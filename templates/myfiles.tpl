@@ -12,7 +12,7 @@
 			<div class="image_manage_bottom">
 				<span style="position: relative; float: right;">
 					<a title="View" href="/view/<%= file.fileid %>"><i class="icon-picture icon-white"></i> </a>
-					<a title="Download" href="https://d3rith5u07eivj.cloudfront.net/<%= file.fileid %><%= file.extension %>"><i class="icon-download icon-white"></i> </a>
+					<a title="Download" href="https://foxcav.es/f/<%= file.fileid %><%= file.extension %>"><i class="icon-download icon-white"></i> </a>
 					<a title="Delete" onclick="return window.confirm('Do you really want to delete <%= escaped_name_js %>?');" href="/myfiles?delete=<%= file.fileid %>"><i class="icon-remove icon-white"></i> </a>
 				</span>
 				<%= format_size(file.size) %>
