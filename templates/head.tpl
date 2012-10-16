@@ -21,7 +21,7 @@
 					<ul class="nav pull-right">
 <% if G.ngx.ctx.user then
 local usedbytes = G.tonumber(G.ngx.ctx.user.usedbytes)
-local totalbytes = G.tonumber(G.ngx.ctx.user.totalbytes)
+local totalbytes = G.tonumber(G.ngx.ctx.user.totalbytes) + G.tonumber(G.ngx.ctx.user.bonusbytes)
 local format_size = G.ngx.ctx.format_size
 local usedperc = G.math.ceil((usedbytes / totalbytes) * 100) %>
 <li>

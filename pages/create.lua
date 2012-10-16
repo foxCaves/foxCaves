@@ -67,7 +67,7 @@ if not file then
 end
 
 local filesize = lfs.attributes(file, "size")
-if tonumber(ngx.ctx.user.usedbytes) + filesize > tonumber(ngx.ctx.user.totalbytes) then
+if tonumber(ngx.ctx.user.usedbytes) + filesize > tonumber(ngx.ctx.user.totalbytes) + tonumber(ngx.ctx.user.bonusbytes) then
 	ngx.status = 402
 	ngx.print("Overquota")
 	return ngx.eof()
