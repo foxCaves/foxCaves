@@ -41,7 +41,7 @@
 					Download link
 				</label>
 				<div class="controls">
-					<input type="text" value="https://foxcav.es/f/<%= FILE.fileid %><%= FILE.extension %>" />
+					<input type="text" value="https://foxcav.es/files/<%= FILE.fileid %><%= FILE.extension %>" />
 				</div>
 			</div>
 		</form>
@@ -54,7 +54,7 @@
 	<% else %>
 		<h5>File cannot be viewed. Download it.</h5>
 	<% end %>
-		<h2><a href="https://foxcav.es/f/<%= RAWNAME %>" target="_blank">Download file</a></h2>
+	<h2><a href="https://foxcav.es/files/<%= RAWNAME %>" target="_blank">Download file</a></h2>
 	<%+ advert %>
 </center>
 <%+ foot %>

@@ -86,7 +86,7 @@ local thumbnail = ""
 local ftype = 0
 
 dofile("scripts/mimetypes.lua")
-local mtype = mimetypes[extension]
+local mtype = mimetypes[extension] or "application/octet-stream"
 local thumbtype = nil
 
 if mtype:sub(1,6) == "image/" then

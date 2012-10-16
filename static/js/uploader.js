@@ -1,6 +1,9 @@
 var dropZoneDefaultInnerHTML = "";
+var dropZoneTransferInProgress = false;
 
 function handleDropFileSelect(evt) {
+	if(dropZoneTransferInProgress) return;
+
 	var dropZone = document.getElementById("uploader");
 
 	handleDragOver(evt);
@@ -11,15 +14,17 @@ function handleDropFileSelect(evt) {
 	
 	if(!theFile) return;
 	
+	dropZoneTransferInProgress = true;
+	
 	dropZone.innerHTML = 'Loading file';
 	
 	fileReader.onloadend = function (evtx) {
-		fileUpload(theFile.name, evtx.target.result);
+		fileUpload(theFile.name, new Uint8Array(evtx.target.result));
 	};
 	fileReader.readAsArrayBuffer(theFile);
 }
 
-function fileUpload(name, fileData) {
+function fileUpload(name, fileData) {	
 	var dropZone = document.getElementById("uploader");
 	dropZone.innerHTML = '<div class="container">Uploading<br /><div id="barUpload" style="margin-left: 50px; margin-right: 50px;" class="progress progress-striped"><div class="bar" style="width: 0%;"></div></div></div>';
 
@@ -52,6 +57,8 @@ function uploadProgress(evt) {
 }
 
 function handleDragOver(evt) {
+	if(dropZoneTransferInProgress) return;
+	
     evt.stopPropagation();
     evt.preventDefault();
 	
@@ -63,7 +70,7 @@ function handleDragOver(evt) {
 	}
 
     evt.dataTransfer.dropEffect = (evt.type == "dragover" ? "copy" : "");
-    evt.target.className = (evt.type == "dragover" ? "hover" : "");
+    dropZone.className = (evt.type == "dragover" ? "hover" : "");
 }
 
 function setupDropZone() {
@@ -79,7 +86,7 @@ function setupDropZone() {
 	dropZone.style.padding = "1em 0";
 	
 	dropZoneDefaultInnerHTML = dropZone.innerHTML;
-
+	
 	dropZone.addEventListener("dragover", handleDragOver, false);
 	dropZone.addEventListener("dragleave", handleDragOver, false);
 	dropZone.addEventListener("drop", handleDropFileSelect, false);

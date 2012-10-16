@@ -3,12 +3,13 @@
 	<head>
 		<link rel="stylesheet" type="text/css" href="https://d3rith5u07eivj.cloudfront.net/static/css/bootstrap.min.css" />
 		<link rel="stylesheet" type="text/css" href="https://d3rith5u07eivj.cloudfront.net/static/css/bootstrap-progressbar.min.css" />
-	        <link rel="stylesheet" type="text/css" href="https://d3rith5u07eivj.cloudfront.net/static/css/main.min.css?v=5" />
-	        <link rel="stylesheet" type="text/css" href="https://d3rith5u07eivj.cloudfront.net/static/css/prettify.min.css" />
+		<link rel="stylesheet" type="text/css" href="https://d3rith5u07eivj.cloudfront.net/static/css/main.min.css?v=5" />
+		<link rel="stylesheet" type="text/css" href="https://d3rith5u07eivj.cloudfront.net/static/css/prettify.min.css" />
 
-		<title><%= MAINTITLE %> - foxCaves</title>
-
+		<script src="https://d3rith5u07eivj.cloudfront.net/static/js/jquery.min.js" type="text/javascript"></script>
 		<script type="text/javascript">var _gaq=_gaq||[];_gaq.push(['_setAccount','UA-9434636-6']);_gaq.push(['_setDomainName','foxcav.es']);_gaq.push(['_trackPageview']);(function(){var ga=document.createElement('script');ga.type='text/javascript';ga.async=true;ga.src=('https:'==document.location.protocol?'https://ssl':'http://www')+'.google-analytics.com/ga.js';var s=document.getElementsByTagName('script')[0];s.parentNode.insertBefore(ga,s);})();</script>
+		
+		<title><%= MAINTITLE %> - foxCaves</title>
 	</head>
     <body data-spy="scroll" data-target=".bs-docs-sidebar">
 		<div class="navbar navbar-inverse navbar-fixed-top">
