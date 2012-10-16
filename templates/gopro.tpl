@@ -4,10 +4,10 @@
 <div class="container">
 	<h3><%= item.title %></h3> <%= item.price %> $(USD)
 	</h4><%= item.description %><h4>
-	<form action="https://<%= PAYPAL_URL %>/webscr" method="post">
+	<form action="https://www.sandbox.paypal.com/webscr" method="post">
 			<input type="hidden" name="cmd" value="_xclick">
 
-			<input type="hidden" name="business" value="<%= PAYPAL_EMAIL %>">
+			<input type="hidden" name="business" value="<%= G.PAYPAL_EMAIL %>">
 			<input type="hidden" name="currency_code" value="USD">
 			<input type="hidden" name="cancel_return" value="https://foxcav.es/gopro?cancel=1">
 			<input type="hidden" name="return" value="https://foxcav.es/gopro?paid=1">

@@ -1,5 +1,5 @@
 dofile("/var/www/doripush/scripts/global.lua")
---if ngx.ctx.user then return ngx.redirect("/user") end
+if ngx.ctx.user then return ngx.redirect("/user") end
 
 local database = ngx.ctx.database
 
@@ -37,9 +37,4 @@ else
 end
 
 dofile("scripts/navtbl.lua")
---[[table.insert(navtbl, {
-	url = "",
-	title = actiontitle,
-	active = true
-})]]
 ngx.print(load_template("message", {MAINTITLE = actiontitle, MESSAGE = message, ADDLINKS = build_nav(navtbl)}))
