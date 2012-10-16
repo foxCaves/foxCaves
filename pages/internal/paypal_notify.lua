@@ -1,7 +1,7 @@
 dofile("/var/www/doripush/scripts/global.lua")
+local database = ngx.ctx.database
 
 local userid = ngx.req.get_uri_args().userid
-
 local args
 
 local function paypal_result(str)
@@ -34,6 +34,14 @@ if args.payment_status:lower() ~= "completed" then
 	return ngx.eof()
 end
 
+local invoiceid = database:escape(args.invoice)
+
+local res = database:query("SELECT 1 FROM `usedinvoices` WHERE `invoiceid` = '"..invoicdid.."'")
+if res and res[1] then
+	paypal_result("Code: #DOUBLE_INVOICE")
+	return ngx.eof()
+end
+
 dofile("scripts/items.lua")
 if args.mc_currency:lower() ~= "usd" or args.receiver_email ~= PAYPAL_EMAIL then
 	paypal_result("Code: #CURRENCY_OR_EMAIL")
@@ -55,6 +63,8 @@ end
 
 ngx.ctx.login(userid, "", true, true)
 item.action()
+
+database:query("INSERT INTO `usedinvoices` (invoiceid, user, time, item) VALUES ('"..invoiceid.."', '"..database:escape(userid).."', UNIX_TIMESTAMP(), '"..database:escape(args.item_number).."')")
 
 paypal_result("Code: #SUCCESS")
 ngx.eof()
