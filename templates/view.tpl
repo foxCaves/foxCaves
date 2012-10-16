@@ -2,7 +2,6 @@
 <% local RAWNAME = FILE.fileid .. FILE.extension %>
 <% local ESCAPED_NAME = G.ngx.ctx.escape_html(FILE.name) %>
 <center>
-	<%+ advert %>
 	<h3>Viewing file: <%= ESCAPED_NAME %></h3>
 	<h4>Uploaded by: <%= FILE.username %><br />Uploaded on: <%= G.os.date("%d.%m.%Y %H:%M", FILE.time) %><br />Size: <%= G.ngx.ctx.format_size(FILE.size) %><h4>
 	<% if FILE.type == 1 then %>

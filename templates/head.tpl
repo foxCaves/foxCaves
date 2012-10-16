@@ -57,5 +57,6 @@ local usedperc = G.math.ceil((usedbytes / totalbytes) * 100) %>
         		</div>
 		</div>
 		<div class="container">
+			<center><%+ advert %></center>
 			<br />
 			<%= MESSAGE %>
