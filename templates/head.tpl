@@ -43,6 +43,8 @@ local usedperc = G.math.ceil((usedbytes / totalbytes) * 100) %>
 								<li class="divider"></li>
 								<li><a href="/foxscreen">Get foxScreen</a></li>
 								<li class="divider"></li>
+								<li><a href="/gopro">Go pro</a></li>
+								<li class="divider"></li>
 								<li><a href="/login?logout=1">Logout</a></li>
 <% else %>
 								<li><a href="/login">Login</a></li>

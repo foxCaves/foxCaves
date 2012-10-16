@@ -2,14 +2,7 @@ dofile("/var/www/doripush/scripts/global.lua")
 
 local userid = ngx.req.get_uri_args().userid
 
-if not userid then
-	ngx.req.discard_body()
-	paypal_result("Code: #INVALID")
-	return ngx.eof()	
-end
-
-ngx.req.read_body()
-local args = ngx.req.get_post_args()
+local args
 
 local function paypal_result(str)
 	local res = {}
@@ -18,8 +11,18 @@ local function paypal_result(str)
 			table.insert(res, k .. " => ".. v .. "\n")
 		end
 	end
-	mail("mriq91@gmail.com", "PayPal: DEBUG", str .. table.concat(res), "paypal@foxcav.es")
+	mail("mriq91@gmail.com", "[foxCaves] PayPal DEBUG", str .. "\nIP: "..ngx.var.remote_addr.."\nUserID: " .. (userid or "N/A") .. "\nPOST DATA\n" .. table.concat(res), "paypal@foxcav.es")
 end
+
+
+if not userid then
+	ngx.req.discard_body()
+	paypal_result("Code: #INVALID")
+	return ngx.eof()	
+end
+
+ngx.req.read_body()
+args = ngx.req.get_post_args()
 
 if not args then
 	paypal_result("Code: #INVALID")
@@ -54,5 +57,4 @@ ngx.ctx.login(userid, "", true, true)
 item.action()
 
 paypal_result("Code: #SUCCESS")
-
 ngx.eof()
