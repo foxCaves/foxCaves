@@ -1,7 +1,26 @@
 <%+ head %>
-<% local function echo_item(itemid) 
-local item = ITEMS[itemid] %>
-	<form action="https://www.paypal.com/webscr" method="post">
+<div class="container well">
+	<%
+		local pro_expiry = G.ngx.ctx.user.pro_expiry
+		local cur_time = G.ngx.time()
+		if pro_expiry >= cur_time then
+	%>
+		You currently have a <span class="badge badge-info">Pro</span> account (valid until <%= G.os.date("%d.%m.%Y %H:%M", pro_expiry) %>)
+	<% else %>
+		You currently have a <span class="badge badge-warning">Basic</span> account
+	<% end %>
+	<br /><br />
+	<h4>Which benefits does a pro account have?</h4>
+	<ul>
+		<li>1GB upload limit instead of 200MB</li>
+		<li>No advertisments, ever, not on your uploads (for others) and not on any page you view</li>
+		<li>The warm and fuzzy feeling of supporting this website to cope with the hosting costs</li>
+	</ul>
+</div>
+<% for itemid,item in pairs(ITEMS) do %>
+<div class="container well">
+	<h3 style="float: right;">
+		<form action="https://www.paypal.com/webscr" method="post">
 			<input type="hidden" name="cmd" value="_xclick">
 
 			<input type="hidden" name="business" value="<%= G.PAYPAL_EMAIL %>">
@@ -9,21 +28,18 @@ local item = ITEMS[itemid] %>
 			<input type="hidden" name="cancel_return" value="https://foxcav.es/gopro?cancel=1">
 			<input type="hidden" name="return" value="https://foxcav.es/gopro?paid=1">
 			<input type="hidden" name="notify_url" value="https://foxcav.es/internal/paypal_notify?userid=<%= G.ngx.ctx.user.id %>">
-			<input type="hidden" name="item_name" value="<%= item.title %>">
-			<input type="hidden" name="item_number" value="<%= k %>">
+			<input type="hidden" name="item_name" value="foxCaves: <%= item.title %>">
+			<input type="hidden" name="item_number" value="<%= itemid %>">
 			<input type="hidden" name="invoice" value="<%= INVOICEID %>">
 			<input type="hidden" name="amount" value="<%= item.price %>">
 
 			<input type="hidden" name="lc" value="US">
 
-			<input class="btn" type="submit" name="submit" alt="" value="Continue to PayPal">
-	</form>
-<% end %>
-<% for k,item in pairs(ITEMS) do %>
-<div class="container">
-	<h3><%= item.title %></h3> <%= item.price %> $(USD)
+			<input class="btn btn-large btn-warning" style="margin-top:  type="submit" name="submit" alt="" value="Pay with PayPal">
+		</form>
+	</h3>
+	<h3><%= item.title %> [<%= item.price %>$]</h3>
 	</h4><%= item.description %><h4>
-	<% echo_item(k) %>
 </div>
 <% end %>
 <%+ foot %>

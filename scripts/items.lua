@@ -29,7 +29,7 @@ ITEMS[1] = {
 }
 ITEMS[2] = {
 	title = "3 month Pro account",
-	description = "A Pro account for 3 months",
+	description = "A Pro account for 3 months (16% discount)",
 	price = 25.00,
 	action = function()
 		gopro(THREEMONTH)
@@ -37,7 +37,7 @@ ITEMS[2] = {
 }
 ITEMS[3] = {
 	title = "6 month Pro account",
-	description = "A Pro account for 6 months",
+	description = "A Pro account for 6 months (25% discount)",
 	price = 45.00,
 	action = function()
 		gopro(SIXMONTH)
@@ -45,7 +45,7 @@ ITEMS[3] = {
 }
 ITEMS[4] = {
 	title = "12 month Pro account",
-	description = "A Pro account for 3 months",
+	description = "A Pro account for 12 months (30% discount)",
 	price = 85.00,
 	action = function()
 		gopro(TWELVEMONTH)
