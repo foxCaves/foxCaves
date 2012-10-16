@@ -3,7 +3,7 @@
 	<head>
 		<link rel="stylesheet" type="text/css" href="https://d3rith5u07eivj.cloudfront.net/static/css/bootstrap.min.css" />
 		<link rel="stylesheet" type="text/css" href="https://d3rith5u07eivj.cloudfront.net/static/css/bootstrap-progressbar.min.css" />
-	        <link rel="stylesheet" type="text/css" href="https://d3rith5u07eivj.cloudfront.net/static/css/main.min.css" />
+	        <link rel="stylesheet" type="text/css" href="https://d3rith5u07eivj.cloudfront.net/static/css/main.min.css?v=1" />
 	        <link rel="stylesheet" type="text/css" href="https://d3rith5u07eivj.cloudfront.net/static/css/prettify.min.css" />
 
 		<title><%= MAINTITLE %> - foxCaves</title>
