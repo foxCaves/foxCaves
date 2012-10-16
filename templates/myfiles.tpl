@@ -4,7 +4,7 @@
 <h2>Manage files</h2>
 <table><tr><td><ul class="image_manage_ul">
 	<% for _,file in pairs(FILES) do %>
-	<% local escaped_name = G.ngx.ctx.escape_html(file.name) %>
+	<% local escaped_name = file.name %>
 	<% local escaped_name_js = escaped_name:gsub("'", "\\'") %>
 	<li>
 		<div style="background-image: url('<% if file.type == 1 and file.thumbnail and file.thumbnail ~= "" then %>https://d3rith5u07eivj.cloudfront.net/_thumbs/<%= file.thumbnail %><% elseif G.lfs.attributes("static/img/thumbs/ext_"..file.extension..".png", "size") then %>https://d3rith5u07eivj.cloudfront.net/static/img/thumbs/ext_<%= file.extension %>.png<% else %>https://d3rith5u07eivj.cloudfront.net/static/img/thumbs/nothumb.png<% end %>')" class="image_manage_main">
