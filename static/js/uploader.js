@@ -1,12 +1,16 @@
 function handleDropFileSelect(evt) {
 	var dropZone = document.getElementById("uploader");
-	dropZone.innerHTML = 'Loading file';
 
 	handleDragOver(evt);
 
 	var files = evt.dataTransfer.files;
 	var fileReader = new FileReader();
 	var theFile = files[0];
+	
+	if(!theFile) return;
+	
+	dropZone.innerHTML = 'Loading file';
+	
 	fileReader.onloadend = function (evtx) {
 		fileUpload(theFile.name, evtx.target.result);
 	};
