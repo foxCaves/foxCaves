@@ -19,7 +19,7 @@ function handleDropFileSelect(evt) {
 
 function fileUpload(name, fileData) {
 	var dropZone = document.getElementById("uploader");
-	dropZone.innerHTML = '<div class="container">Uploading<br /><div id="barUpload" style="margin-left: 50px; margin-right: 50px;" class="progress progress-striped active"><div class="bar" style="width: 100%;"></div></div></div>';
+	dropZone.innerHTML = '<div class="container">Uploading<br /><div id="barUpload" style="margin-left: 50px; margin-right: 50px;" class="progress progress-striped"><div class="bar" style="width: 0%;"></div></div></div>';
 
 	var xhr = new XMLHttpRequest();
 	xhr.upload.addEventListener("loadstart", uploadStart, false);
@@ -45,7 +45,6 @@ function uploadComplete(evt) { }
 
 function uploadProgress(evt) {
 	if(evt.lengthComputable) {
-		$('#barUpload').removeClass("active");
 		$('#barUpload div.bar').css("width", ((evt.loaded / evt.total) * 100) + "%");
 	}
 }
