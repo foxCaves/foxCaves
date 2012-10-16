@@ -1,3 +1,5 @@
+var dropZoneDefaultInnerHTML = "";
+
 function handleDropFileSelect(evt) {
 	var dropZone = document.getElementById("uploader");
 
@@ -52,6 +54,13 @@ function uploadProgress(evt) {
 function handleDragOver(evt) {
     evt.stopPropagation();
     evt.preventDefault();
+	
+	var dropZone = document.getElementById("uploader");
+	if(evt.type == "dragover") {
+		dropZone.innerHTML = 'Drop file now to upload';
+	} else if(evt.type == "dragleave") {
+		dropZone.innerHTML = dropZoneDefaultInnerHTML;
+	}
 
     evt.dataTransfer.dropEffect = (evt.type == "dragover" ? "copy" : "");
     evt.target.className = (evt.type == "dragover" ? "hover" : "");
@@ -68,6 +77,8 @@ function setupDropZone() {
 	dropZone.style.textAlign = "center";
 	dropZone.style.color = "#555";
 	dropZone.style.padding = "1em 0";
+	
+	dropZoneDefaultInnerHTML = dropZone.innerHTML;
 
 	dropZone.addEventListener("dragover", handleDragOver, false);
 	dropZone.addEventListener("dragleave", handleDragOver, false);
