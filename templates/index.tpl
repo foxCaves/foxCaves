@@ -7,6 +7,6 @@
 <h3>Cool, how do I sign up?</h4>
 <h4>Just register via the dropdown menu on the top of this page or <a href="/register">click here</a>!</h4>
 <h3>How exactly does foxScreen work?</h3>
-<h4>Just <a href="/foxscreen">click here</a> to get help and informations about foxScreen!</h4>
+<h4>Just <a href="/foxscreen">click here</a> to get help and information about foxScreen!</h4>
 <%+ foot %>
 
