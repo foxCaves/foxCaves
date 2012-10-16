@@ -9,10 +9,10 @@ $(document).ready(function(){
 	var eles = document.getElementsByTagName("pre");
 	for(i=0; i < eles.length; i++) {
 		var ele = eles[i];
-		ele.style.display = "";
-		ele.innerHTML = "[Loading preview...]";
 		var src = ele.getAttribute('data-thumbnail-source');
 		if(!src) continue;
+		ele.style.display = "";
+		ele.innerHTML = "[Loading preview...]";
 		loadingEles++;
 		$.get('https://d3rith5u07eivj.cloudfront.net/_thumbs/'+src, function(data) {
 			ele.innerHTML = data;

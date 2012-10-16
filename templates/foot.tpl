@@ -34,6 +34,6 @@ end
 		<script src="https://d3rith5u07eivj.cloudfront.net/static/js/jquery.min.js" type="text/javascript"></script>
 		<script src="https://d3rith5u07eivj.cloudfront.net/static/js/bootstrap.min.js" type="text/javascript"></script>
 		<script src="https://d3rith5u07eivj.cloudfront.net/static/js/prettify.min.js" type="text/javascript"></script>
-		<script src="https://d3rith5u07eivj.cloudfront.net/static/js/main.min.js?v=3" type="text/javascript"></script>
+		<script src="https://d3rith5u07eivj.cloudfront.net/static/js/main.min.js?v=6" type="text/javascript"></script>
 	</body>
 </html>
