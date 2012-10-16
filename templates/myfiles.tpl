@@ -1,4 +1,5 @@
 <%+ head %>
+<%+ account_type %>
 <% local format_size = G.ngx.ctx.format_size %>
 <div id="uploader"></div>
 <h2>Manage files</h2>

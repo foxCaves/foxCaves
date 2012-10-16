@@ -1,4 +1,5 @@
 <%+ head %>
+<%+ account_type %>
 <h2>Manage account</h2>
 <form action="" method="post" class="form-horizontal">
 	<div class="control-group">
