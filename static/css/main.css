@@ -71,3 +71,11 @@ body {
 .prettyprint {
 	text-align: left;
 }
+
+.advert {
+	background-image: url('/static/img/abon.png');
+	background-position: center;
+	background-repeat: no-repeat;
+	min-height: 90px;
+	min-width: 768px;
+}
