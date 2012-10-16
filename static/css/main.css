@@ -29,6 +29,7 @@
 	color: white;
 	text-align: left;
 	padding-right: 5px;
+	padding-left: 3px;
 	bottom: 0;
 	width: 145px;
 	position: absolute;
@@ -78,4 +79,9 @@ body {
 	background-repeat: no-repeat;
 	min-height: 90px;
 	min-width: 768px;
+}
+
+.badge-pro {
+	position: relative;
+	top: -1px;
 }
