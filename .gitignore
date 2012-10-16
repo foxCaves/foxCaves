@@ -1,0 +1,4 @@
+scripts/dbconfig.lua
+files/*
+thumbs/*
+static/dls/*

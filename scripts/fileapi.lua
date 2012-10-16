@@ -1,0 +1,69 @@
+if not ngx then
+	local lfs = require("lfs")
+	lfs.chdir("/var/www/doripush")
+end
+
+local AWS_CLIENT = require 'Spore'.new_from_spec('scripts/amazons3.json', {
+	base_url = '*',
+})
+AWS_CLIENT:enable('Parameter.Default', {
+	bucket = '*',
+})
+AWS_CLIENT:enable('Auth.AWS', {
+	aws_access_key = "*",
+	aws_secret_key = "*"
+})
+
+function file_delete(fileid, user)
+	local database = ngx.ctx.database
+
+	local id = database:escape(fileid)
+	local file = database:query("SELECT name, fileid, thumbnail, extension, size, user FROM files WHERE fileid = '"..id.."'")
+	if not (file and file[1]) then return false end
+	file = file[1]
+	if user and file.user ~= user then return false end
+
+	local res = AWS_CLIENT:delete_object({
+		object = file.fileid .. file.extension
+	})
+	if file.thumbnail ~= "" then
+		local res = AWS_CLIENT:delete_object({
+			object = "t/" .. file.thumbnail
+		})
+	end
+
+	database:query("DELETE FROM files WHERE fileid = '"..id.."'")
+
+	if file.user then
+		database:query("UPDATE users SET usedbytes = usedbytes - "..file.size.." WHERE id = '"..file.user.."'")
+		if file.user == ngx.ctx.user.id then
+			ngx.ctx.user.usedbytes = ngx.ctx.user.usedbytes - file.size
+		end
+	end
+
+	return true, file.name
+end
+
+function file_upload(fileid, filename, extension, thumbnail, filetype, thumbtype)
+	local fullname = fileid .. extension
+
+	local res = AWS_CLIENT:put_object({
+		object = fullname,
+		payload = "@files/" .. fullname,
+		["content-type"] = filetype or "application/octet-stream",
+		["content-disposition"] = 'attachment; filename="'..filename:gsub('"',"'")..'"',
+		["cache-control"] = "public, max-age=864000"
+	})
+
+	if thumbnail and thumbnail ~= "" then
+		local res = AWS_CLIENT:put_object({
+			object = "_thumbs/" .. thumbnail,
+			payload = "@thumbs/" .. thumbnail,
+			["content-type"] = thumbtype or "application/octet-stream",
+			["cache-control"] = "public, max-age=864000"
+		})
+		os.remove("thumbs/" .. thumbnail)
+	end
+
+	os.remove("files/"..fullname)
+end
