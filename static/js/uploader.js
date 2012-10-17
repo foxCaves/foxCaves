@@ -42,7 +42,7 @@ function fileUpload(name, fileData) {
 			}
 		}
 	};
-	xhr.open("PUT", "/create?"+escape(name));
+	xhr.open("PUT", "/api/create?"+escape(name));
 	xhr.send(fileData);
 }
 
