@@ -1,13 +1,8 @@
 dofile("/var/www/doripush/scripts/global.lua")
 
 if not ngx.ctx.user then
-	if ngx.var.http_Authorization then
-		ngx.status = 403
-		ngx.print("Please update foxScreen")
-		return ngx.eof()
-	end
-	local user = ngx.var.http_X_Foxscreen_User
-	local pw = ngx.var.http_X_Foxscreen_Password
+	local user = ngx.var.http_X_Foxcaves_User
+	local pw = ngx.var.http_X_Foxcaves_Password
 	local success = false
 	if user and pw then
 		success = (ngx.ctx.login(user,pw,true) == ngx.ctx.LOGIN_SUCCESS)

@@ -1,5 +1,5 @@
 <%+ head %>
-<h1>foxScreen information (<a href="https://d3rith5u07eivj.cloudfront.net/static/dls/foxScreen.exe?v=<%= G.ngx.time() %>">Download here</a>)</h1>
+<h1>foxScreen information (<a href="/static/dls/foxScreen.exe?v=<%= G.ngx.time() %>">Download here</a>)</h1>
 <h3>
 	When you first start foxScreen, you will be presented with the main window of foxScreen:<br />
 </h3>
