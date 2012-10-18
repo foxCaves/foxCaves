@@ -1,8 +1,7 @@
 <%+ head %>
 <% local RAWNAME = FILE.fileid .. FILE.extension %>
-<center>
-	<h3>Viewing file: <%= FILE.name %></h3>
 	<div class="well well-small" style="text-align: left;">
+		<h3>Viewing file: <%= FILE.name %></h3>
 		<form class="form-horizontal">
 			<div class="control-group">
 				<label class="control-label">
@@ -46,7 +45,7 @@
 			</div>
 		</form>
 	</div>
-	<form action="https://foxcav.es/files/<%= RAWNAME %>" method="get">
+	<form action="https://d3rith5u07eivj.cloudfront.net/<%= RAWNAME %>" method="get">
 		<button class="btn btn-large btn-block btn-primary">Download file</button>
 	</form>
 	<% if FILE.type == 1 then %>
@@ -58,5 +57,4 @@
 		<h5>File cannot be viewed. Download it.</h5>
 	<% end %>
 	<%+ advert %>
-</center>
 <%+ foot %>
