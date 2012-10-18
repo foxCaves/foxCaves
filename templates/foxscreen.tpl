@@ -87,6 +87,6 @@ THE SOFTWARE.
 	Can I get the source code anywhere?
 </h3>
 <h4>
-	Sure, you can get all the C# source at <a href="https://github.com/Doridian/FoxScreen">https://github.com/Doridian/FoxScreen</a>
+	Sure, you can get all the source code at <a href="https://github.com/foxCaves">https://github.com/foxCaves</a>
 </h4>
 <%+ foot %>
