@@ -46,6 +46,9 @@
 			</div>
 		</form>
 	</div>
+	<form action="https://foxcav.es/files/<%= RAWNAME %>" method="get">
+		<button class="btn btn-large btn-block btn-primary">Download file</button>
+	</form>
 	<% if FILE.type == 1 then %>
 		<img src="https://d3rith5u07eivj.cloudfront.net/<%= RAWNAME %>">
 	<% elseif FILE.type == 2 then %>
@@ -54,7 +57,6 @@
 	<% else %>
 		<h5>File cannot be viewed. Download it.</h5>
 	<% end %>
-	<h2><a href="https://foxcav.es/files/<%= RAWNAME %>" target="_blank">Download file</a></h2>
 	<%+ advert %>
 </center>
 <%+ foot %>
