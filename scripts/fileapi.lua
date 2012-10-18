@@ -3,16 +3,21 @@ if not ngx then
 	lfs.chdir("/var/www/doripush")
 end
 
+dofile("scripts/awsconfig.lua")
 local AWS_CLIENT = require 'Spore'.new_from_spec('scripts/amazons3.json', {
-	base_url = '*',
+	base_url = AWS_S3_ENDPOINT,
 })
 AWS_CLIENT:enable('Parameter.Default', {
-	bucket = '*',
+	bucket = AWS_S3_BUCKET,
 })
 AWS_CLIENT:enable('Auth.AWS', {
-	aws_access_key = "*",
-	aws_secret_key = "*"
+	aws_access_key = AWS_ACCESS_KEY,
+	aws_secret_key = AWS_SECRET_KEY
 })
+AWS_S3_ENDPOINT = nil
+AWS_S3_BUCKET = nil
+AWS_ACCESS_KEY = nil
+AWS_SECRET_KEY = nil
 
 function file_delete(fileid, user)
 	local database = ngx.ctx.database

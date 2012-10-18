@@ -1,4 +1,5 @@
 /scripts/dbconfig.lua
+/scripts/awsconfig.lua
 /files/*
 /thumbs/*
 /static/dls/*
