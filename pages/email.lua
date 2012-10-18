@@ -82,10 +82,5 @@ if args and args.send then
 end
 
 dofile("scripts/navtbl.lua")
---[[table.insert(navtbl, {
-	url = "",
-	title = actiontitle,
-	active = true
-})]]
 ngx.print(load_template(template_name, {MAINTITLE = actiontitle, MESSAGE = message, ADDLINKS = build_nav(navtbl), USERNAME = username, EMAIL = email, CAPTCHA = generate_captcha(captcha_error)}))
 ngx.eof()

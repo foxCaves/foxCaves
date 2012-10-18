@@ -1,6 +1,6 @@
 <%+ head %>
 <%+ account_type %>
-<div class="container well">
+<div class="container well well-small">
 	<h4>Which benefits does a pro account have?</h4>
 	<ul>
 		<li>1GB upload limit instead of 200MB</li>
@@ -9,7 +9,7 @@
 	</ul>
 </div>
 <% for itemid,item in pairs(ITEMS) do %>
-<div class="container well">
+<div class="container well well-small">
 	<h3 style="float: right;">
 		<form action="https://www.paypal.com/webscr" method="post">
 			<input type="hidden" name="cmd" value="_xclick">

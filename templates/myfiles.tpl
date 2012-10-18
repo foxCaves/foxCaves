@@ -23,5 +23,5 @@
 	</li>		
 	<% end %>
 </ul></td></tr></table>
-<script type="text/javascript" src="/static/js/uploader.min.js?v=7"></script>
+<script type="text/javascript" src="/static/js/uploader.min.js?v=8"></script>
 <%+ foot %>
