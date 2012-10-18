@@ -81,7 +81,27 @@ body {
 	min-width: 768px;
 }
 
-.badge-pro {
+.badge-level {
 	position: relative;
 	top: -1px;
+	padding-top: 2px;
+}
+
+.badge-pro {
+	background-color: #B333E5;
+}
+
+.badge-basic {
+	background-color: #E33535;
+}
+
+.navbar-fixed-bottom .navbar-inner {
+	border-bottom: 0px solid black !important;
+	border-top: 2px solid #B333E5;
+}
+
+.navbar-fixed-bottom .nav li a:hover {
+	border-top: 3px solid #B333E5;
+	border-bottom: 0px solid black !important;
+	padding-top: 10px;
 }

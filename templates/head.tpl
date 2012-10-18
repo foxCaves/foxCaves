@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<link rel="stylesheet" type="text/css" href="/static/css/bootstrap.min.css" />
+		<link rel="stylesheet" type="text/css" href="/static/css/bootstrap.min.css?v=1" />
 		<link rel="stylesheet" type="text/css" href="/static/css/bootstrap-progressbar.min.css" />
-		<link rel="stylesheet" type="text/css" href="/static/css/main.min.css?v=5" />
+		<link rel="stylesheet" type="text/css" href="/static/css/main.min.css?v=6" />
 		<link rel="stylesheet" type="text/css" href="/static/css/prettify.min.css" />
 
 		<script src="/static/js/jquery.min.js" type="text/javascript"></script>
@@ -12,14 +12,15 @@
 		<title><%= MAINTITLE %> - foxCaves</title>
 	</head>
     <body data-spy="scroll" data-target=".bs-docs-sidebar">
-		<div class="navbar navbar-inverse navbar-fixed-top">
+		<div class="navbar navbar-fixed-top">
 			<div class="navbar-inner">
 				<div class="container">
 					<a class="brand" href="/">foxCaves</a>
-					<ul class="nav">
-						<%= ADDLINKS %>
-					</ul>
-					<ul class="nav pull-right">
+					<div class="nav-collapse">
+						<ul class="nav">
+							<%= ADDLINKS %>
+						</ul>
+						<ul class="nav pull-right">
 <% if G.ngx.ctx.user then
 local usedbytes = G.tonumber(G.ngx.ctx.user.usedbytes)
 local totalbytes = G.tonumber(G.ngx.ctx.user.totalbytes) + G.tonumber(G.ngx.ctx.user.bonusbytes)
@@ -35,25 +36,26 @@ local usedperc = G.math.ceil((usedbytes / totalbytes) * 100) %>
 	</div>
 </li>
 <% end %>
-						<li class="dropdown">
-							<a href="" class="dropdown-toggle" data-toggle="dropdown">Welcome, <% if G.ngx.ctx.user then %><%= G.ngx.ctx.escape_html(G.ngx.ctx.user.username) %><% if G.ngx.ctx.user.pro_expiry >= G.ngx.time() then %> <span class="badge badge-info badge-pro">Pro</span><% end %><% else %>Guest<% end %> <b class="caret"></b></a>
-							<ul class="dropdown-menu">
+							<li class="dropdown">
+								<a href="" class="dropdown-toggle" data-toggle="dropdown">Welcome, <% if G.ngx.ctx.user then %><%= G.ngx.ctx.escape_html(G.ngx.ctx.user.username) %><% if G.ngx.ctx.user.pro_expiry >= G.ngx.time() then %> <span class="badge badge-level badge-pro">Pro</span><% end %><% else %>Guest<% end %> <b class="caret"></b></a>
+								<ul class="dropdown-menu">
 <% if G.ngx.ctx.user then %>
-								<li><a href="/myfiles">My files</a></li>
-								<li><a href="/myaccount">My account</a></li>
-								<li class="divider"></li>
-								<li><a href="/foxscreen">Get foxScreen</a></li>
-								<li class="divider"></li>
-								<li><a href="/gopro">Go pro</a></li>
-								<li class="divider"></li>
-								<li><a href="/login?logout=1">Logout</a></li>
+									<li><a href="/myfiles">My files</a></li>
+									<li><a href="/myaccount">My account</a></li>
+									<li class="divider"></li>
+									<li><a href="/foxscreen">Get foxScreen</a></li>
+									<li class="divider"></li>
+									<li><a href="/gopro">Go pro</a></li>
+									<li class="divider"></li>
+									<li><a href="/login?logout=1">Logout</a></li>
 <% else %>
-								<li><a href="/login">Login</a></li>
-								<li><a href="/register">Register</a></li>
+									<li><a href="/login">Login</a></li>
+									<li><a href="/register">Register</a></li>
 <% end %>
-							</ul>
-						</li>
-					</ul>
+								</ul>
+							</li>
+						</ul>
+					</div>
 				</div>
         		</div>
 		</div>

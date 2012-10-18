@@ -15,19 +15,21 @@ if (not filecount) or (not usercount) then
 end
 %>
 		</div>
-		<div class="navbar navbar-fixed-bottom navbar-inverse">
+		<div class="navbar navbar-fixed-bottom">
 			<div class="navbar-inner">
 				<div class="container">
-					<ul class="nav">
-						<li>
-							<a>Request took <%= G.math.ceil((G.socket.gettime() - G.ngx.ctx.req_starttime) * 100000) / 100 %>ms</a>
-						</li>
-					</ul>
-					<ul class="nav pull-right">
-						<li>
-							<a>Currently powering <%= filecount %> files and <%= usercount %> users</a>
-						</li>
-					</ul>
+					<div class="nav-collapse">
+						<ul class="nav">
+							<li>
+								<a>Request took <%= G.math.ceil((G.socket.gettime() - G.ngx.ctx.req_starttime) * 100000) / 100 %>ms</a>
+							</li>
+						</ul>
+						<ul class="nav pull-right">
+							<li>
+								<a>Currently powering <%= filecount %> files and <%= usercount %> users</a>
+							</li>
+						</ul>
+					</div>
 				</div>
 			</div>
 		</div>
