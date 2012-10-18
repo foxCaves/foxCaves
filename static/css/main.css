@@ -95,26 +95,98 @@ body {
 	background-color: #E33535;
 }
 
+.navbar .nav li a {
+  -webkit-transition: border-color linear .2s;
+  -moz-transition: border-color linear .2s;
+  -o-transition: border-color linear .2s;
+  transition: border-color linear .2s;
+}
+
 .navbar-fixed-bottom .navbar-inner {
 	border-bottom: 0px solid black !important;
 	border-top: 2px solid #B333E5;
 }
 
+.navbar-fixed-bottom .nav li a {
+	border-top: 3px solid black;
+	padding-top: 10px;
+}
+
 .navbar-fixed-bottom .nav li a:hover {
 	border-top: 3px solid #B333E5;
 	border-bottom: 0px solid black !important;
-	padding-top: 10px;
 }
 
 #uploader {
 	border: 2px dashed #555;
 	border-radius: 7px;
-    fontWeight: bold;
-    textAlign: center;
+    font-weight: bold;
+    text-align: center;
     color: #555;
     padding: 1em 0;
 	transition: border-color 1s, color 1s;
 	-moz-transition: border-color 1s, color 1s;
 	-webkit-transition: border-color 1s, color 1s;
 	-o-transition: border-color 1s, color 1s;
+}
+
+textarea,
+input[type="text"],
+input[type="password"],
+input[type="datetime"],
+input[type="datetime-local"],
+input[type="date"],
+input[type="month"],
+input[type="time"],
+input[type="week"],
+input[type="number"],
+input[type="email"],
+input[type="url"],
+input[type="search"],
+input[type="tel"],
+input[type="color"],
+.uneditable-input {
+	background-color: #111 !important;
+}
+
+select,
+textarea,
+input[type="text"],
+input[type="password"],
+input[type="datetime"],
+input[type="datetime-local"],
+input[type="date"],
+input[type="month"],
+input[type="time"],
+input[type="week"],
+input[type="number"],
+input[type="email"],
+input[type="url"],
+input[type="search"],
+input[type="tel"],
+input[type="color"],
+.uneditable-input {
+	border-color: #B333E5;
+}
+
+textarea:focus,
+input[type="text"]:focus,
+input[type="password"]:focus,
+input[type="datetime"]:focus,
+input[type="datetime-local"]:focus,
+input[type="date"]:focus,
+input[type="month"]:focus,
+input[type="time"]:focus,
+input[type="week"]:focus,
+input[type="number"]:focus,
+input[type="email"]:focus,
+input[type="url"]:focus,
+input[type="search"]:focus,
+input[type="tel"]:focus,
+input[type="color"]:focus,
+.uneditable-input:focus {
+	-webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 15px rgba(179, 51, 229, 0.9) !important;
+	-moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 15px rgba(179, 51, 229, 0.9) !important;
+	box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 15px rgba(179, 51, 229, 0.9) !important;
+	border-color: #B333E5;
 }

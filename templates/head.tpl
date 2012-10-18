@@ -3,7 +3,7 @@
 	<head>
 		<link rel="stylesheet" type="text/css" href="/static/css/bootstrap.min.css?v=1" />
 		<link rel="stylesheet" type="text/css" href="/static/css/bootstrap-progressbar.min.css" />
-		<link rel="stylesheet" type="text/css" href="/static/css/main.min.css?v=6" />
+		<link rel="stylesheet" type="text/css" href="/static/css/main.css?v=6" />
 		<link rel="stylesheet" type="text/css" href="/static/css/prettify.min.css" />
 
 		<script src="/static/js/jquery.min.js" type="text/javascript"></script>
