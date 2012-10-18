@@ -105,3 +105,16 @@ body {
 	border-bottom: 0px solid black !important;
 	padding-top: 10px;
 }
+
+#uploader {
+	border: 2px dashed #555;
+	border-radius: 7px;
+    fontWeight: bold;
+    textAlign: center;
+    color: #555;
+    padding: 1em 0;
+	transition: border-color 1s, color 1s;
+	-moz-transition: border-color 1s, color 1s;
+	-webkit-transition: border-color 1s, color 1s;
+	-o-transition: border-color 1s, color 1s;
+}

@@ -65,8 +65,12 @@ function handleDragOver(evt) {
 	var dropZone = document.getElementById("uploader");
 	if(evt.type == "dragover") {
 		dropZone.innerHTML = 'Drop file now to upload';
+		dropZone.style.color = "#B333E5";
+		dropZone.style.borderColor = "#B333E5";
 	} else if(evt.type == "dragleave") {
 		dropZone.innerHTML = dropZoneDefaultInnerHTML;
+		dropZone.style.color = "";
+		dropZone.style.borderColor = "";
 	}
 
     evt.dataTransfer.dropEffect = (evt.type == "dragover" ? "copy" : "");
@@ -78,12 +82,6 @@ function setupDropZone() {
 	var dropZone = document.getElementById('uploader');
 
 	dropZone.innerHTML = "Drag & drop files here to upload them";
-	dropZone.style.border = "2px dashed #555";
-	dropZone.style.borderRadius = "7px";
-	dropZone.style.fontWeight = "bold";
-	dropZone.style.textAlign = "center";
-	dropZone.style.color = "#555";
-	dropZone.style.padding = "1em 0";
 	
 	dropZoneDefaultInnerHTML = dropZone.innerHTML;
 	
