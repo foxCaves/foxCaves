@@ -1,7 +1,7 @@
 <%+ head %>
 <% local RAWNAME = FILE.fileid .. FILE.extension %>
+	<h3>Viewing file: <%= FILE.name %></h3>
 	<div class="well well-small" style="text-align: left;">
-		<h3>Viewing file: <%= FILE.name %></h3>
 		<form class="form-horizontal">
 			<div class="control-group">
 				<label class="control-label">
