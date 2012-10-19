@@ -194,3 +194,13 @@ function deleteFile(fileid, filename) {
 	
 	return false;
 }
+
+$(".image_manage_ul li .image_manage_main .image_manage_top").each(function(idx, elem) {
+	elem.style.cursor="move";
+});
+
+var bin = document.getElementById("recycle_bin").style.display = "";
+
+bin.addEventListener("dragover", function(ev){ ev.dataTransfer.dropEffect = "move"; }, false);
+bin.addEventListener("dragleave", function(ev){ ev.dataTransfer.dropEffect = "none"; }, false);
+bin.addEventListener("drop", function(ev){ console.log(ev); }, false);
