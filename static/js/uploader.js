@@ -91,3 +91,18 @@ function setupDropZone() {
 }
 
 setupDropZone();
+
+function deleteFile(fileid, filename) {
+	if(!window.confirm('Do you really want to delete '+filename+'?'))
+		return false;
+	
+	$.get('/api/delete?'+fileid, function(data) {
+		if(data.charAt(0) == '+') {
+			$('#file_'+fileid).remove();
+		} else {
+			alert("Error deleting file :(");
+		}
+	});
+	
+	return false;
+}
