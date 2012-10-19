@@ -111,9 +111,32 @@ function setupDropZone() {
 
 setupDropZone();
 
+function refreshFiles() {
+	$.get('/api/list?idonly', function(data) {
+		var files = data.split("\n");
+		var files_rev = new Array();
+		for(var i=0;i<files.length;i++) {
+			var fileid = files[i];
+			files_rev[fileid] = true;
+			if(!document.getElementById("file_"+fileid)) {
+				addFileLI(fileid);
+			}
+		}
+		
+		$('#file_manage_div li').each(function(i, ele) {
+			var fileid = $(ele).attr('id').substr(5);
+			if(!files_rev[fileid]) {
+				removeFileLI(fileid);
+			}
+		});
+	});
+	
+	return false;
+}
+
 function addFileLI(fileid) {
 	$.get("/api/filehtml?" + fileid, function(data) {
-		var ele = document.getElementById("file_manage_div")
+		var ele = document.getElementById("file_manage_div");
 		ele.innerHTML = data + ele.innerHTML;
 	});
 }
