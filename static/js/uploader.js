@@ -117,6 +117,8 @@ function refreshFiles() {
 		var files_rev = new Array();
 		for(var i=0;i<files.length;i++) {
 			var fileid = files[i];
+			if(!fileid || fileid == "")
+				continue;
 			files_rev[fileid] = true;
 			if(!document.getElementById("file_"+fileid)) {
 				addFileLI(fileid);

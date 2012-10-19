@@ -209,3 +209,12 @@ select {
 	border: 1px solid #B333E5;
 	color: #999;
 }
+
+#recycle_bin {
+	background-image: url("/static/img/recycle_bin.png");
+	width: 256px;
+	height: 256px;
+	position: fixed;
+	right: 10px;
+	bottom: 50px;
+}
