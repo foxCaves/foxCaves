@@ -77,6 +77,12 @@ if mtype:sub(1,6) == "image/" then
 	thumbtype = "image/png"
 
 	os.execute('/usr/bin/convert "files/'..fileid..extension..'" -thumbnail x300 -resize "300x<" -resize 50% -gravity center -crop 150x150+0+0 +repage -format png "thumbs/'..thumbnail..'"')
+	
+	if not lfs.attributes("thumbs/"..thumbnail, "size") then
+		ftype = 0
+		thumbnail = ""
+		thumbtype = nil
+	end
 elseif mtype:sub(1,5) == "text/" then
 	thumbnail = fileid..extension
 	ftype = 2
