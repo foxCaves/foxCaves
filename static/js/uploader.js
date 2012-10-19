@@ -106,8 +106,6 @@ function resetDropZone() {
 }
 
 function handleDragOver(evt) {
-	if(dropZoneTransferInProgress) return;
-	
     evt.stopPropagation();
     evt.preventDefault();
 	
@@ -177,7 +175,7 @@ function removeFileLI(fileid) {
 }
 
 function deleteFile(fileid, filename) {
-	if(!window.confirm('Do you really want to delete '+filename+'?'))
+	if(filename && !window.confirm('Do you really want to delete '+filename+'?'))
 		return false;
 	
 	var eleSel = $("#file_"+fileid+" div.image_manage_main");
@@ -199,8 +197,34 @@ $(".image_manage_ul li .image_manage_main .image_manage_top").each(function(idx,
 	elem.style.cursor="move";
 });
 
-var bin = document.getElementById("recycle_bin").style.display = "";
+var currFileDrag;
 
-bin.addEventListener("dragover", function(ev){ ev.dataTransfer.dropEffect = "move"; }, false);
-bin.addEventListener("dragleave", function(ev){ ev.dataTransfer.dropEffect = "none"; }, false);
-bin.addEventListener("drop", function(ev){ console.log(ev); }, false);
+function storeFileDrag(ev) {
+	currFileDrag = ev.target;
+}
+
+$(".image_manage_ul li").each(function(idx, elem) {
+	elem.addEventListener("dragstart", storeFileDrag);
+});
+
+var bin = document.getElementById("recycle_bin");
+
+bin.style.display = "";
+
+bin.addEventListener("dragover", function(ev){
+	ev.stopPropagation();
+    ev.preventDefault();
+	ev.dataTransfer.dropEffect = "move";
+}, false);
+
+bin.addEventListener("dragleave", function(ev){
+	ev.stopPropagation();
+    ev.preventDefault();
+	ev.dataTransfer.dropEffect = "none";
+}, false);
+
+bin.addEventListener("drop", function(ev){
+	ev.stopPropagation();
+    ev.preventDefault();
+	deleteFile(currFileDrag.id.substr(5));
+}, false);
