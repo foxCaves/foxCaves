@@ -35,9 +35,13 @@ function fileUpload(name, fileData) {
 	xhr.onreadystatechange = function() {
 		if(xhr.readyState == 4) {
 			if(xhr.status == 200) {
-				document.location.href = "/" + xhr.responseText;
+				//document.location.href = "/" + xhr.responseText;
+				var file = xhr.responseText.split("\n");
+				var fileInfo = file[1];
+				_makeFileInfoLI(fileInfo);
+				resetDropZone();
 			} else {
-				setupDropZone();
+				resetDropZone();
 				alert("Upload error: " + xhr.responseText);
 			}
 		}
@@ -46,14 +50,39 @@ function fileUpload(name, fileData) {
 	xhr.send(fileData);
 }
 
-function uploadStart(evt) { }
+function _makeFileInfoLI(fileInfo) {
+	fileInfo = fileInfo.split(">");
+	
+	$.get("/api/filehtml?" + fileInfo[0], function(data) {
+		var ele = document.getElementById("file_manage_div")
+		ele.innerHTML = data + ele.innerHTML;
+	});
+}
 
-function uploadComplete(evt) { }
+function uploadStart(evt) {
+	_setUploadProgress(0);
+}
+
+function uploadComplete(evt) {
+	_setUploadProgress(100);
+}
 
 function uploadProgress(evt) {
 	if(evt.lengthComputable) {
-		$('#barUpload div.bar').css("width", ((evt.loaded / evt.total) * 100) + "%");
+		_setUploadProgress((evt.loaded / evt.total) * 100);
 	}
+}
+
+function _setUploadProgress(progress_percent) {
+	$('#barUpload div.bar').css("width", progress_percent + "%");
+}
+
+function resetDropZone() {
+	var dropZone = document.getElementById("uploader");
+	dropZone.innerHTML = dropZoneDefaultInnerHTML;
+	dropZone.style.color = "";
+	dropZone.style.borderColor = "";
+	dropZoneTransferInProgress = false;
 }
 
 function handleDragOver(evt) {
@@ -68,9 +97,7 @@ function handleDragOver(evt) {
 		dropZone.style.color = "#B333E5";
 		dropZone.style.borderColor = "#B333E5";
 	} else if(evt.type == "dragleave") {
-		dropZone.innerHTML = dropZoneDefaultInnerHTML;
-		dropZone.style.color = "";
-		dropZone.style.borderColor = "";
+		resetDropZone();
 	}
 
     evt.dataTransfer.dropEffect = (evt.type == "dragover" ? "copy" : "");
