@@ -38,7 +38,7 @@ function processNextFile() {
 	
 	dropZoneTransferInProgress = true;
 	if(dropZoneFileNumber == 0) {
-		dropZone.innerHTML = '<div class="container">Uploading<br />File: <div id="barUpload" style="margin-left: 50px; margin-right: 50px;" class="progress progress-striped"><div class="bar" style="width: 0%;"></div></div><br />Total: <div id="barUploadTotal" style="margin-left: 50px; margin-right: 50px;" class="progress progress-striped"><div class="bar" style="width: 0%;"></div></div></div>';
+		dropZone.innerHTML = '<div class="container">Uploading<br />File: <span id="curFileName">N/A</span><div id="barUpload" style="margin-left: 50px; margin-right: 50px;" class="progress progress-striped"><div class="bar" style="width: 0%;"></div></div><br />Total: <div id="barUploadTotal" style="margin-left: 50px; margin-right: 50px;" class="progress progress-striped"><div class="bar" style="width: 0%;"></div></div></div>';
 	}
 	
 	var dropZoneFileReader = new FileReader();
@@ -49,6 +49,8 @@ function processNextFile() {
 }
 
 function fileUpload(name, fileData) {	
+	$('#curFileName').text(name);
+
 	var xhr = new XMLHttpRequest();
 	xhr.upload.addEventListener("loadstart", uploadStart, false);
 	xhr.upload.addEventListener("progress", uploadProgress, false);
@@ -112,7 +114,7 @@ function handleDragOver(evt) {
 	var dropZone = document.getElementById("uploader");
 	var dropZoneSub = document.getElementById("uploader_sub");
 	
-	if(evt.type == "dragover") {
+	if(evt.type == "dragenter") {
 		dropZoneSub.innerHTML = 'Drop file now to upload';
 		dropZone.style.color = "#B333E5";
 		dropZone.style.borderColor = "#B333E5";
@@ -120,23 +122,25 @@ function handleDragOver(evt) {
 		resetDropZone();
 	}
 
-    evt.dataTransfer.dropEffect = (evt.type == "dragover" ? "copy" : "");
-    dropZone.className = (evt.type == "dragover" ? "hover" : "");
+    evt.dataTransfer.dropEffect = (evt.type == "dragenter" ? "copy" : "");
+    dropZone.className = (evt.type == "dragenter" ? "hover" : "");
 }
 
 function setupDropZone() {
-	// Setup the dnd listeners.
+	var body = document.getElementsByTagName("body")[0];
+	/*var fullPageDropZone = document.createElement("div");
+	fullPageDropZone.id = "dropZone";
+	body.appendChild(fullPageDropZone);*/
+
 	var dropZoneMain = document.getElementById('uploader');
-	dropZoneMain.innerHTML = "<div id='uploader_sub'>Drag & drop files here to upload them</div><div id='uploader_cur'></div>";
+	dropZoneMain.innerHTML = "<div id='uploader_sub'>Drag & drop files anywhere on this page to upload them</div><div id='uploader_cur'></div>";
 	
 	dropZoneDefaultInnerHTML = document.getElementById('uploader_sub').innerHTML;
 	
-	dropZoneMain.addEventListener("dragover", handleDragOver, false);
-	dropZoneMain.addEventListener("dragleave", handleDragOver, false);
-	dropZoneMain.addEventListener("drop", handleDropFileSelect, false);
+	body.addEventListener("dragenter", handleDragOver, false);
+	body.addEventListener("dragleave", handleDragOver, false);
+	body.addEventListener("drop", handleDropFileSelect, false);
 }
-
-setupDropZone();
 
 function refreshFiles() {
 	$.get('/api/list?idonly', function(data) {
@@ -166,7 +170,13 @@ function refreshFiles() {
 function addFileLI(fileid) {
 	$.get("/api/filehtml?" + fileid, function(data) {
 		var ele = document.getElementById("file_manage_div");
-		ele.innerHTML = data + ele.innerHTML;
+		
+		var newFile = document.createElement("ul");
+		newFile.innerHTML = data.trim();
+		newFile = newFile.firstChild;
+		newFile.style.cursor = "move";
+		
+		ele.insertBefore(newFile, ele.firstChild);
 	});
 }
 
@@ -193,38 +203,49 @@ function deleteFile(fileid, filename) {
 	return false;
 }
 
-$(".image_manage_ul li .image_manage_main .image_manage_top").each(function(idx, elem) {
-	elem.style.cursor="move";
-});
+function setupFileDragging() {
+	$(".image_manage_ul li .image_manage_main .image_manage_top").each(function(idx, elem) {
+		elem.style.cursor="move";
+	});
 
-var currFileDrag;
+	var currFileDrag;
+	
+	var bin = document.getElementById("recycle_bin");
 
-function storeFileDrag(ev) {
-	currFileDrag = ev.target;
+	function storeFileDrag(ev) {
+		currFileDrag = ev.target;
+		bin.style.opacity = "0.7";
+	}
+	
+	$(".image_manage_ul li").each(function(idx, elem) {
+		elem.addEventListener("dragstart", storeFileDrag, false);
+		elem.addEventListener("dragend", function(ev) { console.log("blarg"); bin.style.opacity = "0.5"; }, false);
+	});
+
+
+	bin.style.display = "";
+
+	bin.addEventListener("dragover", function(ev){
+		ev.stopPropagation();
+		ev.preventDefault();
+		ev.dataTransfer.dropEffect = "move";
+		ev.target.style.opacity = "1";
+	}, false);
+
+	bin.addEventListener("dragleave", function(ev){
+		ev.stopPropagation();
+		ev.preventDefault();
+		ev.dataTransfer.dropEffect = "none";
+		bin.style.opacity = "0.7";
+	}, false);
+
+	bin.addEventListener("drop", function(ev){
+		ev.stopPropagation();
+		ev.preventDefault();
+		deleteFile(currFileDrag.id.substr(5));
+		ev.target.style.opacity = "";
+	}, false);
 }
 
-$(".image_manage_ul li").each(function(idx, elem) {
-	elem.addEventListener("dragstart", storeFileDrag);
-});
-
-var bin = document.getElementById("recycle_bin");
-
-bin.style.display = "";
-
-bin.addEventListener("dragover", function(ev){
-	ev.stopPropagation();
-    ev.preventDefault();
-	ev.dataTransfer.dropEffect = "move";
-}, false);
-
-bin.addEventListener("dragleave", function(ev){
-	ev.stopPropagation();
-    ev.preventDefault();
-	ev.dataTransfer.dropEffect = "none";
-}, false);
-
-bin.addEventListener("drop", function(ev){
-	ev.stopPropagation();
-    ev.preventDefault();
-	deleteFile(currFileDrag.id.substr(5));
-}, false);
+setupDropZone();
+setupFileDragging();
