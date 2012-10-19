@@ -7,6 +7,7 @@
 	background: no-repeat;
 	background-position: center; 
 	display: block;
+	overflow: visible;
 }
 
 .image_manage_top {
@@ -40,7 +41,7 @@
 	list-style: none;
 }
 
-.image_manage_ul li {
+.image_manage_ul > li {
 	padding: 5px;
 	margin-right: 5px;
 	margin-left:  5px;
@@ -222,4 +223,12 @@ select {
 	-o-transition: opacity .5s ease;
 	opacity: 0.5;
 	z-index: 200;
+}
+
+.image_manage_main > .image_manage_bottom > span > .dropdown {
+	display: inline;
+}
+
+.image_manage_main > .image_manage_bottom > span > .dropdown > .dropdown-menu > .dropdown-submenu > .dropdown-menu {
+	min-width: 40px;
 }
