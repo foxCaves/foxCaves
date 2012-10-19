@@ -37,8 +37,9 @@ function fileUpload(name, fileData) {
 			if(xhr.status == 200) {
 				//document.location.href = "/" + xhr.responseText;
 				var file = xhr.responseText.split("\n");
-				var fileInfo = file[1];
-				_makeFileInfoLI(fileInfo);
+				var fileInfo = file[1].split(">");
+				var fileid = fileInfo[0];
+				addFileLI(fileid);
 				resetDropZone();
 			} else {
 				resetDropZone();
@@ -48,15 +49,6 @@ function fileUpload(name, fileData) {
 	};
 	xhr.open("PUT", "/api/create?"+escape(name));
 	xhr.send(fileData);
-}
-
-function _makeFileInfoLI(fileInfo) {
-	fileInfo = fileInfo.split(">");
-	
-	$.get("/api/filehtml?" + fileInfo[0], function(data) {
-		var ele = document.getElementById("file_manage_div")
-		ele.innerHTML = data + ele.innerHTML;
-	});
 }
 
 function uploadStart(evt) {
@@ -119,13 +111,24 @@ function setupDropZone() {
 
 setupDropZone();
 
+function addFileLI(fileid) {
+	$.get("/api/filehtml?" + fileid, function(data) {
+		var ele = document.getElementById("file_manage_div")
+		ele.innerHTML = data + ele.innerHTML;
+	});
+}
+
+function removeFileLI(fileid) {
+	$('#file_'+fileid).remove();
+}
+
 function deleteFile(fileid, filename) {
 	if(!window.confirm('Do you really want to delete '+filename+'?'))
 		return false;
 	
 	$.get('/api/delete?'+fileid, function(data) {
 		if(data.charAt(0) == '+') {
-			$('#file_'+fileid).remove();
+			removeFileLI(fileid);
 		} else {
 			alert("Error deleting file :(");
 		}
