@@ -10,7 +10,7 @@ function handleDropFileSelect(evt) {
 	var dropZone = document.getElementById("uploader");
 	handleDragOver(evt);
 
-	var files = evt.dataTransfer.files;
+	var files = evt.originalEvent.dataTransfer.files;
 	
 	for(var i=0;i<files.length;i++) {
 		dropZoneUploads.push(files[i]);
@@ -107,39 +107,52 @@ function resetDropZone() {
 	dropZoneTransferInProgress = false;
 }
 
-function handleDragOver(evt) {
+function preventDefault(evt) {
+    evt.stopPropagation();
+    evt.preventDefault();	
+}
+
+
+function handleDragOver(evt, evttype) {
     evt.stopPropagation();
     evt.preventDefault();
+	
+	if(!evttype) {
+		evttype = evt.type;
+	}
 	
 	var dropZone = document.getElementById("uploader");
 	var dropZoneSub = document.getElementById("uploader_sub");
 	
-	if(evt.type == "dragenter") {
+	if(evttype == "dragenter") {
+		if(currFileDrag)
+			return;
 		dropZoneSub.innerHTML = 'Drop file now to upload';
 		dropZone.style.color = "#B333E5";
 		dropZone.style.borderColor = "#B333E5";
-	} else if(evt.type == "dragleave") {
+	} else if(evttype == "dragleave") {
+		if(evt.originalEvent && evt.originalEvent.pageX != "0")
+			return;
 		resetDropZone();
 	}
-
-    evt.dataTransfer.dropEffect = (evt.type == "dragenter" ? "copy" : "");
-    dropZone.className = (evt.type == "dragenter" ? "hover" : "");
+	
+	if(evt.originalEvent) {
+		evt.originalEvent.dataTransfer.dropEffect = (evttype == "dragenter" ? "copy" : "");
+	}
+    dropZone.className = (evttype == "dragenter" ? "hover" : "");
 }
 
 function setupDropZone() {
-	var body = document.getElementsByTagName("body")[0];
-	/*var fullPageDropZone = document.createElement("div");
-	fullPageDropZone.id = "dropZone";
-	body.appendChild(fullPageDropZone);*/
-
 	var dropZoneMain = document.getElementById('uploader');
 	dropZoneMain.innerHTML = "<div id='uploader_sub'>Drag & drop files anywhere on this page to upload them</div><div id='uploader_cur'></div>";
 	
 	dropZoneDefaultInnerHTML = document.getElementById('uploader_sub').innerHTML;
 	
-	body.addEventListener("dragenter", handleDragOver, false);
-	body.addEventListener("dragleave", handleDragOver, false);
-	body.addEventListener("drop", handleDropFileSelect, false);
+	var docSel = $("*:not(#recycle_bin)");
+	docSel.bind("dragenter.dropZone", handleDragOver);
+	docSel.bind("dragleave.dropZone", handleDragOver);
+	docSel.bind("dragover.dropZone", preventDefault);
+	docSel.bind("drop.dropZone", handleDropFileSelect);
 }
 
 function refreshFiles() {
@@ -203,47 +216,65 @@ function deleteFile(fileid, filename) {
 	return false;
 }
 
+var currFileDrag;
+
 function setupFileDragging() {
 	$(".image_manage_ul li .image_manage_main .image_manage_top").each(function(idx, elem) {
 		elem.style.cursor="move";
 	});
-
-	var currFileDrag;
 	
-	var bin = document.getElementById("recycle_bin");
+	var trashBin = document.getElementById("recycle_bin");
 
-	function storeFileDrag(ev) {
+	function startFileDrag(ev) {
 		currFileDrag = ev.target;
-		bin.style.opacity = "0.7";
+		trashBin.style.opacity = "0.7";
+	}
+	
+	function endFileDrag(ev) {
+		currFileDrag = false;
+		trashBin.style.opacity = "0.5";
 	}
 	
 	$(".image_manage_ul li").each(function(idx, elem) {
-		elem.addEventListener("dragstart", storeFileDrag, false);
-		elem.addEventListener("dragend", function(ev) { console.log("blarg"); bin.style.opacity = "0.5"; }, false);
+		elem.addEventListener("dragstart", startFileDrag, false);
+		elem.addEventListener("dragend", endFileDrag, false);
 	});
 
 
-	bin.style.display = "";
+	trashBin.style.display = "";
+	
+	trashBin.addEventListener("dragover", preventDefault);
 
-	bin.addEventListener("dragover", function(ev){
+	trashBin.addEventListener("dragenter", function(ev){
 		ev.stopPropagation();
 		ev.preventDefault();
+		
+		handleDragOver(ev, "dragleave");
+		
+		if(!currFileDrag)
+			return;
+		
 		ev.dataTransfer.dropEffect = "move";
 		ev.target.style.opacity = "1";
 	}, false);
 
-	bin.addEventListener("dragleave", function(ev){
+	trashBin.addEventListener("dragleave", function(ev){
 		ev.stopPropagation();
 		ev.preventDefault();
-		ev.dataTransfer.dropEffect = "none";
-		bin.style.opacity = "0.7";
+		
+		ev.dataTransfer.dropEffect = "";
+		trashBin.style.opacity = "0.7";
 	}, false);
 
-	bin.addEventListener("drop", function(ev){
+	trashBin.addEventListener("drop", function(ev){
 		ev.stopPropagation();
 		ev.preventDefault();
+		
+		if(!currFileDrag)
+			return;
+			
 		deleteFile(currFileDrag.id.substr(5));
-		ev.target.style.opacity = "";
+		trashBin.style.opacity = "";
 	}, false);
 }
 
