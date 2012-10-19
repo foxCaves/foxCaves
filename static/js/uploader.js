@@ -1,48 +1,73 @@
 var dropZoneDefaultInnerHTML = "";
 var dropZoneTransferInProgress = false;
 
+var dropZoneUploads = new Array();
+
+var dropZoneFileNumber = 0;
+var dropZoneFileCount = 0;
+
 function handleDropFileSelect(evt) {
-	if(dropZoneTransferInProgress) return;
-
 	var dropZone = document.getElementById("uploader");
-
 	handleDragOver(evt);
 
 	var files = evt.dataTransfer.files;
-	var fileReader = new FileReader();
-	var theFile = files[0];
 	
-	if(!theFile) return;
+	for(var i=0;i<files.length;i++) {
+		dropZoneUploads.push(files[i]);
+		dropZoneFileCount++;
+	}
+	
+	processNextFile();
+}
+
+function processNextFile() {
+	if(dropZoneTransferInProgress) return;
+	
+	resetDropZone();
+	
+	var dropZone = document.getElementById("uploader_cur");
+	
+	if(dropZoneUploads.length <= 0) {
+		dropZoneFileNumber = 0;
+		dropZoneFileCount = 0;
+		dropZone.innerHTML = "";
+		return;
+	}
+	
+	var theFile = dropZoneUploads.shift();
 	
 	dropZoneTransferInProgress = true;
+	if(dropZoneFileNumber == 0) {
+		dropZone.innerHTML = '<div class="container">Uploading<br />File: <div id="barUpload" style="margin-left: 50px; margin-right: 50px;" class="progress progress-striped"><div class="bar" style="width: 0%;"></div></div><br />Total: <div id="barUploadTotal" style="margin-left: 50px; margin-right: 50px;" class="progress progress-striped"><div class="bar" style="width: 0%;"></div></div></div>';
+	}
 	
-	dropZone.innerHTML = 'Loading file';
-	
-	fileReader.onloadend = function (evtx) {
-		fileUpload(theFile.name, new Uint8Array(evtx.target.result));
+	var dropZoneFileReader = new FileReader();
+	dropZoneFileReader.onloadend = function (evt) {
+		fileUpload(theFile.name, evt.target.result);
 	};
-	fileReader.readAsArrayBuffer(theFile);
+	dropZoneFileReader.readAsArrayBuffer(theFile);
 }
 
 function fileUpload(name, fileData) {	
-	var dropZone = document.getElementById("uploader");
-	dropZone.innerHTML = '<div class="container">Uploading<br /><div id="barUpload" style="margin-left: 50px; margin-right: 50px;" class="progress progress-striped"><div class="bar" style="width: 0%;"></div></div></div>';
-
 	var xhr = new XMLHttpRequest();
 	xhr.upload.addEventListener("loadstart", uploadStart, false);
 	xhr.upload.addEventListener("progress", uploadProgress, false);
 	xhr.upload.addEventListener("load", uploadComplete, false);
 	xhr.onreadystatechange = function() {
 		if(xhr.readyState == 4) {
+			dropZoneTransferInProgress = false;
+			
+			dropZoneFileNumber++;
+			$('#barUploadTotal div.bar').css("width", ((dropZoneFileNumber / dropZoneFileCount) * 100.0) + "%");
+			
 			if(xhr.status == 200) {
-				//document.location.href = "/" + xhr.responseText;
 				var file = xhr.responseText.split("\n");
 				var fileInfo = file[1].split(">");
 				var fileid = fileInfo[0];
 				addFileLI(fileid);
-				resetDropZone();
+				processNextFile();
 			} else {
-				resetDropZone();
+				processNextFile();
 				alert("Upload error: " + xhr.responseText);
 			}
 		}
@@ -61,7 +86,7 @@ function uploadComplete(evt) {
 
 function uploadProgress(evt) {
 	if(evt.lengthComputable) {
-		_setUploadProgress((evt.loaded / evt.total) * 100);
+		_setUploadProgress((evt.loaded / evt.total) * 100.0);
 	}
 }
 
@@ -71,7 +96,10 @@ function _setUploadProgress(progress_percent) {
 
 function resetDropZone() {
 	var dropZone = document.getElementById("uploader");
-	dropZone.innerHTML = dropZoneDefaultInnerHTML;
+	var dropZoneSub = document.getElementById('uploader_sub');
+	
+	dropZoneSub.innerHTML = dropZoneDefaultInnerHTML;
+	
 	dropZone.style.color = "";
 	dropZone.style.borderColor = "";
 	dropZoneTransferInProgress = false;
@@ -84,8 +112,10 @@ function handleDragOver(evt) {
     evt.preventDefault();
 	
 	var dropZone = document.getElementById("uploader");
+	var dropZoneSub = document.getElementById("uploader_sub");
+	
 	if(evt.type == "dragover") {
-		dropZone.innerHTML = 'Drop file now to upload';
+		dropZoneSub.innerHTML = 'Drop file now to upload';
 		dropZone.style.color = "#B333E5";
 		dropZone.style.borderColor = "#B333E5";
 	} else if(evt.type == "dragleave") {
@@ -98,15 +128,14 @@ function handleDragOver(evt) {
 
 function setupDropZone() {
 	// Setup the dnd listeners.
-	var dropZone = document.getElementById('uploader');
-
-	dropZone.innerHTML = "Drag & drop files here to upload them";
+	var dropZoneMain = document.getElementById('uploader');
+	dropZoneMain.innerHTML = "<div id='uploader_sub'>Drag & drop files here to upload them</div><div id='uploader_cur'></div>";
 	
-	dropZoneDefaultInnerHTML = dropZone.innerHTML;
+	dropZoneDefaultInnerHTML = document.getElementById('uploader_sub').innerHTML;
 	
-	dropZone.addEventListener("dragover", handleDragOver, false);
-	dropZone.addEventListener("dragleave", handleDragOver, false);
-	dropZone.addEventListener("drop", handleDropFileSelect, false);
+	dropZoneMain.addEventListener("dragover", handleDragOver, false);
+	dropZoneMain.addEventListener("dragleave", handleDragOver, false);
+	dropZoneMain.addEventListener("drop", handleDropFileSelect, false);
 }
 
 setupDropZone();
@@ -151,10 +180,14 @@ function deleteFile(fileid, filename) {
 	if(!window.confirm('Do you really want to delete '+filename+'?'))
 		return false;
 	
+	var eleSel = $("#file_"+fileid+" div.image_manage_main");
+	eleSel.css("border", "1px solid red");
+	
 	$.get('/api/delete?'+fileid, function(data) {
 		if(data.charAt(0) == '+') {
 			removeFileLI(fileid);
 		} else {
+			eleSel.css("border", "");
 			alert("Error deleting file :(");
 		}
 	});

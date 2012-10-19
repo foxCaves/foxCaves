@@ -7,6 +7,6 @@
 		<%+ filehtml %>
 	<% end %>
 </ul></td></tr></table>
-<div id="recycle_bin"></div>
-<script type="text/javascript" src="/static/js/uploader.min.js?v=11"></script>
+<!--<div id="recycle_bin"></div>-->
+<script type="text/javascript" src="/static/js/uploader.min.js?v=13"></script>
 <%+ foot %>
