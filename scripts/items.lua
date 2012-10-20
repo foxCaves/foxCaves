@@ -2,7 +2,7 @@ local database = ngx.ctx.database
 
 local function gopro(time_seconds)
 	local cur_time = ngx.time()
-	if ngx.ctx.user.pro_expiry > cur_time then
+	if ngx.ctx.user.is_pro then
 		cur_time = ngx.ctx.user.pro_expiry + time_seconds
 	else
 		cur_time = cur_time + time_seconds

@@ -37,7 +37,7 @@ local usedperc = G.math.ceil((usedbytes / totalbytes) * 100) %>
 </li>
 <% end %>
 							<li class="dropdown">
-								<a href="" class="dropdown-toggle" data-toggle="dropdown">Welcome, <% if G.ngx.ctx.user then %><%= G.ngx.ctx.escape_html(G.ngx.ctx.user.username) %><% if G.ngx.ctx.user.pro_expiry >= G.ngx.time() then %> <span class="badge badge-level badge-pro">Pro</span><% end %><% else %>Guest<% end %> <b class="caret"></b></a>
+								<a href="" class="dropdown-toggle" data-toggle="dropdown">Welcome, <% if G.ngx.ctx.user then %><%= G.ngx.ctx.escape_html(G.ngx.ctx.user.username) %><% if G.ngx.ctx.user.is_pro then %> <span class="badge badge-level badge-pro">Pro</span><% end %><% else %>Guest<% end %> <b class="caret"></b></a>
 								<ul class="dropdown-menu">
 <% if G.ngx.ctx.user then %>
 									<li><a href="/myfiles">My files</a></li>

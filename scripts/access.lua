@@ -46,6 +46,7 @@ function ngx.ctx.login(username, password, nosession, directlogin)
 					database:query("INSERT INTO sessions (id, user, expire) VALUES ('"..sessionid.."', '"..result.id.."', UNIX_TIMESTAMP() + "..SESSION_EXPIRE_DELAY..")")
 				end
 			end
+			result.is_pro = (result.pro_expiry > ngx.time())
 			ngx.ctx.user = result
 			return ngx.ctx.LOGIN_SUCCESS
 		end
@@ -106,6 +107,7 @@ if cookies then
 			if result and result[1] then
 				result = result[1]
 				database:query("UPDATE sessions SET expire = UNIX_TIMESTAMP() + "..SESSION_EXPIRE_DELAY.." WHERE id = '"..result.sessionid.."'")
+				result.is_pro = (result.pro_expiry > ngx.time())
 				ngx.ctx.user = result
 			end
 		end

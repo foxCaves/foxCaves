@@ -7,7 +7,7 @@
 			<span style="position: relative; float: right;">
 				<a title="View" href="/view/<%= file.fileid %>"><i class="icon-picture icon-white"></i> </a>
 				<a title="Download" href="https://foxcav.es/f/<%= file.fileid %><%= file.extension %>"><i class="icon-download icon-white"></i> </a>
-				<% if file.type == 1 and G.ngx.ctx.user.pro_expiry > G.ngx.time() then %>
+				<% if file.type == 1 and G.ngx.ctx.user.is_pro then %>
 				<div class="dropdown">
 					<a title="Options" class="dropdown-toggle" data-toggle="dropdown" href=""><i class="icon-wrench icon-white"></i> </a>
 					<ul class="dropdown-menu">
