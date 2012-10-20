@@ -1,5 +1,10 @@
 dofile("/var/www/doripush/scripts/global.lua")
-if not ngx.ctx.user then return ngx.redirect("/login") end
+dofile("scripts/api_login.lua")
+if(not ngx.ctx.user.is_pro) then
+	ngx.status = 402
+	ngx.print("not pro")
+	return ngx.eof()
+end
 
 dofile("scripts/fileapi.lua")
 
