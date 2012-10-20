@@ -11,7 +11,7 @@
 				<div class="dropdown">
 					<a title="Options" class="dropdown-toggle" data-toggle="dropdown" href=""><i class="icon-wrench icon-white"></i> </a>
 					<ul class="dropdown-menu">
-						<li><a class="rename" href="#">Get Base64</a></li>
+						<li><a class="rename" href="#">Rename</a></li>
 						<li><a class="getbase64" href="#">Get Base64</a></li>
 						<li class="dropdown-submenu">
 							<a href="#">Convert to</a>

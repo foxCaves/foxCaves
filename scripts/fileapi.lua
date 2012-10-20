@@ -49,6 +49,22 @@ function file_delete(fileid, user)
 	return true, file.name
 end
 
+function file_download(fileid, user)
+	local database = ngx.ctx.database
+
+	local id = database:escape(fileid)
+	local file = database:query("SELECT name, fileid, thumbnail, extension, size, user FROM files WHERE fileid = '"..id.."'")
+	if not (file and file[1]) then return false end
+	file = file[1]
+	if user and file.user ~= user then return false end
+
+	local res = AWS_CLIENT:get_object({
+		object = file.fileid .. file.extension
+	})
+
+	return true, res.body
+end
+
 function file_upload(fileid, filename, extension, thumbnail, filetype, thumbtype)
 	local fullname = fileid .. extension
 

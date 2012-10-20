@@ -424,11 +424,15 @@ var Base64 = {
 function setupOptionMenu() {
 	function handleBase64Request(ev) {
 		var node = ev.target.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode;
-		console.log(node);
-		var fileName = node.getAttribute("data-file-id")+node.getAttribute("data-file-extension");
-		/*$.get("https://d3rith5u07eivj.cloudfront.net/"+fileName, function(data) {
-			console.log(Base64.encode(data));
-		});*/
+		var fileName = node.getAttribute("data-file-id");
+		console.log(fileName);
+		$.get("/api/base64?"+fileName, function(data) {
+			var headUtl = document.getElementById("head-util-container");
+			var text = document.createElement("textarea");
+			text.value = data;
+			headUtl.appendChild(text);
+		});
+		
 	}
 
 	$(".getbase64").each(function(idx, elem) {
