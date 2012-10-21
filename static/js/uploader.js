@@ -180,21 +180,44 @@ function refreshFiles() {
 	return false;
 }
 
-function addFileLI(fileid) {
+function getFileLI(fileid, func) {
 	$.get("/api/filehtml?" + fileid, function(data) {
-		var ele = document.getElementById("file_manage_div");
+		data = data.trim();
 		
+		if(data[0] == '-') {
+			func(null);
+			return;
+		}
+	
 		var newFile = document.createElement("ul");
-		newFile.innerHTML = data.trim();
+		newFile.innerHTML = data;
 		newFile = newFile.firstChild;
 		newFile.style.cursor = "move";
-		
+
+		func(newFile);
+	})
+}
+
+function addFileLI(fileid) {
+	var ele = document.getElementById("file_manage_div");
+	getFileLI(function(newFile) {
+		if(!newFile) return;
 		ele.insertBefore(newFile, ele.firstChild);
 	});
 }
 
 function removeFileLI(fileid) {
 	$('#file_'+fileid).remove();
+}
+
+function refreshFileLI(fileid) {
+	getFileLI(fileid, function(newFile) {
+		if(!newFile) {
+			removeFileLI(fileid);
+			return;
+		}
+		$('#file_'+fileid).replaceWith(newFile);
+	});
 }
 
 function deleteFile(fileid, filename) {
@@ -208,10 +231,13 @@ function deleteFile(fileid, filename) {
 		if(data.charAt(0) == '+') {
 			removeFileLI(fileid);
 		} else {
-			eleSel.css("border", "");
+			refreshFileLI(fileid);
 			alert("Error deleting file :(");
 		}
-	});
+	}).error(function() {
+		refreshFileLI(fileid);
+		alert("Error deleting file :(");
+	});;
 	
 	return false;
 }
@@ -422,17 +448,18 @@ var Base64 = {
 }
 
 function setupOptionMenu() {
+	function getFileLIFromEvt(ev) {
+		return ev.target.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode;;
+	}
+
 	function handleBase64Request(ev) {
-		var node = ev.target.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode;
-		var fileName = node.getAttribute("data-file-id");
-		console.log(fileName);
+		var fileName = getFileLIFromEvt(ev).getAttribute("data-file-id");
 		$.get("/api/base64?"+fileName, function(data) {
 			var headUtl = document.getElementById("head-util-container");
 			var text = document.createElement("textarea");
 			text.value = data;
 			headUtl.appendChild(text);
 		});
-		
 	}
 
 	$(".getbase64").each(function(idx, elem) {

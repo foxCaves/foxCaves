@@ -5,7 +5,7 @@ local database = ngx.ctx.database
 local file = database:query("SELECT * FROM files WHERE fileid = '"..database:escape(ngx.var.query_string).."' AND user = '"..ngx.ctx.user.id.."'")
 
 if not file then
-	ngx.print("")
+	ngx.print("-")
 	return ngx.eof()
 end
 
