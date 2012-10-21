@@ -15,7 +15,7 @@ else
 	end
 
 	ngx.req.read_body()
-	args = ngx.req.get_post_args()
+	args = ngx.ctx.get_post_args()
 	if args and args.login then
 		if (not args.username) or args.username == "" then
 			message = "<div class='alert alert-error'>Username may not be empty</div>"

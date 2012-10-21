@@ -22,7 +22,7 @@ if not userid then
 end
 
 ngx.req.read_body()
-args = ngx.req.get_post_args()
+args = ngx.ctx.get_post_args()
 
 if not args then
 	paypal_result("Code: #INVALID")

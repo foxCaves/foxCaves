@@ -6,7 +6,7 @@ local database = ngx.ctx.database
 local message = ""
 
 ngx.req.read_body()
-local args = ngx.req.get_post_args()
+local args = ngx.ctx.get_post_args()
 if args and args.old_password then
 	if args.kill_sessions then
 		message = "<div class='alert alert-success'>All other sessions have been killed</div>"

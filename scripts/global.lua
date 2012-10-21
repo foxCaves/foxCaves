@@ -107,4 +107,9 @@ function ngx.ctx.escape_html(str)
 	return str
 end
 
+function ngx.ctx.get_post_args(...)
+	if not ngx.req.get_body_data() then return nil end
+	return ngx.req.get_post_args(...)
+end
+
 dofile("scripts/access.lua")
