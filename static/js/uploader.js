@@ -200,7 +200,7 @@ function getFileLI(fileid, func) {
 
 function addFileLI(fileid) {
 	var ele = document.getElementById("file_manage_div");
-	getFileLI(function(newFile) {
+	getFileLI(fileid, function(newFile) {
 		if(!newFile) return;
 		ele.insertBefore(newFile, ele.firstChild);
 	});
