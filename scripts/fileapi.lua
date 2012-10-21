@@ -19,6 +19,12 @@ AWS_S3_BUCKET = nil
 AWS_ACCESS_KEY = nil
 AWS_SECRET_KEY = nil
 
+function file_manualdelete(file)
+	local res = AWS_CLIENT:delete_object({
+		object = file
+	})
+end
+
 function file_delete(fileid, user)
 	local database = ngx.ctx.database
 
@@ -62,7 +68,7 @@ function file_download(fileid, user)
 		object = file.fileid .. file.extension
 	})
 
-	return true, res.body
+	return true, res.body, file
 end
 
 function file_upload(fileid, filename, extension, thumbnail, filetype, thumbtype)
