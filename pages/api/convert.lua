@@ -24,7 +24,7 @@ newextension = "."..newextension
 dofile("scripts/fileapi.lua")
 
 local succ, data, dbdata = file_download(args.fileid, ngx.ctx.user.id)
-if(not succ) or dbdata.extension == newextension then
+if(not succ) or dbdata.extension == newextension or dbdata.type ~= 1 then
 	ngx.status = 403
 	ngx.print("failed")
 	return ngx.eof()

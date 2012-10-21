@@ -1,3 +1,4 @@
+<br /><br />
 <%
 local fcshared = G.ngx.shared.foxcaves
 local filecount = fcshared:get("filecount")
