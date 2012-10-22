@@ -94,3 +94,7 @@ function file_upload(fileid, filename, extension, thumbnail, filetype, thumbtype
 
 	os.remove("files/"..fullname)
 end
+
+function file_push_action(fileid, action)
+	local res = ngx.location.capture("/scripts/file_push", { method = ngx.HTTP_PUT, body = action..fileid.."\n" })
+end

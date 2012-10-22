@@ -199,6 +199,10 @@ function getFileLI(fileid, func) {
 }
 
 function addFileLI(fileid) {
+	if(document.getElementById("file_"+fileid)) {
+		refreshFileLI(fileid);
+		return;
+	}
 	var ele = document.getElementById("file_manage_div");
 	getFileLI(fileid, function(newFile) {
 		if(!newFile) return;
@@ -324,7 +328,32 @@ function setupOptionMenu() {
 	});
 
 }
-setupOptionMenu();
 
-setupDropZone();
-setupFileDragging();
+$(document).ready({
+	setupOptionMenu();
+
+	setupDropZone();
+	setupFileDragging();
+
+	(function files_poll(){
+		$.ajax({ url: "/api/file_push?"+FILES_PUSH_CHANNEL, success: function(data){
+			var files = data.split("\n");
+			for(var i=0;i<files.length;i++) {
+				var action = files[i].trim();
+				if(action == "") {
+					continue;
+				}
+				var file = action.substr(1);
+				action = action.charAt(0);
+				
+				if(action == '+') {
+					addFileLI(file);
+				} else if(action == '-') {
+					removeFileLI(file);
+				} else if(action == '=') {
+					refreshFileLI(file);
+				}
+			}
+		}, complete: files_poll, timeout: 30000 });
+	})();
+});

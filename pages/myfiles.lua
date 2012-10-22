@@ -15,8 +15,6 @@ if args.delete then
 	else
 		message = '<div class="alert alert-error">Could not delete the file :(<a href="/myfiles" class="close" data-dismiss="alert">x</a></div>'
 	end
-
-	--message = message .. '<meta http-equiv="refresh" content="5;/myfiles" />'
 end
 
 dofile("scripts/navtbl.lua")

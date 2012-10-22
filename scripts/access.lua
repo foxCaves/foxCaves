@@ -87,10 +87,12 @@ function ngx.ctx.make_new_login_key(userdata)
 	end
 
 	local str = randstr(64)
-	database:query("UPDATE users SET loginkey = '"..str.."' WHERE id = '"..userdata.id.."'")
+	local str_pchan = randstr(32)
+	database:query("UPDATE users SET loginkey = '"..str.."', pushchan = '"..str_pchan.."' WHERE id = '"..userdata.id.."'")
 	if send_userdata then
 		database:query("DELETE FROM sessions WHERE user = '"..userdata.id.."' AND id != '"..userdata.sessionid.."'")
 		ngx.ctx.user.loginkey = str
+		ngx.ctx.user.pushchan = str_pchan
 		ngx.ctx.send_login_key()
 	else
 		database:query("DELETE FROM sessions WHERE user = '"..userdata.id.."'")
