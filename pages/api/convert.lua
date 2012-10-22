@@ -57,5 +57,7 @@ database:query("UPDATE users SET usedbytes = usedbytes + ("..newsize..") WHERE i
 file_upload(dbdata.fileid, newfilename, newextension, "", mimetypes[newextension], nil)
 file_manualdelete(dbdata.fileid .. dbdata.extension)
 
+file_push_action(dbdata.fileid, '=')
+
 ngx.print("+++")
 ngx.eof()

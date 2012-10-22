@@ -51,6 +51,8 @@ function file_delete(fileid, user)
 			ngx.ctx.user.usedbytes = ngx.ctx.user.usedbytes - file.size
 		end
 	end
+	
+	file_push_action(file.fileid, '-')
 
 	return true, file.name
 end
@@ -96,5 +98,6 @@ function file_upload(fileid, filename, extension, thumbnail, filetype, thumbtype
 end
 
 function file_push_action(fileid, action)
+	action = action or '='
 	local res = ngx.location.capture("/scripts/file_push", { method = ngx.HTTP_PUT, body = action..fileid.."\n" })
 end
