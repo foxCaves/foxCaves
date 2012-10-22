@@ -52,7 +52,9 @@ function file_delete(fileid, user)
 		end
 	end
 	
-	file_push_action(file.fileid, '-')
+	if user and user == ngx.ctx.user.id then
+		file_push_action(file.fileid, '-')
+	end
 
 	return true, file.name
 end
@@ -99,5 +101,5 @@ end
 
 function file_push_action(fileid, action)
 	action = action or '='
-	local res = ngx.location.capture("/scripts/file_push", { method = ngx.HTTP_PUT, body = action..fileid.."\n" })
+	local res = ngx.location.capture("/scripts/file_push?"..ngx.ctx.user.id.."_"..ngx.ctx.user.pushchan, { method = ngx.HTTP_POST, body = action..fileid..'\n' })
 end
