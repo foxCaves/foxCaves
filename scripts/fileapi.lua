@@ -82,7 +82,7 @@ function file_upload(fileid, filename, extension, thumbnail, filetype, thumbtype
 		object = fullname,
 		payload = "@files/" .. fullname,
 		["content-type"] = filetype or "application/octet-stream",
-		["content-disposition"] = 'attachment; filename="'..filename:gsub('"',"'")..'"',
+		["content-disposition"] = 'inline; filename="'..filename:gsub('"',"'")..'"',
 		["cache-control"] = "public, max-age=864000"
 	})
 
