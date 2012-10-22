@@ -8,5 +8,5 @@
 	<% end %>
 </ul></td></tr></table>
 <div style="display: none;" id="recycle_bin"></div>
-<script type="text/javascript" src="/static/js/uploader.min.js?v=18"></script>
+<script type="text/javascript" src="/static/js/myfiles.min.js"></script>
 <%+ foot %>
