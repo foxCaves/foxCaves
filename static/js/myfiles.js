@@ -63,10 +63,11 @@ function fileUpload(name, fileData) {
 			$('#barUploadTotal div.bar').css("width", ((dropZoneFileNumber / dropZoneFileCount) * 100.0) + "%");
 			
 			if(xhr.status == 200) {
-				var file = xhr.responseText.split("\n");
-				var fileInfo = file[1].split(">");
-				var fileid = fileInfo[0];
-				addFileLI(fileid);
+				//Comes from long-polling!
+				//var file = xhr.responseText.split("\n");
+				//var fileInfo = file[1].split(">");
+				//var fileid = fileInfo[0];
+				//addFileLI(fileid);
 				processNextFile();
 			} else {
 				processNextFile();
@@ -235,7 +236,8 @@ function deleteFile(fileid, filename) {
 	
 	$.get('/api/delete?'+fileid, function(data) {
 		if(data.charAt(0) == '+') {
-			removeFileLI(fileid);
+			//Comes from long-polling
+			//removeFileLI(fileid);
 		} else {
 			refreshFileLI(fileid);
 			alert("Error deleting file :(");
