@@ -52,6 +52,7 @@ end
 
 database:query("UPDATE files SET extension = '"..newextension.."', name = '"..database:escape(newfilename).."', size = "..newsize.." WHERE fileid = '"..dbdata.fileid.."'")
 newsize = newsize - dbdata.size
+ngx.ctx.user.usedbytes = ngx.ctx.user.usedbytes + newsize
 database:query("UPDATE users SET usedbytes = usedbytes + ("..newsize..") WHERE id = "..ngx.ctx.user.id)
 
 file_upload(dbdata.fileid, newfilename, newextension, "", mimetypes[newextension], nil)

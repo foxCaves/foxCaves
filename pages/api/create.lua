@@ -109,6 +109,7 @@ file_upload(fileid, name, extension, thumbnail, mtype, thumbtype)
 
 database:query("INSERT INTO files (name, fileid, user, extension, time, thumbnail, type, size) VALUES ('"..database:escape(name).."','"..fileid.."','"..ngx.ctx.user.id.."', '"..database:escape(extension).."', UNIX_TIMESTAMP(), '"..thumbnail.."', '"..ftype.."', "..filesize..")")
 database:query("UPDATE users SET usedbytes = usedbytes + "..filesize.." WHERE id = '"..ngx.ctx.user.id.."'")
+ngx.ctx.user.usedbytes = ngx.ctx.user.usedbytes + filesize
 
 file_push_action(fileid, '+')
 

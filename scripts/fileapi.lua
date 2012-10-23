@@ -49,11 +49,8 @@ function file_delete(fileid, user)
 		database:query("UPDATE users SET usedbytes = usedbytes - "..file.size.." WHERE id = '"..file.user.."'")
 		if file.user == ngx.ctx.user.id then
 			ngx.ctx.user.usedbytes = ngx.ctx.user.usedbytes - file.size
+			file_push_action(file.fileid, '-')
 		end
-	end
-	
-	if user and user == ngx.ctx.user.id then
-		file_push_action(file.fileid, '-')
 	end
 
 	return true, file.name
