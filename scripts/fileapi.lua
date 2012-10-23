@@ -35,11 +35,11 @@ function file_delete(fileid, user)
 	if user and file.user ~= user then return false end
 
 	local res = AWS_CLIENT:delete_object({
-		object = file.fileid .. file.extension
+		object = "files/" .. file.fileid .. file.extension
 	})
 	if file.thumbnail ~= "" then
 		local res = AWS_CLIENT:delete_object({
-			object = "t/" .. file.thumbnail
+			object = "thumbs/" .. file.thumbnail
 		})
 	end
 
@@ -69,7 +69,7 @@ function file_download(fileid, user)
 	if user and file.user ~= user then return false end
 
 	local res = AWS_CLIENT:get_object({
-		object = file.fileid .. file.extension
+		object = "files/" .. file.fileid .. file.extension
 	})
 
 	return true, res.body, file
@@ -79,7 +79,7 @@ function file_upload(fileid, filename, extension, thumbnail, filetype, thumbtype
 	local fullname = fileid .. extension
 
 	local res = AWS_CLIENT:put_object({
-		object = fullname,
+		object = "files/" .. fullname,
 		payload = "@files/" .. fullname,
 		["content-type"] = filetype or "application/octet-stream",
 		["content-disposition"] = 'inline; filename="'..filename:gsub('"',"'")..'"',
@@ -88,7 +88,7 @@ function file_upload(fileid, filename, extension, thumbnail, filetype, thumbtype
 
 	if thumbnail and thumbnail ~= "" then
 		local res = AWS_CLIENT:put_object({
-			object = "_thumbs/" .. thumbnail,
+			object = "thumbs/" .. thumbnail,
 			payload = "@thumbs/" .. thumbnail,
 			["content-type"] = thumbtype or "application/octet-stream",
 			["cache-control"] = "public, max-age=864000"

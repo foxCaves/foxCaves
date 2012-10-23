@@ -112,6 +112,6 @@ database:query("UPDATE users SET usedbytes = usedbytes + "..filesize.." WHERE id
 
 file_push_action(fileid, '+')
 
-ngx.print("view/" .. fileid .. "\n")
+ngx.print("v/" .. fileid .. "\n")
 ngx.print(fileid..">"..name..">"..extension..">"..filesize..">"..(thumbnail or "")..">"..ftype.."\n")
 ngx.eof()

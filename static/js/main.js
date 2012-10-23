@@ -14,7 +14,7 @@ $(document).ready(function(){
 		ele.style.display = "";
 		ele.innerHTML = "[Loading preview...]";
 		loadingEles++;
-		$.get('https://d3rith5u07eivj.cloudfront.net/_thumbs/'+src, function(data) {
+		$.get('/thumbs/'+src, function(data) {
 			ele.innerHTML = data;
 			loadDone();
 		});
