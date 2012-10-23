@@ -32,7 +32,7 @@
 					View link
 				</label>
 				<div class="controls">
-					<input type="text" value="https://foxcav.es/v/<%= FILE.fileid %>" />
+					<input readonly="readonly" type="text" value="https://foxcav.es/v/<%= FILE.fileid %>" />
 				</div>
 			</div>
 			<div class="control-group">
@@ -40,7 +40,7 @@
 					Direct link
 				</label>
 				<div class="controls">
-					<input type="text" value="https://foxcav.es/f/<%= FILE.fileid %><%= FILE.extension %>" />
+					<input readonly="readonly" type="text" value="https://foxcav.es/f/<%= FILE.fileid %><%= FILE.extension %>" />
 				</div>
 			</div>
 			<div class="control-group">
@@ -48,7 +48,7 @@
 					Download link
 				</label>
 				<div class="controls">
-					<input type="text" value="https://foxcav.es/d/<%= FILE.fileid %><%= FILE.extension %>" />
+					<input readonly="readonly" type="text" value="https://foxcav.es/d/<%= FILE.fileid %><%= FILE.extension %>" />
 				</div>
 			</div>
 		</form>

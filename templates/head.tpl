@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<link rel="stylesheet" type="text/css" href="/static/css/bootstrap.css?v=1" />
+		<link rel="stylesheet" type="text/css" href="/static/css/bootstrap.css?v=2" />
 		<link rel="stylesheet" type="text/css" href="/static/css/bootstrap-progressbar.css" />
 		<link rel="stylesheet" type="text/css" href="/static/css/main.css?v=7" />
 		<link rel="stylesheet" type="text/css" href="/static/css/prettify.css" />

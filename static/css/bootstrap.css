@@ -1078,17 +1078,12 @@ input.span1, textarea.span1, .uneditable-input.span1 {
 }
 input[disabled],
 select[disabled],
-textarea[disabled],
-input[readonly],
-select[readonly],
-textarea[readonly] {
+textarea[disabled] {
   cursor: not-allowed;
   background-color: #eeeeee;
 }
 input[type="radio"][disabled],
-input[type="checkbox"][disabled],
-input[type="radio"][readonly],
-input[type="checkbox"][readonly] {
+input[type="checkbox"][disabled] {
   background-color: transparent;
 }
 .control-group.warning > label,
@@ -5448,9 +5443,6 @@ select,
 input[disabled],
 select[disabled],
 textarea[disabled],
-input[readonly],
-select[readonly],
-textarea[readonly],
 .uneditable-input {
   background-color: #555;
   border-color: #444;
