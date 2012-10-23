@@ -103,6 +103,18 @@ body {
   transition: border-color linear .2s;
 }
 
+.expanded {
+	background-color: transparent !important;
+	
+	background-image: -moz-linear-gradient(top, rgba(0,0,0,1) 45px, rgba(0,0,0,0.25) 90%, #b333e5 100%);
+	background-image: -webkit-gradient(linear, left top, left bottom, color-stop(45px,rgba(0,0,0,1)), color-stop(90%,rgba(0,0,0,0.25)), color-stop(100%,#b333e5));
+	background-image: -webkit-linear-gradient(top, rgba(0,0,0,1) 45px,rgba(0,0,0,0.25) 90%,#b333e5 100%);
+	background-image: -o-linear-gradient(top, rgba(0,0,0,1) 45px,rgba(0,0,0,0.25) 90%,#b333e5 100%);
+	background-image: -ms-linear-gradient(top, rgba(0,0,0,1) 45px,rgba(0,0,0,0.25) 90%,#b333e5 100%);
+	background-image: linear-gradient(to bottom, rgba(0,0,0,1) 45px,rgba(0,0,0,0.25) 90%,#b333e5 100%);
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#000000', endColorstr='#770077',GradientType=0 );
+}
+
 .navbar-fixed-bottom .navbar-inner {
 	border-bottom: 0px solid black !important;
 	border-top: 2px solid #B333E5;

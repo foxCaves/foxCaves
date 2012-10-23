@@ -312,6 +312,47 @@ function setupFileDragging() {
 	}, false);
 }
 
+var headUtil;
+
+function setupHeadUtils() {
+	var headUtl = document.getElementById("head-util-container");
+	var jqHeadUtl = $(headUtl);
+	var parent = headUtl.parentNode
+	var jqParent = $(parent);
+	
+	var refreshNode = document.createTextNode(' ');
+	headUtil = {
+		clear: function (ev) {
+			while (headUtl.hasChildNodes())
+				headUtl.removeChild(headUtl.lastChild);
+		},
+		
+		appendElement: function(elem) {
+			headUtl.appendChild(elem);
+		},
+		
+		removeElement: function(elem) {
+			headUtl.removeChild(elem);
+		},
+		
+		show: function(callback) {
+			jqHeadUtl.slideDown(200, callback);
+			jqParent.addClass("expanded");
+			parent.appendChild(refreshNode);
+			parent.removeChild(refreshNode);
+		},
+		
+		hide: function(callback) {
+			jqHeadUtl.slideUp(200, callback);
+			jqParent.removeClass("expanded");
+		},
+		
+		toggle: function (callback) {
+			jqHeadUtl.toggle(200, callback);
+		}
+	};
+}
+
 function setupOptionMenu() {
 	function getFileLIFromEvt(ev) {
 		return ev.target.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode;;
@@ -330,10 +371,22 @@ function setupOptionMenu() {
 	$(".getbase64").each(function(idx, elem) {
 		elem.onclick = handleBase64Request;
 	});
+	
+	function handleImageEdit(event) {
+	}
+	
+	$(".edit").each(function(idx, elem) {
+		elem.onclick = handleBase64Request;
+	});
+}
+
+function startImageEdit(event) {
 
 }
 
 $(document).ready(function() {
+	setupHeadUtils();
+	
 	setupOptionMenu();
 
 	setupDropZone();

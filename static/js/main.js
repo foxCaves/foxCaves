@@ -63,6 +63,9 @@ $(document).ready(function(){
 		loadDone();
 	}
 	
+	if(!PUSH_CHANNEL)
+		return;
+	
 	pushHandlers.push(function(action, usedbytes) {
 		if(action != "U")
 			return false;
