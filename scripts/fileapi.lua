@@ -69,9 +69,7 @@ function file_download(fileid, user)
 	file = file[1]
 	if user and file.user ~= user then return false end
 
-	local res = AWS_CLIENT:get_object({
-		object = "files/" .. file.fileid .. file.extension
-	})
+	local res = ngx.location.capture("/f/" .. file.fileid .. file.extension)
 
 	return true, res.body, file
 end
