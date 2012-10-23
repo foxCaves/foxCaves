@@ -19,6 +19,10 @@ AWS_S3_BUCKET = nil
 AWS_ACCESS_KEY = nil
 AWS_SECRET_KEY = nil
 
+function file_get_awsclient()
+	return AWS_CLIENT
+end
+
 function file_manualdelete(file)
 	local res = AWS_CLIENT:delete_object({
 		object = file
