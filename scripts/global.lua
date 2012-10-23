@@ -66,44 +66,30 @@ function ngx.ctx.check_username(username)
 	return nil
 end
 
+local sizePostFixes = {" B", " kB", " MB", " GB", " TB", " PB", " EB", " ZB", " YB"}
+
 function ngx.ctx.format_size(size)
 	size = tonumber(size)
-	local sinc = 0
+	local sinc = 1
 	while size > 1024 do
 		sinc = sinc + 1
 		size = size / 1024
-		if sinc == 8 then
+		if sinc == 9 then
 			break
 		end
 	end
-	size = math.ceil(size * 100) / 100
-	if sinc == 0 then
-		return size.." B"
-	elseif sinc == 1 then
-		return size.." kB"
-	elseif sinc == 2 then
-		return size.." MB"
-	elseif sinc == 3 then
-		return size.." GB"
-	elseif sinc == 4 then
-		return size.." TB"
-	elseif sinc == 5 then	
-		return size.." PB"
-	elseif sinc == 6 then
-		return size.." EB"
-	elseif sinc == 7 then
-		return size.." ZB"
-	elseif sinc == 8 then
-		return size.." YB"
-	end
-	return "WTF?!"
+	return (math.ceil(size * 100) / 100) .. assert(sizePostFixes[sinc], "No suitable postfix for file size")
 end
 
 function ngx.ctx.escape_html(str)
 	if (not str) or type(str) ~= "string" then
 		return str
 	end
-	str = str:gsub("&","&amp;"):gsub("<","&lt;"):gsub(">","&gt;")
+	str = str:gsub("[&<>]", {
+		["&"] = "&amp;",
+		["<"] = "&lt;",
+		[">"] = "&gt;",
+	})
 	return str
 end
 

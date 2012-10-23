@@ -64,55 +64,104 @@ end
 
 os.rename(file, "files/" .. fileid .. extension)
 
-local thumbnail = ""
-local ftype = 0
-
 dofile("scripts/mimetypes.lua")
 local mtype = mimetypes[extension] or "application/octet-stream"
-local thumbtype = nil
 
-if mtype:sub(1,6) == "image/" then
-	thumbnail = fileid..".png"
-	ftype = 1
-	thumbtype = "image/png"
+local FILE_TYPE_OTHER = 0
+local FILE_TYPE_IMAGE = 1
+local FILE_TYPE_TEXT = 2
+local FILE_TYPE_VIDEO = 3
+local FILE_TYPE_AUDIO = 4
+local FILE_TYPE_APPLICATION = 5
 
-	os.execute('/usr/bin/convert "files/'..fileid..extension..'" -thumbnail x300 -resize "300x<" -resize 50% -gravity center -crop 150x150+0+0 +repage -format png "thumbs/'..thumbnail..'"')
+local mimeHandlers = {
+	image = function()
 	
-	if not lfs.attributes("thumbs/"..thumbnail, "size") then
-		ftype = 0
-		thumbnail = ""
-		thumbtype = nil
-	end
-elseif mtype:sub(1,5) == "text/" then
-	thumbnail = fileid..extension
-	ftype = 2
-	local fh = io.open("files/"..fileid..extension, "r")
-	local content = fh:read(4096):gsub("&","&amp;"):gsub("<","&lt;"):gsub(">","&gt;")
-	if fh:read(1) then
-		content = content .. "\n<i>[...]</i>"
-	end
-	fh:close()
+		os.execute(
+			string.format(
+				'/usr/bin/convert "files/%s%s" -thumbnail x300 -resize "300x<" -resize 50% -gravity center -crop 150x150+0+0 +repage -format png "thumbs/%s"',
+				fileid,
+				extension,
+				thumbnail
+			)
+		)
+		
+		if not lfs.attributes("thumbs/"..thumbnail, "size") then
+			return FILE_TYPE_IMAGE, nil, nil
+		end
+		return FILE_TYPE_IMAGE, "image/png", fileid..".png"
+	end,
+	
+	text = function()
+		local fh = io.open("files/"..fileid..extension, "r")
+		local content = fh:read(4096):gsub("[&<>]", {
+			["&"] = "&amp;",
+			["<"] = "&lt;",
+			[">"] = "&gt;",
+		})
+		
+		if fh:read(1) then
+			content = content .. "\n<i>[...]</i>"
+		end
+		fh:close()
 
-	if content:sub(1,3) == "\xef\xbb\xbf" then
-		content = content:sub(4)
+		if content:sub(1,3) == "\xef\xbb\xbf" then
+			content = content:sub(4)
+		end
+
+		fh = io.open("thumbs/"..fileid..extension, "w")
+		fh:write(content)
+		fh:close()
+
+		return FILE_TYPE_TEXT, "text/plain", fileid..extension
+	end,
+	
+	video = function()
+		return FILE_TYPE_VIDEO, nil, nil
+	end,
+	
+	audio = function()
+		return FILE_TYPE_AUDIO, nil, nil
+	end,
+	
+	application = function()
+		return FILE_TYPE_APPLICATION, nil, nil
 	end
+}
 
-	fh = io.open("thumbs/"..thumbnail, "w")
-	fh:write(content)
-	fh:close()
-
-	thumbtype = "text/plain"
-end
+local mimeType, thumbnailType, thumbnail = mimeHandlers[mtype:match("([a-z]+)/")]()
 
 dofile("scripts/fileapi.lua")
-file_upload(fileid, name, extension, thumbnail, mtype, thumbtype)
+file_upload(fileid, name, extension, thumbnail, mtype, thumbnailType)
 
-database:query("INSERT INTO files (name, fileid, user, extension, time, thumbnail, type, size) VALUES ('"..database:escape(name).."','"..fileid.."','"..ngx.ctx.user.id.."', '"..database:escape(extension).."', UNIX_TIMESTAMP(), '"..thumbnail.."', '"..ftype.."', "..filesize..")")
+database:query(
+	string.format(
+		"INSERT INTO files (name, fileid, user, extension, time, thumbnail, type, size) VALUES ('%s','%s','%u', '%s', UNIX_TIMESTAMP(), '%s', '%u', '%u')",
+		database:escape(name),
+		fileid,
+		ngx.ctx.user.id,
+		database:escape(extension),
+		thumbnail or "",
+		mimeType,
+		filesize
+	)
+)
+
 database:query("UPDATE users SET usedbytes = usedbytes + "..filesize.." WHERE id = '"..ngx.ctx.user.id.."'")
 ngx.ctx.user.usedbytes = ngx.ctx.user.usedbytes + filesize
 
 file_push_action(fileid, '+')
 
-ngx.print("v/" .. fileid .. "\n")
-ngx.print(fileid..">"..name..">"..extension..">"..filesize..">"..(thumbnail or "")..">"..ftype.."\n")
+ngx.print(
+	string.format(
+		"v/%s\n%s>%s>%s>%u>%s>%u\n",
+		fileid,
+		fileid,
+		name,
+		extension,
+		filesize,
+		thumbnail or "",
+		mimeType
+	)
+)
 ngx.eof()

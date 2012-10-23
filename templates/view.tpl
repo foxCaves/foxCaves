@@ -53,16 +53,29 @@
 			</div>
 		</form>
 	</div>
-	<form action="https://foxcav.es/d/<%= RAWNAME %>" method="get">
-		<button class="btn btn-large btn-block btn-primary">Download file</button>
-	</form>
-	<% if FILE.type == 1 then %>
-		<img src="https://foxcav.es/f/<%= RAWNAME %>">
-	<% elseif FILE.type == 2 then %>
+	<a href="/d/<%= RAWNAME %>" class="btn btn-large btn-block btn-primary">Download file</a>
+	<div id="preview-wrapper">
+	<% if FILE.type == FILE_TYPE_IMAGE then %>
+		<img src="/f/<%= RAWNAME %>">
+	<% elseif FILE.type == FILE_TYPE_TEXT then %>
 		<noscript>JavaScript required to preview code/text</noscript>
 		<pre class="prettyprint linenums" style="display: none;" data-thumbnail-source="<%= FILE.thumbnail %>"></pre>
+	<% elseif FILE.type == FILE_TYPE_VIDEO then %>
+		<video width="320" height="240" controls="controls">
+			<source src="/f/<%= RAWNAME %>" type="<%= MIMETYPES[FILE.extension] %>" />
+			Your browser is too old.
+		</video>
+	<% elseif FILE.type == FILE_TYPE_AUDIO then %>
+		<audio controls="controls">
+			<source src="/f/<%= RAWNAME %>" type="<%= MIMETYPES[FILE.extension] %>" />
+			Your browser is too old.
+		</audio>
+	<% elseif FILE.type == FILE_TYPE_APPLICATION then %>
+		<iframe src="/f/<%= RAWNAME %>" style="min-width:400px;width:100%;min-height:600px;height:100%;border:3px solid #B333E5;box-sizing:border-box;" type="<%= MIMETYPES[FILE.extension] %>"> 
+		</iframe>
 	<% else %>
 		<h5>File cannot be viewed. Download it.</h5>
 	<% end %>
+	</div>
 	<%+ advert %>
 <%+ foot %>

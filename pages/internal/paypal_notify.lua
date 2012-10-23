@@ -36,7 +36,7 @@ end
 
 local invoiceid = database:escape(args.invoice)
 
-local res = database:query("SELECT 1 FROM `usedinvoices` WHERE `invoiceid` = '"..invoicdid.."'")
+local res = database:query("SELECT 1 FROM `usedinvoices` WHERE `invoiceid` = '"..invoiceid.."'")
 if res and res[1] then
 	paypal_result("Code: #DOUBLE_INVOICE")
 	return ngx.eof()

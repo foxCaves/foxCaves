@@ -82,7 +82,7 @@ function file_upload(fileid, filename, extension, thumbnail, filetype, thumbtype
 		payload = "@files/" .. fullname,
 		["content-type"] = filetype or "application/octet-stream",
 		["content-disposition"] = 'inline; filename="'..filename:gsub('"',"'")..'"',
-		["cache-control"] = "public, max-age=864000"
+		["cache-control"] = "public, max-age=86400"
 	})
 
 	if thumbnail and thumbnail ~= "" then
@@ -90,7 +90,7 @@ function file_upload(fileid, filename, extension, thumbnail, filetype, thumbtype
 			object = "thumbs/" .. thumbnail,
 			payload = "@thumbs/" .. thumbnail,
 			["content-type"] = thumbtype or "application/octet-stream",
-			["cache-control"] = "public, max-age=864000"
+			["cache-control"] = "public, max-age=86400"
 		})
 		os.remove("thumbs/" .. thumbnail)
 	end

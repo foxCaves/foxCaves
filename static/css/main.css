@@ -252,3 +252,8 @@ select {
 	padding-bottom: 40px;
 	min-height: 400px;
 }
+
+#preview-wrapper {
+	text-align: center;
+	padding: 10px 0 0 0;
+}
