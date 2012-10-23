@@ -12,8 +12,8 @@
 					<a title="Options" class="dropdown-toggle" data-toggle="dropdown" href=""><i class="icon-wrench icon-white"></i> </a>
 					<ul class="dropdown-menu">
 						<li><a class="rename" href="#">Rename</a></li>
-						<li><a class="getbase64" href="#">Get Base64</a></li>
-						<li><a class="edit" onclick="startImageEdit();" href="#">Edit</a></li>
+						<li><a onclick="handleBase64Request(window.event);" href="#">Get Base64</a></li>
+						<li><a onclick="startImageEdit(window.event);" href="#">Edit</a></li>
 						<li class="dropdown-submenu">
 							<a href="#">Convert to</a>
 							<ul class="dropdown-menu">

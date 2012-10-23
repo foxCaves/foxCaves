@@ -353,35 +353,52 @@ function setupHeadUtils() {
 	};
 }
 
+var handleBase64Request;
+var handleImageEdit;
+
 function setupOptionMenu() {
 	function getFileLIFromEvt(ev) {
-		return ev.target.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode;;
+		return ev.target.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode;
 	}
 
-	function handleBase64Request(ev) {
-		var fileName = getFileLIFromEvt(ev).getAttribute("data-file-id");
+	handleBase64Request = function(event) {
+		var fileName = getFileLIFromEvt(event).getAttribute("data-file-id");
 		$.get("/api/base64?"+fileName, function(data) {
-			var headUtl = document.getElementById("head-util-container");
 			var text = document.createElement("textarea");
+			text.rows = "20";
+			text.cols = "100";
 			text.value = data;
-			headUtl.appendChild(text);
+			
+			text.style.width = "60%";
+			
+			headUtil.clear();
+			headUtil.appendElement(text);
+			headUtil.show();
 		});
 	}
-
-	$(".getbase64").each(function(idx, elem) {
-		elem.onclick = handleBase64Request;
-	});
 	
-	function handleImageEdit(event) {
+	handleImageEdit = function(event) {
+		var imgWrapper = getFileLIFromEvt(event);
+		
+		var canvas = document.createElement("canvas");
+		var canvas2D = canvas.getContext('2d');
+		
+		var img = new Image();
+		img.onload = function(){
+			canvas.width = img.width;
+			canvas.height = img.height;
+			canvas2D.drawImage(img, 0, 0, img.width, img.height);
+		};
+		img.src = "/f/"+imgWrapper.getAttribute("data-file-id")+imgWrapper.getAttribute("data-file-extension");
+		
+		headUtil.clear();
+		headUtil.appendElement(canvas);
+		headUtil.show();
 	}
 	
 	$(".edit").each(function(idx, elem) {
-		elem.onclick = handleBase64Request;
+		elem.onclick = handleImageEdit;
 	});
-}
-
-function startImageEdit(event) {
-
 }
 
 $(document).ready(function() {
