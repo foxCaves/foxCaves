@@ -338,40 +338,18 @@ $(document).ready(function() {
 
 	setupDropZone();
 	setupFileDragging();
-
-	var last_modified = "Thu, 1 Jan 1970 00:00:00 GMT";
-	var etag = "0";
 	
-	(function files_poll(){
-		$.ajax({ url: "/api/file_push?"+FILES_PUSH_CHANNEL,
-			beforeSend: function(xhr) {
-				xhr.setRequestHeader("If-None-Match", etag);
-				xhr.setRequestHeader("If-Modified-Since", last_modified);
-			},
-			success: function(data, textStatus, xhr) {
-				etag = xhr.getResponseHeader('Etag');
-				last_modified = xhr.getResponseHeader('Last-Modified');
-			
-				var files = data.split("\n");
-				for(var i=0;i<files.length;i++) {
-					var action = files[i].trim();
-					if(action == "") {
-						continue;
-					}
-					var file = action.substr(1);
-					action = action.charAt(0);
-					
-					if(action == '+') {
-						addFileLI(file, true);
-					} else if(action == '-') {
-						removeFileLI(file);
-					} else if(action == '=') {
-						refreshFileLI(file);
-					}
-				}
-			},
-			complete: files_poll,
-			timeout: 30000
-		});
-	})();
+	pushHandlers.push(function(action, file) {
+		if(action == '+') {
+			addFileLI(file, true);
+			return true;
+		} else if(action == '-') {
+			removeFileLI(file);
+			return true;
+		} else if(action == '=') {
+			refreshFileLI(file);
+			return true;
+		}
+		return false;
+	});
 });

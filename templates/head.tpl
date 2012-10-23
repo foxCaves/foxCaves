@@ -7,6 +7,7 @@
 		<link rel="stylesheet" type="text/css" href="/static/css/prettify.css" />
 
 		<script src="/static/js/jquery.min.js" type="text/javascript"></script>
+		<script src="/static/js/init.min.js" type="text/javascript"></script>
 		<script type="text/javascript">var _gaq=_gaq||[];_gaq.push(['_setAccount','UA-9434636-6']);_gaq.push(['_setDomainName','foxcav.es']);_gaq.push(['_trackPageview']);(function(){var ga=document.createElement('script');ga.type='text/javascript';ga.async=true;ga.src=('https:'==document.location.protocol?'https://ssl':'http://www')+'.google-analytics.com/ga.js';var s=document.getElementsByTagName('script')[0];s.parentNode.insertBefore(ga,s);})();</script>
 		
 		<title><%= MAINTITLE %> - foxCaves</title>
@@ -28,10 +29,11 @@ local format_size = G.ngx.ctx.format_size
 local usedperc = G.math.ceil((usedbytes / totalbytes) * 100) %>
 <li>
 	<div class="progress" style="width: 200px; top: 10px; margin-right: 10px;">
+		<script type="text/javascript">var TOTALBYTES = <%= G.tostring(totalbytes) %>;</script>
 		<div class="bar bar-success" style="width: 100%;"></div>
-		<div class="bar bar-danger" style="width: <%= usedperc %>%;"></div>
+		<div class="bar bar-danger" id="used_bytes_bar" style="width: <%= usedperc %>%;"></div>
 		<div style="float: left; position: relative; width: 100%; text-align: center; color: white;">
-			<%= format_size(usedbytes) %> / <%= format_size(totalbytes) %>
+			<span id="used_bytes_text"><%= format_size(usedbytes) %></span> / <%= format_size(totalbytes) %>
 		</div>
 	</div>
 </li>
