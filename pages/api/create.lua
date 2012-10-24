@@ -76,10 +76,10 @@ local FILE_TYPE_IFRAME = 5
 
 local mimeHandlers = {
 	image = function()
-	
+		local thumbnail = fileid..".png"
 		os.execute(
 			string.format(
-				'/usr/bin/convert "files/%s%s" -thumbnail x300 -resize "300x<" -resize 50% -gravity center -crop 150x150+0+0 +repage -format png "thumbs/%s"',
+				'/usr/bin/convert "files/%s%s" -thumbnail x300 -resize "300x<" -resize 50%% -gravity center -crop 150x150+0+0 +repage -format png "thumbs/%s"',
 				fileid,
 				extension,
 				thumbnail
@@ -89,7 +89,7 @@ local mimeHandlers = {
 		if not lfs.attributes("thumbs/"..thumbnail, "size") then
 			return FILE_TYPE_IMAGE, nil, nil
 		end
-		return FILE_TYPE_IMAGE, "image/png", fileid..".png"
+		return FILE_TYPE_IMAGE, "image/png", thumbnail
 	end,
 	
 	text = function()

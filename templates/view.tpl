@@ -61,7 +61,7 @@
 		<noscript>JavaScript required to preview code/text</noscript>
 		<pre class="prettyprint linenums" style="display: none;" data-thumbnail-source="<%= FILE.thumbnail %>"></pre>
 	<% elseif FILE.type == FILE_TYPE_VIDEO then %>
-		<video width="320" height="240" controls="controls">
+		<video controls="controls">
 			<source src="/f/<%= RAWNAME %>" type="<%= MIMETYPES[FILE.extension] %>" />
 			Your browser is too old.
 		</video>
@@ -77,5 +77,6 @@
 		<h5>File cannot be viewed. Download it.</h5>
 	<% end %>
 	</div>
+	<script type="text/javascript" src="/static/js/view.min.js"></script>
 	<%+ advert %>
 <%+ foot %>

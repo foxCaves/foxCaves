@@ -257,3 +257,7 @@ select {
 	text-align: center;
 	padding: 10px 0 0 0;
 }
+
+video {
+	border: 3px solid #B333E5 inset;
+}
