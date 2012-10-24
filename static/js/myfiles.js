@@ -108,12 +108,6 @@ function resetDropZone() {
 	dropZoneTransferInProgress = false;
 }
 
-function preventDefault(evt) {
-    evt.stopPropagation();
-    evt.preventDefault();	
-}
-
-
 function handleDragOver(evt, evttype) {
     evt.stopPropagation();
     evt.preventDefault();
