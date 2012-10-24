@@ -70,7 +70,7 @@
 			<source src="/f/<%= RAWNAME %>" type="<%= MIMETYPES[FILE.extension] %>" />
 			Your browser is too old.
 		</audio>
-	<% elseif FILE.type == FILE_TYPE_APPLICATION then %>
+	<% elseif FILE.type == FILE_TYPE_IFRAME then %>
 		<iframe src="/f/<%= RAWNAME %>" style="min-width:400px;width:100%;min-height:600px;height:100%;border:3px solid #B333E5;box-sizing:border-box;" type="<%= MIMETYPES[FILE.extension] %>"> 
 		</iframe>
 	<% else %>

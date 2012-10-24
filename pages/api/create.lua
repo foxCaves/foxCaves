@@ -23,7 +23,7 @@ if (not nameregex) or (not nameregex[1]) then
 end
 
 local fileid
-for i=1,10 do
+for i=1, 10 do
 	fileid = randstr(10)
 	local res = database:query("SELECT 1 FROM files WHERE fileid = '"..fileid.."'")
 	if (not res) or (not res[1]) then
@@ -72,7 +72,7 @@ local FILE_TYPE_IMAGE = 1
 local FILE_TYPE_TEXT = 2
 local FILE_TYPE_VIDEO = 3
 local FILE_TYPE_AUDIO = 4
-local FILE_TYPE_APPLICATION = 5
+local FILE_TYPE_IFRAME = 5
 
 local mimeHandlers = {
 	image = function()
@@ -124,12 +124,17 @@ local mimeHandlers = {
 		return FILE_TYPE_AUDIO, nil, nil
 	end,
 	
-	application = function()
-		return FILE_TYPE_APPLICATION, nil, nil
+	application = function(suffix)
+		if(suffix == "pdf") then
+			return FILE_TYPE_IFRAME, nil, nil
+		end
+		return FILE_TYPE_OTHER, nil, nil
 	end
 }
 
-local mimeType, thumbnailType, thumbnail = mimeHandlers[mtype:match("([a-z]+)/")]()
+local prefix, suffix = mtype:match("([a-z]+)/([a-z]+)")
+
+local fileType, thumbnailType, thumbnail = mimeHandlers[prefix](suffix)
 
 dofile("scripts/fileapi.lua")
 file_upload(fileid, name, extension, thumbnail, mtype, thumbnailType)
@@ -142,7 +147,7 @@ database:query(
 		ngx.ctx.user.id,
 		database:escape(extension),
 		thumbnail or "",
-		mimeType,
+		fileType,
 		filesize
 	)
 )
@@ -161,7 +166,7 @@ ngx.print(
 		extension,
 		filesize,
 		thumbnail or "",
-		mimeType
+		fileType
 	)
 )
 ngx.eof()

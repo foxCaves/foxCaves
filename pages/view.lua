@@ -34,7 +34,7 @@ ngx.print(load_template("view", {
 	FILE_TYPE_TEXT = 2,
 	FILE_TYPE_VIDEO = 3,
 	FILE_TYPE_AUDIO = 4,
-	FILE_TYPE_APPLICATION = 5
+	FILE_TYPE_IFRAME = 5
 	--HIDE_ADS = (file.pro_expiry >= ngx.time())
 }))
 ngx.eof()
