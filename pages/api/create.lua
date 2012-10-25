@@ -43,12 +43,18 @@ end
 ngx.req.read_body()
 local file = ngx.req.get_body_file()
 if not file then
-	ngx.status = 403
+	ngx.status = 400
 	ngx.print("No request body")
 	return ngx.eof()
 end
 
 local filesize = lfs.attributes(file, "size")
+if (not filesize) or filesize <= 0 then
+	ngx.status = 400
+	ngx.print("File empty")
+	return ngx.eof()
+end
+
 if tonumber(ngx.ctx.user.usedbytes) + filesize > tonumber(ngx.ctx.user.totalbytes) + tonumber(ngx.ctx.user.bonusbytes) then
 	ngx.status = 402
 	ngx.print("Overquota")
