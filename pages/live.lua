@@ -1,7 +1,7 @@
 dofile("/var/www/doripush/scripts/global.lua")
 
 local name = ngx.var.REQUEST_URI
-local nameregex = ngx.re.match(name, "live/([ a-zA-Z0-9._-]*?)$", "o")
+local nameregex = ngx.re.match(name, "live/([a-zA-Z0-9]+)\\?([a-zA-Z0-9]+)$", "o")
 
 if (not nameregex) or (not nameregex[1]) then
 	ngx.status = 403
@@ -9,6 +9,7 @@ if (not nameregex) or (not nameregex[1]) then
 	return ngx.eof()
 end
 
+local sid = nameregex[2]
 nameregex = nameregex[1]
 
 local database = ngx.ctx.database
@@ -22,6 +23,12 @@ if (not file) or (not file[1])  then
 end
 file = file[1]
 
+if file.type ~= 1 then
+	ngx.status = 400
+	ngx.print("Not an image")
+	return ngx.eof()
+end
+
 if file.pro_expiry < ngx.time() then
 	ngx.status = 403
 	ngx.print("Author of file is not pro")
@@ -32,6 +39,7 @@ dofile("scripts/navtbl.lua")
 ngx.print(load_template("live", {
 	MAINTITLE = "Live drawing file - " .. file.name,
 	ADDLINKS = build_nav(navtbl),
-	FILE = file
+	FILE = file,
+	LDSID = sid
 }))
 ngx.eof()

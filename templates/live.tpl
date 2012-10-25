@@ -8,7 +8,7 @@
 					Invite others to this livedraw:
 				</label>
 				<div class="controls">
-					<input readonly="readonly" type="text" value="https://fox.gy/l<%= FILE.fileid %>" />
+					<input readonly="readonly" type="text" value="https://fox.gy/l<%= FILE.fileid %>?<%= LDSID %>" />
 				</div>
 			</div>
 		</form>
@@ -18,6 +18,7 @@
 	<div id="livedraw-wrapper">
 		<canvas id="livedraw" data-file-url="/f/<%= RAWNAME %>"></canvas>
 	</div>
+	<script type="text/javascript">var SESSIONID = "<%= G.ngx.ctx.user.sessionid %>"; var LIVEDRAW_FILEID = "<%= FILE.fileid %>"; var LIVEDRAW_SID = "<%= LDSID %>";</script>
 	<script type="text/javascript" src="/static/js/live.js"></script>
 	<%+ advert %>
 <%+ foot %>

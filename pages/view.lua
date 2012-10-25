@@ -1,7 +1,7 @@
 dofile("/var/www/doripush/scripts/global.lua")
 
 local name = ngx.var.REQUEST_URI
-local nameregex = ngx.re.match(name, "view/([ a-zA-Z0-9._-]*?)$", "o")
+local nameregex = ngx.re.match(name, "view/([a-zA-Z0-9]+)$", "o")
 
 if (not nameregex) or (not nameregex[1]) then
 	ngx.status = 403
