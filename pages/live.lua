@@ -1,7 +1,8 @@
 dofile("/var/www/doripush/scripts/global.lua")
+if not ngx.ctx.user then return ngx.redirect("/login") end
 
 local name = ngx.var.REQUEST_URI
-local nameregex = ngx.re.match(name, "live/([a-zA-Z0-9]+)\\?([a-zA-Z0-9]+)$", "o")
+local nameregex = ngx.re.match(name, "live/([a-zA-Z0-9]+)(\\?([a-zA-Z0-9]*))?$", "o")
 
 if (not nameregex) or (not nameregex[1]) then
 	ngx.status = 403
@@ -9,8 +10,12 @@ if (not nameregex) or (not nameregex[1]) then
 	return ngx.eof()
 end
 
-local sid = nameregex[2]
+local sid = nameregex[3]
 nameregex = nameregex[1]
+
+if (not sid) or sid == "" then
+	return ngx.redirect("/live/"..nameregex.."?"..randstr(10))
+end
 
 local database = ngx.ctx.database
 local file = database:query(

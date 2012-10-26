@@ -1,7 +1,9 @@
 var MathPI2 = Math.PI * 2.0;
 
-var canvasCTX, canvasEle, canvasImg;
+var canvasCTX, canvasEle, canvasImg, canvasPos;
 var canvasStableImageData, canvasStableImageDataNeeded;
+
+var webSocket;
 
 var isDrawing = false;
 var scaleFactor = 1.0;
@@ -17,7 +19,7 @@ var EVENT_BRUSH = "b";
 var EVENT_MOUSE_UP = "u";
 var EVENT_MOUSE_DOWN = "d";
 var EVENT_MOUSE_MOVE = "m";
-var EVENT_MOUSE_CURSOR = "c";
+var EVENT_MOUSE_CURSOR = "s";
 
 var EVENT_RESET = "r";
 
@@ -25,14 +27,19 @@ var EVENT_JOIN = "j";
 var EVENT_LEAVE = "l";
 
 function recvRaw(msg) {
-	//TODO: Call this!
-	console.log("<< "+msg);
+	msg = msg.trim();
+	if(msg.length < 1)
+		return;
+	//console.log(">> ["+msg+"]");
 	recvDirectEvent(msg.charAt(0), msg.substr(1));
 }
 
 function sendRaw(msg) {
-	console.log(">> "+msg);
-	//TODO: Network send
+	msg = msg.trim();
+	if(msg.length < 1)
+		return;
+	//console.log(">> ["+msg+"]");
+	webSocket.send(msg+"\n");
 }
 
 var paintBrushes = {
@@ -171,10 +178,12 @@ function recvDirectEvent(evtype, payload) {
 				brushWidth: payload[2],
 				brushColor: payload[3],
 				currentBrush: paintBrushes[payload[4]],
+				brushState: {
+					lastX: 0,
+					lastY: 0
+				},
 				cursorX: 0,
-				cursorY: 0,
-				lastX: 0,
-				lastY: 0
+				cursorY: 0
 			};
 			break;
 		case EVENT_LEAVE:
@@ -218,16 +227,16 @@ function sendDrawEvent(evtype, payload) {
 }
 
 function sendBrushEvent(evtype, x, y) {
-	x *= scaleFactor;
-	y *= scaleFactor;
+	x /= scaleFactor;
+	y /= scaleFactor;
 	x = Math.round(x);
 	y = Math.round(y);
 	sendDrawEvent(evtype, x+"|"+y);
 }
 
 function recvBrushEvent(from, evtype, x, y) {
-	x /= scaleFactor;
-	y /= scaleFactor;
+	x *= scaleFactor;
+	y *= scaleFactor;
 
 	var brush = from.currentBrush;
 	canvasCTX.lineWidth = from.brushWidth;
@@ -271,6 +280,14 @@ function setBrushAttribsLocal() {
 	canvasCTX.fillStyle = brushColor;
 }
 
+function setOffsetXAndY(evt) {
+	if(evt.offsetX)
+		return;
+
+	evt.offsetX = evt.pageX - canvasPos.left;
+	evt.offsetY = evt.pageY - canvasPos.top;
+}
+
 function liveDrawCanvasMouseOut(evt) {
 	if(canvasStableImageDataNeeded) {
 		liveDrawCanvasMouseMove(evt);
@@ -290,6 +307,8 @@ function liveDrawCanvasMouseDown(evt) {
 	
 	isDrawing = true;
 	
+	setOffsetXAndY(evt);
+	
 	if(!currentBrush.down(evt.offsetX, evt.offsetY, brushState)) {
 		sendBrushEvent(EVENT_MOUSE_DOWN, evt.offsetX, evt.offsetY);
 	}
@@ -306,6 +325,8 @@ function liveDrawCanvasMouseUp(evt) {
 		return;
 		
 	isDrawing = false;
+		
+	setOffsetXAndY(evt);
 	
 	if(canvasStableImageDataNeeded) {
 		canvasCTX.putImageData(canvasStableImageData, 0, 0);
@@ -324,6 +345,8 @@ function liveDrawCanvasMouseMove(evt) {
 	
 	if(!isDrawing)
 		return;
+		
+	setOffsetXAndY(evt);
 	
 	if(canvasStableImageDataNeeded) {
 		canvasCTX.putImageData(canvasStableImageData, 0, 0);
@@ -338,11 +361,11 @@ $(document).ready(function() {
 	canvasEle = document.getElementById("livedraw");
 	canvasCTX = canvasEle.getContext("2d");
 	
-	canvasEle.addEventListener("mousedown", liveDrawCanvasMouseDown, true);
-	canvasEle.addEventListener("mouseup", liveDrawCanvasMouseUp, true);
-	canvasEle.addEventListener("mousemove", liveDrawCanvasMouseMove, true);
-	canvasEle.addEventListener("mouseout", liveDrawCanvasMouseOut, true);
-	canvasEle.addEventListener("mouseover", liveDrawCanvasMouseOver, true);
+	canvasEle.addEventListener("mousedown", liveDrawCanvasMouseDown, false);
+	canvasEle.addEventListener("mouseup", liveDrawCanvasMouseUp, false);
+	canvasEle.addEventListener("mousemove", liveDrawCanvasMouseMove, false);
+	canvasEle.addEventListener("mouseout", liveDrawCanvasMouseOut, false);
+	canvasEle.addEventListener("mouseover", liveDrawCanvasMouseOver, false);
 	
 	var maxWidth = $('#livedraw-wrapper').width();
 	
@@ -358,10 +381,27 @@ $(document).ready(function() {
 		
 		resetCanvasImage(true);
 		
-		setBrush("brush");
-		setBrushColor("#000");
-		setBrushWidth(10.0);
-		sendDrawEvent(EVENT_JOIN, SESSIONID+"|"+LIVEDRAW_FILEID+"|"+LIVEDRAW_SID); 
+		webSocket = new WebSocket("wss://foxcav.es:8002/", "paint");
+		
+		webSocket.onmessage = function(evt) {
+			var data = evt.data.split("\n");
+			for(var i=0;i<data.length;i++) {
+				recvRaw(data[i]);
+			}
+		};
+		
+		webSocket.onerror = function(evt) {
+			alert("Live drawin error: "+evt.data);
+		};
+		
+		webSocket.onopen = function(evt) {
+			setBrushColor("#000");
+			setBrushWidth(10.0);
+			setBrush("brush");
+			sendDrawEvent(EVENT_JOIN, SESSIONID+"|"+LIVEDRAW_FILEID+"|"+LIVEDRAW_SID);
+		};
+		
+		canvasPos = $(canvasEle).position();
 	};
 	canvasImg.src = canvasEle.getAttribute("data-file-url");
 });

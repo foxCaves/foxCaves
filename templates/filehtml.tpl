@@ -13,7 +13,7 @@
 					<ul class="dropdown-menu">
 						<li><a class="rename" href="#">Rename</a></li>
 						<li><a onclick="handleBase64Request(window.event);" href="#">Get Base64</a></li>
-						<li><a onclick="startImageEdit(window.event);" href="#">Edit</a></li>
+						<li><a href="/live/<%= file.fileid %>">Edit</a></li>
 						<li class="dropdown-submenu">
 							<a href="#">Convert to</a>
 							<ul class="dropdown-menu">
