@@ -4,6 +4,7 @@ var canvasCTX, canvasEle, canvasImg, canvasPos;
 var canvasStableImageData, canvasStableImageDataNeeded;
 
 var webSocket;
+var webSocket_buffer = "";
 var webSocket_On = false;
 
 var isDrawing = false;
@@ -28,11 +29,13 @@ var EVENT_JOIN = "j";
 var EVENT_LEAVE = "l";
 var EVENT_ERROR = "e";
 
+var EVENT_IMGBURST = "i";
+
 function recvRaw(msg) {
 	msg = msg.trim();
 	if(msg.length < 1)
 		return;
-	console.log("<< ["+msg+"]");
+	//console.log("<< ["+msg+"]");
 	recvDirectEvent(msg.charAt(0), msg.substr(1));
 }
 
@@ -40,7 +43,7 @@ function sendRaw(msg) {
 	msg = msg.trim();
 	if(msg.length < 1)
 		return;
-	console.log(">> ["+msg+"]");
+	//console.log(">> ["+msg+"]");
 	webSocket.send(msg+"\n");
 }
 
@@ -55,6 +58,10 @@ var paintBrushes = {
 			brushState.lastY = y;
 		},
 		up: function(x, y, brushState) {
+			if(brushState.lastX == x && brushState.lastY == y) {
+				x++;
+				y++;
+			}
 			canvasCTX.strokeRect(x, y, brushState.lastX - x, brushState.lastY - y);
 		},
 		move: function(x, y, brushState) {
@@ -72,6 +79,10 @@ var paintBrushes = {
 			brushState.lastY = y;
 		},
 		up: function(x, y, brushState) {
+			if(brushState.lastX == x && brushState.lastY == y) {
+				x++;
+				y++;
+			}
 			canvasCTX.beginPath();
 			x = brushState.lastX - x;
 			y = brushState.lastY - y;
@@ -96,6 +107,38 @@ var paintBrushes = {
 			brushState.lastY = y;
 		},
 		up: function(x, y, brushState) {
+			if(brushState.lastX == x && brushState.lastY == y) {
+				x++;
+				y++;
+			}
+			canvasCTX.beginPath();
+			canvasCTX.moveTo(brushState.lastX, brushState.lastY);
+			canvasCTX.lineTo(x, y);
+			canvasCTX.stroke();			
+		},
+		move: function(x, y, brushState) {
+			canvasCTX.beginPath();
+			canvasCTX.moveTo(brushState.lastX, brushState.lastY);
+			canvasCTX.lineTo(x, y);
+			canvasCTX.stroke();
+			brushState.lastX = x;
+			brushState.lastY = y;
+		}
+	},
+	erase: {
+		select: function() {
+			canvasCTX.lineCap = "round";
+			canvasCTX.globalCompositeOperation = "destination-out";
+		},
+		down: function(x, y, brushState) {
+			brushState.lastX = x;
+			brushState.lastY = y;
+		},
+		up: function(x, y, brushState) {
+			if(brushState.lastX == x && brushState.lastY == y) {
+				x++;
+				y++;
+			}
 			canvasCTX.beginPath();
 			canvasCTX.moveTo(brushState.lastX, brushState.lastY);
 			canvasCTX.lineTo(x, y);
@@ -120,6 +163,10 @@ var paintBrushes = {
 			brushState.lastY = y;
 		},
 		up: function(x, y, brushState) {
+			if(brushState.lastX == x && brushState.lastY == y) {
+				x++;
+				y++;
+			}
 			canvasCTX.beginPath();
 			canvasCTX.moveTo(brushState.lastX, brushState.lastY);
 			canvasCTX.lineTo(x, y);
@@ -158,14 +205,14 @@ function setBrush(brush) {
 	setBrushAttribsLocal();
 	currentBrush = paintBrushes[brush];
 	canvasStableImageDataNeeded = false;
+	canvasCTX.globalCompositeOperation = "source-over";
 	currentBrush.select();
 	sendDrawEvent(EVENT_BRUSH, brush);
 }
 
 function resetCanvasImage(dontsend) {
-	canvasEle.width = canvasImg.width * scaleFactor;
-	canvasEle.height = canvasImg.height * scaleFactor;
-	canvasCTX.drawImage(canvasImg, 0, 0, canvasEle.width, canvasEle.height);
+	//canvasCTX.drawImage(canvasImg, 0, 0, canvasEle.width, canvasEle.height);
+	canvasCTX.clearRect(0, 0, canvasEle.width, canvasEle.height);
 	
 	canvasStableImageData = canvasCTX.createImageData(canvasEle.width, canvasEle.height);
 	
@@ -176,7 +223,8 @@ function resetCanvasImage(dontsend) {
 
 function recvDirectEvent(evtype, payload) {
 	if(evtype == EVENT_ERROR) {
-		alert("Network error: " + payload);
+		alert("Network error: " + payload + "\nPlease refresh this page to rejoin!");
+		webSocket_On = false;
 		webSocket.close();
 		return;
 	}
@@ -198,6 +246,17 @@ function recvDirectEvent(evtype, payload) {
 			break;
 		case EVENT_LEAVE:
 			paintUsers[payload[0]] = null;
+			break;
+		case EVENT_IMGBURST:
+			if(payload[0] == "r") {
+				sendDrawEvent(EVENT_IMGBURST, payload[1]+"|"+canvasEle.toDataURL("image/png").replace("\n","").replace("\r","")+"|");
+			} else if(payload[1] == "a") {
+				var toSet = new Image();
+				toSet.onload = function() {
+					canvasCTX.drawImage(toSet, 0, 0, canvasEle.width, canvasEle.height);
+				}
+				toSet.src = payload[2];
+			}
 			break;
 		default:
 			recvDrawEvent(evtype, payload);
@@ -237,19 +296,10 @@ function sendDrawEvent(evtype, payload) {
 }
 
 function sendBrushEvent(evtype, x, y) {
-	x /= scaleFactor;
-	y /= scaleFactor;
-	x = Math.round(x);
-	y = Math.round(y);
-	if(x < 0) x = 0;
-	if(y < 0) y = 0;
 	sendDrawEvent(evtype, x+"|"+y);
 }
 
 function recvBrushEvent(from, evtype, x, y) {
-	x *= scaleFactor;
-	y *= scaleFactor;
-
 	from.cursorX = x;
 	from.cursorY = y;
 	
@@ -294,11 +344,23 @@ function setBrushAttribsLocal() {
 }
 
 function setOffsetXAndY(evt) {
-	if(evt.offsetX)
-		return;
-
-	evt.offsetX = evt.pageX - canvasPos.left;
-	evt.offsetY = evt.pageY - canvasPos.top;
+	var x,y;
+	
+	if(!evt.offsetX) {
+		x = evt.pageX - canvasPos.left;
+		y = evt.pageY - canvasPos.top;
+	} else {
+		x = evt.offsetX;
+		y = evt.offsetY;
+	}
+	
+	x = Math.round(x);
+	y = Math.round(y);
+	if(x < 0) x = 0;
+	if(y < 0) y = 0;
+	
+	evt.myOffsetX = x / scaleFactor;
+	evt.myOffsetY = y / scaleFactor;
 }
 
 function liveDrawCanvasMouseOut(evt) {
@@ -322,8 +384,10 @@ function liveDrawCanvasMouseDown(evt) {
 	
 	setOffsetXAndY(evt);
 	
-	if(!currentBrush.down(evt.offsetX, evt.offsetY, brushState)) {
-		sendBrushEvent(EVENT_MOUSE_DOWN, evt.offsetX, evt.offsetY);
+	if(!currentBrush.down(evt.myOffsetX, evt.myOffsetY, brushState)) {
+		sendBrushEvent(EVENT_MOUSE_DOWN, evt.myOffsetX, evt.myOffsetY);
+	} else {
+		sendBrushEvent(EVENT_MOUSE_CURSOR, evt.myOffsetX, evt.myOffsetY);
 	}
 	
 	if(canvasStableImageDataNeeded) {
@@ -345,8 +409,10 @@ function liveDrawCanvasMouseUp(evt) {
 		canvasCTX.putImageData(canvasStableImageData, 0, 0);
 	}
 	
-	if(!currentBrush.up(evt.offsetX, evt.offsetY, brushState)) {
-		sendBrushEvent(EVENT_MOUSE_UP, evt.offsetX, evt.offsetY);
+	if(!currentBrush.up(evt.myOffsetX, evt.myOffsetY, brushState)) {
+		sendBrushEvent(EVENT_MOUSE_UP, evt.myOffsetX, evt.myOffsetY);
+	} else {
+		sendBrushEvent(EVENT_MOUSE_CURSOR, evt.myOffsetX, evt.myOffsetY);
 	}
 	
 	brushState.lastX = null;
@@ -365,8 +431,10 @@ function liveDrawCanvasMouseMove(evt) {
 		canvasCTX.putImageData(canvasStableImageData, 0, 0);
 	}
 	
-	if(!currentBrush.move(evt.offsetX, evt.offsetY, brushState)) {
-		sendBrushEvent(EVENT_MOUSE_MOVE, evt.offsetX, evt.offsetY);
+	if(!currentBrush.move(evt.myOffsetX, evt.myOffsetY, brushState)) {
+		sendBrushEvent(EVENT_MOUSE_MOVE, evt.myOffsetX, evt.myOffsetY);
+	} else {
+		sendBrushEvent(EVENT_MOUSE_CURSOR, evt.myOffsetX, evt.myOffsetY);
 	}
 }
 
@@ -377,7 +445,20 @@ function webSocket_tryConnect() {
 		webSocket = new WebSocket("wss://foxcav.es:8002/", "paint");
 		
 		webSocket.onmessage = function(evt) {
-			var data = evt.data.split("\n");
+			var data = webSocket_buffer+evt.data;
+			var datalen = data.length;
+			if(data.charAt(datalen - 1) != "\n") {
+				datalen = data.lastIndexOf("\n");
+				if(datalen) {
+					webSocket_buffer = data.substring(0, datalen);
+					data = data.substring(datalen + 1);
+				} else {
+					webSocket_buffer = data;
+					return;
+				}
+			}
+			
+			data = data.split("\n");
 			for(var i=0;i<data.length;i++) {
 				recvRaw(data[i]);
 			}
@@ -414,7 +495,9 @@ $(document).ready(function() {
 	var maxWidth = $('#livedraw-wrapper').width();
 	
 	canvasImg = new Image();
-	canvasImg.onload = function(){
+	canvasImg.onload = function() {
+		var cssWidth;
+		var cssHeight;
 		if(canvasImg.width > maxWidth) {
 			scaleFactor = maxWidth / canvasImg.width;
 		} else {
@@ -428,7 +511,15 @@ $(document).ready(function() {
 		webSocket_On = true;
 		webSocket_tryConnect();
 		
+		canvasEle.width = canvasImg.width;
+		canvasEle.height = canvasImg.height;
+		
+		canvasEle.style.width = (canvasEle.width*scaleFactor)+"px";
+		canvasEle.style.height = (canvasEle.height*scaleFactor)+"px";
+		
 		canvasPos = $(canvasEle).position();
+		
+		canvasEle.style.backgroundImage = 'url("'+canvasImg.src+'")';
 	};
 	canvasImg.src = canvasEle.getAttribute("data-file-url");
 });

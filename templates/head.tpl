@@ -5,7 +5,7 @@
 	
 		<link rel="stylesheet" type="text/css" href="https://fox.gy/static/css/bootstrap.css?v=2" />
 		<link rel="stylesheet" type="text/css" href="https://fox.gy/static/css/bootstrap-progressbar.css" />
-		<link rel="stylesheet" type="text/css" href="https://fox.gy/static/css/main.css?v=7" />
+		<link rel="stylesheet" type="text/css" href="https://fox.gy/static/css/main.css?v=8" />
 		<link rel="stylesheet" type="text/css" href="https://fox.gy/static/css/prettify.css" />
 
 		<script src="https://fox.gy/static/js/jquery.min.js" type="text/javascript"></script>

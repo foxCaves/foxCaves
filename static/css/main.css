@@ -262,7 +262,7 @@ video {
 	border: 3px solid #B333E5 inset;
 }
 
-.livedraw_wrapper > canvas {
+#livedraw {
 	background-repeat: no-repeat;
 	background-size: contain;
 }

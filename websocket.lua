@@ -1,3 +1,15 @@
+local next = next
+local tonumber = tonumber
+local tostring = tostring
+local setmetatable = setmetatable
+local print = print
+local error = error
+local pcall = pcall
+local table_insert = table.insert
+local table_concat = table.concat
+local string_format = string.format
+local time = os.time
+
 local lfs = require("lfs")
 lfs.chdir("/var/www/doripush/")
 local websockets = require("websockets")
@@ -8,15 +20,14 @@ dofile("scripts/dbconfig.lua")
 local database = dbenv:connect(dbconfig.database, dbconfig.user, dbconfig.password)
 dbconfig = nil
 
-function explode(div,str) -- credit: http://richard.warburton.it
-	if (div=='') then return false end
+local function explode(div,str) -- credit: http://richard.warburton.it
 	local pos,arr = 0,{}
 	-- for each divider found
-	for st,sp in function() return string.find(str,div,pos,true) end do
-		table.insert(arr,string.sub(str,pos,st-1)) -- Attach chars left of current divider
+	for st,sp in function() return str:find(div,pos,true) end do
+		table_insert(arr,str:sub(pos,st-1)) -- Attach chars left of current divider
 		pos = sp + 1 -- Jump past current divider
 	end
-	table.insert(arr,string.sub(str,pos)) -- Attach chars right of last divider
+	table_insert(arr,str:sub(pos)) -- Attach chars right of last divider
 	return arr
 end
 
@@ -37,15 +48,17 @@ local EVENT_RESET = "r"
 local EVENT_JOIN = "j"
 local EVENT_LEAVE = "l"
 local EVENT_ERROR = "e"
+local EVENT_IMGBURST = "i"
 
 local valid_brushes = {
 	brush = true,
 	circle = true,
 	rectangle = true,
-	line = true
+	line = true,
+	erase = true
 }
 
-local cA,cF,c0,c9 = string.byte("af09",1,4)
+local chr_a,chr_f,chr_0,chr_9 = string.byte("af09",1,4)
 
 local event_handlers = {
 	[EVENT_BRUSH] = function(user, data)
@@ -63,8 +76,8 @@ local event_handlers = {
 		else
 			local dbyte
 			for i=1,dlen do
-				dbyte = string.byte(data, i)
-				if (dbyte < cA or dbyte > cF) and (dbyte < c0 or dbyte > c9) then
+				dbyte = data:byte(i)
+				if (dbyte < chr_a or dbyte > chr_f) and (dbyte < chr_0 or dbyte > chr_9) then
 					error("Invalid color")
 				end
 			end
@@ -86,180 +99,254 @@ local event_handlers = {
 	end,
 	[EVENT_RESET] = function(user, data)
 		if #data > 1 or (data[1] and data[1] ~= "") then error("Invalid payload") end
+	end,
+	--[[[EVENT_IMGBURST] = function(user, data)
+		local other = user.ws_data[tonumber(data[1])]
+		other:send(EVENT_IMGBURST.."a|"..data[2].."|")
+		return false
+	end,]]
+	[EVENT_LEAVE] = function(user, data)
+		self:kick()
+		return ""
+	end,
+	[EVENT_JOIN] = function(user, data)
+		if #data ~= 3 then
+			error("Invalid payload")
+		end
+		
+		if data[1] == "" or data[2] == "" or data[3] == "" then
+			error("Missing payload data")
+		end
+	
+		local tempvar = data[1]
+		if tempvar ~= "GUEST" then
+			--Session => User
+			local cursor = database:execute(string_format(
+				"SELECT u.username AS name FROM users AS u, sessions AS s WHERE s.id = '%s' AND u.id = s.user AND u.active = 1 LIMIT 0,1",
+				database:escape(tempvar)
+			))
+			local result = {}
+			cursor:fetch(result, "a")
+			cursor:close()
+			if not (result and result.name) then
+				error("Invalid user")
+			end
+			user.name = result.name
+			--End session => User
+		end
+	
+		tempvar = data[2]
+		user.globkey = string_format("%s_%s", tempvar, data[3])
+		
+		user.ws_data = ws_data_global[user.globkey]
+		if not user.ws_data then
+			--Sanity check for the FileID
+			local result = {}
+			local cursor = database:execute(string_format(
+				"SELECT f.type, u.username, u.pro_expiry FROM files AS f, users AS u WHERE f.fileid = '%s' AND f.user = u.id LIMIT 0,1",
+				database:escape(tempvar)
+			))
+			cursor:fetch(result, "a")
+			cursor:close()
+			if (not result) or tonumber(result.type) ~= 1 or tonumber(result.pro_expiry) < time()  then
+				error("Invalid FileID")
+			end
+			--End sanity check
+		
+			user.ws_data = {}
+			user.history = {"r0|"}
+			history_global[user.globkey] = user.history
+			ws_data_global[user.globkey] = user.ws_data
+		else
+			user.history = history_global[user.globkey]
+		end
+		
+		local wsid = last_wsid[user.globkey] or 1
+		while user.ws_data[wsid] do
+			wsid = wsid + 1
+		end
+		last_wsid[user.globkey] = wsid + 1
+		
+		if not user.name then
+			user.name = string_format("Guest %i", wsid)
+		end
+		
+		user.image = data[2]
+		user.drawingsession = data[3]
+		user.id = wsid
+		user.isjoined = true
+		
+		user.ws_data[wsid] = user
+		
+		--local imgburst_found = false
+		for uid,udata in next, user.ws_data do
+			if uid ~= wsid then
+				if udata.name == user.name then
+					udata:send(EVENT_ERROR.."Logged in from another location")
+					udata:kick()
+				else
+					user:send(string_format("%s%i|%s|%i|%s|%s|%i|%i",EVENT_JOIN,
+						udata.id,udata.name,(udata.width or 0),(udata.color or "000"),(udata.brush or "brush"),(udata.cursorX or 0),(udata.cursorY or 0)
+					))
+					--[[if uid ~= user.id and not imgburst_found then
+						imgburst_found = true
+						user:send(EVENT_IMGBURST.."r|"..user.id.."|")
+					end]]
+				end				
+			end
+		end
+		
+		user.historyburst = true
+		print("Join: ", user.name, user.id, user.image, user.drawingsession)		
+		
+		return string_format("%s|%i|%s|%s|%i|%i",
+			user.name,(user.width or 0),(user.color or "000"),(user.brush or "brush"),(user.cursorX or 0),(user.cursorY or 0)
+		)
 	end
 }
 event_handlers[EVENT_MOUSE_UP] = event_handlers[EVENT_MOUSE_CURSOR]
 event_handlers[EVENT_MOUSE_DOWN] = event_handlers[EVENT_MOUSE_CURSOR]
 event_handlers[EVENT_MOUSE_MOVE] = event_handlers[EVENT_MOUSE_CURSOR]
+do
+	local evthdl = event_handlers
+	event_handlers = {}
+	for k,v in next, evthdl do
+		event_handlers[k:byte()] = v
+	end
+end
+
+
+USERMETA = {}
+USERMETA.__index = USERMETA
+function USERMETA:send(data)
+	if self.socket then
+		self.socket:write(data.."\n", websockets.WRITE_TEXT)
+	end
+end
+function USERMETA:kick()
+	if self.id then
+		self.ws_data[self.id] = nil
+	end
+	
+	if self.isjoined then
+		print("Leave: ", self.name, self.id, self.image, self.drawingsession)		
+		self.isjoined = false
+		
+		if(next(self.ws_data) == nil) then
+			ws_data_global[self.globkey] = nil
+			history_global[self.globkey] = nil
+			last_wsid[self.globkey] = nil
+			
+			print("Unsetting globkey: ", self.globkey)
+		else
+			last_wsid[self.globkey] = self.id
+		end
+	else
+		self.id = nil
+		return
+	end
+	
+	if self.socket then
+		self.socket:close(0)
+	end
+	
+	self.id = nil
+end
+function USERMETA:broadcast_others(data, nohistory)
+	if not nohistory then
+		table_insert(self.history, data)
+	end
+	for _,other in next, self.ws_data do
+		if other.id ~= self.id then
+			other:send(data)
+		end
+	end
+end
+
+local cEVENT_JOIN = EVENT_JOIN:byte()
+local cEVENT_MOUSE_CURSOR = EVENT_MOUSE_CURSOR:byte()
+function USERMETA:event_received(ws, rawdata)
+	self.socket = ws
+
+	local evid = rawdata:byte(1)
+	local data = {}
+	if rawdata:len() > 1 then
+		rawdata = rawdata:sub(2)
+		data = explode("|", rawdata)
+	else
+		rawdata = ""
+	end
+	
+	if (evid == cEVENT_JOIN) == self.isjoined then
+		error("Invalid state for this packet: "..evid.."|"..tostring(self.isjoined))
+	else
+		local evthandl = event_handlers[evid]
+		if evthandl then
+			local ret = evthandl(self, data)
+			if ret == false then
+				return
+			elseif ret then
+				rawdata = ret
+			end
+		else
+			error("Invalid packet: "..evid)
+		end
+	end
+	if not self.id then return end
+	self:broadcast_others(string_format("%s%i|%s", evid, self.id, rawdata), (evid == cEVENT_MOUSE_CURSOR))
+	
+	if historyburst then
+		self:send(table_concat(self.history ,"\n"))
+		self:send(string_format("%s%i|", EVENT_LEAVE, self.id))
+		historyburst = false
+	end
+end
+
+function USERMETA:socket_onrecv(ws, data)
+	data = self.databuff..data
+	local datalen = data:len()
+	if data:sub(datalen, datalen) ~= "\n" then
+		datalen = nil
+		local newlen = 1
+		while newlen do
+			newlen = data:find("\n", newlen, true)
+			if newlen then datalen = newlen end
+		end
+		
+		if datalen then
+			self.databuff = data:sub(1, datalen)
+			data = data:sub(datalen + 1)
+		else
+			self.databuff = data
+			return
+		end
+	end
+	local data = explode("\n", data)
+	for _,v in next, data do
+		if v and v ~= "" then
+			local isok, err = pcall(self.event_received, self, ws, v)
+			if not isok then
+				print("EVTErr: ", err)
+				self:send(EVENT_ERROR..err)
+				self:kick()
+			end
+		end
+	end
+end
 
 local function paint_cb(ws)
-	local ws_data
-	local history
-	local user = {}
-	local globkey = nil
-	local historyburst = false
-	
-	local function local_broadcast(data, dont_exclude_user)
-		table.insert(history, data)
-		for _,other in next, ws_data do
-			if other.id ~= user.id or dont_exclude_user then
-				other.socket:write(data.."\n", websockets.WRITE_TEXT)
-			end
-		end
-	end
-
-	local function evt_received(ws, rawdata)		
-		local evid = rawdata:sub(1, 1)
-		local data = {}
-		if rawdata:len() > 1 then
-			rawdata = rawdata:sub(2)
-			data = explode("|", rawdata)
-		else
-			rawdata = ""
-		end
-		
-		if evid == EVENT_JOIN then
-			if user.isjoined then
-				error("Invalid state for this packet")
-			end
-			
-			if #data ~= 3 then
-				error("Invalid payload")
-			end
-			
-			if data[1] == "" or data[2] == "" or data[3] == "" then
-				error("Missing payload data")
-			end
-		
-			local sessionid = data[1]
-			local result
-			if sessionid ~= "GUEST" then
-				--Session => User
-				local cursor = database:execute("SELECT u.username AS name FROM users AS u, sessions AS s WHERE s.id = '"..database:escape(sessionid).."' AND u.id = s.user AND u.active = 1 LIMIT 0,1")
-				result = {}
-				cursor:fetch(result, "a")
-				cursor:close()
-				if not (result and result.name) then
-					error("Invalid user")
-				end
-				result = result.name
-				--End session => User
-			else
-				result = nil
-			end
-		
-			globkey = data[2].."_"..data[3]
-			ws_data = ws_data_global[globkey]
-			
-			if not ws_data then
-				--Sanity check for the FileID
-				local result = {}
-				local cursor = database:execute("SELECT f.type, u.username, u.pro_expiry FROM files AS f, users AS u WHERE f.fileid = '"..database:escape(data[2]).."' AND f.user = u.id LIMIT 0,1")
-				cursor:fetch(result, "a")
-				cursor:close()
-				if (not result) or tonumber(result.type) ~= 1 or tonumber(result.pro_expiry) < os.time()  then
-					error("Invalid FileID")
-				end
-				--End sanity check
-			
-				ws_data = {}
-				history = {"r0|"}
-				history_global[globkey] = history
-				ws_data_global[globkey] = ws_data
-			else
-				history = history_global[globkey]
-			end
-			local wsid = last_wsid[globkey] or 1
-			while ws_data[wsid] do
-				wsid = wsid + 1
-			end
-			last_wsid[globkey] = wsid + 1
-			
-			user.fileid = data[2]
-			user.drawingid = data[3]
-			user.socket = ws
-			user.name = (result or ("Guest "..wsid))
-			user.image = data[2]
-			user.drawingsession = data[3]
-			user.id = wsid
-			user.isjoined = true
-			
-			for uid,udata in next, ws_data do
-				ws:write("j"..udata.id.."|"..udata.name.."|"..(udata.width or 0).."|"..(udata.color or "000").."|"..(udata.brush or "brush").."|"..(udata.cursorX or 0).."|"..(udata.cursorY or 0).."\n", websockets.WRITE_TEXT)
-			end
-			
-			ws_data[wsid] = user
-			
-			rawdata = user.name.."|"..(user.width or 0).."|"..(user.color or "000").."|"..(user.brush or "brush").."|"..(user.cursorX or 0).."|"..(user.cursorY or 0)
-			historyburst = true
-			
-			print("Join: ", user.name.." with ID "..user.id.." in image "..user.image.." and drawing session "..user.drawingsession)
-		elseif evid == EVENT_LEAVE then
-			if user.id then
-				ws_data[user.id] = nil
-			end
-			
-			if user.isjoined then
-				print("Leave: ", user.name.." with ID "..user.id.." in image "..user.image.." and drawing session "..user.drawingsession)
-				user.isjoined = false
-				
-				if(next(ws_data) == nil) then
-					ws_data_global[globkey] = nil
-					history_global[globkey] = nil
-					last_wsid[globkey] = nil
-					print("Unsetting globkey: ", globkey)
-				else
-					last_wsid[globkey] = user.id
-				end
-			else
-				return
-			end
-			
-			ws = ws or user.socket
-			if ws then
-				ws:close(0)
-			end
-			
-			rawdata = ""
-		elseif not user.isjoined then
-			error("Invalid state for this packet")
-		else
-			local evthandl = event_handlers[evid]
-			if evthandl then
-				local ret = event_handlers[evid](user, data)
-				if ret == false then
-					return
-				elseif ret then
-					rawdata = ret
-				end
-			else
-				error("Invalid packet")
-			end
-		end
-		if not user.id then return end
-		local_broadcast(evid..user.id.."|"..rawdata)
-		
-		if historyburst then
-			ws:write(table.concat(history ,"\n"), websockets.WRITE_TEXT)
-		end
-	end
+	local user = setmetatable({
+		historyburst = false,
+		isjoined = false,
+		databuff = ""
+	}, USERMETA)
 	
 	ws:on_receive(function(ws, data)
-		local data = explode("\n", data)
-		for _,v in next, data do
-			if v and v ~= "" then
-				local isok, err = pcall(evt_received, ws, v)
-				if not isok then
-					print("EVTErr: ", err)
-					ws:write("e"..err.."\n", websockets.WRITE_TEXT)
-					return evt_received(ws, EVENT_LEAVE)
-				end
-			end
-		end
+		user:socket_onrecv(ws, data)
 	end)
 	
 	ws:on_closed(function()
-		evt_received(ws, EVENT_LEAVE)
+		user:kick()
 	end)
 	
 	ws:on_broadcast(websockets.WRITE_TEXT)
@@ -269,7 +356,7 @@ local context = websockets.context({
 	port = 8002,
 	on_http = function() end,
 	protocols = {
-		['paint'] = paint_cb
+		paint = paint_cb
 	},
 	ssl_cert_filepath = "/etc/apache2/ssl/foxcav_es.crt",
 	ssl_private_key_filepath = "/etc/apache2/ssl/foxcav_es.key",
