@@ -32,7 +32,7 @@ function recvRaw(msg) {
 	msg = msg.trim();
 	if(msg.length < 1)
 		return;
-	//console.log("<< ["+msg+"]");
+	console.log("<< ["+msg+"]");
 	recvDirectEvent(msg.charAt(0), msg.substr(1));
 }
 
@@ -40,7 +40,7 @@ function sendRaw(msg) {
 	msg = msg.trim();
 	if(msg.length < 1)
 		return;
-	//console.log(">> ["+msg+"]");
+	console.log(">> ["+msg+"]");
 	webSocket.send(msg+"\n");
 }
 

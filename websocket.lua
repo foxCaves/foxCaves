@@ -21,6 +21,7 @@ function explode(div,str) -- credit: http://richard.warburton.it
 end
 
 local ws_data_global = {}
+local history_global = {}
 local last_wsid = {}
 
 local EVENT_WIDTH = "w"
@@ -93,11 +94,13 @@ event_handlers[EVENT_MOUSE_MOVE] = event_handlers[EVENT_MOUSE_CURSOR]
 
 local function paint_cb(ws)
 	local ws_data
+	local history
 	local user = {}
 	local globkey = nil
+	local historyburst = false
 	
 	local function local_broadcast(data, dont_exclude_user)
-		table.insert(ws_data.history, data)
+		table.insert(history, data)
 		for _,other in next, ws_data do
 			if other.id ~= user.id or dont_exclude_user then
 				other.socket:write(data.."\n", websockets.WRITE_TEXT)
@@ -105,7 +108,7 @@ local function paint_cb(ws)
 		end
 	end
 
-	local function evt_received(ws, rawdata)
+	local function evt_received(ws, rawdata)		
 		local evid = rawdata:sub(1, 1)
 		local data = {}
 		if rawdata:len() > 1 then
@@ -159,8 +162,12 @@ local function paint_cb(ws)
 				end
 				--End sanity check
 			
-				ws_data = {history: {"r0|"}}
+				ws_data = {}
+				history = {"r0|"}
+				history_global[globkey] = history
 				ws_data_global[globkey] = ws_data
+			else
+				history = history_global[globkey]
 			end
 			local wsid = last_wsid[globkey] or 1
 			while ws_data[wsid] do
@@ -177,25 +184,28 @@ local function paint_cb(ws)
 			user.id = wsid
 			user.isjoined = true
 			
-			for uid,udata in pairs(ws_data) do
+			for uid,udata in next, ws_data do
 				ws:write("j"..udata.id.."|"..udata.name.."|"..(udata.width or 0).."|"..(udata.color or "000").."|"..(udata.brush or "brush").."|"..(udata.cursorX or 0).."|"..(udata.cursorY or 0).."\n", websockets.WRITE_TEXT)
 			end
 			
 			ws_data[wsid] = user
 			
 			rawdata = user.name.."|"..(user.width or 0).."|"..(user.color or "000").."|"..(user.brush or "brush").."|"..(user.cursorX or 0).."|"..(user.cursorY or 0)
+			historyburst = true
 			
 			print("Join: ", user.name.." with ID "..user.id.." in image "..user.image.." and drawing session "..user.drawingsession)
-			
-			ws:write(table.concat(ws_data.history ,"\n"), websockets.WRITE_TEXT)
 		elseif evid == EVENT_LEAVE then
+			if user.id then
+				ws_data[user.id] = nil
+			end
+			
 			if user.isjoined then
 				print("Leave: ", user.name.." with ID "..user.id.." in image "..user.image.." and drawing session "..user.drawingsession)
 				user.isjoined = false
 				
-				ws_data[user.id] = nil
 				if(next(ws_data) == nil) then
 					ws_data_global[globkey] = nil
+					history_global[globkey] = nil
 					last_wsid[globkey] = nil
 					print("Unsetting globkey: ", globkey)
 				else
@@ -228,6 +238,10 @@ local function paint_cb(ws)
 		end
 		if not user.id then return end
 		local_broadcast(evid..user.id.."|"..rawdata)
+		
+		if historyburst then
+			ws:write(table.concat(history ,"\n"), websockets.WRITE_TEXT)
+		end
 	end
 	
 	ws:on_receive(function(ws, data)
