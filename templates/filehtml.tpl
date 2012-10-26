@@ -1,12 +1,12 @@
 <% local escaped_name = file.name %>
 <% local escaped_name_js = escaped_name:gsub("'", "\\'") %>
 <li draggable="true" id="file_<%= file.fileid %>" data-file-id="<%= file.fileid %>" data-file-extension="<%= file.extension %>">
-	<div style="background-image: url('<% if file.type == 1 then %>/thumbs/<%= file.thumbnail %><% elseif G.lfs.attributes("static/img/thumbs/ext_"..file.extension..".png", "size") then %>/static/img/thumbs/ext_<%= file.extension %>.png<% else %>/static/img/thumbs/nothumb.png<% end %>')" class="image_manage_main">
+	<div style="background-image: url('<% if file.type == 1 then %>https://fox.gy/thumbs/<%= file.thumbnail %><% elseif G.lfs.attributes("static/img/thumbs/ext_"..file.extension..".png", "size") then %>https://fox.gy/static/img/thumbs/ext_<%= file.extension %>.png<% else %>https://fox.gy/static/img/thumbs/nothumb.png<% end %>')" class="image_manage_main">
 		<div class="image_manage_top" title="<%= G.os.date("%d.%m.%Y %H:%M", file.time) %> [<%= escaped_name %>]"><span><%= escaped_name %></span></div>
 		<div class="image_manage_bottom">
 			<span style="position: relative; float: right;">
 				<a title="View" href="/view/<%= file.fileid %>"><i class="icon-picture icon-white"></i> </a>
-				<a title="Download" href="/d/<%= file.fileid %><%= file.extension %>"><i class="icon-download icon-white"></i> </a>
+				<a title="Download" href="https://fox.gy/d<%= file.fileid %><%= file.extension %>"><i class="icon-download icon-white"></i> </a>
 				<% if file.type == 1 and G.ngx.ctx.user.is_pro then %>
 				<div class="dropdown">
 					<a title="Options" class="dropdown-toggle" data-toggle="dropdown" href=""><i class="icon-wrench icon-white"></i> </a>

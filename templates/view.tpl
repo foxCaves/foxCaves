@@ -56,27 +56,27 @@
 	<a href="/d/<%= RAWNAME %>" class="btn btn-large btn-block btn-primary">Download file</a>
 	<div id="preview-wrapper">
 	<% if FILE.type == FILE_TYPE_IMAGE then %>
-		<img src="/f/<%= RAWNAME %>">
+		<img src="https://fox.gy/f<%= RAWNAME %>">
 	<% elseif FILE.type == FILE_TYPE_TEXT then %>
 		<noscript>JavaScript required to preview code/text</noscript>
 		<pre class="prettyprint linenums" style="display: none;" data-thumbnail-source="<%= FILE.thumbnail %>"></pre>
 	<% elseif FILE.type == FILE_TYPE_VIDEO then %>
 		<video controls="controls">
-			<source src="/f/<%= RAWNAME %>" type="<%= MIMETYPES[FILE.extension] %>" />
+			<source src="https://fox.gy/f<%= RAWNAME %>" type="<%= MIMETYPES[FILE.extension] %>" />
 			Your browser is too old.
 		</video>
 	<% elseif FILE.type == FILE_TYPE_AUDIO then %>
 		<audio controls="controls">
-			<source src="/f/<%= RAWNAME %>" type="<%= MIMETYPES[FILE.extension] %>" />
+			<source src="https://fox.gy/f<%= RAWNAME %>" type="<%= MIMETYPES[FILE.extension] %>" />
 			Your browser is too old.
 		</audio>
 	<% elseif FILE.type == FILE_TYPE_IFRAME then %>
-		<iframe src="/f/<%= RAWNAME %>" style="min-width:400px;width:100%;min-height:600px;height:100%;border:3px solid #B333E5;box-sizing:border-box;" type="<%= MIMETYPES[FILE.extension] %>"> 
+		<iframe src="https://fox.gy/f<%= RAWNAME %>" style="min-width:400px;width:100%;min-height:600px;height:100%;border:3px solid #B333E5;box-sizing:border-box;" type="<%= MIMETYPES[FILE.extension] %>"> 
 		</iframe>
 	<% else %>
 		<h5>File cannot be viewed. Download it.</h5>
 	<% end %>
 	</div>
-	<script type="text/javascript" src="/static/js/view.min.js"></script>
+	<script type="text/javascript" src="https://fox.gy/static/js/view.min.js"></script>
 	<%+ advert %>
 <%+ foot %>

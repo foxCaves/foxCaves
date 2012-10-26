@@ -8,5 +8,5 @@
 	<% end %>
 </ul></td></tr></table>
 <div style="display: none;" id="recycle_bin"></div>
-<script type="text/javascript" src="/static/js/myfiles.min.js?v=8"></script>
+<script type="text/javascript" src="https://fox.gy/static/js/myfiles.min.js?v=8"></script>
 <%+ foot %>

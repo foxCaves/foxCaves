@@ -29,34 +29,77 @@ local EVENT_BRUSH = "b"
 local EVENT_MOUSE_UP = "u"
 local EVENT_MOUSE_DOWN = "d"
 local EVENT_MOUSE_MOVE = "m"
-local EVENT_MOUSE_CURSOR = "s"
+local EVENT_MOUSE_CURSOR = "p"
 
 local EVENT_RESET = "r"
 
 local EVENT_JOIN = "j"
 local EVENT_LEAVE = "l"
+local EVENT_ERROR = "e"
+
+local valid_brushes = {
+	brush = true,
+	circle = true,
+	rectangle = true,
+	line = true
+}
+
+local cA,cF,c0,c9 = string.byte("af09",1,4)
 
 local event_handlers = {
 	[EVENT_BRUSH] = function(user, data)
-		user.brush = data[1]
+		if #data ~= 1 then error("Invalid payload") end
+		data = data[1]
+		if not valid_brushes[data] then error("Invalid brush") end
+		user.brush = data
 	end,
 	[EVENT_COLOR] = function(user, data)
-		user.color = data[1]
+		if #data ~= 1 then error("Invalid payload") end
+		data = data[1]:lower()
+		local dlen = data:len()
+		if dlen ~= 3 and dlen ~= 6 then
+			error("Invalid color")
+		else
+			local dbyte
+			for i=1,dlen do
+				dbyte = string.byte(data, i)
+				if (dbyte < cA or dbyte > cF) and (dbyte < c0 or dbyte > c9) then
+					error("Invalid color")
+				end
+			end
+		end
+		user.color = data
 	end,
 	[EVENT_WIDTH] = function(user, data)
-		user.width = data[1]
+		if #data ~= 1 then error("Invalid payload") end
+		data = tonumber(data[1])
+		if (not data) or data <= 0 then error("Invalid width") end
+		user.width = data
+	end,
+	[EVENT_MOUSE_CURSOR] = function(user, data)
+		if #data ~= 2 then error("Invalid payload") end
+		user.cursorX = tonumber(data[1])
+		if (not user.cursorX) or (user.cursorX < 0) then error("Invalid X") end
+		user.cursorY = tonumber(data[2])
+		if (not user.cursorY) or (user.cursorY < 0) then error("Invalid Y") end
+	end,
+	[EVENT_RESET] = function(user, data)
+		if #data > 1 or (data[1] and data[1] ~= "") then error("Invalid payload") end
 	end
 }
+event_handlers[EVENT_MOUSE_UP] = event_handlers[EVENT_MOUSE_CURSOR]
+event_handlers[EVENT_MOUSE_DOWN] = event_handlers[EVENT_MOUSE_CURSOR]
+event_handlers[EVENT_MOUSE_MOVE] = event_handlers[EVENT_MOUSE_CURSOR]
 
 local function paint_cb(ws)
 	local ws_data
 	local user = {}
-	local wsid = nil
 	local globkey = nil
 	
 	local function local_broadcast(data, dont_exclude_user)
-		for _,other in pairs(ws_data) do
-			if other.id ~= wsid or dont_exclude_user then
+		table.insert(ws_data.history, data)
+		for _,other in next, ws_data do
+			if other.id ~= user.id or dont_exclude_user then
 				other.socket:write(data.."\n", websockets.WRITE_TEXT)
 			end
 		end
@@ -73,25 +116,50 @@ local function paint_cb(ws)
 		end
 		
 		if evid == EVENT_JOIN then
+			if user.isjoined then
+				error("Invalid state for this packet")
+			end
+			
+			if #data ~= 3 then
+				error("Invalid payload")
+			end
+			
+			if data[1] == "" or data[2] == "" or data[3] == "" then
+				error("Missing payload data")
+			end
+		
 			local sessionid = data[1]
 			local result
 			if sessionid ~= "GUEST" then
-				local cursor = database:execute("SELECT u.username AS name FROM users AS u, sessions AS s WHERE s.id = '"..database:escape(sessionid).."' AND u.id = s.user AND u.active = 1")
+				--Session => User
+				local cursor = database:execute("SELECT u.username AS name FROM users AS u, sessions AS s WHERE s.id = '"..database:escape(sessionid).."' AND u.id = s.user AND u.active = 1 LIMIT 0,1")
 				result = {}
 				cursor:fetch(result, "a")
 				cursor:close()
 				if not (result and result.name) then
-					return evt_received(ws, EVENT_LEAVE)
+					error("Invalid user")
 				end
 				result = result.name
+				--End session => User
 			else
 				result = nil
 			end
 		
 			globkey = data[2].."_"..data[3]
 			ws_data = ws_data_global[globkey]
+			
 			if not ws_data then
-				ws_data = {}
+				--Sanity check for the FileID
+				local result = {}
+				local cursor = database:execute("SELECT f.type, u.username, u.pro_expiry FROM files AS f, users AS u WHERE f.fileid = '"..database:escape(data[2]).."' AND f.user = u.id LIMIT 0,1")
+				cursor:fetch(result, "a")
+				cursor:close()
+				if (not result) or tonumber(result.type) ~= 1 or tonumber(result.pro_expiry) < os.time()  then
+					error("Invalid FileID")
+				end
+				--End sanity check
+			
+				ws_data = {history: {"r0|"}}
 				ws_data_global[globkey] = ws_data
 			end
 			local wsid = last_wsid[globkey] or 1
@@ -103,37 +171,59 @@ local function paint_cb(ws)
 			user.fileid = data[2]
 			user.drawingid = data[3]
 			user.socket = ws
-			user.name = (result or ("Guest"..wsid))
+			user.name = (result or ("Guest "..wsid))
 			user.image = data[2]
 			user.drawingsession = data[3]
 			user.id = wsid
+			user.isjoined = true
 			
 			for uid,udata in pairs(ws_data) do
-				ws:write("j"..udata.id.."|"..udata.name.."|"..(udata.width or 0).."|"..(udata.color or "#000").."|"..(udata.brush or "brush").."\n", websockets.WRITE_TEXT)
+				ws:write("j"..udata.id.."|"..udata.name.."|"..(udata.width or 0).."|"..(udata.color or "000").."|"..(udata.brush or "brush").."|"..(udata.cursorX or 0).."|"..(udata.cursorY or 0).."\n", websockets.WRITE_TEXT)
 			end
 			
 			ws_data[wsid] = user
 			
-			rawdata = user.name.."|"..(user.width or 0).."|"..(user.color or "#000").."|"..(user.brush or "brush")
+			rawdata = user.name.."|"..(user.width or 0).."|"..(user.color or "000").."|"..(user.brush or "brush").."|"..(user.cursorX or 0).."|"..(user.cursorY or 0)
 			
-			print("Join: "..user.name.." with ID "..user.id.." in image "..user.image.." and drawing session "..user.drawingsession)
+			print("Join: ", user.name.." with ID "..user.id.." in image "..user.image.." and drawing session "..user.drawingsession)
+			
+			ws:write(table.concat(ws_data.history ,"\n"), websockets.WRITE_TEXT)
 		elseif evid == EVENT_LEAVE then
-			if user.id then
+			if user.isjoined then
+				print("Leave: ", user.name.." with ID "..user.id.." in image "..user.image.." and drawing session "..user.drawingsession)
+				user.isjoined = false
+				
 				ws_data[user.id] = nil
-				last_wsid[globkey] = user.id
-			end
-			if ws then
-				ws:close("bye")
+				if(next(ws_data) == nil) then
+					ws_data_global[globkey] = nil
+					last_wsid[globkey] = nil
+					print("Unsetting globkey: ", globkey)
+				else
+					last_wsid[globkey] = user.id
+				end
+			else
+				return
 			end
 			
-			print("Leave: "..user.name.." with ID "..user.id.." in image "..user.image.." and drawing session "..user.drawingsession)
-		end
-		if event_handlers[evid] then
-			local ret = event_handlers[evid](user, data)
-			if ret == false then
-				return
-			elseif ret then
-				rawdata = ret
+			ws = ws or user.socket
+			if ws then
+				ws:close(0)
+			end
+			
+			rawdata = ""
+		elseif not user.isjoined then
+			error("Invalid state for this packet")
+		else
+			local evthandl = event_handlers[evid]
+			if evthandl then
+				local ret = event_handlers[evid](user, data)
+				if ret == false then
+					return
+				elseif ret then
+					rawdata = ret
+				end
+			else
+				error("Invalid packet")
 			end
 		end
 		if not user.id then return end
@@ -144,30 +234,28 @@ local function paint_cb(ws)
 		local data = explode("\n", data)
 		for _,v in next, data do
 			if v and v ~= "" then
-				evt_received(ws, v)
+				local isok, err = pcall(evt_received, ws, v)
+				if not isok then
+					print("EVTErr: ", err)
+					ws:write("e"..err.."\n", websockets.WRITE_TEXT)
+					return evt_received(ws, EVENT_LEAVE)
+				end
 			end
 		end
 	end)
 	
 	ws:on_closed(function()
-		evt_received(nil, EVENT_LEAVE)
+		evt_received(ws, EVENT_LEAVE)
 	end)
 	
 	ws:on_broadcast(websockets.WRITE_TEXT)
-end
-
-local function paint_cb_pcall(...)
-	local isok, err = pcall(paint_cb, ...)
-	if not isok then
-		print(err)
-	end
 end
 
 local context = websockets.context({
 	port = 8002,
 	on_http = function() end,
 	protocols = {
-		['paint'] = paint_cb_pcall
+		['paint'] = paint_cb
 	},
 	ssl_cert_filepath = "/etc/apache2/ssl/foxcav_es.crt",
 	ssl_private_key_filepath = "/etc/apache2/ssl/foxcav_es.key",

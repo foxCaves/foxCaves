@@ -1,5 +1,5 @@
 dofile("/var/www/doripush/scripts/global.lua")
-if not ngx.ctx.user then return ngx.redirect("/login") end
+--if not ngx.ctx.user then return ngx.redirect("/login") end
 
 local name = ngx.var.REQUEST_URI
 local nameregex = ngx.re.match(name, "live/([a-zA-Z0-9]+)(\\?([a-zA-Z0-9]*))?$", "o")
