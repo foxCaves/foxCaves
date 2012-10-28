@@ -87,6 +87,8 @@ $(document).ready(function(){
 				etag = xhr.getResponseHeader('Etag');
 				last_modified = xhr.getResponseHeader('Last-Modified');
 			
+				console.log(data);
+			
 				var cmds = data.split("\n");
 				
 				for(var i=0;i<cmds.length;i++) {
@@ -107,7 +109,8 @@ $(document).ready(function(){
 				}
 			},
 			complete: files_poll,
-			timeout: 30000
+			timeout: 30000,
+			dataType: "text"
 		});
 	})();
 })

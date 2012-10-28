@@ -164,7 +164,7 @@ function refreshFiles() {
 			}
 		}
 		
-		$('#file_manage_div li').each(function(i, ele) {
+		$('#file_manage_div > li').each(function(i, ele) {
 			var fileid = $(ele).attr('id').substr(5);
 			if(!files_rev[fileid]) {
 				removeFileLI(fileid);

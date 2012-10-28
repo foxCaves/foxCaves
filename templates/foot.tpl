@@ -37,6 +37,6 @@ end
 		<% if G.ngx.ctx.user then %><script type="text/javascript">var PUSH_CHANNEL = "<%= G.ngx.ctx.user.id %>_<%= G.ngx.ctx.user.pushchan %>";</script><% end %>
 		<script src="/static/js/bootstrap.min.js" type="text/javascript"></script>
 		<script src="/static/js/prettify.min.js" type="text/javascript"></script>
-		<script src="/static/js/main.min.js?v=11" type="text/javascript"></script>
+		<script src="/static/js/main.min.js?v=12" type="text/javascript"></script>
 	</body>
 </html>
