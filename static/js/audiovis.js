@@ -1,70 +1,29 @@
 var canvasCTX, canvasEle, canvasMaxX, canvasMaxY;
 var dancer;
+
 var MathPI2 = Math.PI * 2.0;
-
-var dirX = 1; var dirY = 1;
-var targetDirX = 1; var targetDirY = 1;
-var speed = 1;
-
-var TURNSPACE = 100;
-
-var snakePositions = new Array();
-var snakeColors = new Array();
-var snakeWidths = new Array();
-
-/**
- * Converts an HSL color value to RGB. Conversion formula
- * adapted from http://en.wikipedia.org/wiki/HSL_color_space.
- * Assumes h, s, and l are contained in the set [0, 1] and
- * returns r, g, and b in the set [0, 255].
- *
- * @param   Number  h       The hue
- * @param   Number  s       The saturation
- * @param   Number  l       The lightness
- * @return  Array           The RGB representation
- */
-function hslToRgb(h, s, l){
-    var r, g, b;
-
-    if(s == 0){
-        r = g = b = l; // achromatic
-    }else{
-        function hue2rgb(p, q, t){
-            if(t < 0) t += 1;
-            if(t > 1) t -= 1;
-            if(t < 1/6) return p + (q - p) * 6 * t;
-            if(t < 1/2) return q;
-            if(t < 2/3) return p + (q - p) * (2/3 - t) * 6;
-            return p;
-        }
-
-        var q = l < 0.5 ? l * (1 + s) : l + s - l * s;
-        var p = 2 * l - q;
-        r = hue2rgb(p, q, h + 1/3);
-        g = hue2rgb(p, q, h);
-        b = hue2rgb(p, q, h - 1/3);
-    }
-
-    return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)];
-}
-
-
-var SPECHEIGHT = 20;
-
 var MLOG10 = Math.log(10);
 function log10(val) {
   return Math.log(val) / MLOG10;
 }
 
+var TURNSPACE = 100;
+var SPECHEIGHT = 20;
+
+var allSnakeStates = new Array();
+
+var snakeColors = new Array();
+var snakeWidths = new Array();
+
 function audiovisUpdate() {
 	var spectrum = dancer.getSpectrum();
 	canvasCTX.clearRect(0, 0, canvasEle.width, canvasEle.height);
 	
-	var cPos, b1, b0, sum, sc, y;
+	var b1, b0, sum, sc, y;
 	b0 = 0;
-	for(var i=0;i<snakePositions.length;i++) {
+	for(var i=0;i<128;i++) {
 		sum = 0;
-		b1 = Math.pow(2, i * 10.0 / (snakePositions.length - 1));
+		b1 = Math.pow(2, i * 10.0 / (128 - 1));
 		
 		if(b1 > 511) b1 = 511;
 		if(b1 <= b0) b1 = b0 + 1;
@@ -74,50 +33,87 @@ function audiovisUpdate() {
 			b0 = b0 + 1;
 		}
 		y = (Math.sqrt(sum / log10(sc)) * 1.7 * SPECHEIGHT) - 4;
-		if(y < 0) y = 0;
+		if(y < 1) y = 1;
 		if(y > SPECHEIGHT) y = SPECHEIGHT;
-		
-		cPos = snakePositions[i];
-		
-		canvasCTX.beginPath();
-		canvasCTX.fillStyle = snakeColors[i];
-		canvasCTX.arc(cPos.x, cPos.y, y + 1, MathPI2, false);
-		canvasCTX.fill();
 		
 		snakeWidths[i] = y;
 	}
 	
-	cPos = snakePositions[0];
-	
-	if(cPos.x >= canvasMaxX)
-		targetDirX = -1;
-	else if(cPos.x < TURNSPACE)
-		targetDirX = 1;
-		
-	if(cPos.y >= canvasMaxY)
-		targetDirY = -1;
-	else if(cPos.y < TURNSPACE)
-		targetDirY = 1;
-	
-	speed = 1 + ((snakeWidths[0] / SPECHEIGHT) * 5);
+	var baseVol = (snakeWidths[0] / SPECHEIGHT);
+	var speed = 1 + (baseVol * 5);
 	var rotspeed = speed * 0.01;
 	
-	if(targetDirX != dirX && Math.abs(targetDirX - dirX) < rotspeed)
-		dirX = targetDirX;
-	else if(targetDirX > dirX)
-		dirX += rotspeed;
-	else if(targetDirX < dirX)
-		dirX -= rotspeed;
+	if(baseVol > 0.5)
+		snakeColors.unshift("rgb(255, " + Math.round(255 - ((baseVol - 0.5) * 512)) + ", 0)");
+	else if(baseVol == 0.5)
+		snakeColors.unshift("rgb(255, 255, 0)");
+	else
+		snakeColors.unshift("rgb(" + Math.round(baseVol * 512) + ", 255, 0)");
 		
-	if(targetDirY != dirY && Math.abs(targetDirY - dirY) < rotspeed)
-		dirY = targetDirY;	
-	else if(targetDirY > dirY)
-		dirY += rotspeed;
-	else if(targetDirY < dirY)
-		dirY -= rotspeed;
+	snakeColors.pop();
+
+	for(var i=0;i<allSnakeStates.length;i++) {
+		audiovisUpdateSnake(allSnakeStates[i], speed, rotspeed);
+	}
+}
+
+function audiovisUpdateSnake(cSnake, speed, rotspeed) {
+	var cPos, cPosNext;
+	for(var i=0;i<128;i++) {
+		cPos = cSnake.positions[i];
+		cPosNext = cSnake.positions[i + 1];
+		
+		canvasCTX.strokeStyle = snakeColors[i];
+		canvasCTX.lineWidth = snakeWidths[i];
+		canvasCTX.beginPath();
+		canvasCTX.moveTo(cPos.x, cPos.y);
+		canvasCTX.lineTo(cPosNext.x, cPosNext.y);
+		canvasCTX.stroke();
+	}
 	
-	snakePositions.unshift({x: cPos.x + (dirX * speed), y: cPos.y + (dirY * speed)});
-	snakePositions.pop();
+	cPos = cSnake.positions[0];
+	
+	var tDirX = Math.sin(cSnake.targetAngle);
+	var tDirY = Math.cos(cSnake.targetAngle);
+	
+	if((cPos.x >= canvasMaxX && tDirX > 0) || (cPos.x <= TURNSPACE && tDirX < 0)) {
+		tDirX *= -1;
+		cSnake.targetAngle = Math.asin(tDirX);
+		var ttDirY = Math.cos(cSnake.targetAngle);
+		if(tDirY != ttDirY) {
+			cSnake.targetAngle *= -1;
+		}
+	}
+	
+	if((cPos.y >= canvasMaxY && tDirY > 0) || (cPos.y <= TURNSPACE && tDirY < 0)) {
+		tDirY *= -1;
+		cSnake.targetAngle = Math.acos(tDirY);
+		var ttDirX = Math.sin(cSnake.targetAngle);
+		if(tDirX != ttDirX) {
+			cSnake.targetAngle *= -1;
+		}		
+	}
+	
+	var oldAngle = cSnake.angle;
+	
+	if(cSnake.targetAngle != cSnake.angle && Math.abs(cSnake.targetAngle - cSnake.angle) < rotspeed) {
+		cSnake.angle = cSnake.targetAngle;
+	} if(cSnake.targetAngle > cSnake.angle) {
+		cSnake.angle += rotspeed;
+	} else if(cSnake.targetAngle < cSnake.angle) {
+		cSnake.angle -= rotspeed;
+	}
+	
+	if(oldAngle != cSnake.angle) {
+		cSnake.dirX = Math.sin(cSnake.angle);
+		cSnake.dirY = Math.cos(cSnake.angle);
+	}
+	
+	cSnake.positions.unshift({
+		x: cPos.x + (cSnake.dirX * speed),
+		y: cPos.y + (cSnake.dirY * speed)
+	});
+	cSnake.positions.pop();
 }
 
 function audiovisLoaded() {
@@ -159,23 +155,41 @@ $(document).ready(function() {
 	
 	canvasCTX = canvasEle.getContext("2d");
 	
-	canvasCTX.fillStyle = "green";
+	canvasCTX.lineCap = "round";
 	
 	dancer = new Dancer();
 	
+	for(var j=0;j<4;j++) {
+		var cSnake = {
+			positions: new Array(),
+			targetAngle: (Math.random() * MathPI2)
+		};
+		
+		var bx = (Math.random() * (canvasMaxX - TURNSPACE)) + TURNSPACE;
+		var by = (Math.random() * (canvasMaxY - TURNSPACE)) + TURNSPACE;
+		
+		for(var i=0;i<129;i++) {
+			cSnake.positions.push({x: bx, y: by});
+			snakeWidths.push(0);
+		}
+		
+		allSnakeStates.push(cSnake);
+	}
+	
 	for(var i=0;i<128;i++) {
-		snakePositions.push({x: 0, y: 0});
-		var hslrgb = hslToRgb((i / 128), 1, 0.5);
-		snakeColors.push("rgb(" + hslrgb[0] + "," + hslrgb[1] + "," + hslrgb[2] + ")");
-		snakeWidths.push(0);
+		snakeColors.push("rgb(0, 255, 0)");
 	}
 	
 	var kick = dancer.createKick({
 		onKick: function() {
-			if(Math.random() > 0.5) {
-				targetDirY *= -1;
-			} else {
-				targetDirX *= -1;
+			snakeColors[0] = "rgb(255, 0, 255)";
+			
+			for(var j=0;j<allSnakeStates.length;j++) {
+				if(Math.random() > 0.5) {
+					allSnakeStates[j].targetDirY *= -1;
+				} else {
+					allSnakeStates[j].targetDirX *= -1;
+				}
 			}
 		},
 		offKick: function() { }
