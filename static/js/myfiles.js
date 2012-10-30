@@ -9,15 +9,24 @@ var dropZoneFileCount = 0;
 function handleDropFileSelect(evt) {
 	var dropZone = document.getElementById("uploader");
 	handleDragOver(evt);
-
-	var files = evt.originalEvent.dataTransfer.files;
 	
-	for(var i=0;i<files.length;i++) {
-		dropZoneUploads.push(files[i]);
+	var datTrans = evt.originalEvent.dataTransfer;
+
+	if(datTrans.files.length > 0) {
+		for(var i=0;i<files.length;i++) {
+			dropZoneUploads.push(files[i]);
+			dropZoneFileCount++;
+		}
+	} else if(datTrans.items.length > 0) {
+		dropZoneUploads.push(datTrans.getData("text/plain"));
 		dropZoneFileCount++;
 	}
-	
 	processNextFile();
+}
+
+function formatZeros(val, len) {
+	var val = val.toString();
+	return (new Array(len - val.length + 1).join("0"))+val;
 }
 
 function processNextFile() {
@@ -41,11 +50,26 @@ function processNextFile() {
 		dropZone.innerHTML = '<div class="container">Uploading<br />File: <span id="curFileName">N/A</span><div id="barUpload" style="margin-left: 50px; margin-right: 50px;" class="progress progress-striped"><div class="bar" style="width: 0%;"></div></div><br />Total: <div id="barUploadTotal" style="margin-left: 50px; margin-right: 50px;" class="progress progress-striped"><div class="bar" style="width: 0%;"></div></div></div>';
 	}
 	
-	var dropZoneFileReader = new FileReader();
-	dropZoneFileReader.onloadend = function (evt) {
-		fileUpload(theFile.name, evt.target.result);
-	};
-	dropZoneFileReader.readAsArrayBuffer(theFile);
+	console.log(typeof(theFile));
+	
+	if(typeof theFile == "Object") {
+		var dropZoneFileReader = new FileReader();
+		dropZoneFileReader.onloadend = function (evt) {
+			fileUpload(theFile.name, evt.target.result);
+		};
+		dropZoneFileReader.readAsArrayBuffer(theFile);
+	} else if(typeof theFile == "string") {
+		var t = new Date();
+		fileUpload("Paste-"+
+			formatZeros(t.getDate(), 2)+"."+
+			formatZeros(t.getMonth(), 2)+"."+
+			formatZeros(t.getYear(), 4)+" "+
+			formatZeros(t.getHours(), 2)+"."+
+			formatZeros(t.getMinutes(), 2)+"."+
+			formatZeros(t.getSeconds(), 2)+".txt",
+			theFile
+		);
+	}
 }
 
 function fileUpload(name, fileData) {	
@@ -395,6 +419,18 @@ function setupOptionMenu() {
 	});
 }
 
+function setupPasting() {
+	document.getElementsByTagName("body")[0].addEventListener("paste", function(ev) {
+		if(ev.clipboardData.items.length == 1) {
+			var contents = ev.clipboardData.getData("text/plain");
+
+			dropZoneUploads.push(contents);
+			dropZoneFileCount++;
+			processNextFile();
+		}
+	}, false);
+}
+
 $(document).ready(function() {
 	setupHeadUtils();
 	
@@ -402,6 +438,8 @@ $(document).ready(function() {
 
 	setupDropZone();
 	setupFileDragging();
+	
+	setupPasting();
 	
 	pushHandlers.push(function(action, file) {
 		if(action == '+') {
