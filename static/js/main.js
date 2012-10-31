@@ -43,7 +43,7 @@ function formatSize(size) {
 	return "WTF?!";
 }
 
-$(document).ready(function(){
+function docReady() {
 	var eles = document.getElementsByTagName("pre");
 	for(i=0; i < eles.length; i++) {
 		var ele = eles[i];
@@ -57,12 +57,16 @@ $(document).ready(function(){
 			loadDone();
 		});
 	}
-
+	
 	if(loadingEles <= 0) {
 		loadingEles = 1;
 		loadDone();
 	}
-	
+}
+
+$(document).ready(function(){
+	docReady();
+
 	if(!PUSH_CHANNEL)
 		return;
 	
@@ -77,6 +81,11 @@ $(document).ready(function(){
 	var last_modified = "Thu, 1 Jan 1970 00:00:00 GMT";
 	var etag = "0";
 	
+	$("a:not([href=#])").click(function(ev) {
+		preventDefault(ev);
+		loadPage(ev.currentTarget.href);
+	});
+	
 	(function files_poll(){
 		$.ajax({ url: "/api/longpoll?"+PUSH_CHANNEL,
 			beforeSend: function(xhr) {
@@ -86,8 +95,6 @@ $(document).ready(function(){
 			success: function(data, textStatus, xhr) {
 				etag = xhr.getResponseHeader('Etag');
 				last_modified = xhr.getResponseHeader('Last-Modified');
-			
-				console.log(data);
 			
 				var cmds = data.split("\n");
 				

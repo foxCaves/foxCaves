@@ -1,13 +1,14 @@
+<% if not G.ngx.var.http_X_Is_Js_Request then %>
 <!DOCTYPE html>
 <html>
 	<head>
 		<link rel="stylesheet" type="text/css" href="https://fox.gy/static/css/bootstrap.css?v=2" />
 		<link rel="stylesheet" type="text/css" href="https://fox.gy/static/css/bootstrap-progressbar.css" />
-		<link rel="stylesheet" type="text/css" href="https://fox.gy/static/css/main.css?v=8" />
+		<link rel="stylesheet" type="text/css" href="https://fox.gy/static/css/main.css?v=9" />
 		<link rel="stylesheet" type="text/css" href="https://fox.gy/static/css/prettify.css" />
 
 		<script src="https://fox.gy/static/js/jquery.min.js" type="text/javascript"></script>
-		<script src="https://fox.gy/static/js/init.min.js" type="text/javascript"></script>
+		<script src="https://fox.gy/static/js/init.min.js?v=5" type="text/javascript"></script>
 		<script type="text/javascript">var _gaq=_gaq||[];_gaq.push(['_setAccount','UA-9434636-6']);_gaq.push(['_setDomainName','foxcav.es']);_gaq.push(['_trackPageview']);(function(){var ga=document.createElement('script');ga.type='text/javascript';ga.async=true;ga.src=('https:'==document.location.protocol?'https://ssl':'http://www')+'.google-analytics.com/ga.js';var s=document.getElementsByTagName('script')[0];s.parentNode.insertBefore(ga,s);})();</script>
 		
 		<title><%= MAINTITLE %> - foxCaves</title>
@@ -18,7 +19,7 @@
 				<div class="container">
 					<a class="brand" href="/">foxCaves</a>
 					<div class="nav-collapse">
-						<ul class="nav">
+						<ul class="nav" id="nav-main">
 							<%= ADDLINKS %>
 						</ul>
 						<ul class="nav pull-right">
@@ -62,7 +63,7 @@ local usedperc = G.math.ceil((usedbytes / totalbytes) * 100) %>
 				<div id="head-util-container" style="margin: auto; display:none;"></div>
         	</div>
 		</div>
-		<div class="container">
+		<div class="container" id="main-container">
+<% end %>
 			<br />
-			<%+ advert %>
 			<%= MESSAGE %>

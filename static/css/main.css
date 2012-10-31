@@ -246,6 +246,13 @@ select {
 	min-width: 40px;
 }
 
+#main-container {
+	-moz-transition: opacity 0.1s ease;
+	-webkit-transition: opacity 0.1s ease;
+	-o-transition: opacity 0.1s ease;
+	transition: opacity 0.1s ease;
+}
+
 #head-util-container {
 	text-align: center;
 	padding: 20px;
@@ -265,4 +272,8 @@ video {
 #livedraw {
 	background-repeat: no-repeat;
 	background-size: contain;
+}
+
+.btn {
+	box-shadow 0.2s linear;
 }
