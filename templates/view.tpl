@@ -70,7 +70,7 @@
 			<source src="https://fox.gy/f<%= RAWNAME %>" type="<%= MIMETYPES[FILE.extension] %>" />
 			Your browser is too old.
 		</audio>
-		<a href="" onclick="return dancer_play();">Play</a>
+		<a href="#" onclick="return dancer_play();">Play</a>
 		<canvas style="position: fixed; z-index: 20000; top: 0; left: 0; pointer-events: none;" id="audiovis"></canvas>
 		<script type="text/javascript" src="https://fox.gy/static/js/dancer.js"></script>
 		<script type="text/javascript" src="https://fox.gy/static/js/audiovis.js?v=4"></script>
