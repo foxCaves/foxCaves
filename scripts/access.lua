@@ -115,7 +115,7 @@ if cookies then
 		end
 	end
 
-	auth = ngx.re.match(cookies, "^(.*;\\s)?loginkey=([0-9]+)\\.([a-zA-Z0-9+/=]+)(\\s;.*)?$", "o")
+	auth = ngx.re.match(cookies, "^(.*; *)?loginkey=([0-9]+)\\.([a-zA-Z0-9+/=]+)( *;.*)?$", "o")
 	if auth then
 		if ngx.ctx.user then
 			ngx.ctx.user.remember_me = true
