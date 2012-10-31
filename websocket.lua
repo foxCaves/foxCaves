@@ -14,10 +14,35 @@ local lfs = require("lfs")
 lfs.chdir("/var/www/doripush/")
 local websockets = require("websockets")
 
-local luasql = require("luasql.mysql")
-local dbenv = luasql.mysql()
-dofile("scripts/dbconfig.lua")
-local database = dbenv:connect(dbconfig.database, dbconfig.user, dbconfig.password)
+local database = {}
+do
+	local luasql = require("luasql.mysql")
+	
+	local dbenv = luasql.mysql()
+	dofile("scripts/dbconfig.lua")
+	local dbconfig = dbconfig
+	local realdatabase = dbenv:connect(dbconfig.database, dbconfig.user, dbconfig.password)
+	
+	local reconntries = 0
+	function database:execute(...)
+		local ret = realdatabase:execute(...)
+		if not ret then
+			if reconntries > 3 then
+				reconntries = 0
+				error("Sorry, database error")
+			end
+			reconntries = reconntries + 1
+			database = dbenv:connect(dbconfig.database, dbconfig.user, dbconfig.password)
+			return self:execute(...)
+		else
+			reconntries = 0
+			return ret
+		end
+	end
+	function database:escape(...)
+		return realdatabase:escape(...)
+	end
+end
 dbconfig = nil
 
 local function explode(div,str) -- credit: http://richard.warburton.it
