@@ -6,13 +6,15 @@ var dropZoneUploads = new Array();
 var dropZoneFileNumber = 0;
 var dropZoneFileCount = 0;
 
+
 function handleDropFileSelect(evt) {
 	var dropZone = document.getElementById("uploader");
 	handleDragOver(evt);
 	
 	var datTrans = evt.originalEvent.dataTransfer;
 
-	if(datTrans.files.length > 0) {
+	if(datTrans.files.length > 0) { 
+		var files = datTrans.files;
 		for(var i=0;i<files.length;i++) {
 			dropZoneUploads.push(files[i]);
 			dropZoneFileCount++;
@@ -50,9 +52,7 @@ function processNextFile() {
 		dropZone.innerHTML = '<div class="container">Uploading<br />File: <span id="curFileName">N/A</span><div id="barUpload" style="margin-left: 50px; margin-right: 50px;" class="progress progress-striped"><div class="bar" style="width: 0%;"></div></div><br />Total: <div id="barUploadTotal" style="margin-left: 50px; margin-right: 50px;" class="progress progress-striped"><div class="bar" style="width: 0%;"></div></div></div>';
 	}
 	
-	console.log(typeof(theFile));
-	
-	if(typeof theFile == "Object") {
+	if(typeof theFile == "object") {
 		var dropZoneFileReader = new FileReader();
 		dropZoneFileReader.onloadend = function (evt) {
 			fileUpload(theFile.name, evt.target.result);
@@ -431,7 +431,7 @@ function setupPasting() {
 	}, false);
 }
 
-$(document).ready(function() {
+//$(document).ready(function() {
 	setupHeadUtils();
 	
 	setupOptionMenu();
@@ -454,4 +454,4 @@ $(document).ready(function() {
 		}
 		return false;
 	});
-});
+//});
