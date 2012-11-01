@@ -81,10 +81,11 @@ $(document).ready(function(){
 	var last_modified = "Thu, 1 Jan 1970 00:00:00 GMT";
 	var etag = "0";
 	
+	/*TODO: Fix history API with this
 	$("a:not([href=#])").click(function(ev) {
 		preventDefault(ev);
 		loadPage(ev.currentTarget.href);
-	});
+	});*/
 	
 	(function files_poll(){
 		$.ajax({ url: "/api/longpoll?"+PUSH_CHANNEL,

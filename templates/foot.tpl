@@ -37,7 +37,7 @@ if not G.ngx.var.http_X_Is_Js_Request then %>
 		<% if G.ngx.ctx.user then %><script type="text/javascript">var PUSH_CHANNEL = "<%= G.ngx.ctx.user.id %>_<%= G.ngx.ctx.user.pushchan %>";</script><% end %>
 		<script src="/static/js/bootstrap.min.js" type="text/javascript"></script>
 		<script src="/static/js/prettify.min.js" type="text/javascript"></script>
-		<script src="/static/js/main.min.js?v=15" type="text/javascript"></script>
+		<script src="/static/js/main.min.js?v=16" type="text/javascript"></script>
 	</body>
 </html>
 <% else %>
