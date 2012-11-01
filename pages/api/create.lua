@@ -1,5 +1,6 @@
 dofile("/var/www/doripush/scripts/global.lua")
 dofile("scripts/api_login.lua")
+if not ngx.ctx.user then return end
 
 local database = ngx.ctx.database
 

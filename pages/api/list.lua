@@ -1,5 +1,6 @@
 dofile("/var/www/doripush/scripts/global.lua")
 dofile("scripts/api_login.lua")
+if not ngx.ctx.user then return end
 
 if ngx.var.query_string == "idonly" then
 	local res = ngx.ctx.database:query("SELECT fileid FROM files WHERE user = '"..ngx.ctx.user.id.."' ORDER BY time DESC;")
