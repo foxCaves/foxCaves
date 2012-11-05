@@ -73,7 +73,7 @@
 		<a href="#" onclick="return dancer_play();">Play</a>
 		<canvas style="position: fixed; z-index: 20000; top: 0; left: 0; pointer-events: none;" id="audiovis"></canvas>
 		<script type="text/javascript" src="https://fox.gy/static/js/dancer.js"></script>
-		<script type="text/javascript" src="https://fox.gy/static/js/audiovis.js?v=4"></script>
+		<script type="text/javascript" src="https://fox.gy/static/js/audiovis.js"></script>
 	<% elseif FILE.type == FILE_TYPE_IFRAME then %>
 		<iframe src="https://fox.gy/f<%= RAWNAME %>" style="min-width:400px;width:100%;min-height:600px;height:100%;border:3px solid #B333E5;box-sizing:border-box;" type="<%= MIMETYPES[FILE.extension] %>"> 
 		</iframe>

@@ -37,7 +37,7 @@ if not G.ngx.var.http_X_Is_Js_Request then %>
 		<script type="text/javascript">var PUSH_CHANNEL = "<% if G.ngx.ctx.user then %><%= G.ngx.ctx.user.id %>_<%= G.ngx.ctx.user.pushchan %><% end %>";</script>
 		<script src="https://fox.gy/static/js/bootstrap.min.js" type="text/javascript"></script>
 		<script src="https://fox.gy/static/js/prettify.min.js" type="text/javascript"></script>
-		<script src="https://fox.gy/static/js/main.min.js?v=19" type="text/javascript"></script>
+		<script src="https://fox.gy/static/js/main.min.js" type="text/javascript"></script>
 	</body>
 </html>
 <% else %>
