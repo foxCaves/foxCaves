@@ -20,5 +20,4 @@
 	</div>
 	<script type="text/javascript">var SESSIONID = "<% if G.ngx.ctx.user then %><%= G.ngx.ctx.user.sessionid %><% else %>GUEST<% end %>"; var LIVEDRAW_FILEID = "<%= FILE.fileid %>"; var LIVEDRAW_SID = "<%= LDSID %>";</script>
 	<script type="text/javascript" src="https://fox.gy/static/js/live.js?v=11"></script>
-	<%+ advert %>
 <%+ foot %>

@@ -82,5 +82,4 @@
 	<% end %>
 	</div>
 	<script type="text/javascript" src="https://fox.gy/static/js/view.min.js"></script>
-	<%+ advert %>
 <%+ foot %>

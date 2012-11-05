@@ -25,7 +25,7 @@ local function s3_request(file, method, content_type, cache_control, body, conte
 		method = method,
 		copy_all_vars = false,
 		share_all_vars = false,
-		body = body or ""
+		body = body
 	})
 	
 	if res.status ~= 200 and res.status ~= 204 then
@@ -40,6 +40,9 @@ local function s3_request(file, method, content_type, cache_control, body, conte
 	end
 	
 	return res
+end
+function get_s3_request()
+	return s3_request
 end
 
 local function file_fullread(filename)
