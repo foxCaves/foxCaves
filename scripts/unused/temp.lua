@@ -1,4 +1,4 @@
-dofile("/var/www/doripush/scripts/global.lua")
+dofile("/var/www/foxcaves/scripts/global.lua")
 dofile("scripts/fileapi.lua")
 
 --[[local files = ngx.ctx.database:query("SELECT * FROM files")

@@ -1,4 +1,4 @@
-dofile("/var/www/doripush/scripts/global.lua")
+dofile("/var/www/foxcaves/scripts/global.lua")
 
 local name = ngx.var.REQUEST_URI
 local nameregex = ngx.re.match(name, "download/([a-zA-Z0-9]*)\\.", "o")

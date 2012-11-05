@@ -1,4 +1,4 @@
-lfs.chdir("/var/www/doripush/")
+lfs.chdir("/var/www/foxcaves/")
 
 ngx.ctx.req_starttime = socket.gettime()
 

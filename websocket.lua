@@ -11,7 +11,7 @@ local string_format = string.format
 local time = os.time
 
 local lfs = require("lfs")
-lfs.chdir("/var/www/doripush/")
+lfs.chdir("/var/www/foxcaves/")
 local websockets = require("websockets")
 
 local database = {}

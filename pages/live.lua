@@ -1,4 +1,4 @@
-dofile("/var/www/doripush/scripts/global.lua")
+dofile("/var/www/foxcaves/scripts/global.lua")
 --if not ngx.ctx.user then return ngx.redirect("/login") end
 
 local name = ngx.var.REQUEST_URI

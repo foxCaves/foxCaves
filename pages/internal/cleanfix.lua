@@ -1,4 +1,4 @@
-dofile("/var/www/doripush/scripts/global.lua")
+dofile("/var/www/foxcaves/scripts/global.lua")
 
 if ngx.ctx.user.id ~= 1 then
 	ngx.status = 403

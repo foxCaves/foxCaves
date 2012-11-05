@@ -1,6 +1,6 @@
 if not ngx then
 	local lfs = require("lfs")
-	lfs.chdir("/var/www/doripush")
+	lfs.chdir("/var/www/foxcaves")
 end
 
 local function s3_request(file, method, content_type, cache_control, body, content_disposition)
