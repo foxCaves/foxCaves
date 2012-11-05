@@ -67,7 +67,7 @@ function docReady() {
 $(document).ready(function(){
 	docReady();
 
-	if(!PUSH_CHANNEL)
+	if(PUSH_CHANNEL == "")
 		return;
 	
 	pushHandlers.push(function(action, usedbytes) {

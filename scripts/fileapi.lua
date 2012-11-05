@@ -3,30 +3,55 @@ if not ngx then
 	lfs.chdir("/var/www/doripush")
 end
 
-dofile("scripts/awsconfig.lua")
-local AWS_CLIENT = require 'Spore'.new_from_spec('scripts/amazons3.json', {
-	base_url = AWS_S3_ENDPOINT,
-})
-AWS_CLIENT:enable('Parameter.Default', {
-	bucket = AWS_S3_BUCKET,
-})
-AWS_CLIENT:enable('Auth.AWS', {
-	aws_access_key = AWS_ACCESS_KEY,
-	aws_secret_key = AWS_SECRET_KEY
-})
-AWS_S3_ENDPOINT = nil
-AWS_S3_BUCKET = nil
-AWS_ACCESS_KEY = nil
-AWS_SECRET_KEY = nil
+local function s3_request(file, method, content_type, cache_control, body, content_disposition)
+	method = method or ngx.HTTP_GET
+	local method_str
+	if method == ngx.HTTP_GET then
+		method_str = "GET"
+	elseif method == ngx.HTTP_PUT then
+		method_str = "PUT"
+	elseif method == ngx.HTTP_DELETE then
+		method_str = "DELETE"
+	end
+	
+	local res = ngx.location.capture("/scripts/amazon_s3", {
+		ctx = {
+			amz_content_type = (content_type or ""),
+			amz_content_disposition = (content_disposition or ""),
+			amz_cache_control = (cache_control or ""),
+			amz_key = file,
+			amz_request_method = method_str
+		},
+		method = method,
+		copy_all_vars = false,
+		share_all_vars = false,
+		body = body or ""
+	})
+	
+	if res.status ~= 200 and res.status ~= 204 then
+		local err = ""
+		for k,v in pairs(res) do
+			err = err .. "\n" .. k .. " => " .. tostring(v)
+		end
+		for k,v in pairs(res.header) do
+			err = err .. "\nHEAD_" .. k .. " => " .. tostring(v)
+		end
+		error("Request failed: "..err)
+	end
+	
+	return res
+end
 
-function file_get_awsclient()
-	return AWS_CLIENT
+local function file_fullread(filename)
+	local fh = io.open(filename, "r")
+	if not fh then return "" end
+	local cont = fh:read("*all")
+	fh:close()
+	return cont
 end
 
 function file_manualdelete(file)
-	local res = AWS_CLIENT:delete_object({
-		object = file
-	})
+	s3_request(file, ngx.HTTP_DELETE)
 end
 
 function file_delete(fileid, user)
@@ -38,13 +63,9 @@ function file_delete(fileid, user)
 	file = file[1]
 	if user and file.user ~= user then return false end
 
-	local res = AWS_CLIENT:delete_object({
-		object = "files/" .. file.fileid .. file.extension
-	})
+	file_manualdelete("files/" .. file.fileid .. file.extension)
 	if file.thumbnail ~= "" then
-		local res = AWS_CLIENT:delete_object({
-			object = "thumbs/" .. file.thumbnail
-		})
+		file_manualdelete("thumbs/" .. file.thumbnail)
 	end
 
 	database:query("DELETE FROM files WHERE fileid = '"..id.."'")
@@ -76,22 +97,24 @@ end
 
 function file_upload(fileid, filename, extension, thumbnail, filetype, thumbtype)
 	local fullname = fileid .. extension
-
-	local res = AWS_CLIENT:put_object({
-		object = "files/" .. fullname,
-		payload = "@files/" .. fullname,
-		["content-type"] = filetype or "application/octet-stream",
-		["content-disposition"] = 'inline; filename="'..filename:gsub('"',"'")..'"',
-		["cache-control"] = "public, max-age=86400"
-	})
+	
+	s3_request(
+		"files/"..fullname,
+		ngx.HTTP_PUT,
+		filetype or "application/octet-stream",
+		"public, max-age=86400",
+		file_fullread("files/" .. fullname),
+		'inline; filename="'..filename:gsub('"',"'")..'"'
+	)
 
 	if thumbnail and thumbnail ~= "" then
-		local res = AWS_CLIENT:put_object({
-			object = "thumbs/" .. thumbnail,
-			payload = "@thumbs/" .. thumbnail,
-			["content-type"] = thumbtype or "application/octet-stream",
-			["cache-control"] = "public, max-age=86400"
-		})
+		s3_request(
+			"thumbs/"..thumbnail,
+			ngx.HTTP_PUT,
+			thumbtype or "application/octet-stream",
+			"public, max-age=86400",
+			file_fullread("thumbs/" .. thumbnail)
+		)
 		os.remove("thumbs/" .. thumbnail)
 	end
 
