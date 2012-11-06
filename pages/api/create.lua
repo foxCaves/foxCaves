@@ -56,7 +56,7 @@ if (not filesize) or filesize <= 0 then
 	return ngx.eof()
 end
 
-if ngx.ctx.user.usedbytes + filesize > ngx.ctx.user.totalbytes + ngx.ctx.user.bonusbytes then
+if ngx.ctx.user.usedbytes + filesize > ngx.ctx.user.totalbytes then
 	ngx.status = 402
 	ngx.print("Overquota")
 	return ngx.eof()

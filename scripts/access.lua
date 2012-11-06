@@ -65,6 +65,7 @@ function ngx.ctx.login(username_or_id, password, nosession, login_with_id)
 			else
 				result.totalbytes = 268435456
 			end
+			result.totalbytes = result.totalbytes + result.bonusbytes
 			ngx.ctx.user = result
 			
 			return ngx.ctx.LOGIN_SUCCESS
