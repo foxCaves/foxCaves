@@ -1,19 +1,7 @@
 <br /><br />
 <%
-local fcshared = G.ngx.shared.foxcaves
-local filecount = 0 or fcshared:get("filecount")
-local usercount = 0 or fcshared:get("usercount")
-if (not filecount) or (not usercount) then
-	local database = G.ngx.ctx.database
-	if not filecount then
-		filecount = database:query("SELECT COUNT(fileid) AS c FROM files")[1].c
-		fcshared:set("filecount", filecount, 60)
-	end
-	if not usercount then
-		usercount = database:query("SELECT COUNT(id) AS c FROM users")[1].c
-		fcshared:set("usercount", usercount, 60)
-	end
-end
+local filecount = 0
+local usercount = 0
 if not G.ngx.var.http_X_Is_Js_Request then %>
 		</div>
 		<div class="navbar navbar-fixed-bottom">
@@ -27,7 +15,8 @@ if not G.ngx.var.http_X_Is_Js_Request then %>
 						</ul>
 						<ul class="nav pull-right">
 							<li>
-								<a>Currently powering <span id="filecount"><%= filecount %></span> files and <span id="usercount"><%= usercount %></span> users</a>
+								<a>foxCaves &copy; Doridian 2012</a>
+								<!--<a>Currently powering <span id="filecount"><%= filecount %></span> files and <span id="usercount"><%= usercount %></span> users</a>-->
 							</li>
 						</ul>
 					</div>
