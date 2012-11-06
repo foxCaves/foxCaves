@@ -1,5 +1,5 @@
 <%+ head %>
-<% local RAWNAME = FILE.fileid .. FILE.extension %>
+<% local RAWNAME = FILEID .. FILE.extension %>
 	<h3>Live drawing file: <%= FILE.name %></h3>
 	<div class="well well-small" style="text-align: left;">
 		<form class="form-horizontal">
@@ -8,7 +8,7 @@
 					Invite others to this livedraw:
 				</label>
 				<div class="controls">
-					<input readonly="readonly" type="text" value="https://fox.gy/l<%= FILE.fileid %>?<%= LDSID %>" />
+					<input readonly="readonly" type="text" value="https://fox.gy/l<%= FILEID %>?<%= LDSID %>" />
 				</div>
 			</div>
 		</form>
@@ -18,6 +18,6 @@
 	<div id="livedraw-wrapper">
 		<canvas id="livedraw" data-file-url="/f/<%= RAWNAME %>"></canvas>
 	</div>
-	<script type="text/javascript">var SESSIONID = "<% if G.ngx.ctx.user then %><%= G.ngx.ctx.user.sessionid %><% else %>GUEST<% end %>"; var LIVEDRAW_FILEID = "<%= FILE.fileid %>"; var LIVEDRAW_SID = "<%= LDSID %>";</script>
+	<script type="text/javascript">var SESSIONID = "<% if G.ngx.ctx.user then %><%= G.ngx.ctx.user.sessionid %><% else %>GUEST<% end %>"; var LIVEDRAW_FILEID = "<%= FILEID %>"; var LIVEDRAW_SID = "<%= LDSID %>";</script>
 	<script type="text/javascript" src="https://fox.gy/static/js/live.js"></script>
 <%+ foot %>

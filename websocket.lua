@@ -5,6 +5,7 @@ local setmetatable = setmetatable
 local print = print
 local error = error
 local pcall = pcall
+local G = _G
 local table_insert = table.insert
 local table_concat = table.concat
 local string_format = string.format
@@ -13,37 +14,44 @@ local time = os.time
 local lfs = require("lfs")
 lfs.chdir("/var/www/foxcaves/")
 local websockets = require("websockets")
+local redis = require("redis")
+lfs = nil
 
-local database = {}
+dofile("scripts/dbconfig.lua")
+
+module("liveedit_websocket")
+
+local database
 do
-	local luasql = require("luasql.mysql")
-	
-	local dbenv = luasql.mysql()
-	dofile("scripts/dbconfig.lua")
-	local dbconfig = dbconfig
-	local realdatabase = dbenv:connect(dbconfig.database, dbconfig.user, dbconfig.password)
+	local dbip = G.dbip
+	local dbport = G.dbport
+	local dbpass = G.dbpass
+	local dbkeys = G.dbkeys
+
+	database = { ping = function() return false end }
 	
 	local reconntries = 0
-	function database:execute(...)
-		local ret = realdatabase:execute(...)
+	function database_ping()
+		local ret = database:ping()
 		if not ret then
 			if reconntries > 3 then
 				reconntries = 0
 				error("Sorry, database error")
 			end
 			reconntries = reconntries + 1
-			database = dbenv:connect(dbconfig.database, dbconfig.user, dbconfig.password)
-			return self:execute(...)
+			database = redis.connect(dbip, dbport)
+			database.KEYS = dbkeys
+			database:auth(dbpass)
+			print("Redis (re)connected successfully!")
+			return database_ping()
 		else
 			reconntries = 0
 			return ret
 		end
 	end
-	function database:escape(...)
-		return realdatabase:escape(...)
-	end
 end
-dbconfig = nil
+G = nil
+database_ping()
 
 local function explode(div,str) -- credit: http://richard.warburton.it
 	local pos,arr = 0,{}
@@ -75,6 +83,9 @@ local EVENT_LEAVE = "l"
 local EVENT_ERROR = "e"
 local EVENT_IMGBURST = "i"
 
+local cEVENT_JOIN = EVENT_JOIN:byte()
+local cEVENT_MOUSE_CURSOR = EVENT_MOUSE_CURSOR:byte()
+
 local valid_brushes = {
 	brush = true,
 	circle = true,
@@ -83,7 +94,7 @@ local valid_brushes = {
 	erase = true
 }
 
-local chr_a,chr_f,chr_0,chr_9 = string.byte("af09",1,4)
+local chr_a,chr_f,chr_0,chr_9 = ("af09"):byte(1,4)
 
 local event_handlers = {
 	[EVENT_BRUSH] = function(user, data)
@@ -143,20 +154,20 @@ local event_handlers = {
 			error("Missing payload data")
 		end
 	
+		database_ping() --Ensure database exists
+		
 		local tempvar = data[1]
 		if tempvar ~= "GUEST" then
 			--Session => User
-			local cursor = database:execute(string_format(
-				"SELECT u.username AS name FROM users AS u, sessions AS s WHERE s.id = '%s' AND u.id = s.user AND u.active = 1 LIMIT 0,1",
-				database:escape(tempvar)
-			))
-			local result = {}
-			cursor:fetch(result, "a")
-			cursor:close()
-			if not (result and result.name) then
+			local result = database:get(database.KEYS.SESSIONS..tempvar)
+			if not result then
+				error("Invalid session")
+			end
+			result = database:hget(database.KEYS.USERS..result, "username")
+			if not result then
 				error("Invalid user")
 			end
-			user.name = result.name
+			user.name = result
 			--End session => User
 		end
 	
@@ -166,14 +177,8 @@ local event_handlers = {
 		user.ws_data = ws_data_global[user.globkey]
 		if not user.ws_data then
 			--Sanity check for the FileID
-			local result = {}
-			local cursor = database:execute(string_format(
-				"SELECT f.type, u.username, u.pro_expiry FROM files AS f, users AS u WHERE f.fileid = '%s' AND f.user = u.id LIMIT 0,1",
-				database:escape(tempvar)
-			))
-			cursor:fetch(result, "a")
-			cursor:close()
-			if (not result) or tonumber(result.type) ~= 1 or tonumber(result.pro_expiry) < time()  then
+			local result = database:hget(database.KEYS.FILES..tempvar, "type")
+			if (not result) or tonumber(result) ~= 1  then
 				error("Invalid FileID")
 			end
 			--End sanity check
@@ -273,6 +278,7 @@ function USERMETA:kick()
 	
 	if self.socket then
 		self.socket:close(0)
+		self.socket = nil
 	end
 	
 	self.id = nil
@@ -288,8 +294,6 @@ function USERMETA:broadcast_others(data, nohistory)
 	end
 end
 
-local cEVENT_JOIN = EVENT_JOIN:byte()
-local cEVENT_MOUSE_CURSOR = EVENT_MOUSE_CURSOR:byte()
 function USERMETA:event_received(ws, rawdata)
 	self.socket = ws
 

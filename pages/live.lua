@@ -31,17 +31,12 @@ if file.type ~= 1 then
 	return ngx.eof()
 end
 
-if file.pro_expiry < ngx.time() then
-	ngx.status = 403
-	ngx.print("Author of file is not pro")
-	return ngx.eof()
-end
-
 dofile("scripts/navtbl.lua")
 ngx.print(load_template("live", {
 	MAINTITLE = "Live drawing file - " .. file.name,
 	ADDLINKS = build_nav(navtbl),
 	FILE = file,
+	FILEID = nameregex,
 	LDSID = sid
 }))
 ngx.eof()

@@ -31,6 +31,8 @@ database.KEYS = dbkeys
 dbkeys = nil
 dbsocket = nil
 dbpass = nil
+dbip = nil
+dbport = nil
 
 database.hgetall_real = database.hgetall
 function database:hgetall(key)
