@@ -35,8 +35,8 @@ if args and args.old_password then
 			elseif emailcheck == ngx.ctx.EMAIL_TAKEN then
 				message = "<div class='alert alert-error'>E-Mail already taken</div>"
 			else
-				database:sadd(database.KEYS.EMAILS, args.email)
-				database:srem(database.KEYS.EMAILS, ngx.ctx.user.email)
+				database:sadd(database.KEYS.EMAILS, args.email:lower())
+				database:srem(database.KEYS.EMAILS, ngx.ctx.user.email:lower())
 				database:hset(database.KEYS.USERS..ngx.ctx.user.id, "email", args.email)
 				message = "<div class='alert alert-success'>E-Mail changed</div>"
 				ngx.ctx.user.email = args.email
