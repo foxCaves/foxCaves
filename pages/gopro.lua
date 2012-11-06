@@ -6,8 +6,8 @@ local database = ngx.ctx.database
 local invoiceid
 for i=1,10 do
 	invoiceid = randstr(64)
-	local res = database:query("SELECT 1 FROM usedinvoices WHERE id = '"..invoiceid.."'")
-	if (not res) or (not res[1]) then
+	local res = database:sismember(database.KEYS.USEDINVOICES, invoiceid)
+	if (not res) or (res == ngx.null) then
 		break
 	else
 		invoiceid = nil

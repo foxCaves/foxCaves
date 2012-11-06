@@ -1,28 +1,32 @@
 dofile("/var/www/foxcaves/scripts/global.lua")
 if ngx.ctx.user then return ngx.redirect("/user") end
-
 local database = ngx.ctx.database
 
-local res = database:query("SELECT id, user, action FROM emailkeys WHERE id = '"..database:escape(ngx.var.query_string).."'")
+local codeID = database.KEYS.EMAILKEYS..ngx.var.query_string
+local res = database:hgetall(codeID)
 
 local actiontitle, message
+if res and res.user and res ~= ngx.null then
+	local userID = database.KEYS.USERS..res.user
 
-if res and res[1] then
-	res = res[1]
+	local userdata = database:hgetall(userID)
 
 	if res.action == "activation" then
 		actiontitle = "Activation"
-		message = "<div class='alert alert-success'>Your account has been activated. Please <a href='/login'>login</a> now.</div>"
-		database:query("UPDATE users SET active = 1 WHERE id = '"..res.user.."' AND active = 0")
+		
+		if userdata.active ~= "0" then
+			message = "<div class='alert alert-success'>Your account was already active or is banned</div>"
+		else		
+			message = "<div class='alert alert-success'>Your account has been activated. Please <a href='/login'>login</a> now.</div>"
+			database:hset(userID, "active", 1)
+		end
 	elseif res.action == "forgotpwd" then
 		actiontitle = "Forgot password"
 		message = "<div class='alert alert-success'>A new password has been sent to you. Once you received it, please <a href='/login'>login</a>.</div>"
 
-		local userdata = database:query("SELECT * FROM users WHERE id = '"..res.user.."'")[1]
-
 		local newPassword = randstr(16)
 
-		database:query("UPDATE users SET password = '"..database:escape(ngx.hmac_sha1(userdata.username, newPassword)).."' WHERE id = '"..res.user.."'")
+		database:hset(userID, "password", ngx.hmac_sha1(userdata.username, newPassword))
 
 		local email = "Hello, "..userdata.username.."!\n\nHere is your new password:\n"..newPassword.."\nPlease log in at https://foxcav.es/login and change it as soon as possible.\n\nKind regards,\nfoxCaves Support"
 		mail(userdata.email, "foxCaves - New password", email, "noreply@foxcav.es")
@@ -30,7 +34,7 @@ if res and res[1] then
 		ngx.ctx.make_new_login_key(userdata)
 	end
 
-	database:query("DELETE FROM emailkeys WHERE id = '"..database:escape(res.id).."'")
+	--database:del(codeID)
 else
 	actiontitle = "Invalid code"
 	message = "<div class='alert alert-error'>Sorry, but your code is invalid or expired</div>"

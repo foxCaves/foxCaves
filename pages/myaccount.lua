@@ -20,7 +20,7 @@ if args and args.old_password then
 			message = "<div class='alert alert-error'>Password and confirmation do not match</div>"
 		else
 			local newpw = ngx.hmac_sha1(ngx.ctx.user.username, args.password)
-			database:query("UPDATE users SET password = '"..database:escape(newpw).."' WHERE id = '"..ngx.ctx.user.id.."'")
+			database:hset(database.KEYS.USERS..ngx.ctx.user.id, "password", newpw)
 			message = "<div class='alert alert-success'>Password changed</div>"
 			ngx.ctx.user.password = newpw
 			ngx.ctx.make_new_login_key()
@@ -35,7 +35,9 @@ if args and args.old_password then
 			elseif emailcheck == ngx.ctx.EMAIL_TAKEN then
 				message = "<div class='alert alert-error'>E-Mail already taken</div>"
 			else
-				database:query("UPDATE users SET email = '"..database:escape(args.email).."' WHERE id = '"..ngx.ctx.user.id.."'")		
+				database:sadd(database.KEYS.EMAILS, args.email)
+				database:srem(database.KEYS.EMAILS, ngx.ctx.user.email)
+				database:hset(database.KEYS.USERS..ngx.ctx.user.id, "email", args.email)
 				message = "<div class='alert alert-success'>E-Mail changed</div>"
 				ngx.ctx.user.email = args.email
 			end

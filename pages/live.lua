@@ -17,16 +17,13 @@ if (not sid) or sid == "" then
 	return ngx.redirect("/live/"..nameregex.."?"..randstr(10))
 end
 
-local database = ngx.ctx.database
-local file = database:query(
-	"SELECT f.fileid, f.thumbnail, f.type, f.name, u.username, u.pro_expiry, f.time, f.extension, f.size FROM files AS f, users AS u WHERE f.fileid = '"..nameregex.."' AND f.user = u.id LIMIT 0,1"
-)
-if (not file) or (not file[1])  then
+dofile("scripts/fileapi.lua")
+local file = file_get(nameregex)
+if not file  then
 	ngx.status = 404
 	ngx.print("File not found")
 	return ngx.eof()
 end
-file = file[1]
 
 if file.type ~= 1 then
 	ngx.status = 400

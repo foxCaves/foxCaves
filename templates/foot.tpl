@@ -1,8 +1,8 @@
 <br /><br />
 <%
 local fcshared = G.ngx.shared.foxcaves
-local filecount = fcshared:get("filecount")
-local usercount = fcshared:get("usercount")
+local filecount = 0 or fcshared:get("filecount")
+local usercount = 0 or fcshared:get("usercount")
 if (not filecount) or (not usercount) then
 	local database = G.ngx.ctx.database
 	if not filecount then

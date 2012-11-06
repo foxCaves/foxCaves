@@ -3,6 +3,8 @@ if not ngx then
 	lfs.chdir("/var/www/foxcaves")
 end
 
+local database = ngx.ctx.database
+
 local function s3_request(file, method, content_type, cache_control, body, content_disposition)
 	method = method or ngx.HTTP_GET
 	local method_str
@@ -53,31 +55,35 @@ local function file_fullread(filename)
 	return cont
 end
 
+function file_get(fileid, user)
+	local file = database:hgetall(database.KEYS.FILES..fileid)
+	if not file then return nil end
+	if user and file.user ~= user then return nil end
+	file.type = tonumber(file.type)
+	return file
+end
+
 function file_manualdelete(file)
 	s3_request(file, ngx.HTTP_DELETE)
 end
 
 function file_delete(fileid, user)
-	local database = ngx.ctx.database
+	local file = file_get(fileid, user)
+	if not file then return false end
 
-	local id = database:escape(fileid)
-	local file = database:query("SELECT name, fileid, thumbnail, extension, size, user FROM files WHERE fileid = '"..id.."'")
-	if not (file and file[1]) then return false end
-	file = file[1]
-	if user and file.user ~= user then return false end
-
-	file_manualdelete("files/" .. file.fileid .. file.extension)
-	if file.thumbnail ~= "" then
+	file_manualdelete("files/" .. fileid .. file.extension)
+	if file.thumbnail and file.thumbnail ~= "" then
 		file_manualdelete("thumbs/" .. file.thumbnail)
 	end
 
-	database:query("DELETE FROM files WHERE fileid = '"..id.."'")
+	database:zrem(database.KEYS.USER_FILES..file.user, fileid)
+	database:del(database.KEYS.FILES..fileid)
 
 	if file.user then
-		database:query("UPDATE users SET usedbytes = usedbytes - "..file.size.." WHERE id = '"..file.user.."'")
+		database:hincrby(database.KEYS.USERS..file.user, "usedbytes", -file.size)
 		if file.user == ngx.ctx.user.id then
 			ngx.ctx.user.usedbytes = ngx.ctx.user.usedbytes - file.size
-			file_push_action(file.fileid, '-')
+			file_push_action(fileid, '-')
 		end
 	end
 
@@ -85,15 +91,10 @@ function file_delete(fileid, user)
 end
 
 function file_download(fileid, user)
-	local database = ngx.ctx.database
+	local file = file_get(fileid, user)
+	if not file then return false end
 
-	local id = database:escape(fileid)
-	local file = database:query("SELECT name, fileid, thumbnail, extension, size, user FROM files WHERE fileid = '"..id.."'")
-	if not (file and file[1]) then return false end
-	file = file[1]
-	if user and file.user ~= user then return false end
-
-	local res = ngx.location.capture("/f/" .. file.fileid .. file.extension)
+	local res = ngx.location.capture("/f/" .. fileid .. file.extension)
 
 	return true, res.body, file
 end

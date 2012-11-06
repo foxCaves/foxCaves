@@ -26,8 +26,8 @@ end
 local fileid
 for i=1, 10 do
 	fileid = randstr(10)
-	local res = database:query("SELECT 1 FROM files WHERE fileid = '"..fileid.."'")
-	if (not res) or (not res[1]) then
+	local res = database:exists(database.KEYS.FILES..fileid)
+	if (not res) or (res == ngx.null) or (res == 0) then
 		break
 	else
 		fileid = nil
@@ -56,7 +56,7 @@ if (not filesize) or filesize <= 0 then
 	return ngx.eof()
 end
 
-if tonumber(ngx.ctx.user.usedbytes) + filesize > tonumber(ngx.ctx.user.totalbytes) + tonumber(ngx.ctx.user.bonusbytes) then
+if ngx.ctx.user.usedbytes + filesize > ngx.ctx.user.totalbytes + ngx.ctx.user.bonusbytes then
 	ngx.status = 402
 	ngx.print("Overquota")
 	return ngx.eof()
@@ -146,20 +146,15 @@ local fileType, thumbnailType, thumbnail = mimeHandlers[prefix](suffix)
 dofile("scripts/fileapi.lua")
 file_upload(fileid, name, extension, thumbnail, mtype, thumbnailType)
 
-database:query(
-	string.format(
-		"INSERT INTO files (name, fileid, user, extension, time, thumbnail, type, size) VALUES ('%s','%s','%u', '%s', UNIX_TIMESTAMP(), '%s', '%u', '%u')",
-		database:escape(name),
-		fileid,
-		ngx.ctx.user.id,
-		database:escape(extension),
-		thumbnail or "",
-		fileType,
-		filesize
-	)
-)
+local fileKeyID = database.KEYS.FILES..fileid
 
-database:query("UPDATE users SET usedbytes = usedbytes + "..filesize.." WHERE id = '"..ngx.ctx.user.id.."'")
+database:hmset(fileKeyID, "name", name, "user", ngx.ctx.user.id, "extension", extension, "type", fileType, "size", filesize, "time", ngx.time())
+if thumbnail and thumbnailType then
+	database:hset(fileKeyID, "thumbnail", thumbnail)
+end
+database:zadd(database.KEYS.USER_FILES..ngx.ctx.user.id, ngx.time(), fileid)
+
+database:hincrby(database.KEYS.USERS..ngx.ctx.user.id, "usedbytes", filesize)
 ngx.ctx.user.usedbytes = ngx.ctx.user.usedbytes + filesize
 
 file_push_action(fileid, '+')

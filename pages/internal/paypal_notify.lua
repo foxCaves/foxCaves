@@ -34,10 +34,8 @@ if args.payment_status:lower() ~= "completed" then
 	return ngx.eof()
 end
 
-local invoiceid = database:escape(args.invoice)
-
-local res = database:query("SELECT 1 FROM `usedinvoices` WHERE `invoiceid` = '"..invoiceid.."'")
-if res and res[1] then
+local res = database:sismember(database.KEYS.USEDINVOICES, args.invoice)
+if res then
 	paypal_result("Code: #DOUBLE_INVOICE")
 	return ngx.eof()
 end
@@ -64,7 +62,7 @@ end
 ngx.ctx.login(userid, "", true, true)
 item.action()
 
-database:query("INSERT INTO `usedinvoices` (invoiceid, user, time, item) VALUES ('"..invoiceid.."', '"..database:escape(userid).."', UNIX_TIMESTAMP(), '"..database:escape(args.item_number).."')")
+database:sadd(database.KEYS.USEDINVOICES, args.invoice)
 
 paypal_result("Code: #SUCCESS")
 ngx.eof()

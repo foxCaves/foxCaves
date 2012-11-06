@@ -12,29 +12,34 @@ ngx.ctx.LOGIN_SUCCESS = 1
 ngx.ctx.LOGIN_USER_INACTIVE = 0
 ngx.ctx.LOGIN_USER_BANNED = -1
 ngx.ctx.LOGIN_BAD_PASSWORD = -10
-function ngx.ctx.login(username, password, nosession, directlogin)
+function ngx.ctx.login(username_or_id, password, nosession, login_with_id)
 	if ngx.ctx.user then return ngx.ctx.LOGIN_SUCCESS end
 
-	local result
-	if directlogin then
-		result = database:query("SELECT * FROM users WHERE id = '"..database:escape(username).."'")
-	else
-		result = database:query("SELECT * FROM users WHERE username = '"..database:escape(username).."'")
+	if not username_or_id then
+		return ngx.ctx.LOGIN_BAD_PASSWORD
 	end
-	if result and result[1] then
-		result = result[1]
+	
+	if not login_with_id then
+		username_or_id = database:get(database.KEYS.USERNAME_TO_ID..username_or_id:lower())
+		if (not username_or_id) or (username_or_id == ngx.null) then
+			return ngx.ctx.LOGIN_BAD_PASSWORD
+		end
+	end
+	
+	local result = database:hgetall(database.KEYS.USERS..username_or_id)
+	if result then
 		if result.active == 0 then
 			return ngx.ctx.LOGIN_USER_INACTIVE
 		elseif result.active == -1 then
 			return ngx.ctx.LOGIN_USER_BANNED
 		end
-		if directlogin or result.password == ngx.hmac_sha1(result.username, password) then
+		if login_with_id or result.password == ngx.hmac_sha1(result.username, password) then
 			if not nosession then
 				local sessionid
 				for i=1,10 do
 					sessionid = randstr(32)
-					local res = database:query("SELECT 1 FROM sessions WHERE id = '"..sessionid.."'")
-					if (not res) or (not res[1]) then
+					local res = database:exists(database.KEYS.SESSIONS..sessionid)
+					if (not res) or (res == ngx.null) or (res == 0) then
 						break
 					else
 						sessionid = nil
@@ -42,12 +47,26 @@ function ngx.ctx.login(username, password, nosession, directlogin)
 				end
 				if sessionid then
 					ngx.header['Set-Cookie'] = {"sessionid="..sessionid.."; Secure; HttpOnly"}
-					result.sessionid = sessionid
-					database:query("INSERT INTO sessions (id, user, expire) VALUES ('"..sessionid.."', '"..result.id.."', UNIX_TIMESTAMP() + "..SESSION_EXPIRE_DELAY..")")
+					result.sessionid = sessionid					
+					
+					sessionid = database.KEYS.SESSIONS..sessionid
+					database:set(sessionid, username_or_id)
+					database:expire(sessionid, SESSION_EXPIRE_DELAY)
 				end
 			end
+			
+			result.id = username_or_id
+			result.pro_expiry = tonumber(result.pro_expiry or 0)
+			result.usedbytes = tonumber(result.usedbytes or 0)
+			result.bonusbytes = tonumber(result.bonusbytes or 0)
 			result.is_pro = (result.pro_expiry > ngx.time())
+			if result.is_pro then
+				result.totalbytes = 1073741824
+			else
+				result.totalbytes = 268435456
+			end
 			ngx.ctx.user = result
+			
 			return ngx.ctx.LOGIN_SUCCESS
 		end
 	end
@@ -58,7 +77,7 @@ end
 function ngx.ctx.logout()
 	ngx.header['Set-Cookie'] = {"sessionid=NULL", "loginkey=NULL"}
 	if (not ngx.ctx.user) or (not ngx.ctx.user.sessionid) then return end
-	database:query("DELETE FROM sessiond WHERE id = '"..ngx.ctx.user.sessionid.."'")
+	database:del(database.KEYS.SESSIONS..ngx.ctx.user.sessionid)
 	ngx.ctx.user = nil
 end
 
@@ -88,14 +107,30 @@ function ngx.ctx.make_new_login_key(userdata)
 
 	local str = randstr(64)
 	local str_pchan = randstr(32)
-	database:query("UPDATE users SET loginkey = '"..str.."', pushchan = '"..str_pchan.."' WHERE id = '"..userdata.id.."'")
+	database:hmset(database.KEYS.USERS..userdata.id, "loginkey", str, "pushchan", str_pchan)
+	
+	local allsessions = database:keys(database.KEYS.SESSIONS.."*")
+	if type(allsessions) ~= "table" then allsessions = {} end
+	
 	if send_userdata then
-		database:query("DELETE FROM sessions WHERE user = '"..userdata.id.."' AND id != '"..userdata.sessionid.."'")
+		database:multi()
+		for _,v in next, allsessions do
+			if v ~= userdata.sessionid and database:get(v) == userdata.id then
+				database:del(v)
+			end
+		end
+		database:exec()
 		ngx.ctx.user.loginkey = str
 		ngx.ctx.user.pushchan = str_pchan
 		ngx.ctx.send_login_key()
 	else
-		database:query("DELETE FROM sessions WHERE user = '"..userdata.id.."'")
+		database:multi()
+		for _,v in next, allsessions do
+			if database:get(v) == userdata.id then
+				database:del(v)
+			end
+		end
+		database:exec()
 	end
 end
 
@@ -105,12 +140,13 @@ if cookies then
 	if auth then
 		auth = auth[2]
 		if auth then
-			local result = database:query("SELECT u.*, s.id AS sessionid FROM users AS u, sessions AS s WHERE s.id = '"..database:escape(auth).."' AND u.id = s.user AND u.active = 1")
-			if result and result[1] then
-				result = result[1]
-				database:query("UPDATE sessions SET expire = UNIX_TIMESTAMP() + "..SESSION_EXPIRE_DELAY.." WHERE id = '"..result.sessionid.."'")
-				result.is_pro = (result.pro_expiry > ngx.time())
-				ngx.ctx.user = result
+			local sessID = database.KEYS.SESSIONS..auth
+			local result = database:get(sessID)
+			if result and result ~= ngx.null then
+				ngx.ctx.login(result, nil, true, true)
+				ngx.ctx.user.sessionid = auth
+				ngx.header['Set-Cookie'] = {"sessionid="..auth.."; Secure; HttpOnly"}
+				database:expire(sessID, SESSION_EXPIRE_DELAY)
 			end
 		end
 	end
@@ -124,10 +160,9 @@ if cookies then
 			local uid = auth[2]
 			auth = auth[3]
 			if uid and auth then
-				local result = database:query("SELECT username, loginkey FROM users WHERE id = '"..database:escape(uid).."' AND active = 1")
-				if result and result[1] then
-					result = result[1]
-					if hash_login_key(result.loginkey) == ngx.decode_base64(auth) then
+				local result = database:hget(database.KEYS.USERS..uid, "loginkey")
+				if result and result ~= ngx.null then
+					if hash_login_key(result) == ngx.decode_base64(auth) then
 						ngx.ctx.login(uid, nil, false, true)
 						ngx.ctx.user.remember_me = true
 						ngx.ctx.send_login_key()

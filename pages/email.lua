@@ -40,17 +40,19 @@ if args and args.send then
 		if not valid then
 			message = "<div class='alert alert-error'>Error validating your CAPTCHA</div>"
 		else
-			local userdata = database:query("SELECT id, username, email FROM users WHERE username = '"..database:escape(username).."' AND email = '"..database:escape(email).."'")
-			if (not userdata) or (not userdata[1]) then
+			local userid = database:get(database.KEYS.USERNAME_TO_ID..username:lower())
+			local userdata
+			if userid then
+				userdata = database:hgetall(database.KEYS.USERS..userid)
+			end
+			if (not userid) or (userdata.email:lower() ~= email:lower()) then
 				message = "<div class='alert alert-error'>There is no user with the specified username and E-Mail on record</div>"
 			else
-				userdata = userdata[1]
-				
 				local emailid
 				for i=1,10 do
 					emailid = randstr(32)
-					local res = database:query("SELECT 1 FROM emailkeys WHERE id = '"..emailid.."'")
-					if (not res) or (not res[1]) then
+					local res = database:exists(database.KEYS.EMAILKEYS..emailid)
+					if (not res) or (res == ngx.null) or (res == 0) then
 						break
 					else
 						emailid = nil
@@ -71,7 +73,9 @@ if args and args.send then
 					end
 					email = email .. " just click on the following link:\nhttps://foxcav.es/emailcode?"..emailid.."\n\nKind regards,\nfoxCaves Support"
 
-					database:query("INSERT INTO emailkeys (id, user, action, expire) VALUES ('"..emailid.."', '"..userdata.id.."', '"..database:escape(action).."', UNIX_TIMESTAMP() + 172800)") --48 hours
+					database:hmset(database.KEYS.EMAILKEYS..emailid, "user", userid, "action", action)
+					database:expire(172800) --48 hours
+					
 					message = "<div class='alert alert-warning'>E-Mail sent.</div>"
 					template_name = "message"
 					mail(userdata.email, subject, email, "noreply@foxcav.es")

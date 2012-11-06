@@ -8,7 +8,7 @@ local function gopro(time_seconds)
 		cur_time = cur_time + time_seconds
 	end
 	ngx.ctx.user.pro_expiry = cur_time
-	database:query("UPDATE users SET pro_expiry = "..cur_time..", totalbytes = 1073741824 WHERE id = "..ngx.ctx.user.id)
+	database:hset(database.KEYS.USERS..ngx.ctx.user.id, "pro_expiry", cur_time)
 end
 
 local ONEMONTH = 30 * 24 * 60 * 60

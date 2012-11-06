@@ -1,5 +1,5 @@
 <%+ head %>
-<% local RAWNAME = FILE.fileid .. FILE.extension %>
+<% local RAWNAME = FILEID .. FILE.extension %>
 	<h3>Viewing file: <%= FILE.name %></h3>
 	<div class="well well-small" style="text-align: left;">
 		<form class="form-horizontal">
@@ -8,7 +8,7 @@
 					Uploaded by
 				</label>
 				<div class="controls" style="padding-top: 5px;">
-					<%= FILE.username %>
+					<%= FILEOWNER %>
 				</div>
 			</div>
 			<div class="control-group">
@@ -32,7 +32,7 @@
 					View link
 				</label>
 				<div class="controls">
-					<input readonly="readonly" type="text" value="https://fox.gy/v<%= FILE.fileid %>" />
+					<input readonly="readonly" type="text" value="https://fox.gy/v<%= FILEID %>" />
 				</div>
 			</div>
 			<div class="control-group">
@@ -40,7 +40,7 @@
 					Direct link
 				</label>
 				<div class="controls">
-					<input readonly="readonly" type="text" value="https://fox.gy/f<%= FILE.fileid %><%= FILE.extension %>" />
+					<input readonly="readonly" type="text" value="https://fox.gy/f<%= FILEID %><%= FILE.extension %>" />
 				</div>
 			</div>
 			<div class="control-group">
@@ -48,7 +48,7 @@
 					Download link
 				</label>
 				<div class="controls">
-					<input readonly="readonly" type="text" value="https://fox.gy/d<%= FILE.fileid %><%= FILE.extension %>" />
+					<input readonly="readonly" type="text" value="https://fox.gy/d<%= FILEID %><%= FILE.extension %>" />
 				</div>
 			</div>
 		</form>

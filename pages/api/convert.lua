@@ -37,30 +37,30 @@ newfilename = newfilename:sub(1, newfilename:len() - dbdata.extension:len())..ne
 
 local database = ngx.ctx.database
 
-local fh = io.open("files/"..dbdata.fileid..dbdata.extension, "w")
+local fh = io.open("files/"..args.fileid..dbdata.extension, "w")
 fh:write(data)
 fh:close()
-os.execute('/usr/bin/convert "files/'..dbdata.fileid..dbdata.extension..'" -format '..newextension:sub(2)..' "files/'..dbdata.fileid..newextension..'"')
-os.remove("files/" .. dbdata.fileid .. dbdata.extension)
+os.execute('/usr/bin/convert "files/'..args.fileid..dbdata.extension..'" -format '..newextension:sub(2)..' "files/'..args.fileid..newextension..'"')
+os.remove("files/" .. args.fileid .. dbdata.extension)
 
 dofile("scripts/mimetypes.lua")
 
-local newsize = lfs.attributes("files/"..dbdata.fileid..newextension, "size")
+local newsize = lfs.attributes("files/"..args.fileid..newextension, "size")
 if not newsize then
 	ngx.status = 500
 	ngx.print("failed")
 	return ngx.eof()
 end
 
-database:query("UPDATE files SET extension = '"..newextension.."', name = '"..database:escape(newfilename).."', size = "..newsize.." WHERE fileid = '"..dbdata.fileid.."'")
+database:hmset(database.KEYS.FILES..args.fileid, "extension", newextension, "name", newfilename, "size", newsize)
 newsize = newsize - dbdata.size
 ngx.ctx.user.usedbytes = ngx.ctx.user.usedbytes + newsize
-database:query("UPDATE users SET usedbytes = usedbytes + ("..newsize..") WHERE id = "..ngx.ctx.user.id)
+database:hincrby(database.KEYS.USERS..ngx.ctx.user.id, newsize)
 
-file_upload(dbdata.fileid, newfilename, newextension, "", mimetypes[newextension], nil)
-file_manualdelete(dbdata.fileid .. dbdata.extension)
+file_upload(args.fileid, newfilename, newextension, "", mimetypes[newextension], nil)
+file_manualdelete(args.fileid .. dbdata.extension)
 
-file_push_action(dbdata.fileid, '=')
+file_push_action(args.fileid, '=')
 
 ngx.print("+++")
 ngx.eof()

@@ -1,39 +1,56 @@
 lfs.chdir("/var/www/foxcaves/")
 
+ngx.ctx.user = nil
 ngx.ctx.req_starttime = socket.gettime()
 
-local mysql = require("resty.mysql")
+local redis = require("resty.redis")
 
-local database, err = mysql:new()
+local database, err = redis:new()
 if not database then
-	ngx.print("Error initializing MySQL: ", err)
+	ngx.print("Error initializing DB: ", err)
 	return ngx.eof()
 end
 database:set_timeout(60000)
 
 dofile("scripts/dbconfig.lua")
-local ok, err = database:connect(dbconfig)
-dbconfig = nil
-
+local ok, err = database:connect(dbsocket)
 if not ok then
-	ngx.print("Error connecting to MySQL: ", err)
+	ngx.print("Error connecting to DB: ", err)
 	return ngx.eof()
 end
 
-local escapeArray = {
-	["\0"] = "\\0",
-	["\b"] = "\\b",
-	["\n"] = "\\n",
-	["\r"] = "\\r",
-	["\t"] = "\\t",
-	["\x1A"] = "\\Z",
-	["\\"] = "\\\\",
-	["'"] = "\\'",
-	['"'] = '\\"'
-}
-function database:escape(str)
-	return str:gsub(".", escapeArray)
+if database:get_reused_times() == 0 then
+	local ok, err = database:auth(dbpass)
+	if not ok then
+		ngx.print("Error connecting to DB: ", err)
+		return ngx.eof()
+	end
 end
+
+database.KEYS = dbkeys
+dbkeys = nil
+dbsocket = nil
+dbpass = nil
+
+database.hgetall_real = database.hgetall
+function database:hgetall(key)
+	local res = self:hgetall_real(key)
+	if (not res) or (res == ngx.null) then
+		return res
+	end
+	local ret = {}
+	local k = nil
+	for _,v in next, res do
+		if not k then
+			k = v
+		else
+			ret[k] = v
+			k = nil
+		end
+	end
+	return ret
+end
+
 ngx.ctx.database = database
 
 ngx.ctx.EMAIL_INVALID = -1
@@ -43,9 +60,8 @@ function ngx.ctx.check_email(email)
 		return ngx.ctx.EMAIL_INVALID
 	end
 
-	email = database:escape(email)
-	local emailcur = database:query("SELECT id FROM users WHERE email = '"..email.."' LIMIT 0,1")
-	if emailcur and emailcur[1] then
+	local res = database:sismember(database.KEYS.EMAILS, email:lower())
+	if res and res ~= 0 and res ~= ngx.null then
 		return ngx.ctx.EMAIL_TAKEN
 	end
 	return nil
@@ -56,9 +72,8 @@ function ngx.ctx.check_username(username)
 		return ngx.ctx.EMAIL_INVALID
 	end
 
-	username = database:escape(username)
-	local usernamecur = database:query("SELECT id FROM users WHERE username = '"..username.."' LIMIT 0,1")
-	if usernamecur and usernamecur[1] then
+	local res = database:exists(database.KEYS.USERS..username:lower())
+	if res and res ~= 0 and res ~= ngx.null then
 		return ngx.ctx.EMAIL_TAKEN
 	end
 	return nil
@@ -97,3 +112,11 @@ function ngx.ctx.get_post_args(...)
 end
 
 dofile("scripts/access.lua")
+
+_G.ngx = ngx
+_G.math = math
+_G.socket = socket
+_G.tonumber = tonumber
+_G.tostring = tostring
+_G.os = os
+_G.lfs = lfs
