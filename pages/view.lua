@@ -13,7 +13,7 @@ nameregex = nameregex[1]
 
 dofile("scripts/fileapi.lua")
 local file = file_get(nameregex)
-if not file  then
+if not file then
 	ngx.status = 404
 	ngx.print("File not found")
 	return ngx.eof()
