@@ -10,7 +10,10 @@ if not G.ngx.var.http_X_Is_Js_Request then %>
 					<div class="nav-collapse">
 						<ul class="nav">
 							<li>
-								<a>Request took <span id="reqtime"><%= G.math.ceil((G.socket.gettime() - G.ngx.ctx.req_starttime) * 100000) / 100 %>ms</span></a>
+								<a href="/legal/terms_of_service">Terms of Service</a>
+							</li>
+							<li>
+								<a href="/legal/privacy_policy">Privacy Policy</a>
 							</li>
 						</ul>
 						<ul class="nav pull-right">
@@ -31,7 +34,6 @@ if not G.ngx.var.http_X_Is_Js_Request then %>
 </html>
 <% else %>
 |{
-	"reqtime": "<%= G.math.ceil((G.socket.gettime() - G.ngx.ctx.req_starttime) * 100000) / 100 %>ms",
 	"filecount": "<%= filecount %>",
 	"usercount": "<%= usercount %>",
 	"pushchan": "<% if G.ngx.ctx.user then %><%= G.ngx.ctx.user.id %>_<%= G.ngx.ctx.user.pushchan %><% end %>",
