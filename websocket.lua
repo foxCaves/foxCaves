@@ -12,7 +12,7 @@ local string_format = string.format
 local time = os.time
 
 local lfs = require("lfs")
-lfs.chdir("/var/www/foxcaves/")
+lfs.chdir(ngx.var.main_root.."/")
 local websockets = require("websockets")
 local redis = require("redis")
 lfs = nil

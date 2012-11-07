@@ -1,5 +1,5 @@
-dofile("/var/www/foxcaves/scripts/dbconfig.lua")
-dofile("/var/www/foxcaves/scripts/dbconfig_mysql.lua")
+dofile(ngx.var.main_root.."/scripts/dbconfig.lua")
+dofile(ngx.var.main_root.."/scripts/dbconfig_mysql.lua")
 
 local function print(...)
 	for k,v in pairs({...}) do

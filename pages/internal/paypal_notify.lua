@@ -1,4 +1,4 @@
-dofile("/var/www/foxcaves/scripts/global.lua")
+dofile(ngx.var.main_root.."/scripts/global.lua")
 local database = ngx.ctx.database
 
 local userid = ngx.req.get_uri_args().userid

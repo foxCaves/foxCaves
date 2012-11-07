@@ -1,4 +1,4 @@
-dofile("/var/www/foxcaves/scripts/global.lua")
+dofile(ngx.var.main_root.."/scripts/global.lua")
 if not ngx.ctx.user then return ngx.redirect("/login") end
 
 local database = ngx.ctx.database

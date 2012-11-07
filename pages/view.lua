@@ -1,4 +1,4 @@
-dofile("/var/www/foxcaves/scripts/global.lua")
+dofile(ngx.var.main_root.."/scripts/global.lua")
 
 local name = ngx.var.REQUEST_URI
 local nameregex = ngx.re.match(name, "view/([a-zA-Z0-9]+)$", "o")

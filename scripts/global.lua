@@ -1,4 +1,4 @@
-lfs.chdir("/var/www/foxcaves/")
+lfs.chdir(ngx.var.main_root)
 
 ngx.ctx.user = nil
 ngx.ctx.req_starttime = socket.gettime()
@@ -12,7 +12,7 @@ if not database then
 end
 database:set_timeout(60000)
 
-dofile("scripts/dbconfig.lua")
+dofile("config/database.lua")
 local ok, err = database:connect(dbsocket)
 if not ok then
 	ngx.print("Error connecting to DB: ", err)

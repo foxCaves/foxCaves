@@ -1,6 +1,6 @@
 if not ngx then
 	local lfs = require("lfs")
-	lfs.chdir("/var/www/foxcaves")
+	lfs.chdir(ngx.var.main_root.."")
 end
 
 local database = ngx.ctx.database

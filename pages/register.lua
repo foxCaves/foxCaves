@@ -1,4 +1,4 @@
-dofile("/var/www/foxcaves/scripts/global.lua")
+dofile(ngx.var.main_root.."/scripts/global.lua")
 if ngx.ctx.user then return ngx.redirect("/myaccount") end
 --do ngx.print("Disabled") return ngx.eof() end
 

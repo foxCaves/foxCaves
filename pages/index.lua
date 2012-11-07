@@ -1,4 +1,4 @@
-dofile("/var/www/foxcaves/scripts/global.lua")
+dofile(ngx.var.main_root.."/scripts/global.lua")
 
 dofile("scripts/navtbl.lua")
 navtbl[1].active = true
