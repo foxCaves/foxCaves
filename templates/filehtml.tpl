@@ -4,7 +4,7 @@
 	local escaped_name_js = escaped_name:gsub("'", "\\'")
 %>
 <li draggable="true" id="file_<%= fileid %>" data-file-id="<%= fileid %>" data-file-extension="<%= file.extension %>">
-	<div style="background-image: url('<% if file.type == 1 then %>https://fox.gy/thumbs/<%= file.thumbnail %><% elseif G.lfs.attributes("static/img/thumbs/ext_"..file.extension..".png", "size") then %>https://fox.gy/static/img/thumbs/ext_<%= file.extension %>.png<% else %>https://fox.gy/static/img/thumbs/nothumb.png<% end %>')" class="image_manage_main">
+	<div style="background-image: url('<% if file.type == 1 then %>https://fox.gy/thumbs/<%= file.thumbnail %><% elseif G.lfs.attributes("static/img/thumbs/ext_"..file.extension..".png", "size") then %><%= STATIC_URL_PREFIX %>/img/thumbs/ext_<%= file.extension %>.png<% else %><%= STATIC_URL_PREFIX %>/img/thumbs/nothumb.png<% end %>')" class="image_manage_main">
 		<div class="image_manage_top" title="<%= G.os.date("%d.%m.%Y %H:%M", file.time) %> [<%= escaped_name %>]"><span><%= escaped_name %></span></div>
 		<div class="image_manage_bottom">
 			<span style="position: relative; float: right;">

@@ -1,4 +1,5 @@
 lfs.chdir(ngx.var.main_root)
+dofile("config/main.lua")
 
 ngx.ctx.user = nil
 ngx.ctx.req_starttime = socket.gettime()
