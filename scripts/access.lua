@@ -46,7 +46,7 @@ function ngx.ctx.login(username_or_id, password, nosession, login_with_id)
 					end
 				end
 				if sessionid then
-					ngx.header['Set-Cookie'] = {"sessionid="..sessionid.."; Secure; HttpOnly"}
+					ngx.header['Set-Cookie'] = {"sessionid="..sessionid.."; HttpOnly"}
 					result.sessionid = sessionid					
 					
 					sessionid = database.KEYS.SESSIONS..sessionid
@@ -86,7 +86,7 @@ function ngx.ctx.send_login_key()
 	if not ngx.ctx.user.remember_me then return end
 	local expires = "; Expires="..ngx.cookie_time(ngx.time() + (30 * 24 * 60 * 60))
 	local hdr = ngx.header['Set-Cookie']
-	expires = "loginkey="..ngx.ctx.user.id.."."..ngx.encode_base64(hash_login_key())..expires.."; Secure; HttpOnly"
+	expires = "loginkey="..ngx.ctx.user.id.."."..ngx.encode_base64(hash_login_key())..expires.."; HttpOnly"
 	if type(hdr) == "table" then
 		table.insert(hdr, expires)
 	elseif hdr then
@@ -146,7 +146,7 @@ if cookies then
 			if result and result ~= ngx.null then
 				ngx.ctx.login(result, nil, true, true)
 				ngx.ctx.user.sessionid = auth
-				ngx.header['Set-Cookie'] = {"sessionid="..auth.."; Secure; HttpOnly"}
+				ngx.header['Set-Cookie'] = {"sessionid="..auth.."; HttpOnly"}
 				database:expire(sessID, SESSION_EXPIRE_DELAY)
 			end
 		end
