@@ -7,7 +7,7 @@ local invoiceid
 for i=1,10 do
 	invoiceid = randstr(64)
 	local res = database:sismember(database.KEYS.USEDINVOICES, invoiceid)
-	if (not res) or (res == ngx.null) then
+	if (not res) or (res == 0) or (res == ngx.null) then
 		break
 	else
 		invoiceid = nil

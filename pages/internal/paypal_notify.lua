@@ -35,7 +35,7 @@ if args.payment_status:lower() ~= "completed" then
 end
 
 local res = database:sismember(database.KEYS.USEDINVOICES, args.invoice)
-if res then
+if res and res ~= 0 and res ~= ngx.null then
 	paypal_result("Code: #DOUBLE_INVOICE")
 	return ngx.eof()
 end
