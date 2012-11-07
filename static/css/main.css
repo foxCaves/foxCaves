@@ -62,7 +62,7 @@ span.whole_div_link {
 	top: 0;
 	left: 0;
 	z-index: 1;
-	background-image: url('/static/img/empty.gif');
+	background-image: url('/img/empty.gif');
 }
 
 body {
@@ -75,7 +75,7 @@ body {
 }
 
 .advert {
-	background-image: url('/static/img/abon.png');
+	background-image: url('/img/abon.png');
 	background-position: center;
 	background-repeat: no-repeat;
 	min-height: 90px;
@@ -225,7 +225,7 @@ select {
 }
 
 #recycle_bin {
-	background-image: url("/static/img/recycle_bin.png");
+	background-image: url("/img/recycle_bin.png");
 	width: 256px;
 	height: 256px;
 	position: fixed;
