@@ -1,16 +1,16 @@
 <%+ head %>
-<h1>foxScreen information (<a href="/static/dls/foxScreen.exe?v=<%= G.ngx.time() %>">Download here</a>)</h1>
+<h1>foxScreen information (<a href="<%= STATIC_URL_PREFIX %>/dls/foxScreen.exe?v=<%= G.ngx.time() %>">Download here</a>)</h1>
 <h3>
 	When you first start foxScreen, you will be presented with the main window of foxScreen:<br />
 </h3>
-<img src="/static/img/foxscreen/main_window.png" />
+<img src="<%= STATIC_URL_PREFIX %>/img/foxscreen/main_window.png" />
 <h4>
 	Just enter your login details and click "Save credentials".
 </h4>
 <h3>
 	You may notice a little tray icon of foxScreen:
 </h3>
-<img src="/static/img/foxscreen/notify_bar.png" />
+<img src="<%= STATIC_URL_PREFIX %>/img/foxscreen/notify_bar.png" />
 <h4>
 	If you double-click it, that will hide/show the main window<br />
 	If you click it once, it will hide/show the drop area (explained later)
@@ -18,7 +18,7 @@
 <h3>
 	The drop area of foxScreen looks like the following
 </h3>
-<img src="/static/img/foxscreen/drop_area.png" />
+<img src="<%= STATIC_URL_PREFIX %>/img/foxscreen/drop_area.png" />
 <h4>
 	Any file you drop onto it (out of a explorer window, etc) will be uploaded to your foxCaves account.<br />
 	The uploaded file's link will be automatically copied into your clipboard
