@@ -59,7 +59,7 @@
 		<img src="https://fox.gy/f<%= RAWNAME %>">
 	<% elseif FILE.type == FILE_TYPE_TEXT then %>
 		<noscript>JavaScript required to preview code/text</noscript>
-		<pre class="prettyprint linenums" style="display: none;" data-thumbnail-source="<%= FILE.thumbnail %>"></pre>
+		<pre class="prettyprint linenums" style="display: none;" data-thumbnail-source="<%= FILEID %><%= FILE.thumbnail %>"></pre>
 	<% elseif FILE.type == FILE_TYPE_VIDEO then %>
 		<video controls="controls">
 			<source src="https://fox.gy/f<%= RAWNAME %>" type="<%= MIMETYPES[FILE.extension] %>" />

@@ -83,7 +83,8 @@ local FILE_TYPE_IFRAME = 5
 
 local mimeHandlers = {
 	image = function()
-		local thumbnail = fileid..".png"
+		local thumbext = ".png"
+		local thumbnail = fileid..thumbext
 		os.execute(
 			string.format(
 				'/usr/bin/convert "files/%s%s" -thumbnail x300 -resize "300x<" -resize 50%% -gravity center -crop 150x150+0+0 +repage -format png "thumbs/%s"',
@@ -96,7 +97,7 @@ local mimeHandlers = {
 		if not lfs.attributes("thumbs/"..thumbnail, "size") then
 			return FILE_TYPE_IMAGE, nil, nil
 		end
-		return FILE_TYPE_IMAGE, "image/png", thumbnail
+		return FILE_TYPE_IMAGE, "image/png", thumbext
 	end,
 	
 	text = function()
@@ -120,7 +121,7 @@ local mimeHandlers = {
 		fh:write(content)
 		fh:close()
 
-		return FILE_TYPE_TEXT, "text/plain", fileid..extension
+		return FILE_TYPE_TEXT, "text/plain", extension
 	end,
 	
 	video = function()

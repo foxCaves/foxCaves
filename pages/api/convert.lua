@@ -58,7 +58,7 @@ ngx.ctx.user.usedbytes = ngx.ctx.user.usedbytes + newsize
 database:hincrby(database.KEYS.USERS..ngx.ctx.user.id, newsize)
 
 file_upload(args.fileid, newfilename, newextension, "", mimetypes[newextension], nil)
-file_manualdelete(args.fileid .. dbdata.extension)
+file_manualdelete(args.fileid .. "/file" .. dbdata.extension)
 
 file_push_action(args.fileid, '=')
 

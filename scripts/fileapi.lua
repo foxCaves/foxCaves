@@ -71,10 +71,11 @@ function file_delete(fileid, user)
 	local file = file_get(fileid, user)
 	if not file then return false end
 
-	file_manualdelete("files/" .. fileid .. file.extension)
+	file_manualdelete(fileid .. "/file" .. file.extension)
 	if file.thumbnail and file.thumbnail ~= "" then
-		file_manualdelete("thumbs/" .. file.thumbnail)
+		file_manualdelete(fileid .. "/thumb" .. file.thumbnail)
 	end
+	file_manualdelete(fileid)
 
 	database:zrem(database.KEYS.USER_FILES..file.user, fileid)
 	database:del(database.KEYS.FILES..fileid)
@@ -103,7 +104,7 @@ function file_upload(fileid, filename, extension, thumbnail, filetype, thumbtype
 	local fullname = fileid .. extension
 	
 	s3_request(
-		"files/"..fullname,
+		fileid .. "/file" .. extension,
 		ngx.HTTP_PUT,
 		filetype or "application/octet-stream",
 		"public, max-age=86400",
@@ -113,13 +114,13 @@ function file_upload(fileid, filename, extension, thumbnail, filetype, thumbtype
 
 	if thumbnail and thumbnail ~= "" then
 		s3_request(
-			"thumbs/"..thumbnail,
+			fileid .. "/thumb" .. thumbnail,
 			ngx.HTTP_PUT,
 			thumbtype or "application/octet-stream",
 			"public, max-age=86400",
-			file_fullread("thumbs/" .. thumbnail)
+			file_fullread("thumbs/" .. fileid .. thumbnail)
 		)
-		os.remove("thumbs/" .. thumbnail)
+		os.remove("thumbs/" .. fileid .. thumbnail)
 	end
 
 	os.remove("files/"..fullname)
