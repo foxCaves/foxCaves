@@ -52,7 +52,7 @@ function docReady() {
 		ele.style.display = "";
 		ele.innerHTML = "[Loading preview...]";
 		loadingEles++;
-		$.get('/thumbs/'+src, function(data) {
+		$.get('https://fox.gy/thumbs/'+src, function(data) {
 			ele.innerHTML = data;
 			loadDone();
 		});

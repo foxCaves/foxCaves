@@ -5,15 +5,14 @@ local userid = ngx.req.get_uri_args().userid
 local args
 
 local function paypal_result(str, noemail)
+	if noemail then return end
 	local res = {}
 	if args then
 		for k,v in pairs(args) do
 			table.insert(res, k .. " => ".. v .. "\n")
 		end
 	end
-	if not noemail then
-		ses_mail("mriq91@gmail.com", "[foxCaves] PayPal DEBUG", str .. "\nIP: "..ngx.var.remote_addr.."\nUserID: " .. (userid or "N/A") .. "\nPOST DATA\n" .. table.concat(res), "noreply@foxcav.es", "foxCaves")
-	end
+	mail("mriq91@gmail.com", "[foxCaves] PayPal DEBUG", str .. "\nIP: "..ngx.var.remote_addr.."\nUserID: " .. (userid or "N/A") .. "\nPOST DATA\n" .. table.concat(res), "noreply@foxcav.es", "foxCaves")
 end
 
 
