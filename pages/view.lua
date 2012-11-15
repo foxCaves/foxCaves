@@ -4,9 +4,7 @@ local name = ngx.var.REQUEST_URI
 local nameregex = ngx.re.match(name, "view/([a-zA-Z0-9]+)$", "o")
 
 if (not nameregex) or (not nameregex[1]) then
-	ngx.status = 403
-	ngx.print("Invalid filename")
-	return ngx.eof()
+	return ngx.exec("/error/403")
 end
 
 nameregex = nameregex[1]
@@ -14,9 +12,7 @@ nameregex = nameregex[1]
 dofile("scripts/fileapi.lua")
 local file = file_get(nameregex)
 if not file then
-	ngx.status = 404
-	ngx.print("File not found")
-	return ngx.eof()
+	return ngx.exec("/error/404")
 end
 
 local database = ngx.ctx.database
