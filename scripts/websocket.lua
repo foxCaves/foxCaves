@@ -12,12 +12,12 @@ local string_format = string.format
 local time = os.time
 
 local lfs = require("lfs")
-lfs.chdir(ngx.var.main_root.."/")
+lfs.chdir("..")
 local websockets = require("websockets")
 local redis = require("redis")
 lfs = nil
 
-dofile("scripts/dbconfig.lua")
+dofile("config/database.lua")
 
 module("liveedit_websocket")
 
