@@ -53,7 +53,7 @@
 			</div>
 		</form>
 	</div>
-	<a href="/d/<%= RAWNAME %>" class="btn btn-large btn-block btn-primary">Download file</a>
+	<a href="https://fox.gy/d<%= RAWNAME %>" class="btn btn-large btn-block btn-primary">Download file</a>
 	<div id="preview-wrapper">
 	<% if FILE.type == FILE_TYPE_IMAGE then %>
 		<img src="https://fox.gy/f<%= RAWNAME %>">
