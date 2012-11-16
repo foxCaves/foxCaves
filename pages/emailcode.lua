@@ -1,5 +1,5 @@
 dofile(ngx.var.main_root.."/scripts/global.lua")
-if ngx.ctx.user then return ngx.redirect("/user") end
+if ngx.ctx.user then return ngx.redirect("/myaccount") end
 local database = ngx.ctx.database
 
 local codeID = database.KEYS.EMAILKEYS..ngx.var.query_string
