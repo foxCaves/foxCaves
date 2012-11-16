@@ -16,7 +16,7 @@
 	<a href="/d/<%= RAWNAME %>" class="btn btn-large btn-block btn-primary">Download original file</a>
 	<br />
 	<div id="livedraw-wrapper">
-		<canvas id="livedraw" data-file-url="/f/<%= RAWNAME %>"></canvas>
+		<canvas id="livedraw" data-file-url="https://fox.gy/f<%= RAWNAME %>"></canvas>
 	</div>
 	<script type="text/javascript">var SESSIONID = "<% if G.ngx.ctx.user then %><%= G.ngx.ctx.user.sessionid %><% else %>GUEST<% end %>"; var LIVEDRAW_FILEID = "<%= FILEID %>"; var LIVEDRAW_SID = "<%= LDSID %>";</script>
 	<script type="text/javascript" src="<%= STATIC_URL_PREFIX %>/js/live.js"></script>
