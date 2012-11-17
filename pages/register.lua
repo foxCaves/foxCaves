@@ -72,7 +72,7 @@ if args and args.register then
 						database:hmset(database.KEYS.EMAILKEYS..emailid, "user", userid, "action", "activation")
 						database:expire(172800) --48 hours
 
-						mail(email, "foxCaves - Welcome!", email_text, "noreply@foxcav.es")
+						ses_mail(email, "foxCaves - Welcome!", email_text, "noreply@foxcav.es", "foxCaves")
 
 						message = "<div class='alert alert-warning'>You are now registered. Please click the link in the activation E-Mail to log in.</div>"
 						template_name = "message"
