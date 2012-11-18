@@ -3,10 +3,24 @@ if not ngx.ctx.user then return ngx.redirect("/login") end
 
 local database = ngx.ctx.database
 
+local args = ngx.req.get_uri_args()
+
+if(args and args.setstyle) then
+	local style = args.setstyle
+	if(style == "purple_fox" or style == "red_fox" or style == "arctic_fox") then
+		database:hset(database.KEYS.USERS..ngx.ctx.user.id, "style", style)
+		if(args.js) then
+			ngx.print("success")
+			return ngx.eof()
+		end
+	end
+	return ngx.redirect("/myfiles")
+end
+
 local message = ""
 
 ngx.req.read_body()
-local args = ngx.ctx.get_post_args()
+args = ngx.ctx.get_post_args()
 if args and args.old_password then
 	if args.kill_sessions then
 		message = "<div class='alert alert-success'>All other sessions have been killed</div>"

@@ -21,6 +21,14 @@ if not G.ngx.var.http_X_Is_Js_Request then %>
 								<a>foxCaves &copy; Doridian 2012</a>
 								<!--<a>Currently powering <span id="filecount"><%= filecount %></span> files and <span id="usercount"><%= usercount %></span> users</a>-->
 							</li>
+							<li class="dropdown">
+								<a href="#" class="dropdown-toggle" data-toggle="dropdown">Style</a>
+								<ul class="dropdown-menu">
+									<li><a href="/myaccount?setstyle=purple_fox">Purple Fox</a></li>
+									<li><a href="/myaccount?setstyle=red_fox">Red Fox</a></li>
+									<li><a href="/myaccount?setstyle=arctic_fox">Arctic Fox</a></li>
+								</ul>
+							</li>
 						</ul>
 					</div>
 				</div>

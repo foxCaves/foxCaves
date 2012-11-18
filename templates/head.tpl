@@ -5,6 +5,7 @@
 		<link rel="stylesheet" type="text/css" href="<%= STATIC_URL_PREFIX %>/css/bootstrap.css" />
 		<link rel="stylesheet" type="text/css" href="<%= STATIC_URL_PREFIX %>/css/bootstrap-progressbar.css" />
 		<link rel="stylesheet" type="text/css" href="<%= STATIC_URL_PREFIX %>/css/main.css" />
+		<link rel="stylesheet" type="text/css" href="<%= STATIC_URL_PREFIX %>/css/<%= ((G.ngx.ctx.user and G.ngx.ctx.user.style) or "purple_fox") %>.css" />
 		<link rel="stylesheet" type="text/css" href="<%= STATIC_URL_PREFIX %>/css/prettify.css" />
 
 		<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/1.8.3/jquery.min.js" type="text/javascript"></script>
