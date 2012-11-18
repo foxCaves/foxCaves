@@ -10,7 +10,7 @@ if res and res.user and res ~= ngx.null then
 	local userID = database.KEYS.USERS..res.user
 
 	local userdata = database:hgetall(userID)
-
+	
 	if res.action == "activation" then
 		actiontitle = "Activation"
 		
@@ -31,6 +31,7 @@ if res and res.user and res ~= ngx.null then
 		local email = "Hello, "..userdata.username.."!\n\nHere is your new password:\n"..newPassword.."\nPlease log in at https://foxcav.es/login and change it as soon as possible.\n\nKind regards,\nfoxCaves Support"
 		ses_mail(userdata.email, "foxCaves - New password", email, "noreply@foxcav.es", "foxCaves")
 
+		userdata.id = userID
 		ngx.ctx.make_new_login_key(userdata)
 	end
 
