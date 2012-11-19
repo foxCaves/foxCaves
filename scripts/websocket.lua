@@ -322,7 +322,7 @@ function USERMETA:event_received(ws, rawdata)
 		end
 	end
 	if not self.id then return end
-	self:broadcast_others(string_format("%s%i|%s", evid, self.id, rawdata), (evid == cEVENT_MOUSE_CURSOR))
+	self:broadcast_others(string_format("%c%i|%s", evid, self.id, rawdata), (evid == cEVENT_MOUSE_CURSOR))
 	
 	if historyburst then
 		self:send(table_concat(self.history ,"\n"))
