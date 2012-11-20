@@ -1,5 +1,4 @@
 <%
-	local file = file_get(fileid)
 	local escaped_name = file.name
 	local escaped_name_js = escaped_name:gsub("'", "\\'")
 %>
