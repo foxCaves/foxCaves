@@ -114,6 +114,11 @@ function ngx.ctx.get_post_args(...)
 	return ngx.req.get_post_args(...)
 end
 
+function raw_push_action(action)
+	action = action or '='
+	local res = ngx.location.capture("/scripts/longpoll_push?"..ngx.ctx.user.id.."_"..ngx.ctx.user.pushchan, { method = ngx.HTTP_POST, body = action.."\n" })
+end
+
 dofile("scripts/access.lua")
 
 _G.ngx = ngx

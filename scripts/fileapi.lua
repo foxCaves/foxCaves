@@ -129,5 +129,5 @@ end
 
 function file_push_action(fileid, action)
 	action = action or '='
-	local res = ngx.location.capture("/scripts/longpoll_push?"..ngx.ctx.user.id.."_"..ngx.ctx.user.pushchan, { method = ngx.HTTP_POST, body = action..fileid..'\nU'..tostring(ngx.ctx.user.usedbytes).."\n" })
+	raw_push_action(action..fileid..'\nU'..tostring(ngx.ctx.user.usedbytes))
 end

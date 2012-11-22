@@ -9,6 +9,10 @@ if ngx.ctx.user then
 			title = "My files"
 		},
 		{
+			url = "/mylinks",
+			title = "My links"
+		},
+		{
 			url = "/myaccount",
 			title = "My account"
 		}

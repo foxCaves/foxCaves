@@ -14,8 +14,7 @@ for i=1,10 do
 	end
 end
 if not invoiceid then
-	ngx.print("Internal error!")
-	return ngx.eof()
+	return ngx.exec("/error/500")
 end
 
 dofile("scripts/items.lua")

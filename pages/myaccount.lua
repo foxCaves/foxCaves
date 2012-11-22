@@ -46,6 +46,6 @@ if args and args.old_password then
 end
 
 dofile("scripts/navtbl.lua")
-navtbl[3].active = true
+navtbl[4].active = true
 ngx.print(load_template("myaccount", {MAINTITLE = "My account", MESSAGE = message, ADDLINKS = build_nav(navtbl)}))
 ngx.eof()
