@@ -271,7 +271,7 @@ function deleteFile(fileid, filename) {
 var currFileDrag;
 
 function setupFileDragging() {
-	$(".image_manage_ul li .image_manage_main .image_manage_top").each(function(idx, elem) {
+	$(".image_manage_ul li").each(function(idx, elem) {
 		elem.style.cursor="move";
 	});
 	
