@@ -14,7 +14,7 @@ if res and res.user and res ~= ngx.null then
 	if res.action == "activation" then
 		actiontitle = "Activation"
 		
-		if userdata.active ~= "0" then
+		if userdata.active and userdata.active ~= 0 then
 			message = "<div class='alert alert-success'>Your account was already active or is banned</div>"
 		else		
 			message = "<div class='alert alert-success'>Your account has been activated. Please <a href='/login'>login</a> now.</div>"

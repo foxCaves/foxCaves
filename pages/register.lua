@@ -61,7 +61,7 @@ if args and args.register then
 					else
 						local userid = database:incr(database.KEYS.NEXTUSERID)
 					
-						database:hmset(database.KEYS.USERS..userid, "username", args.username, "email", email, "password", ngx.hmac_sha1(args.username, args.password), "active", 0)
+						database:hmset(database.KEYS.USERS..userid, "username", args.username, "email", email, "password", ngx.hmac_sha1(args.username, args.password))
 						database:sadd(database.KEYS.EMAILS, email:lower())
 						database:set(database.KEYS.USERNAME_TO_ID..args.username:lower(), userid)
 						
