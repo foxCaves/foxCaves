@@ -6,7 +6,7 @@ if not ngx.ctx.user then
 		success = (ngx.ctx.login(user,pw,true) == ngx.ctx.LOGIN_SUCCESS)
 	end
 	if (not success) or (not ngx.ctx.user) then
-		ngx.status = 403
+		ngx.status = 401
 		ngx.print("Wrong username/password")
 		return ngx.eof()
 	end

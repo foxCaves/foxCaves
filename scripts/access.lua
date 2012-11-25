@@ -28,6 +28,11 @@ function ngx.ctx.login(username_or_id, password, nosession, login_with_id)
 	
 	local result = database:hgetall(database.KEYS.USERS..username_or_id)
 	if result then
+		if result.active then
+			result.active = tonumber(result.active)
+		else
+			result.active = 0
+		end
 		if result.active == 0 then
 			return ngx.ctx.LOGIN_USER_INACTIVE
 		elseif result.active == -1 then
