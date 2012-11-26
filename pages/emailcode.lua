@@ -14,7 +14,7 @@ if res and res.user and res ~= ngx.null then
 	if res.action == "activation" then
 		actiontitle = "Activation"
 		
-		if userdata.active and userdata.active ~= 0 then
+		if userdata.active and userdata.active ~= "0" and userdata.active ~= 0 then
 			message = "<div class='alert alert-success'>Your account was already active or is banned</div>"
 		else		
 			message = "<div class='alert alert-success'>Your account has been activated. Please <a href='/login'>login</a> now.</div>"
@@ -35,7 +35,7 @@ if res and res.user and res ~= ngx.null then
 		ngx.ctx.make_new_login_key(userdata)
 	end
 
-	--database:del(codeID)
+	database:del(codeID)
 else
 	actiontitle = "Invalid code"
 	message = "<div class='alert alert-error'>Sorry, but your code is invalid or expired</div>"
