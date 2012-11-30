@@ -53,21 +53,21 @@
 			</div>
 		</form>
 	</div>
-	<a href="https://fox.gy/d<%= RAWNAME %>" class="btn btn-large btn-block btn-primary">Download file</a>
+	<a href="https://d16l38yicn0lym.cloudfront.net/d<%= RAWNAME %>" class="btn btn-large btn-block btn-primary">Download file</a>
 	<div id="preview-wrapper">
 	<% if FILE.type == FILE_TYPE_IMAGE then %>
-		<img src="https://fox.gy/f<%= RAWNAME %>">
+		<img src="https://d16l38yicn0lym.cloudfront.net/f<%= RAWNAME %>">
 	<% elseif FILE.type == FILE_TYPE_TEXT then %>
 		<noscript>JavaScript required to preview code/text</noscript>
 		<pre class="prettyprint linenums" style="display: none;" data-thumbnail-source="<%= FILEID %><%= FILE.thumbnail %>"></pre>
 	<% elseif FILE.type == FILE_TYPE_VIDEO then %>
 		<video controls="controls">
-			<source src="https://fox.gy/f<%= RAWNAME %>" type="<%= MIMETYPES[FILE.extension] %>" />
+			<source src="https://d16l38yicn0lym.cloudfront.net/f<%= RAWNAME %>" type="<%= MIMETYPES[FILE.extension] %>" />
 			Your browser is too old.
 		</video>
 	<% elseif FILE.type == FILE_TYPE_AUDIO then %>
 		<audio id="audioplayer">
-			<source src="https://fox.gy/f<%= RAWNAME %>" type="<%= MIMETYPES[FILE.extension] %>" />
+			<source src="https://d16l38yicn0lym.cloudfront.net/f<%= RAWNAME %>" type="<%= MIMETYPES[FILE.extension] %>" />
 			Your browser is too old.
 		</audio>
 		<a href="#" onclick="return dancer_play();">Play</a>
@@ -75,7 +75,7 @@
 		<script type="text/javascript" src="<%= STATIC_URL_PREFIX %>/js/dancer.js"></script>
 		<script type="text/javascript" src="<%= STATIC_URL_PREFIX %>/js/audiovis.js"></script>
 	<% elseif FILE.type == FILE_TYPE_IFRAME then %>
-		<iframe src="https://fox.gy/f<%= RAWNAME %>" style="min-width:400px;width:100%;min-height:600px;height:100%;border:3px solid #B333E5;box-sizing:border-box;" type="<%= MIMETYPES[FILE.extension] %>"> 
+		<iframe src="https://d16l38yicn0lym.cloudfront.net/f<%= RAWNAME %>" style="min-width:400px;width:100%;min-height:600px;height:100%;border:3px solid #B333E5;box-sizing:border-box;" type="<%= MIMETYPES[FILE.extension] %>"> 
 		</iframe>
 	<% else %>
 		<h5>File cannot be viewed. Download it.</h5>
