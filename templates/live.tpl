@@ -8,7 +8,7 @@
 					Invite others to this livedraw:
 				</label>
 				<div class="controls">
-					<input readonly="readonly" type="text" value="https://fox.gy/l<%= FILEID %>?<%= LDSID %>" />
+					<input readonly="readonly" type="text" value="http://fox.gy/l<%= FILEID %>?<%= LDSID %>" />
 				</div>
 			</div>
 		</form>

@@ -4,7 +4,7 @@
 <table border="1" width="100%">
 	<% for _,linkid in pairs(LINKS) do
 		local link = link_get(linkid) %>
-		<tr><td>https://fox.gy/g<%= linkid %></td><td><%= G.escape_html(link) %></td><td><a href="?delete=<%= linkid %>">Delete</a></td></tr>
+		<tr><td>http://fox.gy/g<%= linkid %></td><td><%= G.escape_html(link) %></td><td><a href="?delete=<%= linkid %>">Delete</a></td></tr>
 	<% end %>
 </table>
 <script type="text/javascript" src="<%= STATIC_URL_PREFIX %>/js/mylinks.min.js"></script>

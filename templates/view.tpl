@@ -32,7 +32,7 @@
 					View link
 				</label>
 				<div class="controls">
-					<input readonly="readonly" type="text" value="https://fox.gy/v<%= FILEID %>" />
+					<input readonly="readonly" type="text" value="http://fox.gy/v<%= FILEID %>" />
 				</div>
 			</div>
 			<div class="control-group">
@@ -40,7 +40,7 @@
 					Direct link
 				</label>
 				<div class="controls">
-					<input readonly="readonly" type="text" value="https://fox.gy/f<%= FILEID %><%= FILE.extension %>" />
+					<input readonly="readonly" type="text" value="http://fox.gy/f<%= FILEID %><%= FILE.extension %>" />
 				</div>
 			</div>
 			<div class="control-group">
@@ -48,7 +48,7 @@
 					Download link
 				</label>
 				<div class="controls">
-					<input readonly="readonly" type="text" value="https://fox.gy/d<%= FILEID %><%= FILE.extension %>" />
+					<input readonly="readonly" type="text" value="http://fox.gy/d<%= FILEID %><%= FILE.extension %>" />
 				</div>
 			</div>
 		</form>
