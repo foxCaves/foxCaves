@@ -79,6 +79,9 @@ $(document).ready(function(){
 	});
 	
 	var last_modified = "Thu, 1 Jan 1970 00:00:00 GMT";
+	if(PUSH_IF_MODIFIED_SINCE) {
+		last_modified = PUSH_IF_MODIFIED_SINCE;
+	}
 	var etag = "0";
 	
 	/*TODO: Fix history API with this
