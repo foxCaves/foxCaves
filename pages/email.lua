@@ -42,8 +42,10 @@ if args and args.send then
 		else
 			local userid = database:get(database.KEYS.USERNAME_TO_ID..username:lower())
 			local userdata
-			if userid then
+			if userid and userid ~= ngx.null then
 				userdata = database:hgetall(database.KEYS.USERS..userid)
+			else
+				userid = nil
 			end
 			if (not userid) or (userdata.email:lower() ~= email:lower()) then
 				message = "<div class='alert alert-error'>There is no user with the specified username and E-Mail on record</div>"
