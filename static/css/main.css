@@ -94,7 +94,7 @@ body {
 	padding-top: 2px;
 }
 
-.navbar .nav li a {
+.navbar .nav > li > a {
   -webkit-transition: border-color linear .2s;
   -moz-transition: border-color linear .2s;
   -o-transition: border-color linear .2s;

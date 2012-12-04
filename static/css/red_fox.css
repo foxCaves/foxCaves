@@ -123,7 +123,9 @@ input[type="search"],
 input[type="tel"],
 input[type="color"],
 .uneditable-input {
+	background-color: #bbb !important;
 	border-color: #DF6200;
+	color: #eee;
 }
 
 select,
@@ -147,6 +149,8 @@ input[type="color"]:focus,
 	-moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 15px rgba(223, 98, 0, 0.9) !important;
 	box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 15px rgba(223, 98, 0, 0.9) !important;
 	border-color: #DF6200;
+	background-color: #aaa !important;
+	color: #eee;
 }
 
 input[type="submit"]:hover {
@@ -157,10 +161,8 @@ input[type="submit"]:hover {
 
 select {
 	outline: none !important;
-	background-color: #111;
 	border-radius: 3px;
 	border: 1px solid #DF6200;
-	color: #999;
 }
 
 video {
@@ -173,35 +175,17 @@ legend, label {
 	color: #777;
 }
 
-textarea,
-input[type="text"],
-input[type="password"],
-input[type="datetime"],
-input[type="datetime-local"],
-input[type="date"],
-input[type="month"],
-input[type="time"],
-input[type="week"],
-input[type="number"],
-input[type="email"],
-input[type="url"],
-input[type="search"],
-input[type="tel"],
-input[type="color"],
-.uneditable-input {
-	background-color: #999 !important;
+.navbar .nav > li > a {
+	color: #222;
 }
 
-.navbar .nav > li > a {
-	color: black;
-}
 h1,
 h2,
 h3,
 h4,
 h5,
 h6 {
-	color: black;
+	color: #222;
 }
 
 a:hover {
@@ -235,4 +219,26 @@ body {
 	background-image: -o-linear-gradient(top, #EEE, #8F8F8F);
 	background-image: linear-gradient(to bottom, #EEE, #8F8F8F);
 	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff8F8F8F', endColorstr='#ff8F8F8F', GradientType=0);
+}
+
+.dropdown-menu {
+	background-color: #ccc;
+	-webkit-box-shadow: 0 2px 4px rgba(50, 50, 50, 0.8);
+	-moz-box-shadow: 0 2px 4px rgba(50, 50, 50, 0.8);
+	box-shadow: 0 2px 4px rgba(50, 50, 50, 0.8);
+}
+
+.navbar .nav li.dropdown.open > .dropdown-toggle,
+.navbar .nav li.dropdown.active > .dropdown-toggle,
+.navbar .nav li.dropdown.open.active > .dropdown-toggle {
+	background-color: #CCC;
+}
+
+#uploader.hover {
+	border-color: #DF6200;
+	color: #DF6200;
+}
+
+#recycle_bin {
+	-webkit-filter: hue-rotate(100deg);/* BESSER ALS NICHTS DORI!*/
 }

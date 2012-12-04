@@ -171,3 +171,8 @@ select {
 video {
 	border: 3px solid #B333E5;
 }
+
+#uploader.hover {
+	border-color: #B333E5;
+	color: #B333E5;
+}
