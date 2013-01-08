@@ -28,27 +28,27 @@
 				</div>
 			</div>
 			<div class="control-group">
-				<label class="control-label">
+				<label class="control-label" for="view-link">
 					View link
 				</label>
 				<div class="controls">
-					<input readonly="readonly" type="text" value="http://fox.gy/v<%= FILEID %>" />
+					<input readonly="readonly" id="view-link" type="text" value="http://fox.gy/v<%= FILEID %>" />
 				</div>
 			</div>
 			<div class="control-group">
-				<label class="control-label">
+				<label class="control-label" for="direct-link">
 					Direct link
 				</label>
 				<div class="controls">
-					<input readonly="readonly" type="text" value="http://fox.gy/f<%= FILEID %><%= FILE.extension %>" />
+					<input readonly="readonly" id="direct-link" type="text" value="http://fox.gy/f<%= FILEID %><%= FILE.extension %>" />
 				</div>
 			</div>
 			<div class="control-group">
-				<label class="control-label">
+				<label class="control-label" for="download-link">
 					Download link
 				</label>
 				<div class="controls">
-					<input readonly="readonly" type="text" value="http://fox.gy/d<%= FILEID %><%= FILE.extension %>" />
+					<input readonly="readonly" id="download-link" type="text" value="http://fox.gy/d<%= FILEID %><%= FILE.extension %>" />
 				</div>
 			</div>
 		</form>
