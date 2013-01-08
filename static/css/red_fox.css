@@ -242,3 +242,7 @@ body {
 #recycle_bin {
 	-webkit-filter: hue-rotate(100deg);/* BESSER ALS NICHTS DORI!*/
 }
+
+#pdf-view {
+	border-color: #DF6200;
+}

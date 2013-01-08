@@ -75,7 +75,7 @@
 		<script type="text/javascript" src="<%= STATIC_URL_PREFIX %>/js/dancer.js"></script>
 		<script type="text/javascript" src="<%= STATIC_URL_PREFIX %>/js/audiovis.js"></script>
 	<% elseif FILE.type == FILE_TYPE_IFRAME then %>
-		<iframe src="https://d16l38yicn0lym.cloudfront.net/f<%= RAWNAME %>" style="min-width:400px;width:100%;min-height:600px;height:100%;border:3px solid #B333E5;box-sizing:border-box;" type="<%= MIMETYPES[FILE.extension] %>"> 
+		<iframe id="pdf-view" src="https://d16l38yicn0lym.cloudfront.net/f<%= RAWNAME %>" type="<%= MIMETYPES[FILE.extension] %>"> 
 		</iframe>
 	<% else %>
 		<h5>File cannot be viewed. Download it.</h5>
