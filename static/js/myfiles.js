@@ -55,7 +55,7 @@ function processNextFile() {
 	if(typeof theFile == "object") {
 		var dropZoneFileReader = new FileReader();
 		dropZoneFileReader.onloadend = function (evt) {
-			fileUpload(theFile.name, evt.target.result);
+			fileUpload(theFile.name, new Int8Array(evt.target.result));
 		};
 		dropZoneFileReader.readAsArrayBuffer(theFile);
 	} else if(typeof theFile == "string") {
@@ -172,7 +172,7 @@ function setupDropZone() {
 	docSel.bind("dragleave.dropZone", handleDragOver);
 	docSel.bind("drop.dropZone", handleDropFileSelect);
 	
-	document.getElementsByTagName("body")[0].addEventListener("mouseout", function(e){ console.log("DERP"); resetDropZone(); }, false);
+	document.getElementsByTagName("body")[0].addEventListener("mouseout", function(e){ resetDropZone(); }, false);
 }
 
 function refreshFiles() {
