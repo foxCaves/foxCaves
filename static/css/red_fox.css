@@ -103,7 +103,7 @@ a.thumbnail:hover {
 
 .navbar-fixed-bottom .nav li a:hover {
 	border-top: 3px solid #DF6200;
-	border-bottom: 0px solid black !important;
+	border-bottom: 0px solid transparent !important;
 }
 
 select,
