@@ -56,7 +56,7 @@
 	<a href="https://d16l38yicn0lym.cloudfront.net/d<%= RAWNAME %>" class="btn btn-large btn-block btn-primary">Download file</a>
 	<div id="preview-wrapper">
 	<% if FILE.type == FILE_TYPE_IMAGE then %>
-		<img src="https://d16l38yicn0lym.cloudfront.net/f<%= RAWNAME %>">
+		<a href="https://d16l38yicn0lym.cloudfront.net/f<%= RAWNAME %>"><img src="https://d16l38yicn0lym.cloudfront.net/f<%= RAWNAME %>"></a>
 	<% elseif FILE.type == FILE_TYPE_TEXT then %>
 		<noscript>JavaScript required to preview code/text</noscript>
 		<pre class="prettyprint linenums" style="display: none;" data-thumbnail-source="<%= FILEID %><%= FILE.thumbnail %>"></pre>
