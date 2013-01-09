@@ -20,7 +20,7 @@ local function makeTableRecurse(var, done)
 	elseif(t == "function") then
 		return escape_html(tostring(var))
 	else
-		return escape_html(tostring(var))
+		return escape_html(tostring(var):sub(1, 1024))
 	end
 end
 
