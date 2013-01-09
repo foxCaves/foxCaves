@@ -206,7 +206,7 @@ local function sendAttachmentMail(attachment)
 	mp = mp .. buildMultipart("error.html", attachment, boundry)
 	
 	mail(
-		"mriq91@gmail.com",
+		"development@foxcav.es",
 		"[foxCaves] Error report",
 		"",
 		"noreply@foxcav.es",
