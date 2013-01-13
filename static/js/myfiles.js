@@ -6,7 +6,6 @@ var dropZoneUploads = new Array();
 var dropZoneFileNumber = 0;
 var dropZoneFileCount = 0;
 
-
 function handleDropFileSelect(evt) {
 	var dropZone = document.getElementById("uploader");
 	handleDragOver(evt);
@@ -31,6 +30,15 @@ function formatZeros(val, len) {
 	return (new Array(len - val.length + 1).join("0"))+val;
 }
 
+var currentUpload;
+var wasAborted = false;
+
+function abortCurrentFileUpload() {
+	wasAborted = true;
+	currentUpload.abort();
+	wasAborted = false;
+}
+
 function processNextFile() {
 	if(dropZoneTransferInProgress) return;
 	
@@ -49,7 +57,7 @@ function processNextFile() {
 	
 	dropZoneTransferInProgress = true;
 	if(dropZoneFileNumber == 0) {
-		dropZone.innerHTML = '<div class="container">Uploading<br />File: <span id="curFileName">N/A</span><div id="barUpload" style="margin-left: 50px; margin-right: 50px;" class="progress progress-striped"><div class="bar" style="width: 0%;"></div></div><br />Total: <div id="barUploadTotal" style="margin-left: 50px; margin-right: 50px;" class="progress progress-striped"><div class="bar" style="width: 0%;"></div></div></div>';
+		dropZone.innerHTML = '<div class="container">Uploading<br />File: <span id="curFileName">N/A</span><div id="barUpload" style="margin-left: 50px; margin-right: 50px;" class="progress progress-striped"><div class="bar" style="width: 0%;"></div></div><br />Total: <div id="barUploadTotal" style="margin-left: 50px; margin-right: 50px;" class="progress progress-striped"><div class="bar" style="width: 0%;"></div></div><input type="button"  value="Abort upload" class="btn" onclick="abortCurrentFileUpload();" /></div>';
 	}
 	
 	if(typeof theFile == "object") {
@@ -95,11 +103,13 @@ function fileUpload(name, fileData) {
 				processNextFile();
 			} else {
 				processNextFile();
-				alert("Upload error: " + xhr.responseText);
+				if(!wasAborted)
+					alert("Upload error: " + xhr.responseText);
 			}
 		}
 	};
 	xhr.open("PUT", "/api/create?"+escape(name));
+	currentUpload = xhr;
 	xhr.send(fileData);
 }
 
@@ -342,12 +352,12 @@ function setupHeadUtils() {
 	var refreshNode = document.createTextNode(' ');
 	headUtil = {
 		clear: function (ev) {
-			while (headUtl.hasChildNodes())
-				headUtl.removeChild(headUtl.lastChild);
+			while (headUtl.childNodes.length > 1)
+				headUtl.removeChild(headUtl.lastChild.previousSibling);
 		},
 		
 		appendElement: function(elem) {
-			headUtl.appendChild(elem);
+			headUtl.insertBefore(elem, headUtl.lastChild.previousSibling);
 		},
 		
 		removeElement: function(elem) {
