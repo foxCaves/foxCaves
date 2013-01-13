@@ -193,9 +193,8 @@ function setBrushWidth(bWidth) {
 function setBrushColor(bColor) {
 	if(bColor == brushColor)
 		return;
-	if(bColor.charAt(0) != "#") {
+	if(bColor.charAt(0) != "#")
 		bColor = "#" + bColor;
-	}
 	brushColor = bColor;
 	setBrushAttribsLocal();
 	sendDrawEvent(EVENT_COLOR, brushColor.substr(1));
@@ -216,9 +215,8 @@ function resetCanvasImage(dontsend) {
 	
 	canvasStableImageData = canvasCTX.createImageData(canvasEle.width, canvasEle.height);
 	
-	if(!dontsend) {
+	if(!dontsend)
 		sendDrawEvent(EVENT_RESET, "");
-	}
 }
 
 function recvDirectEvent(evtype, payload) {
@@ -248,9 +246,9 @@ function recvDirectEvent(evtype, payload) {
 			paintUsers[payload[0]] = null;
 			break;
 		case EVENT_IMGBURST:
-			if(payload[0] == "r") {
+			if(payload[0] == "r")
 				sendDrawEvent(EVENT_IMGBURST, payload[1]+"|"+canvasEle.toDataURL("image/png").replace("\n","").replace("\r","")+"|");
-			} else if(payload[1] == "a") {
+			else if(payload[1] == "a") {
 				var toSet = new Image();
 				toSet.onload = function() {
 					canvasCTX.drawImage(toSet, 0, 0, canvasEle.width, canvasEle.height);
@@ -311,9 +309,8 @@ function recvBrushEvent(from, evtype, x, y) {
 	var cstableData = canvasStableImageDataNeeded;
 	brush.select();
 	canvasStableImageDataNeeded = cstableData;
-	if(canvasStableImageDataNeeded) {
+	if(canvasStableImageDataNeeded)
 		canvasCTX.putImageData(canvasStableImageData, 0, 0);
-	}
 	
 	switch(evtype) {
 		case EVENT_MOUSE_DOWN:
@@ -331,9 +328,8 @@ function recvBrushEvent(from, evtype, x, y) {
 	setBrushAttribsLocal();
 	if(canvasStableImageDataNeeded) {
 		canvasStableImageData = canvasCTX.getImageData(0, 0, canvasEle.width, canvasEle.height);
-		if(brushState.lastX) {
+		if(brushState.lastX)
 			currentBrush.move(brushState.lastX, brushState.lastY);
-		}
 	}
 }
 
@@ -364,17 +360,15 @@ function setOffsetXAndY(evt) {
 }
 
 function liveDrawCanvasMouseOut(evt) {
-	if(canvasStableImageDataNeeded) {
+	if(canvasStableImageDataNeeded)
 		liveDrawCanvasMouseMove(evt);
-	} else {
+	else
 		liveDrawCanvasMouseUp(evt);
-	}
 }
 
 function liveDrawCanvasMouseOver(evt) {
-	if(canvasStableImageDataNeeded) {
+	if(canvasStableImageDataNeeded)
 		liveDrawCanvasMouseMove(evt);
-	}
 }
 
 function liveDrawCanvasMouseDown(evt) {
@@ -384,15 +378,13 @@ function liveDrawCanvasMouseDown(evt) {
 	
 	setOffsetXAndY(evt);
 	
-	if(!currentBrush.down(evt.myOffsetX, evt.myOffsetY, brushState)) {
+	if(!currentBrush.down(evt.myOffsetX, evt.myOffsetY, brushState))
 		sendBrushEvent(EVENT_MOUSE_DOWN, evt.myOffsetX, evt.myOffsetY);
-	} else {
+	else
 		sendBrushEvent(EVENT_MOUSE_CURSOR, evt.myOffsetX, evt.myOffsetY);
-	}
 	
-	if(canvasStableImageDataNeeded) {
+	if(canvasStableImageDataNeeded)
 		canvasStableImageData = canvasCTX.getImageData(0, 0, canvasEle.width, canvasEle.height);
-	}
 }
 
 function liveDrawCanvasMouseUp(evt) {
@@ -405,15 +397,13 @@ function liveDrawCanvasMouseUp(evt) {
 		
 	setOffsetXAndY(evt);
 	
-	if(canvasStableImageDataNeeded) {
+	if(canvasStableImageDataNeeded)
 		canvasCTX.putImageData(canvasStableImageData, 0, 0);
-	}
 	
-	if(!currentBrush.up(evt.myOffsetX, evt.myOffsetY, brushState)) {
+	if(!currentBrush.up(evt.myOffsetX, evt.myOffsetY, brushState))
 		sendBrushEvent(EVENT_MOUSE_UP, evt.myOffsetX, evt.myOffsetY);
-	} else {
+	else
 		sendBrushEvent(EVENT_MOUSE_CURSOR, evt.myOffsetX, evt.myOffsetY);
-	}
 	
 	brushState.lastX = null;
 	brushState.lastY = null;
@@ -427,15 +417,13 @@ function liveDrawCanvasMouseMove(evt) {
 		
 	setOffsetXAndY(evt);
 	
-	if(canvasStableImageDataNeeded) {
+	if(canvasStableImageDataNeeded)
 		canvasCTX.putImageData(canvasStableImageData, 0, 0);
-	}
 	
-	if(!currentBrush.move(evt.myOffsetX, evt.myOffsetY, brushState)) {
+	if(!currentBrush.move(evt.myOffsetX, evt.myOffsetY, brushState))
 		sendBrushEvent(EVENT_MOUSE_MOVE, evt.myOffsetX, evt.myOffsetY);
-	} else {
+	else
 		sendBrushEvent(EVENT_MOUSE_CURSOR, evt.myOffsetX, evt.myOffsetY);
-	}
 }
 
 function webSocket_tryConnect() {
@@ -465,12 +453,12 @@ function webSocket_tryConnect() {
 		};
 		
 		webSocket.onerror = function(evt) {
-			window.setTimeout("webSocket_tryConnect();", 200);
+			window.setTimeout(webSocket_tryConnect, 200);
 			webSocket.close();
 		};
 		
 		webSocket.onclose = function(evt) {
-			window.setTimeout("webSocket_tryConnect();", 200);
+			window.setTimeout(webSocket_tryConnect, 200);
 			webSocket.close();
 		}
 		

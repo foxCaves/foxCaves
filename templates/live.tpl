@@ -3,12 +3,12 @@
 	<h3>Live drawing file: <%= FILE.name %></h3>
 	<div class="well well-small" style="text-align: left;">
 		<form class="form-horizontal">
-			<div class="control-group">
+			<div class="control-group" for="inviteid">
 				<label class="control-label">
 					Invite others to this livedraw:
 				</label>
 				<div class="controls">
-					<input readonly="readonly" type="text" value="http://fox.gy/l<%= FILEID %>?<%= LDSID %>" />
+					<input type="text" readonly="readonly" id="inviteid" value="http://fox.gy/l<%= FILEID %>?<%= LDSID %>" />
 				</div>
 			</div>
 		</form>

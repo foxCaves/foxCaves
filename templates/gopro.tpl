@@ -26,7 +26,7 @@
 
 			<input type="hidden" name="lc" value="US">
 
-			<input class="btn btn-large btn-warning" type="submit" name="submit" alt="" value="Pay with PayPal">
+			<input type="submit" class="btn btn-large btn-warning" name="submit" alt="" value="Pay with PayPal">
 		</form>
 	</h3>
 	<h3><%= item.title %> [<%= item.price %>$]</h3>

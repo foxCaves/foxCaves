@@ -3,27 +3,27 @@
 <form action="" method="post" class="form-horizontal">
 	<legend>Please enter your requested user details</legend>
 	<div class="control-group">
-		<label class="control-label">Username</label>
+		<label class="control-label" for="username">Username</label>
 		<div class="controls">
-			<input type="text" name="username" value="<%= G.ngx.ctx.escape_html(USERNAME) %>" />
+			<input type="text" name="username" id="username" value="<%= G.ngx.ctx.escape_html(USERNAME) %>" />
 		</div>
 	</div>
 	<div class="control-group">
-		<label class="control-label">Password</label>
+		<label class="control-label" for="password">Password</label>
 		<div class="controls">
-			<input type="password" name="password" value="" />
+			<input type="password" name="password" id="password" value="" />
 		</div>
 	</div>
 	<div class="control-group">
-		<label class="control-label">Confirm password</label>
+		<label class="control-label" for="passwordconf">Confirm password</label>
 		<div class="controls">
-			<input type="password" name="password_confirm" value="" />
+			<input type="password" name="password_confirm" id="passwordconf" value="" />
 		</div>
 	</div>
 	<div class="control-group">
-		<label class="control-label">E-Mail</label>
+		<label class="control-label" for="email">E-Mail</label>
 		<div class="controls">
-			<input type="text" name="email" value="<%= G.ngx.ctx.escape_html(EMAIL) %>" />
+			<input type="text" name="email" id="emails" value="<%= G.ngx.ctx.escape_html(EMAIL) %>" />
 		</div>
 	</div>
 
