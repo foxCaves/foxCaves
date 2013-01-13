@@ -5,43 +5,61 @@ end
 
 local database = ngx.ctx.database
 
+local function s3_request_multi(tbl)
+	local reqParams = {}
+	for _,req in pairs(tbl) do
+		req.method = req.method or ngx.HTTP_GET
+		local method_str
+		if req.method == ngx.HTTP_GET then
+			method_str = "GET"
+		elseif req.method == ngx.HTTP_PUT then
+			method_str = "PUT"
+		elseif req.method == ngx.HTTP_POST then
+			method_str = "POST"
+		elseif req.method == ngx.HTTP_DELETE then
+			method_str = "DELETE"
+		end
+		
+		table.insert(reqParams, {"/scripts/amazon_s3", {
+			ctx = {
+				amz_content_type = (req.content_type or ""),
+				amz_content_disposition = (req.content_disposition or ""),
+				amz_cache_control = (req.cache_control or ""),
+				amz_key = req.file,
+				amz_request_method = method_str
+			},
+			method = req.method,
+			copy_all_vars = false,
+			share_all_vars = false,
+			body = req.body or ""
+		}})
+	end
+	
+	local resps = {ngx.location.capture_multi(reqParams)}
+	
+	for _,res in pairs(resps) do
+		if res.status ~= 200 and res.status ~= 204 then
+			local err = ""
+			for k,v in pairs(res) do
+				err = err .. "\n" .. k .. " => " .. tostring(v)
+			end
+			for k,v in pairs(res.header) do
+				err = err .. "\nHEAD_" .. k .. " => " .. tostring(v)
+			end
+			if body == nil then
+				err = err .. "\nEMPTY BODY"
+			else
+				err = err .. "\nFILLED BODY"
+			end
+			error("Request failed: "..err)
+		end
+	end
+	
+	return resps
+end
 local function s3_request(file, method, content_type, cache_control, body, content_disposition)
-	method = method or ngx.HTTP_GET
-	local method_str
-	if method == ngx.HTTP_GET then
-		method_str = "GET"
-	elseif method == ngx.HTTP_PUT then
-		method_str = "PUT"
-	elseif method == ngx.HTTP_DELETE then
-		method_str = "DELETE"
-	end
-	
-	local res = ngx.location.capture("/scripts/amazon_s3", {
-		ctx = {
-			amz_content_type = (content_type or ""),
-			amz_content_disposition = (content_disposition or ""),
-			amz_cache_control = (cache_control or ""),
-			amz_key = file,
-			amz_request_method = method_str
-		},
-		method = method,
-		copy_all_vars = false,
-		share_all_vars = false,
-		body = body
-	})
-	
-	if res.status ~= 200 and res.status ~= 204 then
-		local err = ""
-		for k,v in pairs(res) do
-			err = err .. "\n" .. k .. " => " .. tostring(v)
-		end
-		for k,v in pairs(res.header) do
-			err = err .. "\nHEAD_" .. k .. " => " .. tostring(v)
-		end
-		error("Request failed: "..err)
-	end
-	
-	return res
+	local res = s3_request_multi({{file = file, method = method, content_type = content_type, cache_control = cache_control, body = body, content_disposition = content_disposition}})
+	return res[1]
 end
 function get_s3_request()
 	return s3_request
@@ -101,17 +119,78 @@ function file_download(fileid, user)
 	return true, res.body, file
 end
 
+local S3_PARTSIZE = 6 * 1024 * 1024
+
 function file_upload(fileid, filename, extension, thumbnail, filetype, thumbtype)
 	local fullname = fileid .. extension
 	
-	s3_request(
-		fileid .. "/file" .. extension,
-		ngx.HTTP_PUT,
-		filetype or "application/octet-stream",
-		"public, max-age=86400",
-		file_fullread("files/" .. fullname),
-		'inline; filename="'..filename:gsub('"',"'")..'"'
-	)
+	local fileContent = file_fullread("files/" .. fullname)
+	local fileSize = fileContent:len()
+	if fileSize <= S3_PARTSIZE then
+		s3_request(
+			fileid .. "/file" .. extension,
+			ngx.HTTP_PUT,
+			filetype or "application/octet-stream",
+			"public, max-age=86400",
+			fileContent,
+			'inline; filename="'..filename:gsub('"',"'")..'"'
+		)
+	else
+		local fName = fileid .. "/file" .. extension
+	
+		local uploadID = s3_request(
+			fName .. "?uploads",
+			ngx.HTTP_POST,
+			filetype or "application/octet-stream",
+			"public, max-age=86400",
+			nil,
+			'inline; filename="'..filename:gsub('"',"'")..'"'
+		)
+		uploadID = ngx.re.match(uploadID.body, "<UploadId>([^<]+)</UploadId>", "o")
+		uploadID = "uploadId=" .. uploadID[1]
+		
+		local partCount = math.floor(fileSize / S3_PARTSIZE)
+		
+		local completeReply = {"<CompleteMultipartUpload>"}
+		
+		local requests = {}
+		for partNumber = 1,partCount do
+			local startPos = ((partNumber - 1) * S3_PARTSIZE) + 1
+			local endPos
+			if partNumber < partCount then
+				endPos = startPos + S3_PARTSIZE
+			else
+				endPos = fileSize
+			end
+			
+			requests[partNumber] = {
+				file = fName .. "?partNumber=" .. partNumber .. "&" .. uploadID,
+				method = ngx.HTTP_PUT,
+				body = fileContent:sub(startPos, endPos)
+			}
+		end
+		
+		local res = s3_request_multi(requests)
+		for partNumber,reply in pairs(res) do	
+			table.insert(completeReply, "<Part><PartNumber>")
+			table.insert(completeReply, partNumber)
+			table.insert(completeReply, "</PartNumber><ETag>")
+			table.insert(completeReply, reply.header.ETag)
+			table.insert(completeReply, "</ETag></Part>")
+		end
+		
+		table.insert(completeReply, "</CompleteMultipartUpload>")
+		completeReply = table.concat(completeReply)
+		
+		s3_request(
+				fName .. "?" .. uploadID,
+				ngx.HTTP_POST,
+				nil,
+				nil,
+				completeReply,
+				nil
+		)
+	end
 
 	if thumbnail and thumbnail ~= "" then
 		s3_request(
