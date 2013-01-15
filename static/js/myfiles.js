@@ -442,7 +442,7 @@ function setupPasting() {
 	}, false);
 }
 
-//$(document).ready(function() {
+$(document).ready(function() {
 	setupHeadUtils();
 	
 	setupOptionMenu();
@@ -465,4 +465,4 @@ function setupPasting() {
 		}
 		return false;
 	});
-//});
+});
