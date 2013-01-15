@@ -180,6 +180,7 @@ function setupDropZone() {
 	var docSel = $("*:not(#recycle_bin)");
 	docSel.bind("dragenter.dropZone", handleDragOver);
 	docSel.bind("dragleave.dropZone", handleDragOver);
+	docSel.bind("dragover.dropZone", preventDefault);
 	docSel.bind("drop.dropZone", handleDropFileSelect);
 	
 	document.getElementsByTagName("body")[0].addEventListener("mouseout", function(e){ resetDropZone(); }, false);
