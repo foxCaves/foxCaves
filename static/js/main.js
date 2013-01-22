@@ -104,11 +104,14 @@ $(document).ready(function(){
 			}
 		}
     };
+	
+	var useSSL = (window.location.protocol == "https:");
+	var port = (useSSL ? 443 : 80);
 
     var pushstream = new PushStream({
       host: window.location.hostname,
-      port: window.location.port,
-	  useSSL: (window.location.port == 443),
+      port: port,
+	  useSSL: useSSL,
 	  urlPrefixStream: "/push/stream",
 	  urlPrefixEventsource: "/push/eventsource",
 	  urlPrefixLongpolling: "/push/longpolling",
