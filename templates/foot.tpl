@@ -41,6 +41,7 @@ if not G.ngx.var.http_X_Is_Js_Request then %>
 		<script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/2.2.1/bootstrap.min.js" type="text/javascript"></script>
 		<script src="//cdnjs.cloudflare.com/ajax/libs/prettify/188.0.0/prettify.js" type="text/javascript"></script>
 		<script src="//cdnjs.cloudflare.com/ajax/libs/prettify/188.0.0/lang-lua.js" type="text/javascript"></script>
+		<script src="<%= STATIC_URL_PREFIX %>/js/pushstream.min.js" type="text/javascript"></script>
 		<script src="<%= STATIC_URL_PREFIX %>/js/main.min.js" type="text/javascript"></script>
 	</body>
 </html>

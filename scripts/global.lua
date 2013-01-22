@@ -116,7 +116,7 @@ end
 
 function raw_push_action(action)
 	action = action or '='
-	local res = ngx.location.capture("/scripts/longpoll_push?"..ngx.ctx.user.id.."_"..ngx.ctx.user.pushchan, { method = ngx.HTTP_POST, body = action.."\n" })
+	local res = ngx.location.capture("/scripts/longpoll_push?"..ngx.ctx.user.id.."_"..ngx.ctx.user.pushchan, { method = ngx.HTTP_POST, body = action.."|" })
 end
 
 dofile("scripts/access.lua")

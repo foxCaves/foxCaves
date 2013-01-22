@@ -78,50 +78,43 @@ $(document).ready(function(){
 		return true;
 	});
 	
-	var last_modified = "Thu, 1 Jan 1970 00:00:00 GMT";
-	if(PUSH_IF_MODIFIED_SINCE) {
-		last_modified = PUSH_IF_MODIFIED_SINCE;
-	}
-	var etag = "0";
-	
 	/*TODO: Fix history API with this
 	$("a:not([href=#])").click(function(ev) {
 		preventDefault(ev);
 		loadPage(ev.currentTarget.href);
 	});*/
 	
-	(function files_poll(){
-		$.ajax({ url: "/api/longpoll?"+PUSH_CHANNEL,
-			beforeSend: function(xhr) {
-				xhr.setRequestHeader("If-None-Match", etag);
-				xhr.setRequestHeader("If-Modified-Since", last_modified);
-			},
-			success: function(data, textStatus, xhr) {
-				etag = xhr.getResponseHeader('Etag');
-				last_modified = xhr.getResponseHeader('Last-Modified');
-			
-				var cmds = data.split("\n");
-				
-				for(var i=0;i<cmds.length;i++) {
-					var action = cmds[i].trim();
-					
-					if(action == "") {
-						continue;
-					}
-					
-					var param = action.substr(1);
-					action = action.charAt(0);
-					
-					for(var j=0;j<pushHandlers.length;j++) {
-						if(pushHandlers[j](action, param)) {
-							break;
-						}
-					}
+	function messageReceived(text, id, channel) {
+		var cmds = text.split("|");
+
+		for(var i=0;i<cmds.length;i++) {
+			var action = cmds[i].trim();
+
+			if(action == "") {
+				continue;
+			}
+
+			var param = action.substr(1);
+			action = action.charAt(0);
+
+			for(var j=0;j<pushHandlers.length;j++) {
+				if(pushHandlers[j](action, param)) {
+					break;
 				}
-			},
-			complete: files_poll,
-			timeout: 30000,
-			dataType: "text"
-		});
-	})();
-})
+			}
+		}
+    };
+
+    var pushstream = new PushStream({
+      host: window.location.hostname,
+      port: window.location.port,
+	  useSSL: (window.location.port == 443),
+	  urlPrefixStream: "/push/stream",
+	  urlPrefixEventsource: "/push/eventsource",
+	  urlPrefixLongpolling: "/push/longpolling",
+	  urlPrefixWebsocket: "/push/websocket"
+    });
+    pushstream.onmessage = messageReceived;
+    pushstream.addChannel(PUSH_CHANNEL);
+    pushstream.connect();
+});

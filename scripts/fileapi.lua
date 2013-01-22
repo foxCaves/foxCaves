@@ -208,5 +208,5 @@ end
 
 function file_push_action(fileid, action)
 	action = action or '='
-	raw_push_action(action..fileid..'\nU'..tostring(ngx.ctx.user.usedbytes))
+	raw_push_action(action..fileid..'|U'..tostring(ngx.ctx.user.usedbytes))
 end
