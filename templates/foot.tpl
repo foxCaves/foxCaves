@@ -34,10 +34,7 @@ if not G.ngx.var.http_X_Is_Js_Request then %>
 				</div>
 			</div>
 		</div>
-		<script type="text/javascript">
-			var PUSH_CHANNEL = "<% if G.ngx.ctx.user then %><%= G.ngx.ctx.user.id %>_<%= G.ngx.ctx.user.pushchan %><% end %>";
-			var PUSH_IF_MODIFIED_SINCE = "<%= G.ngx.http_time(G.ngx.time()) %>";
-		</script>
+		<script type="text/javascript">var PUSH_CHANNEL="<% if G.ngx.ctx.user then %><%= G.ngx.ctx.user.id %>_<%= G.ngx.ctx.user.pushchan %><% end %>";</script>
 		<script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/2.2.1/bootstrap.min.js" type="text/javascript"></script>
 		<script src="//cdnjs.cloudflare.com/ajax/libs/prettify/188.0.0/prettify.js" type="text/javascript"></script>
 		<script src="//cdnjs.cloudflare.com/ajax/libs/prettify/188.0.0/lang-lua.js" type="text/javascript"></script>
