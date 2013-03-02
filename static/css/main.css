@@ -25,9 +25,16 @@
 	-webkit-transition: background-color 0.2s ease;
 	-moz-transition: background-color 0.2s ease;
 	-o-transition: background-color 0.2s ease;
-	
+}
+
+.image_manage_top {
 	overflow: hidden;
+	text-overflow: ellipsis;
 	white-space: nowrap;
+}
+
+.image_manage_bottom {
+	overflow: visible;
 }
 
 .image_manage_main > a {
