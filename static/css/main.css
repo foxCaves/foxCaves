@@ -23,20 +23,9 @@
 	-webkit-transition: background-color 0.2s ease;
 	-moz-transition: background-color 0.2s ease;
 	-o-transition: background-color 0.2s ease;
-}
-
-.image_manage_top {
-	width: 141px;
+	
 	overflow: hidden;
 	white-space: nowrap;
-	text-overflow: ellipsis;
-	top: 0;
-}
-
-.image_manage_bottom {
-	padding-left: 3px;
-	bottom: 0;
-	width: 142px;
 }
 
 .image_manage_main > a {
