@@ -16,7 +16,6 @@
 	color: white;
 	text-align: left;
 	padding-right: 5px;
-	position: absolute;
 	z-index: 2;
 	transition: background-color 0.2s ease;
 	-webkit-transition: background-color 0.2s ease;
@@ -39,6 +38,12 @@
 	width: 142px;
 }
 
+.image_manage_main > a {
+	display: block;
+	width: 150px;
+	height: 110px;
+}
+
 .image_manage_main:hover > div {
 	background-color: rgba(0, 0, 0, 0.7);
 }
@@ -49,12 +54,11 @@
 }
 
 .image_manage_ul > li {
-	padding: 5px;
+	display: inline-block;
 	margin-right: 5px;
 	margin-left:  5px;
 	text-decoration: none;
 	text-align: center;
-	float: left;
 	margin-bottom: 10px;
 }
 
@@ -63,7 +67,6 @@
 }
 
 span.whole_div_link {
-	position: absolute;
 	width: 100%;
 	height: 100%;
 	top: 0;

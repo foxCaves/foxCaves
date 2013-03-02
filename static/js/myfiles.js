@@ -183,7 +183,7 @@ function setupDropZone() {
 	docSel.bind("dragover.dropZone", preventDefault);
 	docSel.bind("drop.dropZone", handleDropFileSelect);
 	
-	document.getElementsByTagName("body")[0].addEventListener("mouseout", function(e){ resetDropZone(); }, false);
+	document.getElementsByTagName("body")[0].addEventListener("mouseout", function(e) { resetDropZone(); }, false);
 }
 
 function refreshFiles() {
@@ -234,14 +234,14 @@ function getFileLI(fileid, func) {
 
 function addFileLI(fileid, no_refresh_if_exist) {
 	if(document.getElementById("file_"+fileid)) {
-		if(!no_refresh_if_exist) {
+		if(!no_refresh_if_exist)
 			refreshFileLI(fileid);
-		}
 		return;
 	}
 	var ele = document.getElementById("file_manage_div");
 	getFileLI(fileid, function(newFile) {
-		if(!newFile) return;
+		if(!newFile)
+			return;
 		ele.insertBefore(newFile, ele.firstChild);
 	});
 }
@@ -312,7 +312,7 @@ function setupFileDragging() {
 	
 	trashBin.addEventListener("dragover", preventDefault);
 
-	trashBin.addEventListener("dragenter", function(ev){
+	trashBin.addEventListener("dragenter", function(ev) {
 		ev.stopPropagation();
 		ev.preventDefault();
 		
@@ -325,7 +325,7 @@ function setupFileDragging() {
 		ev.target.style.opacity = "1";
 	}, false);
 
-	trashBin.addEventListener("dragleave", function(ev){
+	trashBin.addEventListener("dragleave", function(ev) {
 		ev.stopPropagation();
 		ev.preventDefault();
 		
@@ -333,7 +333,7 @@ function setupFileDragging() {
 		trashBin.style.opacity = "0.7";
 	}, false);
 
-	trashBin.addEventListener("drop", function(ev){
+	trashBin.addEventListener("drop", function(ev) {
 		ev.stopPropagation();
 		ev.preventDefault();
 		
@@ -417,7 +417,7 @@ function setupOptionMenu() {
 		var canvas2D = canvas.getContext('2d');
 		
 		var img = new Image();
-		img.onload = function(){
+		img.onload = function() {
 			canvas.width = img.width;
 			canvas.height = img.height;
 			canvas2D.drawImage(img, 0, 0, img.width, img.height);
