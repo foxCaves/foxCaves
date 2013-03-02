@@ -24,7 +24,7 @@
 	-moz-transition: background-color 0.2s ease;
 	-o-transition: background-color 0.2s ease;
 	
-	overflow: hidden;
+	overflow: visible;
 	white-space: nowrap;
 }
 
@@ -41,10 +41,6 @@
 .image_manage_ul {
 	list-style: none;
 	display: inline-block;
-}
-
-.image_manage_ul > li {
-
 }
 
 .image_manage_bottom a {
