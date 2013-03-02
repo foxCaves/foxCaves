@@ -45,6 +45,7 @@
 
 .image_manage_ul {
 	list-style: none;
+	display: inline-block;
 }
 
 .image_manage_ul > li {
