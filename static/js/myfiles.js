@@ -446,6 +446,23 @@ function setupPasting() {
 	}, false);
 }
 
+function setupSearch() {
+	document.getElementById("filter-form").style.display = "inline";
+	document.getElementById("name-filter").addEventListener("keyup", function(){
+		var nodes = document.getElementById("file_manage_div").childNodes;
+		console.log("Searching for :" + this.value);
+		for(i = 0;i<nodes.length;++i) {
+			if(nodes[i].nodeType == 1 && nodes[i].firstChild.nextSibling.title.indexOf(this.value) == -1) {
+				console.log("hid node");
+				nodes[i].style.display = "none";
+			} else if(nodes[i].nodeType == 1) {
+				nodes[i].style.display = "inline-block";
+				console.log("unhid node");
+			}
+		}
+	})
+}
+
 $(document).ready(function() {
 	setupHeadUtils();
 	
@@ -455,6 +472,8 @@ $(document).ready(function() {
 	setupFileDragging();
 	
 	setupPasting();
+	
+	setupSearch();
 	
 	pushHandlers.push(function(action, file) {
 		if(action == '+') {
