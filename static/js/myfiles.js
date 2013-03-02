@@ -220,10 +220,13 @@ function getFileLI(fileid, func) {
 			return;
 		}
 	
-		var newFile = document.createElement("ul");
+		var newFile = document.createElement("ul");//Fake
 		newFile.innerHTML = data;
 		newFile = newFile.firstChild;
-		newFile.style.cursor = "move";
+		
+		$(newFile).find(".image_manage_top, .image_manage_bottom").each(function(idx, elem) {
+			elem.style.cursor="move";
+		});
 
 		func(newFile);
 	})
@@ -283,7 +286,7 @@ function deleteFile(fileid, filename) {
 var currFileDrag;
 
 function setupFileDragging() {
-	$(".image_manage_ul li").each(function(idx, elem) {
+	$(".image_manage_top, .image_manage_bottom").each(function(idx, elem) {
 		elem.style.cursor="move";
 	});
 	
