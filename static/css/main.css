@@ -9,7 +9,9 @@
 	border: 1px solid black;
 	overflow: hidden;
 	background: no-repeat;
-	background-position: center; 
+	background-position: center;
+	
+	overflow: visible;
 }
 
 .image_manage_top, .image_manage_bottom {
@@ -24,7 +26,7 @@
 	-moz-transition: background-color 0.2s ease;
 	-o-transition: background-color 0.2s ease;
 	
-	overflow: visible;
+	overflow: hidden;
 	white-space: nowrap;
 }
 
