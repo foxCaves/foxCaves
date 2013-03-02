@@ -49,7 +49,8 @@
 
 .btn-link,
 a,
-.breadcrumb li > a {
+.breadcrumb li > a,
+#uploader.hover {
 	color: #DF6200;
 }
 
@@ -92,7 +93,9 @@ blockquote.pull-right {
 	border-right: 5px solid #DF6200;
 }
 
-a.thumbnail:hover {
+#uploader.hover,
+a.thumbnail:hover,
+#pdf-view {
 	border-color: #DF6200;
 }
 
@@ -228,21 +231,18 @@ body {
 	box-shadow: 0 2px 4px rgba(50, 50, 50, 0.8);
 }
 
+.image_manage_main {
+	-webkit-box-shadow: 2px 2px 4px #DF6200;
+	-moz-box-shadow: 2px 2px 4px #DF6200;
+	box-shadow: 2px 2px 4px #DF6200;
+}
+
 .navbar .nav li.dropdown.open > .dropdown-toggle,
 .navbar .nav li.dropdown.active > .dropdown-toggle,
 .navbar .nav li.dropdown.open.active > .dropdown-toggle {
 	background-color: #CCC;
 }
 
-#uploader.hover {
-	border-color: #DF6200;
-	color: #DF6200;
-}
-
 #recycle_bin {
 	-webkit-filter: hue-rotate(100deg);/* BESSER ALS NICHTS DORI!*/
-}
-
-#pdf-view {
-	border-color: #DF6200;
 }
