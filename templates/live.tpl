@@ -24,10 +24,12 @@
 		<option>line</option>
 	</select>
 	<br />
-	<input type="button" value="Save Image" class="btn" onclick="liveDraw.save();"/>
-	<a class="btn" download="<%= LDSID %>-edited.png" onclick="this.href=canvasEle.toDataURL('image/png')">Download</a>
 	0<input type="range" value="10" min="1" max="100" step="0.1" onchange="setBrushWidth(this.value);" />100
-	<a href="/d/<%= RAWNAME %>" class="btn btn-large btn-block btn-primary">Download original file</a>
+	<a type="button" value="Save Image" class="btn" onclick="liveDraw.save();" />
+	<a href="/d/<%= RAWNAME %>" class="btn">Download original file</a>
+	<a class="btn" download="<%= LDSID %>-edited.png" onclick="this.href=canvasEle.toDataURL('image/png')">Download</a>
+	
+	
 	<script type="text/javascript">var SESSIONID = "<% if G.ngx.ctx.user then %><%= G.ngx.ctx.user.sessionid %><% else %>GUEST<% end %>"; var LIVEDRAW_FILEID = "<%= FILEID %>"; var LIVEDRAW_SID = "<%= LDSID %>";</script>
 	<script type="text/javascript" src="<%= STATIC_URL_PREFIX %>/js/live.js"></script>
 <%+ foot %>
