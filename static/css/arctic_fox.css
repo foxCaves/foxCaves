@@ -6,6 +6,21 @@
 	}
 }
 
+::-webkit-scrollbar {
+}
+::-webkit-scrollbar-button {
+}
+::-webkit-scrollbar-track {
+}
+::-webkit-scrollbar-track-piece {
+}
+::-webkit-scrollbar-thumb {
+}
+::-webkit-scrollbar-corner {
+}
+::-webkit-resizer {
+}
+
 .dropdown-menu .active > a,
 .dropdown-menu .active > a:hover,
 .dropdown-menu li > a:hover,

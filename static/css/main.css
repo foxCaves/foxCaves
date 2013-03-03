@@ -1,3 +1,35 @@
+/*Chrome only so far*/
+::-webkit-scrollbar {
+	width: 24px;
+}
+::-webkit-scrollbar-button {
+	display: none;
+}
+::-webkit-scrollbar-track {
+	background-color: darkgrey;
+	-webkit-box-shadow: inset 2px 2px 6px rgba(0,0,0,0.4);
+}
+::-webkit-scrollbar-track:hover {
+	-webkit-box-shadow: inset 2px 2px 6px rgba(0,0,0,0.6);
+}
+
+::-webkit-scrollbar-thumb {
+	background-color: grey;
+	-webkit-box-shadow: inset 2px 2px 6px rgba(0,0,0,0.4); 
+	border-radius: 8px;
+}
+
+::-webkit-scrollbar-thumb:active {
+	-webkit-box-shadow: inset 2px 2px 6px rgba(0,0,0,0.8); 
+}
+
+::-webkit-scrollbar-corner {
+	display: none;
+}
+::-webkit-resizer {
+	display: none;
+}
+
 .image_manage_main {
 	display: inline-block;
 	
