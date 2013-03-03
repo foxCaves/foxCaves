@@ -14,15 +14,12 @@
 		</form>
 	</div>
 	<div style="text-align:center;" id="livedraw-wrapper">
-		<canvas id="livedraw" style="margin:auto" data-file-url="https://d16l38yicn0lym.cloudfront.net/f<%= RAWNAME %>">
-			<canvas id="livedraw-overlay" style="width:100%;height:100%;"></canvas>
-		</canvas>
+		<canvas id="livedraw" style="margin:auto" data-file-url="https://d16l38yicn0lym.cloudfront.net/f<%= RAWNAME %>"></canvas>
 	</div>
-	<div>
 	<select onchange="setBrush(this.options[this.selectedIndex].value);">
 		<option>rectangle</option>
 		<option>circle</option>
-		<option>brush</option>
+		<option selected="selected">brush</option>
 		<option>erase</option>
 		<option>line</option>
 	</select>
