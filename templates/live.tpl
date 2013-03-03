@@ -25,7 +25,7 @@
 	</select>
 	<br />
 	0<input type="range" value="10" min="1" max="100" step="0.1" onchange="setBrushWidth(this.value);" />100
-	<button type="button" value="Save Image" class="btn" onclick="liveDraw.save();" />
+	<input type="button" value="Save Image" class="btn" onclick="liveDraw.save();" />
 	<a href="/d/<%= RAWNAME %>" class="btn">Download original file</a>
 	<a class="btn" download="<%= LDSID %>-edited.png" onclick="this.href=canvasEle.toDataURL('image/png')">Download</a>
 	
