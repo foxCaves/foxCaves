@@ -33,7 +33,7 @@
 		</fieldset>
 		<fieldset>
 			<legend>Utils</legend>
-			<input type="button" value="Save Image" class="btn" onclick="liveDraw.save();" />
+			<input type="button" value="Save Image" class="btn" onclick="liveDrawInterface.save();" />
 			<a href="/d/<%= RAWNAME %>" class="btn">Download original file</a>
 			<a class="btn" download="<%= LDSID %>-edited.png" onclick="this.href=canvasEle.toDataURL('image/png')">Download</a>
 		</fieldset>
