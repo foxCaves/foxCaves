@@ -483,14 +483,15 @@ $(document).ready(function() {
 	var maxWidth = $('#livedraw-wrapper').width();
 	
 	canvasImg = new Image();
+	canvasImg.crossOrigin = "anonymous";
 	canvasImg.onload = function() {
+		alert(this);
 		var cssWidth;
 		var cssHeight;
-		if(canvasImg.width > maxWidth) {
+		if(canvasImg.width > maxWidth)
 			scaleFactor = maxWidth / canvasImg.width;
-		} else {
+		else
 			scaleFactor = 1.00;
-		}
 		
 		canvasStableImageDataNeeded = false;
 		
@@ -507,7 +508,9 @@ $(document).ready(function() {
 		
 		canvasPos = $(canvasEle).position();
 		
-		canvasEle.style.backgroundImage = 'url("'+canvasImg.src+'")';
+		canvasCTX.drawImage(this, 0, 0);
+		
+		console.log(window.atob(canvasEle.toDataURL("image/png").replace(/^data:image\/png;base64,/, "")));
 	};
 	canvasImg.src = canvasEle.getAttribute("data-file-url");
 });
