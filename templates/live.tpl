@@ -24,6 +24,7 @@
 		<option>line</option>
 	</select>
 	<br />
+	<input type="button" value="Save Image" class="btn" onclick="liveDraw.save();"/>
 	0<input type="range" value="10" min="1" max="100" step="0.1" onchange="setBrushWidth(this.value);" />100
 	<a href="/d/<%= RAWNAME %>" class="btn btn-large btn-block btn-primary">Download original file</a>
 	<script type="text/javascript">var SESSIONID = "<% if G.ngx.ctx.user then %><%= G.ngx.ctx.user.sessionid %><% else %>GUEST<% end %>"; var LIVEDRAW_FILEID = "<%= FILEID %>"; var LIVEDRAW_SID = "<%= LDSID %>";</script>

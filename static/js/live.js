@@ -470,6 +470,18 @@ function webSocket_tryConnect() {
 		};
 }
 
+var liveDraw = {
+	save: function() {
+		var xhr = new XMLHttpRequest();
+		/*xhr.upload.addEventListener("loadstart", uploadStart, false);
+		xhr.upload.addEventListener("progress", uploadProgress, false);*/
+		xhr.upload.addEventListener("load", function(ev){ console.log("Upload complete"); }, false);
+		xhr.open("PUT", "/api/create?"+escape(LIVEDRAW_FILEID + "-edited.png"));//LIVEDRAW_FILEID defined in love.tpl
+		xhr.setRequestHeader("x-is-base-64","yes");
+		xhr.send(canvasEle.toDataURL("image/png").replace(/^data:image\/png;base64,/, "")));
+	}
+};
+
 $(document).ready(function() {
 	canvasEle = document.getElementById("livedraw");
 	canvasCTX = canvasEle.getContext("2d");
@@ -510,7 +522,7 @@ $(document).ready(function() {
 		
 		canvasCTX.drawImage(this, 0, 0);
 		
-		console.log(window.atob(canvasEle.toDataURL("image/png").replace(/^data:image\/png;base64,/, "")));
+		
 	};
 	canvasImg.src = canvasEle.getAttribute("data-file-url");
 });
