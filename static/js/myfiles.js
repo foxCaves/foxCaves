@@ -146,9 +146,8 @@ function handleDragOver(evt, evttype) {
     evt.stopPropagation();
     evt.preventDefault();
 	
-	if(!evttype) {
+	if(!evttype)
 		evttype = evt.type;
-	}
 	
 	var dropZone = document.getElementById("uploader");
 	var dropZoneSub = document.getElementById("uploader_sub");
@@ -165,9 +164,9 @@ function handleDragOver(evt, evttype) {
 		resetDropZone();
 	}
 	
-	if(evt.originalEvent) {
+	if(evt.originalEvent)
 		evt.originalEvent.dataTransfer.dropEffect = (evttype == "dragenter" ? "copy" : "");
-	}
+
     dropZone.className = (evttype == "dragenter" ? "hover" : "");
 }
 
@@ -195,16 +194,14 @@ function refreshFiles() {
 			if(!fileid || fileid == "")
 				continue;
 			files_rev[fileid] = true;
-			if(!document.getElementById("file_"+fileid)) {
+			if(!document.getElementById("file_"+fileid))
 				addFileLI(fileid);
-			}
 		}
 		
 		$('#file_manage_div > li').each(function(i, ele) {
 			var fileid = $(ele).attr('id').substr(5);
-			if(!files_rev[fileid]) {
+			if(!files_rev[fileid])
 				removeFileLI(fileid);
-			}
 		});
 	});
 	
@@ -264,21 +261,17 @@ function deleteFile(fileid, filename) {
 	if(filename && !window.confirm('Do you really want to delete '+filename+'?'))
 		return false;
 	
-	var eleSel = $("#file_"+fileid+" div.image_manage_main");
-	eleSel.css("border", "1px solid red");
+	$("#file_"+fileid+" div.image_manage_main").css("border", "1px solid red");//Highlight file deletion
 	
 	$.get('/api/delete?'+fileid, function(data) {
-		if(data.charAt(0) == '+') {
-			//Comes from long-polling
-			//removeFileLI(fileid);
-		} else {
+		if(data.charAt(0) != '+') {
 			refreshFileLI(fileid);
 			alert("Error deleting file :(");
 		}
 	}).error(function() {
 		refreshFileLI(fileid);
 		alert("Error deleting file :(");
-	});;
+	});
 	
 	return false;
 }
@@ -356,7 +349,7 @@ function setupHeadUtils() {
 	var refreshNode = document.createTextNode(' ');
 	headUtil = {
 		clear: function (ev) {
-			while (headUtl.childNodes.length > 1)
+			while(headUtl.childNodes.length > 1)
 				headUtl.removeChild(headUtl.lastChild.previousSibling);
 		},
 		
@@ -437,9 +430,7 @@ function setupOptionMenu() {
 function setupPasting() {
 	document.getElementsByTagName("body")[0].addEventListener("paste", function(ev) {
 		if(ev.clipboardData.items.length == 1) {
-			var contents = ev.clipboardData.getData("text/plain");
-
-			dropZoneUploads.push(contents);
+			dropZoneUploads.push(ev.clipboardData.getData("text/plain"));//Upload clipboard contents
 			dropZoneFileCount++;
 			processNextFile();
 		}
@@ -450,16 +441,12 @@ function setupSearch() {
 	document.getElementById("filter-form").style.display = "inline";
 	document.getElementById("name-filter").addEventListener("keyup", function(){
 		var nodes = document.getElementById("file_manage_div").childNodes;
-		console.log("Searching for :" + this.value);
-		for(i = 0;i<nodes.length;++i) {
-			if(nodes[i].nodeType == 1 && nodes[i].firstChild.nextSibling.title.indexOf(this.value) == -1) {
-				console.log("hid node");
+		var val = this.value.toLowerCase();
+		for(i = 0;i<nodes.length;++i)
+			if(nodes[i].nodeType == 1 && nodes[i].firstChild.nextSibling.title.toLowerCase().indexOf(val) == -1)
 				nodes[i].style.display = "none";
-			} else if(nodes[i].nodeType == 1) {
+			else if(nodes[i].nodeType == 1 && nodes[i].style.display == "none")
 				nodes[i].style.display = "inline-block";
-				console.log("unhid node");
-			}
-		}
 	})
 }
 

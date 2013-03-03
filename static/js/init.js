@@ -56,11 +56,10 @@ function loadPage(href, fromHistory) {
 			container.html(data);
 			container.css("opacity", "1");
 			
-			if(!fromHistory) {
+			if(!fromHistory)
 				history.pushState({url: href}, document.title, href);
-			} else {
+			else
 				history.replaceState({url: href}, document.title, href);
-			}
 			
 			docReady();
 		},

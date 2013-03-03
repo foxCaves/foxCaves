@@ -2,9 +2,8 @@ var loadingEles = 0;
 
 function loadDone() {
 	loadingEles--;
-	if(loadingEles == 0) {
+	if(loadingEles == 0)
 		window.prettyPrint && prettyPrint();
-	}
 }
 
 function formatSize(size) {
@@ -13,9 +12,8 @@ function formatSize(size) {
 	while(size > 1024) {
 		sinc = sinc + 1;
 		size = size / 1024;
-		if(sinc == 8) {
+		if(sinc == 8)
 			break;
-		}
 	}
 	
 	size = Math.ceil(size * 100.0) / 100.0;
@@ -90,18 +88,15 @@ $(document).ready(function(){
 		for(var i=0;i<cmds.length;i++) {
 			var action = cmds[i].trim();
 
-			if(action == "") {
+			if(action == "")
 				continue;
-			}
 
 			var param = action.substr(1);
 			action = action.charAt(0);
 
-			for(var j=0;j<pushHandlers.length;j++) {
-				if(pushHandlers[j](action, param)) {
+			for(var j=0;j<pushHandlers.length;j++)
+				if(pushHandlers[j](action, param))
 					break;
-				}
-			}
 		}
     };
 	
