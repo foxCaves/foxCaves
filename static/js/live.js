@@ -477,8 +477,8 @@ var liveDraw = {
 		xhr.upload.addEventListener("progress", uploadProgress, false);*/
 		xhr.upload.addEventListener("load", function(ev){ console.log("Upload complete"); }, false);
 		xhr.open("PUT", "/api/create?"+escape(LIVEDRAW_FILEID + "-edited.png"));//LIVEDRAW_FILEID defined in love.tpl
-		xhr.setRequestHeader("x-is-base-64","yes");
-		xhr.send(canvasEle.toDataURL("image/png").replace(/^data:image\/png;base64,/, "")));
+		xhr.setRequestHeader("x-is-base64","yes");
+		xhr.send(canvasEle.toDataURL("image/png").replace(/^data:image\/png;base64,/, ""));
 	}
 };
 
@@ -497,9 +497,6 @@ $(document).ready(function() {
 	canvasImg = new Image();
 	canvasImg.crossOrigin = "anonymous";
 	canvasImg.onload = function() {
-		alert(this);
-		var cssWidth;
-		var cssHeight;
 		if(canvasImg.width > maxWidth)
 			scaleFactor = maxWidth / canvasImg.width;
 		else
@@ -521,8 +518,6 @@ $(document).ready(function() {
 		canvasPos = $(canvasEle).position();
 		
 		canvasCTX.drawImage(this, 0, 0);
-		
-		
 	};
 	canvasImg.src = canvasEle.getAttribute("data-file-url");
 });

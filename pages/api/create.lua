@@ -69,7 +69,21 @@ else
 	extension = extension:lower()
 end
 
-os.rename(file, "files/" .. fileid .. extension)
+local headers = ngx.req.get_headers()
+if headers.x_is_base64 == "yes" then
+	local f = io.open(file, "rb")
+    local content = f:read("*all")
+    f:close()
+	os.remove(file)
+	content = ngx.decode_base64(content)
+	f = io.open("files/" .. fileid .. extension, "wb")
+	f:write(content)
+	f:close()
+	content = nil
+	f = nil
+else
+	os.rename(file, "files/" .. fileid .. extension)
+end
 
 dofile("scripts/mimetypes.lua")
 local mtype = mimetypes[extension] or "application/octet-stream"
