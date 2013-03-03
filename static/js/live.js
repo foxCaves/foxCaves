@@ -231,9 +231,11 @@ function recvDirectEvent(evtype, payload) {
 		case EVENT_JOIN:
 			paintUsers[payload[0]] = {
 				name: payload[1],
-				brushWidth: payload[2],
-				brushColor: "#"+payload[3],
-				currentBrush: paintBrushes[payload[4]],
+				brushData: {
+					width: payload[2],
+					color: "#"+payload[3],
+					brush: paintBrushes[payload[4]]
+				},
 				brushState: {
 					lastX: 0,
 					lastY: 0
@@ -275,13 +277,13 @@ function recvDrawEvent(evtype, payload) {
 			recvBrushEvent(from, evtype, payload[1], payload[2]);
 			break;
 		case EVENT_WIDTH:
-			from.brushWidth = payload[1];
+			from.previewCanvasActions.width = payload[1];
 			break;
 		case EVENT_COLOR:
-			from.brushColor = "#"+payload[1];
+			from.previewCanvasActions.color = "#"+payload[1];
 			break;
 		case EVENT_BRUSH:
-			from.currentBrush = paintBrushes[payload[1]];
+			from.previewCanvasActions.brush = paintBrushes[payload[1]];
 			break;
 		case EVENT_RESET:
 			resetCanvasImage(true);
@@ -316,11 +318,11 @@ function recvBrushEvent(from, evtype, x, y) {
 		case EVENT_MOUSE_DOWN:
 			brush.down(x, y, from.brushState);
 			break;
-		case EVENT_MOUSE_MOVE:
-			brush.move(x, y, from.brushState);
-			break;
 		case EVENT_MOUSE_UP:
 			brush.up(x, y, from.brushState);
+			break;
+		case EVENT_MOUSE_MOVE:
+			brush.move(x, y, from.brushState);
 			break;
 	}
 	
@@ -482,9 +484,15 @@ var liveDraw = {
 	}
 };
 
+function previewCanvasActions() {
+}
+
 $(document).ready(function() {
 	canvasEle = document.getElementById("livedraw");
 	canvasCTX = canvasEle.getContext("2d");
+	
+	window.setInterval(previewCanvasActions, 100);
+		
 	
 	canvasEle.addEventListener("mousedown", liveDrawCanvasMouseDown, false);
 	canvasEle.addEventListener("mouseup", liveDrawCanvasMouseUp, false);
