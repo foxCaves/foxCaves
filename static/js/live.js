@@ -503,7 +503,7 @@ function paintCanvas() {
 	currentBrush.preview(liveDrawInput.localCursorX, liveDrawInput.localCursorY, brushState, foregroundCanvasCTX);
 	
 	for(var i=0;i<paintUsers.length;++i) {
-		if(!paintUsers[i]) {
+		if(paintUsers[i]) {
 			console.log(paintUsers[i]);
 			paintUsers[i].brushData.brush.preview(paintUsers[i].cursorX, liveDrawInput.cursorY, paintUsers[i].brushState, foregroundCanvasCTX);
 		}
