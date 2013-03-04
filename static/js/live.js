@@ -505,7 +505,8 @@ function paintCanvas() {
 	currentBrush.preview(liveDrawInput.localCursorX, liveDrawInput.localCursorY, brushState, foregroundCanvasCTX);
 	
 	foregroundCanvasCTX.font = "12px Verdana";
-	foregroundCanvasCTX.fontAlign = "left"
+	foregroundCanvasCTX.textAlign = "left";
+	foregroundCanvasCTX.textBaseline = "top";
 	
 	var offset;
 	var user;
