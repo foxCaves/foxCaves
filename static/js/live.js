@@ -507,7 +507,7 @@ function paintCanvas() {
 	for(var i=0;i<paintUsers.length;++i) {
 		if(paintUsers[i]) {
 			console.log(paintUsers[i]);
-			paintUsers[i].brushData.brush.preview(paintUsers[i].cursorX, liveDrawInput.cursorY, paintUsers[i].brushState, foregroundCanvasCTX);
+			paintUsers[i].brushData.brush.preview(paintUsers[i].cursorX, paintUsers[i].cursorY, paintUsers[i].brushState, foregroundCanvasCTX);
 		}
 	}
 	finalCanvasCTX.clearRect(0, 0, finalCanvas.width, finalCanvas.height);
