@@ -519,8 +519,8 @@ function paintCanvas() {
 			
 			foregroundCanvasCTX.fillText(
 				user.name,
-				user.cursorX + user.brushData.width,
-				user.cursorY + user.brushData.width
+				(user.cursorX + user.brushData.width*2)*scaleFactor,
+				(user.cursorY + user.brushData.width*2)*scaleFactor
 			)
 		}
 	}
