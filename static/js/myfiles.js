@@ -261,7 +261,7 @@ function deleteFile(fileid, filename) {
 	if(filename && !window.confirm('Do you really want to delete '+filename+'?'))
 		return false;
 	
-	$("#file_"+fileid+" div.image_manage_main").css("border", "1px solid red");//Highlight file deletion
+	$("#file_"+fileid).css("border", "1px solid red");//Highlight file deletion
 	
 	$.get('/api/delete?'+fileid, function(data) {
 		if(data.charAt(0) != '+') {
