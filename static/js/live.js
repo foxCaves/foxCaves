@@ -301,8 +301,10 @@ var liveDrawInput = {
 		this.localCursorX = evt.myOffsetX;
 		this.localCursorY = evt.myOffsetY;
 		
-		if(!this.isDrawing)
+		if(!this.isDrawing) {
+			networking.sendBrushEvent(EVENT_MOUSE_CURSOR, evt.myOffsetX, evt.myOffsetY);
 			return;
+		}
 		
 		if(!currentBrush.move(evt.myOffsetX, evt.myOffsetY, brushState, backgroundCanvasCTX))
 			networking.sendBrushEvent(EVENT_MOUSE_MOVE, evt.myOffsetX, evt.myOffsetY);
