@@ -237,7 +237,7 @@ function recvDirectEvent(evtype, payload) {
 			break;
 		case EVENT_IMGBURST:
 			if(payload[0] == "r")
-				sendDrawEvent(EVENT_IMGBURST, payload[1]+"|"+canvasElement.toDataURL("image/png").replace("\n","").replace("\r","")+"|");
+				sendDrawEvent(EVENT_IMGBURST, payload[1]+"|"+canvasElement.toDataURL("image/png").replace(/[\r\n]/g,"")+"|");
 			else if(payload[1] == "a") {
 				var toSet = new Image();
 				toSet.onload = function() {
@@ -477,7 +477,7 @@ var liveDrawInterface = {
 		xhr.upload.addEventListener("load", function(ev){ console.log("Upload complete"); }, false);
 		xhr.open("PUT", "/api/create?"+escape(LIVEDRAW_FILEID + "-edited.png"));//LIVEDRAW_FILEID defined in love.tpl
 		xhr.setRequestHeader("x-is-base64","yes");
-		xhr.send(canvasElement.toDataURL("image/png").replace(/^data:image\/png;base64,/, ""));
+		xhr.send(canvasElement.toDataURL("image/png").replace(/^data:image\/png;base64,/, "").replace(/[\r\n]/g,""));
 	}
 };
 
