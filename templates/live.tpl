@@ -30,7 +30,7 @@
 			<span style="color:white;">0</span>
 			<input type="range" value="10" min="1" max="100" step="0.1" onchange="setBrushWidth(this.value);" />
 			<span style="color:white;">100</span>
-			<div style="width:200px;height50px;background-image: -webkit-linear-gradient(left, #F00, #FF0, #0F0, #0FF, #00F, #F0F, #F00);"</div>
+			<div style="width:200px;height:50px;background-image:-webkit-linear-gradient(left, #F00, #FF0, #0F0, #0FF, #00F, #F0F, #F00);"</div>
 		</fieldset>
 		<fieldset>
 			<legend>Utils</legend>
