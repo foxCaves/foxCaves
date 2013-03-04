@@ -427,9 +427,18 @@ function setupOptionMenu() {
 	});
 }
 
+function hasValidType(types) {
+	for(var i=0;types.length>i;++i)
+		if(types[i] == "text/plain")
+			return true;
+	return false;
+}
+
 function setupPasting() {
 	document.getElementsByTagName("body")[0].addEventListener("paste", function(ev) {
-		if(ev.clipboardData.items.length == 1) {
+		if(ev.clipboardData.items.length >= 1) {
+			if(!hasValidType(ev.clipboardData.types))
+				return;
 			dropZoneUploads.push(ev.clipboardData.getData("text/plain"));//Upload clipboard contents
 			dropZoneFileCount++;
 			processNextFile();
