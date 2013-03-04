@@ -504,10 +504,22 @@ function paintCanvas() {
 	
 	currentBrush.preview(liveDrawInput.localCursorX, liveDrawInput.localCursorY, brushState, foregroundCanvasCTX);
 	
+	foregroundCanvasCTX.font = "10 Verdana";
+	
+	var offset;
+	var user;
+	
 	for(var i=0;i<paintUsers.length;++i) {
 		if(paintUsers[i]) {
-			console.log(paintUsers[i]);
-			paintUsers[i].brushData.brush.preview(paintUsers[i].cursorX, paintUsers[i].cursorY, paintUsers[i].brushState, foregroundCanvasCTX);
+			user = paintUsers[i];
+			user.brushData.brush.preview(user.cursorX, user.cursorY, user.brushState, foregroundCanvasCTX);
+			
+			
+			foregroundCanvasCTX.fillText(
+				user.name,
+				user.cursorX + user.brushData.width,
+				user.cursorY + user.brushData.width
+			)
 		}
 	}
 	finalCanvasCTX.clearRect(0, 0, finalCanvas.width, finalCanvas.height);
