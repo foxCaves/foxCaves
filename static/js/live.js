@@ -537,7 +537,7 @@ function loadImage() {
 		
 		backgroundCanvasCTX.drawImage(this, 0, 0);
 		
-		window.setInterval(paintCanvas, 1/30);
+		window.setInterval(paintCanvas, 1000);
 	};
 	baseImage.src = finalCanvas.getAttribute("data-file-url");
 }
