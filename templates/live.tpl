@@ -30,7 +30,7 @@
 			<span style="color:white;">0</span>
 			<input type="range" value="10" min="1" max="100" step="0.1" onchange="setBrushWidth(this.value);" />
 			<span style="color:white;">100</span>
-			<div class="color-selector"</div>
+			<div class="color-selector"></div>
 		</fieldset>
 		<fieldset>
 			<legend>Utils</legend>
