@@ -86,9 +86,18 @@ html::-webkit-resizer {
 	background-color: rgba(0, 0, 0, 0.7);
 }
 
-.image_manage_ul {
-	list-style: none;
+#filter-form {
 	display: inline;
+	margin-left: 450px;
+}
+
+#file-refresh {
+	display: inline;
+}
+
+.image_manage_ul {
+	margin-top: 20px;
+	list-style: none;
 }
 
 .image_manage_bottom a {

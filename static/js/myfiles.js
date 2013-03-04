@@ -287,10 +287,12 @@ function setupFileDragging() {
 
 	function startFileDrag(ev) {
 		currFileDrag = ev.target;
+		window.setTimeout("currFileDrag.style.opacity = '0.2';", 1);
 		trashBin.style.opacity = "0.7";
 	}
 	
 	function endFileDrag(ev) {
+		currFileDrag.style.opacity = "1";
 		currFileDrag = false;
 		trashBin.style.opacity = "0.5";
 	}
