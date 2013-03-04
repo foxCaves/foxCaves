@@ -502,7 +502,7 @@ function paintCanvas() {
 	
 	currentBrush.preview(liveDrawInput.localCursorX, liveDrawInput.localCursorY, brushState, foregroundCanvasCTX);
 	
-	for(var i=0;i>paintUsers.length;++i)
+	for(var i=0;i<paintUsers.length;++i)
 		paintUsers[i].brushData.brush.preview(paintUsers[i].cursorX, liveDrawInput.cursorY, paintUsers[i].brushState, foregroundCanvasCTX);
 	
 	finalCanvasCTX.clearRect(0, 0, finalCanvas.width, finalCanvas.height);
