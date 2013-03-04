@@ -240,3 +240,9 @@ input[type="submit"] {
 	display: inline;
 	vertical-align:text-top;
 }
+
+.color-selector {
+	width:200px;
+	height:50px;
+	background-image:	-webkit-linear-gradient(left, #F00, #FF0, #0F0, #0FF, #00F, #F0F, #F00),
+						-webkit-linear-gradient(bottom, transparent, white);
