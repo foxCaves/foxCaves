@@ -244,6 +244,6 @@ input[type="submit"] {
 .color-selector {
 	width:200px;
 	height:50px;
-	background-image:	-webkit-linear-gradient(bottom, transparent, white),
+	background-image:	-webkit-linear-gradient(top, transparent, white),
 						-webkit-linear-gradient(left, #F00, #FF0, #0F0, #0FF, #00F, #F0F, #F00);
 						
