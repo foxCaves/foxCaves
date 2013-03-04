@@ -25,18 +25,19 @@
 				<option selected="selected">brush</option>
 				<option>erase</option>
 				<option>line</option>
+				<option>text</option>
 			</select>
 			<br />
 			<span style="color:white;">0</span>
 			<input type="range" value="10" min="1" max="100" step="0.1" onchange="setBrushWidth(this.value);" />
 			<span style="color:white;">100</span>
-			<div class="color-selector"></div>
+			<div class="color-selector" onmouseup="setBrushColor('hsl('+((event.offsetX/this.offsetWidth)*360)+', 100%, '+(50+(event.offsetY/this.offsetHeight)*50)+'%)');"></div>
 		</fieldset>
 		<fieldset>
 			<legend>Utils</legend>
-			<input type="button" value="Save Image" class="btn" onclick="liveDrawInterface.save();" />
+			<% if G.ngx.ctx.user then %><input type="button" value="Save Image" class="btn" onclick="liveDrawInterface.save();" /><% end %>
 			<a href="/d/<%= RAWNAME %>" class="btn">Download original file</a>
-			<a class="btn" download="<%= LDSID %>-edited.png" onclick="this.href=canvasEle.toDataURL('image/png')">Download</a>
+			<a class="btn" download="<%= LDSID %>-edited.png" onclick="this.href=finalCanvas.toDataURL('image/png')">Download</a>
 		</fieldset>
 	</div>
 	<script type="text/javascript">var SESSIONID = "<% if G.ngx.ctx.user then %><%= G.ngx.ctx.user.sessionid %><% else %>GUEST<% end %>"; var LIVEDRAW_FILEID = "<%= FILEID %>"; var LIVEDRAW_SID = "<%= LDSID %>";</script>

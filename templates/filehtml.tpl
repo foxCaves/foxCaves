@@ -9,13 +9,13 @@
 		<span style="position: relative; float: right;">
 			<a title="View" href="/view/<%= fileid %>"><i class="icon-picture icon-white"></i> </a>
 			<a title="Download" href="https://d16l38yicn0lym.cloudfront.net/d<%= fileid %><%= file.extension %>"><i class="icon-download icon-white"></i> </a>
-			<% if file.type == 1 and G.ngx.ctx.user.is_pro then %>
 			<div class="dropdown">
 				<a title="Options" class="dropdown-toggle" data-toggle="dropdown" href=""><i class="icon-wrench icon-white"></i> </a>
 				<ul class="dropdown-menu">
 					<li><a class="rename" href="#">Rename</a></li>
-					<li><a onclick="handleBase64Request(window.event);" href="#">Get Base64</a></li>
 					<li><a href="/live/<%= fileid %>">Edit</a></li>
+					<% if file.type == 1 and G.ngx.ctx.user.is_pro then %>
+					<li><a onclick="handleBase64Request(window.event);" href="#">Get Base64</a></li>
 					<li class="dropdown-submenu">
 						<a href="#">Convert to</a>
 						<ul class="dropdown-menu">
@@ -25,9 +25,10 @@
 							<li><a href="#">bmp</a></li>
 						</ul>
 					</li>
+					<% end %>
 				</ul>
 			</div>
-			<% end %>
+			
 			<a href="#" title="Delete" onclick="return deleteFile('<%= fileid %>','<%= escaped_name_js %>');" href="/myfiles?delete=<%= fileid %>"><i class="icon-remove icon-white"></i> </a>
 		</span>
 		<%= G.ngx.ctx.format_size(file.size) %>

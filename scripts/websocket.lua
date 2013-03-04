@@ -105,20 +105,7 @@ local event_handlers = {
 	end,
 	[EVENT_COLOR] = function(user, data)
 		if #data ~= 1 then error("Invalid payload") end
-		data = data[1]:lower()
-		local dlen = data:len()
-		if dlen ~= 3 and dlen ~= 6 then
-			error("Invalid color")
-		else
-			local dbyte
-			for i=1,dlen do
-				dbyte = data:byte(i)
-				if (dbyte < chr_a or dbyte > chr_f) and (dbyte < chr_0 or dbyte > chr_9) then
-					error("Invalid color")
-				end
-			end
-		end
-		user.color = data
+		user.color = data[1]:lower()
 	end,
 	[EVENT_WIDTH] = function(user, data)
 		if #data ~= 1 then error("Invalid payload") end

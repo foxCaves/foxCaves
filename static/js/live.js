@@ -6,7 +6,7 @@ var webSocket_buffer = "";
 
 var scaleFactor = 1.0;
 
-var brushWidth , brushColor, currentBrush;
+var brushWidth, brushColor, currentBrush;
 var brushState = {};
 
 var paintUsers = new Array();
@@ -30,12 +30,14 @@ var EVENT_IMGBURST = "i";
 
 var paintBrushes = {
 	rectangle: {
-		select: function() {
+		select: function(brushState, foregroundCanvasCTX, backgroundCanvasCTX) {
 			backgroundCanvasCTX.lineCap = "butt";
+			foregroundCanvasCTX.lineWidth = brushWidth;
 		},
 		down: function(x, y, brushState) {
 			brushState.lastX = x;
 			brushState.lastY = y;
+			this.active = true;
 		},
 		up: function(x, y, brushState, backgroundCanvasCTX) {
 			if(brushState.lastX == x && brushState.lastY == y) {
@@ -43,19 +45,24 @@ var paintBrushes = {
 				y++;
 			}
 			backgroundCanvasCTX.strokeRect(x, y, brushState.lastX - x, brushState.lastY - y);
+			this.active = false;
 		},
 		move: function(x, y, brushState, backgroundCanvasCTX) {
 			return true;
 		},
 		preview: function(x, y, brushState, previewCanvasCTX) {
-			//previewCanvasCTX.strokeRect(x, y, brushState.lastX - x, brushState.lastY - y);
+			if(!this.active)
+				return;
+			previewCanvasCTX.strokeRect(x, y, brushState.lastX - x, brushState.lastY - y);
 		}
 	},
 	circle: {
-		select: function() {
+		select: function(brushState, foregroundCanvasCTX, backgroundCanvasCTX) {
 			backgroundCanvasCTX.lineCap = "butt";
+			foregroundCanvasCTX.lineWidth = brushWidth;
 		},
 		down: function(x, y, brushState) {
+			this.active = true;
 			brushState.lastX = x;
 			brushState.lastY = y;
 		},
@@ -69,11 +76,14 @@ var paintBrushes = {
 			y = brushState.lastY - y;
 			backgroundCanvasCTX.arc(brushState.lastX, brushState.lastY, Math.sqrt(x*x + y*y), 0, MathPI2, false);
 			backgroundCanvasCTX.stroke();
+			this.active = false;
 		},
 		move: function(x, y, brushState, backgroundCanvasCTX) {
 			return true;
 		},
 		preview: function(x, y, brushState, previewCanvasCTX) {
+			if(!this.active)
+				return;
 			previewCanvasCTX.beginPath();
 			x = brushState.lastX - x;
 			y = brushState.lastY - y;
@@ -82,8 +92,9 @@ var paintBrushes = {
 		}
 	},
 	brush: {
-		select: function() {
+		select: function(brushState, foregroundCanvasCTX, backgroundCanvasCTX) {
 			backgroundCanvasCTX.lineCap = "round";
+			foregroundCanvasCTX.lineWidth = 1;
 		},
 		down: function(x, y, brushState) {
 			brushState.lastX = x;
@@ -109,7 +120,6 @@ var paintBrushes = {
 		},
 		preview: function(x, y, brushState, previewCanvasCTX) {
 			previewCanvasCTX.lineWidth = "1px";
-			previewCanvasCTX.strokeStyle = "black";
 			previewCanvasCTX.fillStyle = "";
 		
 			previewCanvasCTX.beginPath();
@@ -118,9 +128,10 @@ var paintBrushes = {
 		}
 	},
 	erase: {
-		select: function() {
+		select: function(brushState, foregroundCanvasCTX, backgroundCanvasCTX) {
 			backgroundCanvasCTX.lineCap = "round";
 			backgroundCanvasCTX.globalCompositeOperation = "destination-out";
+			foregroundCanvasCTX.lineWidth = 1;
 		},
 		down: function(x, y, brushState) {
 			brushState.lastX = x;
@@ -145,22 +156,23 @@ var paintBrushes = {
 			brushState.lastY = y;
 		},
 		preview: function(x, y, brushState, previewCanvasCTX) {
-			previewCanvasCTX.lineWidth = "1px";
-			previewCanvasCTX.strokeStyle = "black";
+			foregroundCanvasCTX.lineWidth = "1px";
 			previewCanvasCTX.fillStyle = "";
-		
+			
 			previewCanvasCTX.beginPath();
-			previewCanvasCTX.arc(x, y, brushWidth, 0, 2*Math.PI);
+			previewCanvasCTX.arc(x, y, brushWidth/2, 0, 2*Math.PI);
 			previewCanvasCTX.stroke();
 		}
 	},
 	line: {
-		select: function() {
+		select: function(brushState, foregroundCanvasCTX, backgroundCanvasCTX) {
 			backgroundCanvasCTX.lineCap = "butt";
+			foregroundCanvasCTX.lineWidth = brushWidth;
 		},
 		down: function(x, y, brushState) {
 			brushState.lastX = x;
 			brushState.lastY = y;
+			this.active = true;
 		},
 		up: function(x, y, brushState, backgroundCanvasCTX) {
 			if(brushState.lastX == x && brushState.lastY == y) {
@@ -171,11 +183,15 @@ var paintBrushes = {
 			backgroundCanvasCTX.moveTo(brushState.lastX, brushState.lastY);
 			backgroundCanvasCTX.lineTo(x, y);
 			backgroundCanvasCTX.stroke();
+			this.active = false;
 		},
 		move: function(x, y, brushState, backgroundCanvasCTX) {
 			return true;
 		},
 		preview: function(x, y, brushState, previewCanvasCTX) {
+			if(!this.active)
+				return;
+			foregroundCanvasCTX.lineWidth = "1px";
 			previewCanvasCTX.beginPath();
 			previewCanvasCTX.moveTo(brushState.lastX, brushState.lastY);
 			previewCanvasCTX.lineTo(x, y);
@@ -194,20 +210,16 @@ function setBrushWidth(bWidth) {
 }
 
 function setBrushColor(bColor) {
-	if(bColor == brushColor)
-		return;
-	if(bColor.charAt(0) != "#")
-		bColor = "#" + bColor;
 	brushColor = bColor;
 	setBrushAttribsLocal();
-	networking.sendDrawEvent(EVENT_COLOR, brushColor.substr(1));
+	networking.sendDrawEvent(EVENT_COLOR, brushColor);
 }
 
 function setBrush(brush) {
 	setBrushAttribsLocal();
 	currentBrush = paintBrushes[brush];
 	backgroundCanvasCTX.globalCompositeOperation = "source-over";
-	currentBrush.select();
+	currentBrush.select(brushState, foregroundCanvasCTX, backgroundCanvasCTX);
 	networking.sendDrawEvent(EVENT_BRUSH, brush);
 }
 
@@ -216,6 +228,8 @@ function setBrushAttribsLocal() {
 	backgroundCanvasCTX.lineWidth = brushWidth;
 	backgroundCanvasCTX.strokeStyle = brushColor;
 	backgroundCanvasCTX.fillStyle = brushColor;
+	
+	foregroundCanvasCTX.strokeStyle = brushColor;
 }
 
 function setOffsetXAndY(evt) {
@@ -243,7 +257,7 @@ var liveDrawInput = {
 	localCursorY: 0,
 	isDrawing: false,
 	mouseOut: function(evt, backgroundCanvasCTX) {
-		this.mouseUp(evt, backgroundCanvasCTX);
+		//this.mouseUp(evt, backgroundCanvasCTX);
 	},
 	mouseOver: function(evt) {
 	},
@@ -340,7 +354,7 @@ var networking = {
 					name: payload[1],
 					brushData: {
 						width: payload[2],
-						color: "#"+payload[3],
+						color: payload[3],
 						brush: paintBrushes[payload[4]]
 					},
 					brushState: {
@@ -392,7 +406,7 @@ var networking = {
 				from.brushData.width = payload[1];
 				break;
 			case EVENT_COLOR:
-				from.brushData.color = "#"+payload[1];
+				from.brushData.color = payload[1];
 				break;
 			case EVENT_BRUSH:
 				from.brushData.brush = paintBrushes[payload[1]];
@@ -410,7 +424,7 @@ var networking = {
 		backgroundCanvasCTX.strokeStyle = from.brushData.color;
 		backgroundCanvasCTX.fillStyle = from.brushData.color;
 		
-		brush.select();
+		brush.select(from.brushState, foregroundCanvasCTX, backgroundCanvasCTX);
 		
 		switch(evtype) {
 			case EVENT_MOUSE_DOWN:
@@ -423,6 +437,12 @@ var networking = {
 				brush.move(x, y, from.brushState, backgroundCanvasCTX);
 				break;
 		}
+		
+		backgroundCanvasCTX.lineWidth = brushWidth;
+		backgroundCanvasCTX.strokeStyle = brushColor;
+		backgroundCanvasCTX.fillStyle = brushColor;
+		
+		currentBrush.select(brushState, foregroundCanvasCTX, backgroundCanvasCTX);
 	},
 	connect: function() {
 		this.shouldConnect = true;
@@ -457,7 +477,7 @@ var networking = {
 		
 		webSocket.onopen = function(evt) {
 			networking.sendDrawEvent(EVENT_JOIN, SESSIONID+"|"+LIVEDRAW_FILEID+"|"+LIVEDRAW_SID);
-			setBrushColor("000");
+			setBrushColor("black");
 			setBrushWidth(10.0);
 			setBrush("brush");
 		};
@@ -481,6 +501,11 @@ function paintCanvas() {
 	foregroundCanvasCTX.clearRect(0, 0, foregroundCanvas.width, foregroundCanvas.height);
 	
 	currentBrush.preview(liveDrawInput.localCursorX, liveDrawInput.localCursorY, brushState, foregroundCanvasCTX);
+	
+	for(var i=0;i>paintUsers.length;++i)
+		paintUsers[i].brushData.brush.preview();
+	
+	finalCanvasCTX.clearRect(0, 0, finalCanvas.width, finalCanvas.height);
 	
 	finalCanvasCTX.drawImage(backgroundCanvas, 0, 0);
 	finalCanvasCTX.drawImage(foregroundCanvas, 0, 0);
