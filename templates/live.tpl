@@ -19,7 +19,7 @@
 	<div id="live-draw-options">
 		<fieldset>
 			<legend>Brush Settings</legend>
-			<select onchange="setBrush(this.options[this.selectedIndex].value);">
+			<select onchange="localUser.brushData.setBrush(this.options[this.selectedIndex].value);">
 				<option>rectangle</option>
 				<option>circle</option>
 				<option selected="selected">brush</option>
@@ -27,11 +27,12 @@
 				<option>line</option>
 				<option>text</option>
 			</select>
+			<input id="live-draw-text-input" type="text" style="display:none" placeholder="drawtext" />
 			<br />
 			<span style="color:white;">0</span>
-			<input type="range" value="10" min="1" max="100" step="0.1" onchange="setBrushWidth(this.value);" />
+			<input type="range" value="10" min="1" max="100" step="0.1" onchange="localUser.brushData.setWidth(this.value);" />
 			<span style="color:white;">100</span>
-			<div class="color-selector" onmouseup="setBrushColor('hsl('+((event.offsetX/this.offsetWidth)*360)+', 100%, '+(50+(event.offsetY/this.offsetHeight)*50)+'%)');"></div>
+			<div class="color-selector" onmouseup="localUser.brushData.setColor('hsl('+((event.offsetX/this.offsetWidth)*360)+', 100%, '+(50+(event.offsetY/this.offsetHeight)*50)+'%)');"></div>
 		</fieldset>
 		<fieldset>
 			<legend>Utils</legend>
