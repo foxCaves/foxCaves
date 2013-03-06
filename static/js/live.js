@@ -73,7 +73,6 @@ var paintBrushes = {
 	rectangle: {
 		select: function(user, foregroundCanvasCTX, backgroundCanvasCTX) {
 			backgroundCanvasCTX.lineCap = "butt";
-			foregroundCanvasCTX.lineWidth = localUser.brushData.width;
 		},
 		down: function(x, y, user) {
 			user.cursorData.lastX = x;
@@ -100,7 +99,6 @@ var paintBrushes = {
 	circle: {
 		select: function(user, foregroundCanvasCTX, backgroundCanvasCTX) {
 			backgroundCanvasCTX.lineCap = "butt";
-			foregroundCanvasCTX.lineWidth = localUser.brushData.width;
 		},
 		down: function(x, y, user) {
 			this.active = true;
@@ -115,7 +113,7 @@ var paintBrushes = {
 			backgroundCanvasCTX.beginPath();
 			x = user.cursorData.lastX - x;
 			y = user.cursorData.lastY - y;
-			backgroundCanvasCTX.arc(user.cursorData.lastX, user.cursorData.lastY, Math.sqrt(x*x + y*y), 0, MathPI2, false);
+			backgroundCanvasCTX.arc(user.cursorData.lastX, user.cursorData.lastY, Math.sqrt(x*x + y*y)*scaleFactor, 0, MathPI2, false);
 			backgroundCanvasCTX.stroke();
 			this.active = false;
 		},
@@ -128,7 +126,7 @@ var paintBrushes = {
 			foregroundCanvasCTX.beginPath();
 			x = user.cursorData.lastX - x;
 			y = user.cursorData.lastY - y;
-			foregroundCanvasCTX.arc(user.cursorData.lastX, user.cursorData.lastY, Math.sqrt(x*x + y*y), 0, MathPI2, false);
+			foregroundCanvasCTX.arc(user.cursorData.lastX, user.cursorData.lastY, Math.sqrt(x*x + y*y)*scaleFactor, 0, MathPI2, false);
 			foregroundCanvasCTX.stroke();
 		}
 	},
@@ -136,7 +134,7 @@ var paintBrushes = {
 		keepLineWidth: true,
 		select: function(user, foregroundCanvasCTX, backgroundCanvasCTX) {
 			backgroundCanvasCTX.lineCap = "round";
-			foregroundCanvasCTX.lineWidth = 1;
+			foregroundCanvasCTX.lineWidth = 1/scaleFactor;
 		},
 		down: function(x, y, user) {
 			user.cursorData.lastX = x;
@@ -162,7 +160,7 @@ var paintBrushes = {
 		},
 		preview: function(x, y, user, foregroundCanvasCTX) {
 			foregroundCanvasCTX.beginPath();
-			foregroundCanvasCTX.arc(x, y, user.brushData.width/2, 0, 2*Math.PI);
+			foregroundCanvasCTX.arc(x, y, (user.brushData.width/2)*scaleFactor, 0, 2*Math.PI);
 			foregroundCanvasCTX.stroke();
 		}
 	},
@@ -171,7 +169,7 @@ var paintBrushes = {
 		select: function(user, foregroundCanvasCTX, backgroundCanvasCTX) {
 			backgroundCanvasCTX.lineCap = "round";
 			backgroundCanvasCTX.globalCompositeOperation = "destination-out";
-			foregroundCanvasCTX.lineWidth = 1;
+			foregroundCanvasCTX.lineWidth = 1/scaleFactor;
 		},
 		down: function(x, y, user) {
 			user.cursorData.lastX = x;
@@ -197,7 +195,7 @@ var paintBrushes = {
 		},
 		preview: function(x, y, user, foregroundCanvasCTX) {
 			foregroundCanvasCTX.beginPath();
-			foregroundCanvasCTX.arc(x, y, user.brushData.width/2, 0, 2*Math.PI);
+			foregroundCanvasCTX.arc(x, y, (user.brushData.width/2)*scaleFactor, 0, 2*Math.PI);
 			foregroundCanvasCTX.stroke();
 		}
 	},
