@@ -26,13 +26,20 @@
 				<option>erase</option>
 				<option>line</option>
 				<option>text</option>
+				<option>restore</option>
 			</select>
 			<input id="live-draw-text-input" type="text" style="display:none" placeholder="drawtext" />
 			<br />
 			<span style="color:white;">0</span>
 			<input type="range" value="10" min="1" max="100" step="0.1" onchange="localUser.brushData.setWidth(this.value);" />
-			<span style="color:white;">100</span>
-			<div class="color-selector" onmouseup="localUser.brushData.setColor('hsl('+((event.offsetX/this.offsetWidth)*360)+', 100%, '+(50+(event.offsetY/this.offsetHeight)*50)+'%)');"></div>
+			<span style="color:white;">100</span><br />
+			<div id="color-selector">
+				<svg id="color-selector-inner" xmlns="http://www.w3.org/2000/svg" version="1.1" >
+				  <line x1="0" y1="5" x2="10" y2="5" style="stroke:black;stroke-width:1px" />
+				  <line x1="5" y1="0" x2="5" y2="10" style="stroke:black;stroke-width:1px" />
+				</svg>
+			</div>
+			<div id="lightness-selector"><div id="lightness-selector-inner"></div></div>
 		</fieldset>
 		<fieldset>
 			<legend>Utils</legend>

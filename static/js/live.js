@@ -6,11 +6,15 @@ var webSocket_buffer = "";
 
 var scaleFactor = 1.0;
 
+var imagePattern;
+
 var localUser = {
 	brushData: {
 		width: 0,
 		color: "black",
 		brush: null,
+		customData: {
+		},
 		setWidth: function(bWidth) {
 			if(bWidth == this.width)
 				return;
@@ -32,14 +36,15 @@ var localUser = {
 			networking.sendDrawEvent(EVENT_BRUSH, brush);
 		},
 		setBrushAttribsLocal: function() {
-			backgroundCanvasCTX.lineWidth = this.width;
-			backgroundCanvasCTX.strokeStyle = this.color;
+			backgroundCanvasCTX.lineWidth = this.width*scaleFactor;
+			if(localUser.brushData.brush && localUser.brushData.brush.keepBackgroundStrokeStyle != true)
+				backgroundCanvasCTX.strokeStyle = this.color;
 			backgroundCanvasCTX.fillStyle = this.color;
 			
 			foregroundCanvasCTX.strokeStyle = this.color;
 			foregroundCanvasCTX.fillStyle = this.color;
 			if(localUser.brushData.brush && localUser.brushData.brush.keepLineWidth != true)
-				foregroundCanvasCTX.lineWidth = this.width
+				foregroundCanvasCTX.lineWidth = this.width*scaleFactor;
 		}
 	},
 	cursorData: {
@@ -73,6 +78,7 @@ var paintBrushes = {
 	rectangle: {
 		select: function(user, foregroundCanvasCTX, backgroundCanvasCTX) {
 			backgroundCanvasCTX.lineCap = "butt";
+			foregroundCanvasCTX.lineWidth = localUser.brushData.width;
 		},
 		down: function(x, y, user) {
 			user.cursorData.lastX = x;
@@ -99,6 +105,7 @@ var paintBrushes = {
 	circle: {
 		select: function(user, foregroundCanvasCTX, backgroundCanvasCTX) {
 			backgroundCanvasCTX.lineCap = "butt";
+			foregroundCanvasCTX.lineWidth = localUser.brushData.width;
 		},
 		down: function(x, y, user) {
 			this.active = true;
@@ -199,6 +206,41 @@ var paintBrushes = {
 			foregroundCanvasCTX.stroke();
 		}
 	},
+	restore: {
+		keepLineWidth: true,
+		keepBackgroundStrokeStyle: true,
+		select: function(user, foregroundCanvasCTX, backgroundCanvasCTX) {
+			backgroundCanvasCTX.strokeStyle = imagePattern;
+			foregroundCanvasCTX.lineWidth = 1/scaleFactor;
+		},
+		down: function(x, y, user) {
+			user.cursorData.lastX = x;
+			user.cursorData.lastY = y;
+		},
+		up: function(x, y, user, backgroundCanvasCTX) {
+			if(user.cursorData.lastX == x && user.cursorData.lastY == y) {
+				x++;
+				y++;
+			}
+			backgroundCanvasCTX.beginPath();
+			backgroundCanvasCTX.moveTo(user.cursorData.lastX, user.cursorData.lastY);
+			backgroundCanvasCTX.lineTo(x, y);
+			backgroundCanvasCTX.stroke();			
+		},
+		move: function(x, y, user, backgroundCanvasCTX) {
+			backgroundCanvasCTX.beginPath();
+			backgroundCanvasCTX.moveTo(user.cursorData.lastX, user.cursorData.lastY);
+			backgroundCanvasCTX.lineTo(x, y);
+			backgroundCanvasCTX.stroke();
+			user.cursorData.lastX = x;
+			user.cursorData.lastY = y;
+		},
+		preview: function(x, y, user, foregroundCanvasCTX) {
+			foregroundCanvasCTX.beginPath();
+			foregroundCanvasCTX.arc(x, y, (user.brushData.width/2)*scaleFactor, 0, 2*Math.PI);
+			foregroundCanvasCTX.stroke();
+		}
+	},
 	line: {
 		select: function(user, foregroundCanvasCTX, backgroundCanvasCTX) {
 			backgroundCanvasCTX.lineCap = "butt";
@@ -262,21 +304,33 @@ var paintBrushes = {
 				x,
 				y
 			)
+		},
+		setText: function(user, text) {
+			user.brushData.customData.text.text = text;
+			networking.setCustomPacket("text", "text", text);
+		},
+		setFont: function(user, font) {
+			user.brushData.customData.text.font = font
+			networking.setCustomPacket("text", "font", font);
+		},
+		setFontSize: function(user, fontSize) {
+			user.brushData.customData.text.fontSize = fontSize
+			networking.setCustomPacket("text", "fontSize", fontSize);
 		}
 	}
 };
 
 
 
-function setOffsetXAndY(evt) {
+function setOffsetXAndY(event) {
 	var x,y;
 	
-	if(!evt.offsetX) {
-		x = evt.pageX - canvasPos.left;
-		y = evt.pageY - canvasPos.top;
+	if(!event.offsetX) {
+		x = event.pageX - canvasPos.left;
+		y = event.pageY - canvasPos.top;
 	} else {
-		x = evt.offsetX;
-		y = evt.offsetY;
+		x = event.offsetX;
+		y = event.offsetY;
 	}
 	
 	x = Math.round(x);
@@ -284,8 +338,8 @@ function setOffsetXAndY(evt) {
 	if(x < 0) x = 0;
 	if(y < 0) y = 0;
 	
-	evt.myOffsetX = x / scaleFactor;
-	evt.myOffsetY = y / scaleFactor;
+	event.myOffsetX = x / scaleFactor;
+	event.myOffsetY = y / scaleFactor;
 }
 
 function sign(x) { return x ? x < 0 ? -1 : 1 : 0; }
@@ -296,62 +350,62 @@ var liveDrawInput = {
 	cursorX: 0,
 	cursorY: 0,
 	isDrawing: false,
-	mouseOut: function(evt, backgroundCanvasCTX) {
-		//this.mouseUp(evt, backgroundCanvasCTX);
+	mouseOut: function(event, backgroundCanvasCTX) {
+		//this.mouseUp(event, backgroundCanvasCTX);
 	},
-	mouseOver: function(evt) {
+	mouseOver: function(event) {
 	},
-	mouseDown: function(evt) {
-		if(evt.button != 0)
+	mouseDown: function(event) {
+		if(event.button != 0)
 			return;
-		preventDefault(evt);
+		preventDefault(event);
 		
 		this.isDrawing = true;
 		
-		setOffsetXAndY(evt);
+		setOffsetXAndY(event);
 		
-		if(!localUser.brushData.brush.down(evt.myOffsetX, evt.myOffsetY, localUser))
-			networking.sendBrushEvent(EVENT_MOUSE_DOWN, evt.myOffsetX, evt.myOffsetY);
+		if(!localUser.brushData.brush.down(event.myOffsetX, event.myOffsetY, localUser))
+			networking.sendBrushEvent(EVENT_MOUSE_DOWN, event.myOffsetX, event.myOffsetY);
 		else
-			networking.sendBrushEvent(EVENT_MOUSE_CURSOR, evt.myOffsetX, evt.myOffsetY);
+			networking.sendBrushEvent(EVENT_MOUSE_CURSOR, event.myOffsetX, event.myOffsetY);
 	},
-	mouseUp: function(evt, backgroundCanvasCTX) {
-		preventDefault(evt);
-		
-		
+	mouseUp: function(event, backgroundCanvasCTX) {
+		if(event.button != 0)
+			return;
+		preventDefault(event);
 			
-		setOffsetXAndY(evt);
+		setOffsetXAndY(event);
 		if(!this.isDrawing)
 			return
 		this.isDrawing = false;
 		
-		if(!localUser.brushData.brush.up(evt.myOffsetX, evt.myOffsetY, localUser, backgroundCanvasCTX))
-			networking.sendBrushEvent(EVENT_MOUSE_UP, evt.myOffsetX, evt.myOffsetY);
+		if(!localUser.brushData.brush.up(event.myOffsetX, event.myOffsetY, localUser, backgroundCanvasCTX))
+			networking.sendBrushEvent(EVENT_MOUSE_UP, event.myOffsetX, event.myOffsetY);
 		else
-			networking.sendBrushEvent(EVENT_MOUSE_CURSOR, evt.myOffsetX, evt.myOffsetY);
+			networking.sendBrushEvent(EVENT_MOUSE_CURSOR, event.myOffsetX, event.myOffsetY);
 		
 		localUser.cursorData.lastX = null;
 		localUser.cursorData.lastY = null;
 	},
-	mouseMove: function(evt, backgroundCanvasCTX) {
-		preventDefault(evt);
+	mouseMove: function(event, backgroundCanvasCTX) {
+		preventDefault(event);
 		
-		setOffsetXAndY(evt);
+		setOffsetXAndY(event);
 		
-		this.cursorX = evt.myOffsetX;
-		this.cursorY = evt.myOffsetY;
+		this.cursorX = event.myOffsetX;
+		this.cursorY = event.myOffsetY;
 		
 		if(!this.isDrawing) {
-			networking.sendBrushEvent(EVENT_MOUSE_CURSOR, evt.myOffsetX, evt.myOffsetY);
+			networking.sendBrushEvent(EVENT_MOUSE_CURSOR, event.myOffsetX, event.myOffsetY);
 			return;
 		}
 		
-		if(!localUser.brushData.brush.move(evt.myOffsetX, evt.myOffsetY, localUser, backgroundCanvasCTX))
-			networking.sendBrushEvent(EVENT_MOUSE_MOVE, evt.myOffsetX, evt.myOffsetY);
+		if(!localUser.brushData.brush.move(event.myOffsetX, event.myOffsetY, localUser, backgroundCanvasCTX))
+			networking.sendBrushEvent(EVENT_MOUSE_MOVE, event.myOffsetX, event.myOffsetY);
 		else
-			networking.sendBrushEvent(EVENT_MOUSE_CURSOR, evt.myOffsetX, evt.myOffsetY);
+			networking.sendBrushEvent(EVENT_MOUSE_CURSOR, event.myOffsetX, event.myOffsetY);
 	},
-	mouseScroll: function(evt) {
+	mouseScroll: function(event) {
 		var delta;
 		if ('wheelDelta' in event)
 			delta = sign(event.wheelDelta)*2;
@@ -359,7 +413,7 @@ var liveDrawInput = {
 			delta = sign(-event.detail)*2;
 			
 		localUser.brushData.setWidth(clamp(localUser.brushData.width+delta, 1, 100))
-		evt.preventDefault();
+		event.preventDefault();
 		//return false;
 	}
 }
@@ -392,25 +446,25 @@ var networking = {
 			return;
 		this.recvDirectEvent(msg.charAt(0), msg.substr(1));
 	},
-	recvDirectEvent: function(evtype, payload) {
-		if(evtype == EVENT_ERROR) {
+	recvDirectEvent: function(eventype, payload) {
+		if(eventype == EVENT_ERROR) {
 			this.close();
 			alert("Network error: " + payload + "\nPlease refresh this page to rejoin!");
 			return;
 		}
 		payload = payload.split("|");
-		switch(evtype) {
+		switch(eventype) {
 			case EVENT_JOIN:
 				paintUsers[payload[0]] = {
 					name: payload[1],
 					brushData: {
-						width: parseFloat(payload[2]),
+						width: parseFloat(payload[2])*scaleFactor,
 						color: payload[3],
 						brush: paintBrushes[payload[4]]
 					},
 					cursorData: {
-						x: parseFloat(payload[5]),
-						y: parseFloat(payload[6]),
+						x: parseFloat(payload[5])*scaleFactor,
+						y: parseFloat(payload[6])*scaleFactor,
 						lastX: 0,
 						lastY: 0
 					},  	
@@ -431,30 +485,30 @@ var networking = {
 				}
 				break;
 			default:
-				this.recvDrawEvent(evtype, payload);
+				this.recvDrawEvent(eventype, payload);
 				break;
 		}
 	},
-	sendDrawEvent: function(evtype, payload) {
-		this.sendRaw(evtype + payload);
+	sendDrawEvent: function(eventype, payload) {
+		this.sendRaw(eventype + payload);
 	},
-	sendBrushEvent: function(evtype, x, y) {
-		this.sendDrawEvent(evtype, x+"|"+y);
+	sendBrushEvent: function(eventype, x, y) {
+		this.sendDrawEvent(eventype, x+"|"+y);
 	},
-	recvDrawEvent: function(evtype, payload) {
+	recvDrawEvent: function(eventype, payload) {
 		var from = paintUsers[payload[0]];
-		switch(evtype) {
+		switch(eventype) {
 			case EVENT_MOUSE_CURSOR:
-				from.cursorData.x = parseFloat(payload[1]);
-				from.cursorData.y = parseFloat(payload[2]);
+				from.cursorData.x = parseFloat(payload[1])*scaleFactor;
+				from.cursorData.y = parseFloat(payload[2])*scaleFactor;
 				break;
 			case EVENT_MOUSE_MOVE:
 			case EVENT_MOUSE_DOWN:
 			case EVENT_MOUSE_UP:
-				this.recvBrushEvent(from, evtype, payload[1], payload[2]);
+				this.recvBrushEvent(from, eventype, payload[1], payload[2]);
 				break;
 			case EVENT_WIDTH:
-				from.brushData.width = parseFloat(payload[1]);
+				from.brushData.width = parseFloat(payload[1])*scaleFactor;
 				break;
 			case EVENT_COLOR:
 				from.brushData.color = payload[1];
@@ -466,7 +520,7 @@ var networking = {
 				break;
 		}
 	},
-	recvBrushEvent: function(from, evtype, x, y) {
+	recvBrushEvent: function(from, eventype, x, y) {
 		from.cursorData.x = x;
 		from.cursorData.y = y;
 		
@@ -477,7 +531,7 @@ var networking = {
 		
 		brush.select(from, foregroundCanvasCTX, backgroundCanvasCTX);
 		
-		switch(evtype) {
+		switch(eventype) {
 			case EVENT_MOUSE_DOWN:
 				brush.down(x, y, from);
 				break;
@@ -497,8 +551,8 @@ var networking = {
 		this.shouldConnect = true;
 		var webSocket = new WebSocket("wss://foxcav.es:8002/", "paint");
 		
-		webSocket.onmessage = function(evt) {
-			var data = webSocket_buffer+evt.data;
+		webSocket.onmessage = function(event) {
+			var data = webSocket_buffer+event.data;
 			var datalen = data.length;
 			if(data.charAt(datalen - 1) != "\n") {
 				datalen = data.lastIndexOf("\n");
@@ -517,14 +571,14 @@ var networking = {
 			}
 		};
 		
-		webSocket.onclose = webSocket.onerror = function(evt) {//Unwanted disconnect
+		webSocket.onclose = webSocket.onerror = function(event) {//Unwanted disconnect
 			if(!networking.shouldConnect)
 				return;
 			window.setTimeout(function() { networking.connect() }, 200);
 			webSocket.close();
 		}
 		
-		webSocket.onopen = function(evt) {
+		webSocket.onopen = function(event) {
 			networking.sendDrawEvent(EVENT_JOIN, SESSIONID+"|"+LIVEDRAW_FILEID+"|"+LIVEDRAW_SID);
 			localUser.brushData.setColor("black");
 			localUser.brushData.setWidth(10.0);
@@ -547,6 +601,7 @@ var networking = {
 var defaultFont = "24px Verdana";
 
 function paintCanvas() {
+	requestAnimationFrame(paintCanvas);
 	if(!localUser.brushData.brush)
 		return;
 	foregroundCanvasCTX.clearRect(0, 0, foregroundCanvas.width, foregroundCanvas.height);
@@ -609,7 +664,11 @@ function loadImage() {
 		
 		backgroundCanvasCTX.drawImage(this, 0, 0);
 		
-		window.setInterval(paintCanvas, 1/30);
+		imagePattern = backgroundCanvasCTX.createPattern(this, "no-repeat");
+		
+		requestAnimationFrame(paintCanvas);
+		
+		//window.setInterval(, 1/40);
 	};
 	baseImage.src = finalCanvas.getAttribute("data-file-url");
 }
@@ -623,18 +682,77 @@ function setupCanvas() {
 	foregroundCanvasCTX = foregroundCanvas.getContext("2d");
 	finalCanvasCTX = finalCanvas.getContext("2d");
 	
-	finalCanvas.addEventListener("mousedown", function(evt) { liveDrawInput.mouseDown(evt) }, false);
-	finalCanvas.addEventListener("mouseup", function(evt) { liveDrawInput.mouseUp(evt, backgroundCanvasCTX) }, false);
-	finalCanvas.addEventListener("mousemove", function(evt) { liveDrawInput.mouseMove(evt, backgroundCanvasCTX) }, false);
-	finalCanvas.addEventListener("mouseout", function(evt) { liveDrawInput.mouseOut(evt, backgroundCanvasCTX) }, false);
-	finalCanvas.addEventListener("mouseover", function(evt) { liveDrawInput.mouseOver(evt) }, false);
+	finalCanvas.addEventListener("mousedown", function(event) { liveDrawInput.mouseDown(event) }, false);
+	finalCanvas.addEventListener("mouseup", function(event) { liveDrawInput.mouseUp(event, backgroundCanvasCTX) }, false);
+	finalCanvas.addEventListener("mousemove", function(event) { liveDrawInput.mouseMove(event, backgroundCanvasCTX) }, false);
+	finalCanvas.addEventListener("mouseout", function(event) { liveDrawInput.mouseOut(event, backgroundCanvasCTX) }, false);
+	finalCanvas.addEventListener("mouseover", function(event) { liveDrawInput.mouseOver(event) }, false);
 	
-	finalCanvas.addEventListener("mousewheel", function(evt) { liveDrawInput.mouseScroll(evt) }, false);
-	finalCanvas.addEventListener('DOMMouseScroll', function(evt) { liveDrawInput.mouseScroll(evt) }, false);
+	finalCanvas.addEventListener("mousewheel", function(event) { liveDrawInput.mouseScroll(event) }, false);
+	finalCanvas.addEventListener('DOMMouseScroll', function(event) { liveDrawInput.mouseScroll(event) }, false);
 }
+
+function setupColorSelector() {
+	var hsSelector = document.getElementById("color-selector");
+	var hsSelectorMarker = document.getElementById("color-selector-inner");
+	var lSelector = document.getElementById("lightness-selector");
+	var lSelectorMarker = document.getElementById("lightness-selector-inner");
+	
+	var hue = 0;
+	var saturisation = 0;
+	var lightness = 50;
+	
+	var hsSelectorDown;
+	var lSelectorDown;
+	
+	function setHSLColor(h, s, l) {
+		var colStr = "hsl("+h+", "+s+"%, "+l+"%)";
+		localUser.brushData.setColor(colStr);
+		
+		hsSelector.style.outlineColor = colStr;
+		lSelector.style.outlineColor = colStr;
+	}
+	var hsSelectorMouseMoveListener;
+	var lSelectorMouseMoveListener;
+	
+	hsSelector.addEventListener("mousedown", function(event) { if(event.button == 0) { hsSelectorDown = true; hsSelectorMouseMoveListener(event) } });
+	hsSelector.addEventListener("mouseup", function(event) { if(event.button == 0) hsSelectorDown = false; });
+	hsSelector.addEventListener("mousemove", hsSelectorMouseMoveListener = function(event) {
+		if(!hsSelectorDown)
+			return;
+	
+		hue = (event.offsetX/this.offsetWidth)*360;
+		lightness = (event.offsetY/this.offsetHeight)*100;
+		lSelector.style.backgroundImage = "-webkit-linear-gradient(top, hsl("+hue+", 100%, "+lightness+"%), hsl("+hue+", 0%, "+lightness+"%))";
+		
+		hsSelectorMarker.style.left = (event.offsetX-5)+"px";
+		hsSelectorMarker.style.top = (event.offsetY-5)+"px";
+		
+		setHSLColor(hue, saturisation, lightness);
+	});
+	
+	lSelector.addEventListener("mousedown", function(event) { if(event.button == 0) { lSelectorDown = true; lSelectorMouseMoveListener(event) } });
+	lSelector.addEventListener("mouseup", function(event) { if(event.button == 0) lSelectorDown = false; });
+	lSelector.addEventListener("mousemove", lSelectorMouseMoveListener = function(event) {
+		if(!lSelectorDown)
+			return;
+			
+		saturisation = (1-event.offsetY/this.offsetHeight)*100;
+		
+		lSelectorMarker.style.top = event.offsetY+"px";
+		
+		hsSelector.style.backgroundImage="-webkit-linear-gradient(top, black, transparent, white),\
+		-webkit-linear-gradient(left, hsl(0, "+saturisation+"%, 50%), hsl(60, "+saturisation+"%, 50%), hsl(120, "+saturisation+"%, 50%),\
+		hsl(180, "+saturisation+"%, 50%), hsl(240, "+saturisation+"%, 50%), hsl(300, "+saturisation+"%, 50%), hsl(0, "+saturisation+"%, 50%))";
+		
+		setHSLColor(hue, saturisation, lightness);
+	});
+}
+	
 
 $(document).ready(function() {
 	setupCanvas();
+	setupColorSelector();
 	loadImage();
 });
 

@@ -91,7 +91,9 @@ local valid_brushes = {
 	circle = true,
 	rectangle = true,
 	line = true,
-	erase = true
+	erase = true,
+	text = true,
+	restore = true
 }
 
 local chr_a,chr_f,chr_0,chr_9 = ("af09"):byte(1,4)
