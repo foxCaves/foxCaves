@@ -310,7 +310,7 @@ var paintBrushes = {
 		down: function() {
 		},
 		up: function(x, y, user, backgroundCanvasCTX) {
-			backgroundCanvasCTX.font = (scaleFactor * user.brushData.width) + "px Verdana"
+			backgroundCanvasCTX.font = (scaleFactor * user.brushData.width) + "px "+user.brushData.customData.text.font;
 			backgroundCanvasCTX.textAlign = "left";
 			backgroundCanvasCTX.textBaseline = "top";
 			backgroundCanvasCTX.fillText(
