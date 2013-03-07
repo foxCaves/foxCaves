@@ -797,7 +797,7 @@ function setupBrushes() {
 			paintBrushes[brush].setup();
 		if(paintBrushes[brush].usesCustomData) {
 			var dataSet = {};
-			var defaultSet =  paintBrushes[brush].defaultCustomData
+			var defaultSet = paintBrushes[brush].defaultCustomData
 			for(attrib in paintBrushes[brush].defaultCustomData)
 				dataSet[attrib] = defaultSet[attrib];
 			localUser.brushData.customData[brush] = dataSet;
