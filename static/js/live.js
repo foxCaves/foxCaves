@@ -421,7 +421,7 @@ var liveDrawInput = {
 		this.cursorY = event.myOffsetY;
 		
 		var sendX = event.myOffsetX/scaleFactor;
-		var sendY = event.myOffsetX/scaleFactor;
+		var sendY = event.myOffsetY/scaleFactor;
 		
 		if(!this.isDrawing) {
 			networking.sendBrushEvent(EVENT_MOUSE_CURSOR, sendX, sendY);
