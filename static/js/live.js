@@ -280,6 +280,7 @@ var paintBrushes = {
 		}
 	},
 	text: {
+		keepLineWidth: true,
 		usesCustomData: true,
 		defaultCustomData: {
 			text: "",
