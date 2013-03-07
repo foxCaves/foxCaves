@@ -109,7 +109,7 @@ var paintBrushes = {
 	circle: {
 		select: function(user, foregroundCanvasCTX, backgroundCanvasCTX) {
 			backgroundCanvasCTX.lineCap = "butt";
-			foregroundCanvasCTX.lineWidth = user.brushData.width;
+			foregroundCanvasCTX.lineWidth = user.brushData.width*scaleFactor;
 		},
 		down: function(x, y, user) {
 			this.active = true;
