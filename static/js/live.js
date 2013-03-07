@@ -587,7 +587,7 @@ var networking = {
 		
 		localUser.brushData.brush.select(from, foregroundCanvasCTX, backgroundCanvasCTX);
 	},
-	sendCustomPacket: function(brushName, key, val) {
+	sendBrushPacket: function(brushName, key, val) {
 		this.sendRaw(EVENT_CUSTOM + brushName + "|" + key + "|" + val);
 	},
 	connect: function() {
