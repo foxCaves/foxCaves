@@ -20,7 +20,7 @@ var localUser = {
 				return;
 			this.width = bWidth*scaleFactor;
 			this.setBrushAttribsLocal();
-			networking.sendDrawEvent(EVENT_WIDTH, this.width/scaleFactor);
+			networking.sendDrawEvent(EVENT_WIDTH, this.width);
 		},
 		setColor: function(bColor) {
 			this.color = bColor;
