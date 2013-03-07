@@ -489,7 +489,8 @@ var networking = {
 		payload = payload.split("|");
 		switch(eventype) {
 			case EVENT_JOIN:
-				paintUsers[payload[0]] = {
+				var from = payload[0];
+				paintUsers[from] = {
 					name: payload[1],
 					brushData: {
 						width: parseFloat(payload[2])*scaleFactor,
@@ -504,6 +505,15 @@ var networking = {
 						lastY: 0
 					},  	
 				};
+				for(brush in paintBrushes) {
+					if(paintBrushes[brush].usesCustomData) {
+						var dataSet = {};
+						var defaultSet = paintBrushes[brush].defaultCustomData
+						for(attrib in paintBrushes[brush].defaultCustomData)
+							dataSet[attrib] = defaultSet[attrib];
+						from.brushData.customData[brush] = dataSet;
+					}
+				}
 				break;
 			case EVENT_LEAVE:
 				paintUsers[payload[0]] = null;
