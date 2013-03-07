@@ -290,12 +290,12 @@ var paintBrushes = {
 			this.textInput = document.getElementById("live-draw-text-input");
 			this.fontInput = document.getElementById("live-draw-font-input");
 			
-			this.textInput.addEventListener("change", function(event) {
+			this.textInput.addEventListener("keyup", function(event) {
 				console.log("obboy");
 				localUser.brushData.brush.setText(this.value);
 			});
 			
-			this.fontInput.addEventListener("change", function(event) {
+			this.fontInput.addEventListener("keyup", function(event) {
 				localUser.brushData.brush.setFont(this.value);
 			});
 		},
@@ -331,11 +331,11 @@ var paintBrushes = {
 			)
 		},
 		setText: function(text) {
-			user.brushData.customData.text.text = text;
+			localUser.brushData.customData.text.text = text;
 			networking.sendBrushPacket("text", "text", text);
 		},
 		setFont: function(font) {
-			user.brushData.customData.text.font = font
+			localUser.brushData.customData.text.font = font
 			networking.sendBrushPacket("text", "font", font);
 		}/*,
 		setFontSize: function(user, fontSize) {
