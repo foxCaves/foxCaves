@@ -489,8 +489,8 @@ var networking = {
 		payload = payload.split("|");
 		switch(eventype) {
 			case EVENT_JOIN:
-				var from = payload[0];
-				paintUsers[from] = {
+				var from;
+				from = paintUsers[from] = {
 					name: payload[1],
 					brushData: {
 						width: parseFloat(payload[2])*scaleFactor,
