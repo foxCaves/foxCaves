@@ -97,15 +97,17 @@ function ngx.ctx.format_size(size)
 	return (math.ceil(size * 100) / 100) .. assert(sizePostFixes[sinc], "No suitable postfix for file size")
 end
 
+local repTbl = {
+	["&"] = "&amp;",
+	["<"] = "&lt;",
+	[">"] = "&gt;",
+}
+
 function ngx.ctx.escape_html(str)
 	if (not str) or type(str) ~= "string" then
 		return str
 	end
-	str = str:gsub("[&<>]", {
-		["&"] = "&amp;",
-		["<"] = "&lt;",
-		[">"] = "&gt;",
-	})
+	str = str:gsub("[&<>]", repTbl)
 	return str
 end
 

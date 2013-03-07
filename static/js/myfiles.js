@@ -67,6 +67,7 @@ function processNextFile() {
 		};
 		dropZoneFileReader.readAsArrayBuffer(theFile);
 	} else if(typeof theFile == "string") {
+		debugger;
 		var t = new Date();
 		fileUpload("Paste-"+
 			formatZeros(t.getDate(), 2)+"."+
@@ -340,47 +341,6 @@ function setupFileDragging() {
 	}, false);
 }
 
-var headUtil;
-
-function setupHeadUtils() {
-	var headUtl = document.getElementById("head-util-container");
-	var jqHeadUtl = $(headUtl);
-	var parent = headUtl.parentNode
-	var jqParent = $(parent);
-	
-	var refreshNode = document.createTextNode(' ');
-	headUtil = {
-		clear: function (ev) {
-			while(headUtl.childNodes.length > 1)
-				headUtl.removeChild(headUtl.lastChild.previousSibling);
-		},
-		
-		appendElement: function(elem) {
-			headUtl.insertBefore(elem, headUtl.lastChild.previousSibling);
-		},
-		
-		removeElement: function(elem) {
-			headUtl.removeChild(elem);
-		},
-		
-		show: function(callback) {
-			jqHeadUtl.slideDown(200, callback);
-			jqParent.addClass("expanded");
-			parent.appendChild(refreshNode);
-			parent.removeChild(refreshNode);
-		},
-		
-		hide: function(callback) {
-			jqHeadUtl.slideUp(200, callback);
-			jqParent.removeClass("expanded");
-		},
-		
-		toggle: function (callback) {
-			jqHeadUtl.toggle(200, callback);
-		}
-	};
-}
-
 var handleBase64Request;
 var handleImageEdit;
 
@@ -398,35 +358,8 @@ function setupOptionMenu() {
 			text.value = data;
 			
 			text.style.width = "60%";
-			
-			headUtil.clear();
-			headUtil.appendElement(text);
-			headUtil.show();
 		});
 	}
-	
-	handleImageEdit = function(event) {
-		var imgWrapper = getFileLIFromEvt(event);
-		
-		var canvas = document.createElement("canvas");
-		var canvas2D = canvas.getContext('2d');
-		
-		var img = new Image();
-		img.onload = function() {
-			canvas.width = img.width;
-			canvas.height = img.height;
-			canvas2D.drawImage(img, 0, 0, img.width, img.height);
-		};
-		img.src = "/f/"+imgWrapper.getAttribute("data-file-id")+imgWrapper.getAttribute("data-file-extension");
-		
-		headUtil.clear();
-		headUtil.appendElement(canvas);
-		headUtil.show();
-	}
-	
-	$(".edit").each(function(idx, elem) {
-		elem.onclick = handleImageEdit;
-	});
 }
 
 function hasValidType(types) {
@@ -462,8 +395,6 @@ function setupSearch() {
 }
 
 $(document).ready(function() {
-	setupHeadUtils();
-	
 	setupOptionMenu();
 
 	setupDropZone();
