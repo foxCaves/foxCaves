@@ -124,7 +124,7 @@ var paintBrushes = {
 			backgroundCanvasCTX.beginPath();
 			x = user.cursorData.lastX - x;
 			y = user.cursorData.lastY - y;
-			backgroundCanvasCTX.arc(user.cursorData.lastX, user.cursorData.lastY, Math.sqrt(x*x + y*y)*scaleFactor, 0, MathPI2, false);
+			backgroundCanvasCTX.arc(user.cursorData.lastX, user.cursorData.lastY, Math.sqrt(x*x + y*y), 0, MathPI2, false);
 			backgroundCanvasCTX.stroke();
 			this.active = false;
 		},
@@ -137,7 +137,7 @@ var paintBrushes = {
 			foregroundCanvasCTX.beginPath();
 			x = user.cursorData.lastX - x;
 			y = user.cursorData.lastY - y;
-			foregroundCanvasCTX.arc(user.cursorData.lastX, user.cursorData.lastY, Math.sqrt(x*x + y*y)*scaleFactor, 0, MathPI2, false);
+			foregroundCanvasCTX.arc(user.cursorData.lastX, user.cursorData.lastY, Math.sqrt(x*x + y*y), 0, MathPI2, false);
 			foregroundCanvasCTX.stroke();
 		}
 	},
