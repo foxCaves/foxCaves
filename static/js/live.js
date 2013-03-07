@@ -107,7 +107,6 @@ var paintBrushes = {
 		}
 	},
 	circle: {
-		keepLineWidth: true,
 		select: function(user, foregroundCanvasCTX, backgroundCanvasCTX) {
 			backgroundCanvasCTX.lineCap = "butt";
 			foregroundCanvasCTX.lineWidth = localUser.brushData.width;
