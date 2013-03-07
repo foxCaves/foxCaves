@@ -82,7 +82,7 @@ var paintBrushes = {
 	rectangle: {
 		select: function(user, foregroundCanvasCTX, backgroundCanvasCTX) {
 			backgroundCanvasCTX.lineCap = "butt";
-			foregroundCanvasCTX.lineWidth = localUser.brushData.width;
+			foregroundCanvasCTX.lineWidth = user.brushData.width;
 		},
 		down: function(x, y, user) {
 			user.cursorData.lastX = x;
@@ -109,7 +109,7 @@ var paintBrushes = {
 	circle: {
 		select: function(user, foregroundCanvasCTX, backgroundCanvasCTX) {
 			backgroundCanvasCTX.lineCap = "butt";
-			foregroundCanvasCTX.lineWidth = localUser.brushData.width;
+			foregroundCanvasCTX.lineWidth = user.brushData.width;
 		},
 		down: function(x, y, user) {
 			this.active = true;
@@ -248,7 +248,7 @@ var paintBrushes = {
 	line: {
 		select: function(user, foregroundCanvasCTX, backgroundCanvasCTX) {
 			backgroundCanvasCTX.lineCap = "butt";
-			foregroundCanvasCTX.lineWidth = localUser.brushData.width;
+			foregroundCanvasCTX.lineWidth = user.brushData.width;
 		},
 		down: function(x, y, user) {
 			user.cursorData.lastX = x;
@@ -670,7 +670,7 @@ function paintCanvas() {
 	var offset;
 	var user;
 	
-	for(var i=0;i<paintUsers.length;++i) {
+	for(var i=0;i<paintUsers.length;++i)
 		if(paintUsers[i]) {
 			user = paintUsers[i];
 				
@@ -685,7 +685,7 @@ function paintCanvas() {
 				user.cursorData.y + user.brushData.width
 			)
 		}
-	}
+		
 	finalCanvasCTX.clearRect(0, 0, finalCanvas.width, finalCanvas.height);
 	
 	finalCanvasCTX.drawImage(backgroundCanvas, 0, 0);
