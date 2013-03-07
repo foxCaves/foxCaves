@@ -552,7 +552,7 @@ var networking = {
 				this.recvBrushEvent(from, eventype, payload[1], payload[2]);
 				break;
 			case EVENT_WIDTH:
-				from.brushData.width = parseFloat(payload[1])*scaleFactor;
+				from.brushData.width = parseFloat(payload[1]);
 				break;
 			case EVENT_COLOR:
 				from.brushData.color = payload[1];
