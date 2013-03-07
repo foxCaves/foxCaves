@@ -576,7 +576,7 @@ var networking = {
 		from.cursorData.y = y;
 		
 		var brush = from.brushData.brush;
-		backgroundCanvasCTX.lineWidth = from.brushData.width;
+		backgroundCanvasCTX.lineWidth = from.brushData.width*scaleFactor;//Needed in order to draw correctly
 		backgroundCanvasCTX.strokeStyle = from.brushData.color;
 		backgroundCanvasCTX.fillStyle = from.brushData.color;
 		
