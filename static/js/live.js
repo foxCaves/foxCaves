@@ -561,8 +561,8 @@ var networking = {
 		}
 	},
 	recvBrushEvent: function(from, eventype, x, y) {
-		from.cursorData.x = x;
-		from.cursorData.y = y;
+		from.cursorData.x = x*scaleFactor;
+		from.cursorData.y = y*scaleFactor;
 		
 		var brush = from.brushData.brush;
 		backgroundCanvasCTX.lineWidth = from.brushData.width;
