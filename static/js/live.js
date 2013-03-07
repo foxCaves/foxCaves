@@ -18,7 +18,7 @@ var localUser = {
 		setWidth: function(bWidth) {
 			if(bWidth == this.width)
 				return;
-			this.width = bWidth;
+			this.width = bWidth*scaleFactor;
 			this.setBrushAttribsLocal();
 			networking.sendDrawEvent(EVENT_WIDTH, this.width/scaleFactor);
 		},
@@ -171,7 +171,7 @@ var paintBrushes = {
 		},
 		preview: function(x, y, user, foregroundCanvasCTX) {
 			foregroundCanvasCTX.beginPath();
-			foregroundCanvasCTX.arc(x, y, (user.brushData.width/2)*scaleFactor, 0, 2*Math.PI);
+			foregroundCanvasCTX.arc(x, y, (user.brushData.width/2), 0, 2*Math.PI);
 			foregroundCanvasCTX.stroke();
 		}
 	},
@@ -206,7 +206,7 @@ var paintBrushes = {
 		},
 		preview: function(x, y, user, foregroundCanvasCTX) {
 			foregroundCanvasCTX.beginPath();
-			foregroundCanvasCTX.arc(x, y, (user.brushData.width/2)*scaleFactor, 0, 2*Math.PI);
+			foregroundCanvasCTX.arc(x, y, (user.brushData.width/2), 0, 2*Math.PI);
 			foregroundCanvasCTX.stroke();
 		}
 	},
@@ -241,7 +241,7 @@ var paintBrushes = {
 		},
 		preview: function(x, y, user, foregroundCanvasCTX) {
 			foregroundCanvasCTX.beginPath();
-			foregroundCanvasCTX.arc(x, y, (user.brushData.width/2)*scaleFactor, 0, 2*Math.PI);
+			foregroundCanvasCTX.arc(x, y, (user.brushData.width/2), 0, 2*Math.PI);
 			foregroundCanvasCTX.stroke();
 		}
 	},
