@@ -292,11 +292,11 @@ var paintBrushes = {
 			
 			this.textInput.addEventListener("change", function(event) {
 				console.log("obboy");
-				this.setText(this.value);
+				localUser.brushData.brush.setText(this.value);
 			});
 			
 			this.fontInput.addEventListener("change", function(event) {
-				this.setFont(this.value);
+				localUser.brushData.brush.setFont(this.value);
 			});
 		},
 		select: function(user, foregroundCanvasCTX, backgroundCanvasCTX) {
@@ -496,7 +496,6 @@ var networking = {
 						lastY: 0
 					},  	
 				};
-				console.log(from);
 				for(brush in paintBrushes)
 					if(paintBrushes[brush].usesCustomData) {
 						var dataSet = {};
