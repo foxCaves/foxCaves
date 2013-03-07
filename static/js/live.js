@@ -496,6 +496,7 @@ var networking = {
 						lastY: 0
 					},  	
 				};
+				console.log(from);
 				for(brush in paintBrushes)
 					if(paintBrushes[brush].usesCustomData) {
 						var dataSet = {};
