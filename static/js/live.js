@@ -480,6 +480,7 @@ var networking = {
 		payload = payload.split("|");
 		switch(eventype) {
 			case EVENT_JOIN:
+				var from;
 				from = paintUsers[payload[0]] = {
 					name: payload[1],
 					brushData: {
