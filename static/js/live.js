@@ -420,15 +420,18 @@ var liveDrawInput = {
 		this.cursorX = event.myOffsetX;
 		this.cursorY = event.myOffsetY;
 		
+		var sendX = event.myOffsetX/scaleFactor;
+		var sendY = event.myOffsetX/scaleFactor;
+		
 		if(!this.isDrawing) {
-			networking.sendBrushEvent(EVENT_MOUSE_CURSOR, event.myOffsetX, event.myOffsetY);
+			networking.sendBrushEvent(EVENT_MOUSE_CURSOR, sendX, sendY);
 			return;
 		}
 		
 		if(!localUser.brushData.brush.move(event.myOffsetX, event.myOffsetY, localUser, backgroundCanvasCTX))
-			networking.sendBrushEvent(EVENT_MOUSE_MOVE, event.myOffsetX, event.myOffsetY);
+			networking.sendBrushEvent(EVENT_MOUSE_MOVE, sendX, sendY);
 		else
-			networking.sendBrushEvent(EVENT_MOUSE_CURSOR, event.myOffsetX, event.myOffsetY);
+			networking.sendBrushEvent(EVENT_MOUSE_CURSOR, sendX, sendY;
 	},
 	mouseScroll: function(event) {
 		var delta;
