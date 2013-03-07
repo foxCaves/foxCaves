@@ -307,15 +307,15 @@ var paintBrushes = {
 		},
 		setText: function(user, text) {
 			user.brushData.customData.text.text = text;
-			networking.setCustomPacket("text", "text", text);
+			networking.sendCustomPacket("text", "text", text);
 		},
 		setFont: function(user, font) {
 			user.brushData.customData.text.font = font
-			networking.setCustomPacket("text", "font", font);
+			networking.sendCustomPacket("text", "font", font);
 		},
 		setFontSize: function(user, fontSize) {
 			user.brushData.customData.text.fontSize = fontSize
-			networking.setCustomPacket("text", "fontSize", fontSize);
+			networking.sendCustomPacket("text", "fontSize", fontSize);
 		}
 	}
 };
@@ -699,8 +699,8 @@ function setupColorSelector() {
 	var lSelectorMarker = document.getElementById("lightness-selector-inner");
 	
 	var hue = 0;
-	var saturisation = 0;
-	var lightness = 50;
+	var saturisation = 100;
+	var lightness = 0;
 	
 	var hsSelectorDown;
 	var lSelectorDown;
