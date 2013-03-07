@@ -667,7 +667,6 @@ function paintCanvas() {
 	foregroundCanvasCTX.textAlign = "left";
 	foregroundCanvasCTX.textBaseline = "top";
 	
-	var offset;
 	var user;
 	
 	for(var i=0;i<paintUsers.length;++i)
@@ -676,8 +675,6 @@ function paintCanvas() {
 				
 			user.brushData.brush.select(user, foregroundCanvasCTX, backgroundCanvasCTX);
 			user.brushData.brush.preview(user.cursorData.x, user.cursorData.y, user, foregroundCanvasCTX);
-				
-			var offset = Math.sqrt(Math.pow(user.brushData.width)*2)
 			
 			foregroundCanvasCTX.font = defaultFont;
 			foregroundCanvasCTX.fillText(
