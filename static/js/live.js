@@ -505,7 +505,7 @@ var networking = {
 						lastY: 0
 					},  	
 				};
-				for(brush in paintBrushes) {
+				for(brush in paintBrushes)
 					if(paintBrushes[brush].usesCustomData) {
 						var dataSet = {};
 						var defaultSet = paintBrushes[brush].defaultCustomData
@@ -513,7 +513,6 @@ var networking = {
 							dataSet[attrib] = defaultSet[attrib];
 						from.brushData.customData[brush] = dataSet;
 					}
-				}
 				break;
 			case EVENT_LEAVE:
 				paintUsers[payload[0]] = null;
