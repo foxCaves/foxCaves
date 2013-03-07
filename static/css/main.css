@@ -241,7 +241,7 @@ input[type="submit"] {
 	vertical-align:text-top;
 }
 
-#color-selector, #lightness-selector {
+#color-selector, #saturisation-selector, #opacity-selector {
 	-webkit-touch-callout: none;
 	-webkit-user-select: none;
 	-khtml-user-select: none;
@@ -271,12 +271,17 @@ input[type="submit"] {
 	pointer-events: none;
 }
 
-#lightness-selector {
+#saturisation-selector {
 	width: 20px;
 	background-image: -webkit-linear-gradient(top, hsl(0, 100%, 50%), hsl(0, 100%, 0%));	
 }
 
-#lightness-selector-inner {
+#opacity-selector {
+	width: 20px;
+	background-image: -webkit-linear-gradient(top, hsl(0, 100%, 50%), hsla(0, 100%, 0%, 0));
+}
+
+#saturisation-selector-inner, #opacity-selector-inner {
 	width: 20px;
 	height: 1px;
 	background-color: black;

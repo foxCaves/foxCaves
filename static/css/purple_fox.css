@@ -180,3 +180,14 @@ video {
 #pdf-view {
 	border-color: #B333E5;
 }
+
+.image_manage_main {
+	-webkit-box-shadow: 2px 2px 4px #B333E5;
+	-moz-box-shadow: 2px 2px 4px #B333E5;
+	box-shadow: 2px 2px 4px #B333E5;
+}
+
+#livedraw {
+	-webkit-filter: drop-shadow(20px 20px 20px #B333E5);
+	filter: drop-shadow(20px 20px 20px #B333E5);
+}

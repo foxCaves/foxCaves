@@ -8,6 +8,8 @@ var scaleFactor = 1.0;
 
 var imagePattern;
 
+var brushSizeSlider;
+
 var localUser = {
 	brushData: {
 		width: 0,
@@ -19,6 +21,7 @@ var localUser = {
 			if(bWidth == this.width)
 				return;
 			this.width = bWidth;
+			brushSizeSlider.value = bWidth;
 			this.setBrushAttribsLocal();
 			networking.sendDrawEvent(EVENT_WIDTH, bWidth);
 		},
@@ -181,6 +184,7 @@ var paintBrushes = {
 			backgroundCanvasCTX.lineCap = "round";
 			backgroundCanvasCTX.globalCompositeOperation = "destination-out";
 			foregroundCanvasCTX.lineWidth = 1/scaleFactor;
+			foregroundCanvasCTX.strokeStyle = "black";
 		},
 		down: function(x, y, user) {
 			user.cursorData.lastX = x;
@@ -216,6 +220,7 @@ var paintBrushes = {
 		select: function(user, foregroundCanvasCTX, backgroundCanvasCTX) {
 			backgroundCanvasCTX.strokeStyle = imagePattern;
 			foregroundCanvasCTX.lineWidth = 1/scaleFactor;
+			foregroundCanvasCTX.strokeStyle = "black";
 		},
 		down: function(x, y, user) {
 			user.cursorData.lastX = x;
@@ -446,7 +451,7 @@ var liveDrawInput = {
 		else
 			delta = sign(-event.detail)*2;
 			
-		localUser.brushData.setWidth(clamp(localUser.brushData.width+delta, 1, 100))
+		localUser.brushData.setWidth(clamp(localUser.brushData.width+delta, 1, maxBrushWidth))
 		event.preventDefault();
 		//return false;
 	}
@@ -746,59 +751,79 @@ function setupCanvas() {
 }
 
 function setupColorSelector() {
-	var hsSelector = document.getElementById("color-selector");
-	var hsSelectorMarker = document.getElementById("color-selector-inner");
-	var lSelector = document.getElementById("lightness-selector");
-	var lSelectorMarker = document.getElementById("lightness-selector-inner");
+	var hlSelector = document.getElementById("color-selector");
+	var hlSelectorMarker = document.getElementById("color-selector-inner");
+	var sSelector = document.getElementById("saturisation-selector");
+	var sSelectorMarker = document.getElementById("saturisation-selector-inner");
+	var oSelector = document.getElementById("opacity-selector");
+	var oSelectorMarker = document.getElementById("opacity-selector-inner");
 	
 	var hue = 0;
 	var saturisation = 100;
 	var lightness = 0;
+	var opacity = 1;
 	
-	var hsSelectorDown;
-	var lSelectorDown;
+	var hlSelectorDown;
+	var sSelectorDown;
+	var oSelectorDown;
 	
-	function setHSLColor(h, s, l) {
-		var colStr = "hsl("+h+", "+s+"%, "+l+"%)";
+	function setHSLColor(h, s, l, o) {
+		var colStr = "hsla("+h+", "+s+"%, "+l+"%, "+o+")";
 		localUser.brushData.setColor(colStr);
 		
-		hsSelector.style.outlineColor = colStr;
-		lSelector.style.outlineColor = colStr;
+		hlSelector.style.outlineColor = colStr;
+		sSelector.style.outlineColor = colStr;
+		oSelector.style.outlineColor = colStr;
 	}
-	var hsSelectorMouseMoveListener;
-	var lSelectorMouseMoveListener;
+	var hlSelectorMouseMoveListener;
+	var sSelectorMouseMoveListener;
+	var oSelectorMouseMoveListener;
 	
-	hsSelector.addEventListener("mousedown", function(event) { if(event.button == 0) { hsSelectorDown = true; hsSelectorMouseMoveListener(event) } });
-	hsSelector.addEventListener("mouseup", function(event) { if(event.button == 0) hsSelectorDown = false; });
-	hsSelector.addEventListener("mousemove", hsSelectorMouseMoveListener = function(event) {
-		if(!hsSelectorDown)
+	hlSelector.addEventListener("mousedown", function(event) { if(event.button == 0) { hlSelectorDown = true; hlSelectorMouseMoveListener(event) } });
+	hlSelector.addEventListener("mouseup", function(event) { if(event.button == 0) hlSelectorDown = false; });
+	hlSelector.addEventListener("mousemove", hlSelectorMouseMoveListener = function(event) {
+		if(!hlSelectorDown)
 			return;
 	
 		hue = (event.offsetX/this.offsetWidth)*360;
 		lightness = (event.offsetY/this.offsetHeight)*100;
-		lSelector.style.backgroundImage = "-webkit-linear-gradient(top, hsl("+hue+", 100%, "+lightness+"%), hsl("+hue+", 0%, "+lightness+"%))";
+		sSelector.style.backgroundImage = "-webkit-linear-gradient(top, hsl("+hue+", 100%, "+lightness+"%), hsl("+hue+", 0%, "+lightness+"%))";
+		oSelector.style.backgroundImage = "-webkit-linear-gradient(top, hsl("+hue+", 100%, "+lightness+"%), hsla("+hue+", 0%, "+lightness+"%, "+opacity+"))";
 		
-		hsSelectorMarker.style.left = (event.offsetX-5)+"px";
-		hsSelectorMarker.style.top = (event.offsetY-5)+"px";
+		hlSelectorMarker.style.left = (event.offsetX-5)+"px";
+		hlSelectorMarker.style.top = (event.offsetY-5)+"px";
 		
-		setHSLColor(hue, saturisation, lightness);
+		setHSLColor(hue, saturisation, lightness, opacity);
 	});
 	
-	lSelector.addEventListener("mousedown", function(event) { if(event.button == 0) { lSelectorDown = true; lSelectorMouseMoveListener(event) }});
-	lSelector.addEventListener("mouseup", function(event) { if(event.button == 0) lSelectorDown = false; });
-	lSelector.addEventListener("mousemove", lSelectorMouseMoveListener = function(event) {
-		if(!lSelectorDown)
+	sSelector.addEventListener("mousedown", function(event) { if(event.button == 0) { sSelectorDown = true; sSelectorMouseMoveListener(event) }});
+	sSelector.addEventListener("mouseup", function(event) { if(event.button == 0) sSelectorDown = false; });
+	sSelector.addEventListener("mousemove", sSelectorMouseMoveListener = function(event) {
+		if(!sSelectorDown)
 			return;
 			
 		saturisation = (1-event.offsetY/this.offsetHeight)*100;
 		
-		lSelectorMarker.style.top = event.offsetY+"px";
+		sSelectorMarker.style.top = event.offsetY+"px";
 		
-		hsSelector.style.backgroundImage="-webkit-linear-gradient(top, black, transparent, white),\
+		hlSelector.style.backgroundImage="-webkit-linear-gradient(top, black, transparent, white),\
 		-webkit-linear-gradient(left, hsl(0, "+saturisation+"%, 50%), hsl(60, "+saturisation+"%, 50%), hsl(120, "+saturisation+"%, 50%),\
 		hsl(180, "+saturisation+"%, 50%), hsl(240, "+saturisation+"%, 50%), hsl(300, "+saturisation+"%, 50%), hsl(0, "+saturisation+"%, 50%))";
 		
-		setHSLColor(hue, saturisation, lightness);
+		setHSLColor(hue, saturisation, lightness, opacity);
+	});
+	
+	oSelector.addEventListener("mousedown", function(event) { if(event.button == 0) { oSelectorDown = true; oSelectorMouseMoveListener(event) }});
+	oSelector.addEventListener("mouseup", function(event) { if(event.button == 0) oSelectorDown = false; });
+	oSelector.addEventListener("mousemove", oSelectorMouseMoveListener = function(event) {
+		if(!oSelectorDown)
+			return;
+			
+		opacity = (1-event.offsetY/this.offsetHeight);
+		
+		oSelectorMarker.style.top = event.offsetY+"px";
+		
+		setHSLColor(hue, saturisation, lightness, opacity);
 	});
 }
 
@@ -817,6 +842,8 @@ function setupBrushes() {
 }
 
 $(document).ready(function() {
+	brushSizeSlider = document.getElementById("brush-width-slider");
+
 	setupCanvas();
 	setupColorSelector();
 	setupBrushes();

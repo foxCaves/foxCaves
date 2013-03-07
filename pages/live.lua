@@ -31,6 +31,7 @@ ngx.print(load_template("live", {
 	ADDLINKS = build_nav(navtbl),
 	FILE = file,
 	FILEID = nameregex,
-	LDSID = sid
+	LDSID = sid,
+	MAX_BRUSH_WIDTH = 200
 }))
 ngx.eof()

@@ -32,15 +32,16 @@
 			<input id="live-draw-font-input" type="text" style="display:none" value="Verdana" placeholder="font" />
 			<br />
 			<span style="color:white;">0</span>
-			<input type="range" value="10" min="1" max="100" step="0.1" onchange="localUser.brushData.setWidth(this.value);" />
-			<span style="color:white;">100</span><br />
+			<input id="brush-width-slider" type="range" value="10" min="1" max="<%= MAX_BRUSH_WIDTH %>" step="0.1" onchange="localUser.brushData.setWidth(this.value);" />
+			<span style="color:white;"><%= MAX_BRUSH_WIDTH %></span><br />
 			<div id="color-selector">
 				<svg id="color-selector-inner" xmlns="http://www.w3.org/2000/svg" version="1.1" >
 				  <line x1="0" y1="5" x2="10" y2="5" style="stroke:black;stroke-width:1px" />
 				  <line x1="5" y1="0" x2="5" y2="10" style="stroke:black;stroke-width:1px" />
 				</svg>
 			</div>
-			<div id="lightness-selector"><div id="lightness-selector-inner"></div></div>
+			<div id="saturisation-selector"><div id="saturisation-selector-inner"></div></div>
+			<div id="opacity-selector"><div id="opacity-selector-inner"></div></div>
 		</fieldset>
 		<fieldset>
 			<legend>Utils</legend>
@@ -49,6 +50,6 @@
 			<a class="btn" download="<%= LDSID %>-edited.png" onclick="this.href=finalCanvas.toDataURL('image/png')">Download</a>
 		</fieldset>
 	</div>
-	<script type="text/javascript">var SESSIONID = "<% if G.ngx.ctx.user then %><%= G.ngx.ctx.user.sessionid %><% else %>GUEST<% end %>"; var LIVEDRAW_FILEID = "<%= FILEID %>"; var LIVEDRAW_SID = "<%= LDSID %>";</script>
+	<script type="text/javascript">var SESSIONID = "<% if G.ngx.ctx.user then %><%= G.ngx.ctx.user.sessionid %><% else %>GUEST<% end %>"; var LIVEDRAW_FILEID = "<%= FILEID %>"; var LIVEDRAW_SID = "<%= LDSID %>";var maxBrushWidth = <%= MAX_BRUSH_WIDTH %></script>
 	<script type="text/javascript" src="<%= STATIC_URL_PREFIX %>/js/live.js"></script>
 <%+ foot %>

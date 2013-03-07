@@ -246,3 +246,14 @@ body {
 #recycle_bin {
 	-webkit-filter: hue-rotate(260deg);/* BESSER ALS NICHTS DORI!*/
 }
+
+.image_manage_main {
+	-webkit-box-shadow: 2px 2px 4px #0CF;
+	-moz-box-shadow: 2px 2px 4px #0CF;
+	box-shadow: 2px 2px 4px #0CF;
+}
+
+#livedraw {
+	-webkit-filter: drop-shadow(20px 20px 20px #0CF);
+	filter: drop-shadow(20px 20px 20px #0CF);
+}
