@@ -32,7 +32,7 @@
 			<input id="live-draw-font-input" type="text" style="display:none" placeholder="font" />
 			<br />
 			<span style="color:white;">0</span>
-			<input type="range" value="10" min="1" max="100" step="0.1" onchange="localUser.brushData.setWidth(this.value);" />
+			<input type="range" value="10" min="1" max="100" step="0.1" style="display: block;" onchange="localUser.brushData.setWidth(this.value);" />
 			<span style="color:white;">100</span>
 			<div id="color-selector">
 				<svg id="color-selector-inner" xmlns="http://www.w3.org/2000/svg" version="1.1" >
