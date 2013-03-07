@@ -280,19 +280,14 @@ var paintBrushes = {
 		}
 	},
 	text: {
+		usesCustomData: true,
+		defaultCustomData: {
+			text: "",
+			font: "Verdana",
+		},
 		select: function(user, foregroundCanvasCTX, backgroundCanvasCTX) {
-			if(!user.brushData.customData.text) {
-				user.brushData.customData.text = {
-					text: "",
-					font: ""
-				};
-			}
-			 
 		},
 		selectLocal: function(user) {
-			if(!localUser.brushData.customData.text)
-				this.setText("");
-			
 			this.textInput = document.getElementById("live-draw-text-input");
 			this.fontInput = document.getElementById("live-draw-font-input");
 			this.textInput.style.display = this.fontInput.style.display = "block";
@@ -338,6 +333,15 @@ var paintBrushes = {
 	}
 };
 
+for(brush in paintBrushes)
+	if(paintBrushes[brush].usesCustomData) {
+		var dataSet = {};
+		var defaultSet =  paintBrushes[brush].defaultCustomData
+		for(attrib in paintBrushes[brush].defaultCustomData)
+			dataSet[attrib] = defaultSet[attrib];
+		localUser.brushData.customData[brush] = dataSet;
+	}
+	
 
 
 function setOffsetXAndY(event) {
