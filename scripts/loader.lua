@@ -186,7 +186,6 @@ local function debug_trace(err)
 	return table.concat(out, "")
 end
 
-getFunctionCode(debug.getinfo(0))
 local isok, err = xpcall(dofile, debug_trace, ngx.var.run_lua_file)
 
 local function buildMultipart(name, content, boundry)

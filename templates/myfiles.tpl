@@ -11,6 +11,15 @@
 		<%+ filehtml %>
 	<% end %>
 </ul>
+<form id="file-mass-action-form">
+	<fieldset>
+		<legend>Mass operation</legend>
+		<select name="action">
+			<option>delete</option>
+		</select>
+		<input type="submit" value="Execute" class="btn">
+	</fieldset>
+</form>
 <div style="display: none;" id="recycle_bin"></div>
 <script type="text/javascript" src="<%= STATIC_URL_PREFIX %>/js/myfiles.min.js"></script>
 <%+ foot %>

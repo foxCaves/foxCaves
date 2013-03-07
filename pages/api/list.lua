@@ -9,7 +9,7 @@ if ngx.var.query_string == "idonly" then
 	ngx.print(table.concat(files, "\n").."\n")
 else
 	dofile("scripts/fileapi.lua")
-	for _,fileid in pairs(files) do
+	for _,fileid in next, files do
 		local row = file_get(fileid)
 		ngx.print(fileid..">"..row.name..">"..row.extension..">"..row.size..">"..row.thumbnail..">"..row.type.."\n")
 	end

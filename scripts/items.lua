@@ -18,36 +18,38 @@ local TWELVEMONTH = 12 * ONEMONTH
 
 PAYPAL_EMAIL = "mriq91@gmail.com"
 
-ITEMS = {}
-ITEMS[1] = {
-	title = "1 month Pro account",
-	description = "A Pro account for 1 month",
-	price = 2.50,
-	action = function()
-		gopro(ONEMONTH)
-	end
-}
-ITEMS[2] = {
-	title = "3 month Pro account",
-	description = "A Pro account for 3 months (16% discount)",
-	price = 7.00,
-	action = function()
-		gopro(THREEMONTH)
-	end
-}
-ITEMS[3] = {
-	title = "6 month Pro account",
-	description = "A Pro account for 6 months (25% discount)",
-	price = 12.00,
-	action = function()
-		gopro(SIXMONTH)
-	end
-}
-ITEMS[4] = {
-	title = "12 month Pro account",
-	description = "A Pro account for 12 months (30% discount)",
-	price = 20.00,
-	action = function()
-		gopro(TWELVEMONTH)
-	end
+ITEMS = {
+	{
+		title = "1 month Pro account",
+		description = "A Pro account for 1 month",
+		price = 2.50,
+		action = function()
+			gopro(ONEMONTH)
+		end
+	},
+	{
+		title = "3 month Pro account",
+		description = "A Pro account for 3 months (16% discount)",
+		price = 7.00,
+		action = function()
+			gopro(THREEMONTH)
+		end
+	},
+	{
+		title = "6 month Pro account",
+		description = "A Pro account for 6 months (25% discount)",
+		price = 12.00,
+		action = function()
+			gopro(SIXMONTH)
+		end
+
+	},
+	{
+		title = "12 month Pro account",
+		description = "A Pro account for 12 months (30% discount)",
+		price = 20.00,
+		action = function()
+			gopro(TWELVEMONTH)
+		end
+	}
 }

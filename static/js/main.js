@@ -6,6 +6,8 @@ function loadDone() {
 		window.prettyPrint && prettyPrint();
 }
 
+var sizePostFixes = [" B", " kB", " MB", " GB", " TB", " PB", " EB", " ZB", " YB"];
+
 function formatSize(size) {
 	var sinc = 0;
 	
@@ -18,27 +20,7 @@ function formatSize(size) {
 	
 	size = Math.ceil(size * 100.0) / 100.0;
 	
-	switch(sinc) {
-		case 0:
-			return size+" B";
-		case 1:
-			return size+" kB";
-		case 2:
-			return size+" MB";
-		case 3:
-			return size+" GB";
-		case 4:
-			return size+" TB";
-		case 5:
-			return size+" PB";
-		case 6:
-			return size+" EB";
-		case 7:
-			return size+" ZB";
-		case 8:
-			return size+" YB";
-	}
-	return "WTF?!";
+	return size + sizePostFixes[sinc];
 }
 
 function docReady() {

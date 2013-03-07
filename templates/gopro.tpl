@@ -8,7 +8,7 @@
 		<li>The warm and fuzzy feeling of supporting this website to cope with the hosting costs</li>
 	</ul>
 </div>
-<% for itemid,item in pairs(ITEMS) do %>
+<% for itemid,item in next, ITEMS do %>
 <div class="container well well-small">
 	<h3 style="float: right;">
 		<form action="https://www.paypal.com/webscr" method="post">

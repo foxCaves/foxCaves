@@ -4,7 +4,7 @@
 <div class="controls">
 <% if ANSWERS then %>
 	<select name="captcha_result">
-		<% for _,answer in pairs(ANSWERS) do %>
+		<% for _,answer in next, ANSWERS do %>
 		<option><%= answer %></option>
 		<% end %>
 <% else %>

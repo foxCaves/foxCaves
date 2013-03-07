@@ -394,6 +394,39 @@ function setupSearch() {
 	})
 }
 
+function setupMassOperations() {
+	var form = document.getElementById("file-mass-action-form");
+	form.addEventListener("submit", function(event) {
+		var operation = this.action.value;
+		
+		var count = 0;
+		
+		var str = "";
+		
+		var elems = $(".image_manage_ul > li[id^=file_]").each(function(k, v) {
+			if(v.style.display != "none")
+				return false;
+			str += ("|" + v.getAttribute("data-file-id"));
+			count++;
+		});
+		
+		if(!confirm("Are you sure you want to "+operation+" all selected("+count+") files?"))
+			return
+		
+		$.ajax({
+			method: "POST",
+			url: "/api/deletemulti",
+			data: str,
+			success: function(data) {
+				console.log("yaff");
+				console.log(data);
+			}
+		});
+		
+		event.preventDefault();
+	});
+}
+
 $(document).ready(function() {
 	setupOptionMenu();
 
@@ -403,6 +436,8 @@ $(document).ready(function() {
 	setupPasting();
 	
 	setupSearch();
+	
+	setupMassOperations();
 	
 	pushHandlers.push(function(action, file) {
 		if(action == '+') {

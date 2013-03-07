@@ -37,13 +37,13 @@ local function s3_request_multi(tbl)
 	
 	local resps = {ngx.location.capture_multi(reqParams)}
 	
-	for _,res in pairs(resps) do
+	for _,res in next, resps do
 		if res.status ~= 200 and res.status ~= 204 then
 			local err = ""
-			for k,v in pairs(res) do
+			for k,v in next, res do
 				err = err .. "\n" .. k .. " => " .. tostring(v)
 			end
-			for k,v in pairs(res.header) do
+			for k,v in next, res.header do
 				err = err .. "\nHEAD_" .. k .. " => " .. tostring(v)
 			end
 			if body == nil then
@@ -171,7 +171,7 @@ function file_upload(fileid, filename, extension, thumbnail, filetype, thumbtype
 		end
 		
 		local res = s3_request_multi(requests)
-		for partNumber,reply in pairs(res) do	
+		for partNumber,reply in next, res do	
 			table.insert(completeReply, "<Part><PartNumber>")
 			table.insert(completeReply, partNumber)
 			table.insert(completeReply, "</PartNumber><ETag>")

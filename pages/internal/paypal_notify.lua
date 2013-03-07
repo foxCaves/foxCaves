@@ -8,7 +8,7 @@ local function paypal_result(str, noemail)
 	if noemail then return end
 	local res = {}
 	if args then
-		for k,v in pairs(args) do
+		for k,v in next, args do
 			table.insert(res, k .. " => ".. v .. "\n")
 		end
 	end
