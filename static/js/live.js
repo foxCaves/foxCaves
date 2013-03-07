@@ -493,7 +493,7 @@ var networking = {
 				from = paintUsers[payload[0]] = {
 					name: payload[1],
 					brushData: {
-						width: parseFloat(payload[2])*scaleFactor,
+						width: parseFloat(payload[2]),
 						color: payload[3],
 						brush: paintBrushes[payload[4]],
 						customData: {}
