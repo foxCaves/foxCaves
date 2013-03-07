@@ -431,7 +431,7 @@ var liveDrawInput = {
 		if(!localUser.brushData.brush.move(event.myOffsetX, event.myOffsetY, localUser, backgroundCanvasCTX))
 			networking.sendBrushEvent(EVENT_MOUSE_MOVE, sendX, sendY);
 		else
-			networking.sendBrushEvent(EVENT_MOUSE_CURSOR, sendX, sendY;
+			networking.sendBrushEvent(EVENT_MOUSE_CURSOR, sendX, sendY);
 	},
 	mouseScroll: function(event) {
 		var delta;
