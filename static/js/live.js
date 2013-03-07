@@ -297,7 +297,7 @@ var paintBrushes = {
 			backgroundCanvasCTX.textAlign = "left";
 			backgroundCanvasCTX.textBaseline = "top";
 			backgroundCanvasCTX.fillText(
-				this.textInput.value,
+				user.brushData.customData.text.text,
 				x,
 				y
 			)
@@ -308,7 +308,7 @@ var paintBrushes = {
 		preview: function(x, y, user, foregroundCanvasCTX) {
 			foregroundCanvasCTX.font = (scaleFactor * user.brushData.width) + "px Verdana"
 			foregroundCanvasCTX.fillText(
-				this.textInput.value,
+				user.brushData.customData.text.text,
 				x,
 				y
 			)
