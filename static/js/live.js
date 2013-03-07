@@ -661,7 +661,7 @@ function paintCanvas() {
 		return;
 	foregroundCanvasCTX.clearRect(0, 0, foregroundCanvas.width, foregroundCanvas.height);
 	
-	localUser.brushData.brush.select(user, foregroundCanvasCTX, backgroundCanvasCTX);
+	localUser.brushData.brush.select(localUser, foregroundCanvasCTX, backgroundCanvasCTX);
 	localUser.brushData.brush.preview(liveDrawInput.cursorX, liveDrawInput.cursorY, localUser, foregroundCanvasCTX);
 	
 	foregroundCanvasCTX.textAlign = "left";
@@ -692,7 +692,7 @@ function paintCanvas() {
 	finalCanvasCTX.drawImage(backgroundCanvas, 0, 0);
 	finalCanvasCTX.drawImage(foregroundCanvas, 0, 0);
 	
-	localUser.brushData.brush.select(user, foregroundCanvasCTX, backgroundCanvasCTX);
+	localUser.brushData.brush.select(localUser, foregroundCanvasCTX, backgroundCanvasCTX);
 }
 
 function loadImage() {
