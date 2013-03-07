@@ -281,10 +281,17 @@ var paintBrushes = {
 	},
 	text: {
 		select: function(user, foregroundCanvasCTX, backgroundCanvasCTX) {
+			if(!user.brushData.customData.text) {
+				user.brushData.customData.text = {
+					text: "",
+					font: ""
+				};
+			}
+			 
 		},
 		selectLocal: function(user) {
 			if(!localUser.brushData.customData.text)
-				localUser.brushData.customData.text = {}
+				this.setText("");
 			
 			this.textInput = document.getElementById("live-draw-text-input");
 			this.fontInput = document.getElementById("live-draw-font-input");
