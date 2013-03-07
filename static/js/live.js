@@ -28,11 +28,15 @@ var localUser = {
 			networking.sendDrawEvent(EVENT_COLOR, bColor);
 		},
 		setBrush: function(brush) {
+			if(this.brush && this.brush.unselectLocal)
+				this.brush.unselectLocal();
+				
 			this.brush = paintBrushes[brush];
 			backgroundCanvasCTX.globalCompositeOperation = "source-over";
-			this.brush.select(localUser, foregroundCanvasCTX, backgroundCanvasCTX);
+			
 			if(this.brush.selectLocal)
 				this.brush.selectLocal(localUser, foregroundCanvasCTX, backgroundCanvasCTX);
+			this.brush.select(localUser, foregroundCanvasCTX, backgroundCanvasCTX);
 			networking.sendDrawEvent(EVENT_BRUSH, brush);
 		},
 		setBrushAttribsLocal: function() {
@@ -55,8 +59,6 @@ var localUser = {
 	}
 };
 
-
-
 var paintUsers = new Array();
 
 var EVENT_WIDTH = "w";
@@ -66,6 +68,8 @@ var EVENT_MOUSE_UP = "u";
 var EVENT_MOUSE_DOWN = "d";
 var EVENT_MOUSE_MOVE = "m";
 var EVENT_MOUSE_CURSOR = "p";
+
+var EVENT_CUSTOM = "x";
 
 var EVENT_RESET = "r";
 var EVENT_JOIN = "j";
@@ -279,8 +283,12 @@ var paintBrushes = {
 		select: function(user, foregroundCanvasCTX, backgroundCanvasCTX) {
 		},
 		selectLocal: function() {
-			this.textInput = document.getElementById("live-draw-text-input")
-			this.textInput.style.display = "inline";
+			this.textInput = document.getElementById("live-draw-text-input");
+			this.fontInput = document.getElementById("live-draw-font-input");
+			this.textInput.style.display = this.fontInput.style.display = "block";
+		},
+		unselectLocal: function() {
+			this.textInput.style.display = this.fontInput.style.display = "none";
 		},
 		down: function() {
 		},
@@ -306,17 +314,21 @@ var paintBrushes = {
 			)
 		},
 		setText: function(user, text) {
+			if(!user.brushData.customData.text)
+				user.brushData.customData.text = {};
 			user.brushData.customData.text.text = text;
-			networking.sendCustomPacket("text", "text", text);
+			networking.sendBrushPacket("text", "text", text);
 		},
 		setFont: function(user, font) {
+			if(!user.brushData.customData.text)
+				user.brushData.customData.text = {};
 			user.brushData.customData.text.font = font
-			networking.sendCustomPacket("text", "font", font);
-		},
+			networking.sendBrushPacket("text", "font", font);
+		}/*,
 		setFontSize: function(user, fontSize) {
 			user.brushData.customData.text.fontSize = fontSize
 			networking.sendCustomPacket("text", "fontSize", fontSize);
-		}
+		}*/
 	}
 };
 
@@ -460,7 +472,8 @@ var networking = {
 					brushData: {
 						width: parseFloat(payload[2])*scaleFactor,
 						color: payload[3],
-						brush: paintBrushes[payload[4]]
+						brush: paintBrushes[payload[4]],
+						customData: {}
 					},
 					cursorData: {
 						x: parseFloat(payload[5])*scaleFactor,
@@ -513,6 +526,11 @@ var networking = {
 			case EVENT_COLOR:
 				from.brushData.color = payload[1];
 				break;
+			case EVENT_CUSTOM:
+				if(!from.brushData.customData[payload[1]])
+					from.brushData.customData[payload[1]] = {};
+				from.brushData.customData[payload[1]][payload[2]] = payload[3];
+				break;
 			case EVENT_BRUSH:
 				from.brushData.brush = paintBrushes[payload[1]];
 				break;
@@ -546,6 +564,9 @@ var networking = {
 		localUser.brushData.setBrushAttribsLocal();
 		
 		localUser.brushData.brush.select(from, foregroundCanvasCTX, backgroundCanvasCTX);
+	},
+	sendCustomPacket: function(brushName, key, val) {
+		this.sendRaw(EVENT_CUSTOM + brushName + "|" + key + "|" + val);
 	},
 	connect: function() {
 		this.shouldConnect = true;
@@ -731,7 +752,7 @@ function setupColorSelector() {
 		setHSLColor(hue, saturisation, lightness);
 	});
 	
-	lSelector.addEventListener("mousedown", function(event) { if(event.button == 0) { lSelectorDown = true; lSelectorMouseMoveListener(event) } });
+	lSelector.addEventListener("mousedown", function(event) { if(event.button == 0) { lSelectorDown = true; lSelectorMouseMoveListener(event) }});
 	lSelector.addEventListener("mouseup", function(event) { if(event.button == 0) lSelectorDown = false; });
 	lSelector.addEventListener("mousemove", lSelectorMouseMoveListener = function(event) {
 		if(!lSelectorDown)

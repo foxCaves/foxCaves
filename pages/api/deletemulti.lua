@@ -17,8 +17,7 @@ end
 ngx.print("+")
 local id = ngx.ctx.user.id
 for match in ngx.re.gmatch(data, "([a-zA-Z0-9]+)", "o") do
-	--res, filename = file_delete(match[1], id)
-	ngx.print("BALETED: "..match[1])
+	res, filename = file_delete(match[1], id)
 end
 
 ngx.eof()

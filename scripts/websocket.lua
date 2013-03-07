@@ -78,6 +78,8 @@ local EVENT_MOUSE_CURSOR = "p"
 
 local EVENT_RESET = "r"
 
+local EVENT_CUSTOM = "x"
+
 local EVENT_JOIN = "j"
 local EVENT_LEAVE = "l"
 local EVENT_ERROR = "e"
@@ -121,6 +123,9 @@ local event_handlers = {
 		if (not user.cursorX) or (user.cursorX < 0) then error("Invalid X") end
 		user.cursorY = tonumber(data[2])
 		if (not user.cursorY) or (user.cursorY < 0) then error("Invalid Y") end
+	end,
+	[EVENT_CUSTOM] = function(user, data)
+		if #data ~= 3 then error("Invalid payload") end
 	end,
 	[EVENT_RESET] = function(user, data)
 		if #data > 1 or (data[1] and data[1] ~= "") then error("Invalid payload") end

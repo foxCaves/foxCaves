@@ -397,6 +397,9 @@ function setupSearch() {
 function setupMassOperations() {
 	var form = document.getElementById("file-mass-action-form");
 	form.addEventListener("submit", function(event) {
+	
+		event.preventDefault();
+		
 		var operation = this.action.value;
 		
 		var count = 0;
@@ -404,8 +407,9 @@ function setupMassOperations() {
 		var str = "";
 		
 		var elems = $(".image_manage_ul > li[id^=file_]").each(function(k, v) {
-			if(v.style.display != "none")
-				return false;
+			console.log(v);
+			if(v.style.display == "none")
+				return true;
 			str += ("|" + v.getAttribute("data-file-id"));
 			count++;
 		});
@@ -418,12 +422,10 @@ function setupMassOperations() {
 			url: "/api/deletemulti",
 			data: str,
 			success: function(data) {
-				console.log("yaff");
-				console.log(data);
+				if(data == "+")
+					alert("Done.");
 			}
 		});
-		
-		event.preventDefault();
 	});
 }
 
