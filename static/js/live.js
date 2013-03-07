@@ -661,7 +661,7 @@ function paintCanvas() {
 		return;
 	foregroundCanvasCTX.clearRect(0, 0, foregroundCanvas.width, foregroundCanvas.height);
 	
-		
+	localUser.brushData.brush.select();
 	localUser.brushData.brush.preview(liveDrawInput.cursorX, liveDrawInput.cursorY, localUser, foregroundCanvasCTX);
 	
 	foregroundCanvasCTX.textAlign = "left";
@@ -674,6 +674,7 @@ function paintCanvas() {
 		if(paintUsers[i]) {
 			user = paintUsers[i];
 				
+			user.brushData.brush.select(user, foregroundCanvasCTX, backgroundCanvasCTX);
 			user.brushData.brush.preview(user.cursorData.x, user.cursorData.y, user, foregroundCanvasCTX);
 				
 			var offset = Math.sqrt(Math.pow(user.brushData.width)*2)
@@ -690,6 +691,8 @@ function paintCanvas() {
 	
 	finalCanvasCTX.drawImage(backgroundCanvas, 0, 0);
 	finalCanvasCTX.drawImage(foregroundCanvas, 0, 0);
+	
+	localUser.brushData.brush.select();
 }
 
 function loadImage() {
