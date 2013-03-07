@@ -285,11 +285,21 @@ var paintBrushes = {
 			text: "",
 			font: "Verdana",
 		},
+		setup: function() {
+			this.textInput = document.getElementById("live-draw-text-input");
+			this.fontInput = document.getElementById("live-draw-font-input");
+			
+			this.textInput.addEventListener("change", function(event) {
+				this.setText(this.value);
+			});
+			
+			this.fontInput.addEventListener("change", function(event) {
+				this.setFont(this.value);
+			});
+		},
 		select: function(user, foregroundCanvasCTX, backgroundCanvasCTX) {
 		},
 		selectLocal: function(user) {
-			this.textInput = document.getElementById("live-draw-text-input");
-			this.fontInput = document.getElementById("live-draw-font-input");
 			this.textInput.style.display = this.fontInput.style.display = "block";
 		},
 		unselectLocal: function() {
@@ -318,11 +328,11 @@ var paintBrushes = {
 				y
 			)
 		},
-		setText: function(user, text) {
+		setText: function(text) {
 			user.brushData.customData.text.text = text;
 			networking.sendBrushPacket("text", "text", text);
 		},
-		setFont: function(user, font) {
+		setFont: function(font) {
 			user.brushData.customData.text.font = font
 			networking.sendBrushPacket("text", "font", font);
 		}/*,
@@ -333,7 +343,9 @@ var paintBrushes = {
 	}
 };
 
-for(brush in paintBrushes)
+for(brush in paintBrushes) {
+	if(paintBrushes[brush].setup)
+		paintBrushes[brush].setup();
 	if(paintBrushes[brush].usesCustomData) {
 		var dataSet = {};
 		var defaultSet =  paintBrushes[brush].defaultCustomData
@@ -341,7 +353,7 @@ for(brush in paintBrushes)
 			dataSet[attrib] = defaultSet[attrib];
 		localUser.brushData.customData[brush] = dataSet;
 	}
-	
+}
 
 
 function setOffsetXAndY(event) {
