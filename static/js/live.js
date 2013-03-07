@@ -282,7 +282,10 @@ var paintBrushes = {
 	text: {
 		select: function(user, foregroundCanvasCTX, backgroundCanvasCTX) {
 		},
-		selectLocal: function() {
+		selectLocal: function(user) {
+			if(!localUser.brushData.customData.text)
+				localUser.brushData.customData.text = {}
+			
 			this.textInput = document.getElementById("live-draw-text-input");
 			this.fontInput = document.getElementById("live-draw-font-input");
 			this.textInput.style.display = this.fontInput.style.display = "block";
@@ -314,14 +317,10 @@ var paintBrushes = {
 			)
 		},
 		setText: function(user, text) {
-			if(!user.brushData.customData.text)
-				user.brushData.customData.text = {};
 			user.brushData.customData.text.text = text;
 			networking.sendBrushPacket("text", "text", text);
 		},
 		setFont: function(user, font) {
-			if(!user.brushData.customData.text)
-				user.brushData.customData.text = {};
 			user.brushData.customData.text.font = font
 			networking.sendBrushPacket("text", "font", font);
 		}/*,
