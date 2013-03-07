@@ -18,7 +18,7 @@ var localUser = {
 		setWidth: function(bWidth) {
 			if(bWidth == this.width)
 				return;
-			this.width = bWidth*scaleFactor;
+			this.width = bWidth;
 			this.setBrushAttribsLocal();
 			networking.sendDrawEvent(EVENT_WIDTH, bWidth);
 		},
@@ -82,7 +82,7 @@ var paintBrushes = {
 	rectangle: {
 		select: function(user, foregroundCanvasCTX, backgroundCanvasCTX) {
 			backgroundCanvasCTX.lineCap = "butt";
-			foregroundCanvasCTX.lineWidth = user.brushData.width;
+			foregroundCanvasCTX.lineWidth = user.brushData.width*scaleFactor;
 		},
 		down: function(x, y, user) {
 			user.cursorData.lastX = x;
@@ -171,7 +171,7 @@ var paintBrushes = {
 		},
 		preview: function(x, y, user, foregroundCanvasCTX) {
 			foregroundCanvasCTX.beginPath();
-			foregroundCanvasCTX.arc(x, y, (user.brushData.width/2), 0, 2*Math.PI);
+			foregroundCanvasCTX.arc(x, y, (user.brushData.width/2)*scaleFactor, 0, 2*Math.PI);
 			foregroundCanvasCTX.stroke();
 		}
 	},
@@ -206,7 +206,7 @@ var paintBrushes = {
 		},
 		preview: function(x, y, user, foregroundCanvasCTX) {
 			foregroundCanvasCTX.beginPath();
-			foregroundCanvasCTX.arc(x, y, (user.brushData.width/2), 0, 2*Math.PI);
+			foregroundCanvasCTX.arc(x, y, (user.brushData.width/2)*scaleFactor, 0, 2*Math.PI);
 			foregroundCanvasCTX.stroke();
 		}
 	},
@@ -241,7 +241,7 @@ var paintBrushes = {
 		},
 		preview: function(x, y, user, foregroundCanvasCTX) {
 			foregroundCanvasCTX.beginPath();
-			foregroundCanvasCTX.arc(x, y, (user.brushData.width/2), 0, 2*Math.PI);
+			foregroundCanvasCTX.arc(x, y, (user.brushData.width/2)*scaleFactor, 0, 2*Math.PI);
 			foregroundCanvasCTX.stroke();
 		}
 	},
@@ -292,7 +292,6 @@ var paintBrushes = {
 			this.fontInput = document.getElementById("live-draw-font-input");
 			
 			this.textInput.addEventListener("keyup", function(event) {
-				console.log("obboy");
 				localUser.brushData.brush.setText(this.value);
 			});
 			
