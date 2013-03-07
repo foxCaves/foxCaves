@@ -323,7 +323,7 @@ var paintBrushes = {
 			return true;
 		},
 		preview: function(x, y, user, foregroundCanvasCTX) {
-			foregroundCanvasCTX.font = (scaleFactor * user.brushData.width) + "px Verdana"
+			foregroundCanvasCTX.font = (scaleFactor * user.brushData.width) + "px "+user.brushData.customData.text.font;
 			foregroundCanvasCTX.fillText(
 				user.brushData.customData.text.text,
 				x,
@@ -620,9 +620,8 @@ var networking = {
 			}
 			
 			data = data.split("\n");
-			for(var i=0;i<data.length;i++) {
+			for(var i=0;i<data.length;i++)
 				networking.recvRaw(data[i]);
-			}
 		};
 		
 		webSocket.onclose = webSocket.onerror = function(event) {//Unwanted disconnect

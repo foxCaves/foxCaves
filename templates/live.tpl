@@ -29,7 +29,7 @@
 				<option>restore</option>
 			</select>
 			<input id="live-draw-text-input" type="text" style="display:none" placeholder="drawtext" />
-			<input id="live-draw-font-input" type="text" style="display:none" placeholder="font" />
+			<input id="live-draw-font-input" type="text" style="display:none" value="Verdana" placeholder="font" />
 			<br />
 			<span style="color:white;">0</span>
 			<input type="range" value="10" min="1" max="100" step="0.1" onchange="localUser.brushData.setWidth(this.value);" />
