@@ -292,7 +292,6 @@ var paintBrushes = {
 			font: "Verdana",
 		},
 		setup: function() {
-			console.log("setup");
 			this.textInput = document.getElementById("live-draw-text-input");
 			this.fontInput = document.getElementById("live-draw-font-input");
 			
@@ -347,6 +346,38 @@ var paintBrushes = {
 			user.brushData.customData.text.fontSize = fontSize
 			networking.sendCustomPacket("text", "fontSize", fontSize);
 		}*/
+	},
+	polygon: {
+		usesCustomData: true,
+		down: function() {
+			
+		},
+		up: function(x, y, user, backgroundCanvasCTX) {
+			user.brushData.customData.polygon.verts.push({x: x, y: y});
+		},
+		preview: function(x, y, user, foregroundCanvasCTX) {
+			var verts = user.brushData.customData.polygon.verts;
+			foregroundCanvasCTX.beginPath();
+				foregroundCanvasCTX.moveTo(verts[0].x, verts[0].y);
+			for(var i = 1;verts.length>i;++i)
+				foregroundCanvasCTX.lineTo(verts[i].x, verts[i].y);
+			foregroundCanvasCTX.lineTo(x, y);
+			foregroundCanvasCTX.lineTo(verts[0].x, verts[0].y);
+			foregroundCanvasCTX.fill();
+		},
+		doubleClick: function(x, y, user, backgroundCanvasCTX) {
+			var verts = user.brushData.customData.polygon.verts;
+			if(verts.length == 0)
+				return;
+			foregroundCanvasCTX.beginPath();
+				foregroundCanvasCTX.moveTo(verts[0].x, verts[0].y);
+			for(var i = 1;verts.length>i;++i)
+				foregroundCanvasCTX.lineTo(verts[i].x, verts[i].y);
+			foregroundCanvasCTX.lineTo(verts[0].x, verts[0].y);
+			foregroundCanvasCTX.fill();
+			
+			user.brushData.customData.polygon.verts.length = 0;//flush the array
+		}
 	}
 };
 
@@ -454,6 +485,12 @@ var liveDrawInput = {
 		localUser.brushData.setWidth(clamp(localUser.brushData.width+delta, 1, maxBrushWidth))
 		event.preventDefault();
 		//return false;
+	},
+	doubleClick: function(event) {
+			if(localUser.brushData.brush.doubleClick)
+				localUser.brushData.brush.doubleClick(event.myOffsetX, event.myOffsetY, localUser, backgroundCanvasCTX);
+		event.preventDefault();
+		//networking.sendBrushEvent(EVENT_MOUSE_DOUBLE_CLICK, sendX, sendY); laster
 	}
 }
 
@@ -748,6 +785,8 @@ function setupCanvas() {
 	
 	finalCanvas.addEventListener("mousewheel", function(event) { liveDrawInput.mouseScroll(event) }, false);
 	finalCanvas.addEventListener('DOMMouseScroll', function(event) { liveDrawInput.mouseScroll(event) }, false);
+	finalCanvas.addEventListener('dblclick', function(event) { liveDrawInput.doubleClick(event) }, false);
+	
 }
 
 function setupColorSelector() {

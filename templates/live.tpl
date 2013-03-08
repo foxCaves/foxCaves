@@ -27,6 +27,7 @@
 				<option>line</option>
 				<option>text</option>
 				<option>restore</option>
+				<option>polygon</option>
 			</select>
 			<input id="live-draw-text-input" type="text" style="display:none" placeholder="drawtext" />
 			<input id="live-draw-font-input" type="text" style="display:none" value="Verdana" placeholder="font" />
