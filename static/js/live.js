@@ -81,6 +81,8 @@ var EVENT_ERROR = "e";
 
 var EVENT_IMGBURST = "i";
 
+var EVENT_MOUSE_DOUBLE_CLICK = "F";
+
 var paintBrushes = {
 	rectangle: {
 		select: function(user, foregroundCanvasCTX, backgroundCanvasCTX) {
@@ -97,6 +99,7 @@ var paintBrushes = {
 				x++;
 				y++;
 			}
+			backgroundCanvasCTX.strokeStyle = user.brushData.color;
 			backgroundCanvasCTX.strokeRect(x, y, user.cursorData.lastX - x, user.cursorData.lastY - y);
 			this.active = false;
 		},
@@ -124,6 +127,8 @@ var paintBrushes = {
 				x++;
 				y++;
 			}
+			backgroundCanvasCTX.strokeStyle = user.brushData.color;
+			
 			backgroundCanvasCTX.beginPath();
 			x = user.cursorData.lastX - x;
 			y = user.cursorData.lastY - y;
@@ -147,7 +152,6 @@ var paintBrushes = {
 	brush: {
 		keepLineWidth: true,
 		select: function(user, foregroundCanvasCTX, backgroundCanvasCTX) {
-			backgroundCanvasCTX.lineCap = "round";
 			foregroundCanvasCTX.lineWidth = 1/scaleFactor;
 		},
 		down: function(x, y, user) {
@@ -159,12 +163,13 @@ var paintBrushes = {
 				x++;
 				y++;
 			}
-			backgroundCanvasCTX.beginPath();
-			backgroundCanvasCTX.moveTo(user.cursorData.lastX, user.cursorData.lastY);
-			backgroundCanvasCTX.lineTo(x, y);
-			backgroundCanvasCTX.stroke();			
+			
+			this.move(x, y, user, backgroundCanvasCTX);
 		},
 		move: function(x, y, user, backgroundCanvasCTX) {
+			backgroundCanvasCTX.lineCap = "round";
+			backgroundCanvasCTX.strokeStyle = user.brushData.color;
+			
 			backgroundCanvasCTX.beginPath();
 			backgroundCanvasCTX.moveTo(user.cursorData.lastX, user.cursorData.lastY);
 			backgroundCanvasCTX.lineTo(x, y);
@@ -181,8 +186,6 @@ var paintBrushes = {
 	erase: {
 		keepLineWidth: true,
 		select: function(user, foregroundCanvasCTX, backgroundCanvasCTX) {
-			backgroundCanvasCTX.lineCap = "round";
-			backgroundCanvasCTX.globalCompositeOperation = "destination-out";
 			foregroundCanvasCTX.lineWidth = 1/scaleFactor;
 			foregroundCanvasCTX.strokeStyle = "black";
 		},
@@ -195,12 +198,12 @@ var paintBrushes = {
 				x++;
 				y++;
 			}
-			backgroundCanvasCTX.beginPath();
-			backgroundCanvasCTX.moveTo(user.cursorData.lastX, user.cursorData.lastY);
-			backgroundCanvasCTX.lineTo(x, y);
-			backgroundCanvasCTX.stroke();			
+			this.move(x, y, user, backgroundCanvasCTX);	
 		},
 		move: function(x, y, user, backgroundCanvasCTX) {
+			backgroundCanvasCTX.lineCap = "round";
+			backgroundCanvasCTX.globalCompositeOperation = "destination-out";
+			
 			backgroundCanvasCTX.beginPath();
 			backgroundCanvasCTX.moveTo(user.cursorData.lastX, user.cursorData.lastY);
 			backgroundCanvasCTX.lineTo(x, y);
@@ -218,7 +221,6 @@ var paintBrushes = {
 		keepLineWidth: true,
 		keepBackgroundStrokeStyle: true,
 		select: function(user, foregroundCanvasCTX, backgroundCanvasCTX) {
-			backgroundCanvasCTX.strokeStyle = imagePattern;
 			foregroundCanvasCTX.lineWidth = 1/scaleFactor;
 			foregroundCanvasCTX.strokeStyle = "black";
 		},
@@ -231,12 +233,14 @@ var paintBrushes = {
 				x++;
 				y++;
 			}
-			backgroundCanvasCTX.beginPath();
-			backgroundCanvasCTX.moveTo(user.cursorData.lastX, user.cursorData.lastY);
-			backgroundCanvasCTX.lineTo(x, y);
-			backgroundCanvasCTX.stroke();			
+			
+			this.move(x, y, user, backgroundCanvasCTX);	
 		},
 		move: function(x, y, user, backgroundCanvasCTX) {
+			backgroundCanvasCTX.strokeStyle = imagePattern;
+			backgroundCanvasCTX.lineWidth = user.brushData.width*scaleFactor;
+			backgroundCanvasCTX.lineCap = "round";
+			
 			backgroundCanvasCTX.beginPath();
 			backgroundCanvasCTX.moveTo(user.cursorData.lastX, user.cursorData.lastY);
 			backgroundCanvasCTX.lineTo(x, y);
@@ -252,7 +256,6 @@ var paintBrushes = {
 	},
 	line: {
 		select: function(user, foregroundCanvasCTX, backgroundCanvasCTX) {
-			backgroundCanvasCTX.lineCap = "butt";
 			foregroundCanvasCTX.lineWidth = user.brushData.width;
 		},
 		down: function(x, y, user) {
@@ -265,6 +268,7 @@ var paintBrushes = {
 				x++;
 				y++;
 			}
+			backgroundCanvasCTX.lineCap = "butt";
 			backgroundCanvasCTX.beginPath();
 			backgroundCanvasCTX.moveTo(user.cursorData.lastX, user.cursorData.lastY);
 			backgroundCanvasCTX.lineTo(x, y);
@@ -291,7 +295,9 @@ var paintBrushes = {
 			text: "",
 			font: "Verdana",
 		},
-		setup: function() {
+		setup: function(user) {
+			if(user != localUser)
+				return;
 			this.textInput = document.getElementById("live-draw-text-input");
 			this.fontInput = document.getElementById("live-draw-font-input");
 			
@@ -349,16 +355,25 @@ var paintBrushes = {
 	},
 	polygon: {
 		usesCustomData: true,
+		setup: function(user) {
+			user.brushData.customData.polygon.verts = [];
+		},
+		select: function() {
+		},
 		down: function() {
-			
 		},
 		up: function(x, y, user, backgroundCanvasCTX) {
 			user.brushData.customData.polygon.verts.push({x: x, y: y});
 		},
+		move: function(x, y, user, backgroundCanvasCTX) {
+			return true;
+		},
 		preview: function(x, y, user, foregroundCanvasCTX) {
 			var verts = user.brushData.customData.polygon.verts;
+			if(verts.length == 0)
+				return;
 			foregroundCanvasCTX.beginPath();
-				foregroundCanvasCTX.moveTo(verts[0].x, verts[0].y);
+			foregroundCanvasCTX.moveTo(verts[0].x, verts[0].y);
 			for(var i = 1;verts.length>i;++i)
 				foregroundCanvasCTX.lineTo(verts[i].x, verts[i].y);
 			foregroundCanvasCTX.lineTo(x, y);
@@ -369,12 +384,12 @@ var paintBrushes = {
 			var verts = user.brushData.customData.polygon.verts;
 			if(verts.length == 0)
 				return;
-			foregroundCanvasCTX.beginPath();
-				foregroundCanvasCTX.moveTo(verts[0].x, verts[0].y);
+			backgroundCanvasCTX.beginPath();
+				backgroundCanvasCTX.moveTo(verts[0].x, verts[0].y);
 			for(var i = 1;verts.length>i;++i)
-				foregroundCanvasCTX.lineTo(verts[i].x, verts[i].y);
-			foregroundCanvasCTX.lineTo(verts[0].x, verts[0].y);
-			foregroundCanvasCTX.fill();
+				backgroundCanvasCTX.lineTo(verts[i].x, verts[i].y);
+			backgroundCanvasCTX.lineTo(verts[0].x, verts[0].y);
+			backgroundCanvasCTX.fill();
 			
 			user.brushData.customData.polygon.verts.length = 0;//flush the array
 		}
@@ -487,10 +502,19 @@ var liveDrawInput = {
 		//return false;
 	},
 	doubleClick: function(event) {
-			if(localUser.brushData.brush.doubleClick)
-				localUser.brushData.brush.doubleClick(event.myOffsetX, event.myOffsetY, localUser, backgroundCanvasCTX);
+		if(localUser.brushData.brush.doubleClick)
+			localUser.brushData.brush.doubleClick(event.myOffsetX, event.myOffsetY, localUser, backgroundCanvasCTX);
+		
+		setOffsetXAndY(event);
+		
+		this.cursorX = event.myOffsetX;
+		this.cursorY = event.myOffsetY;
+		
+		var sendX = event.myOffsetX/scaleFactor;
+		var sendY = event.myOffsetY/scaleFactor;
+			
 		event.preventDefault();
-		//networking.sendBrushEvent(EVENT_MOUSE_DOUBLE_CLICK, sendX, sendY); laster
+		networking.sendBrushEvent(EVENT_MOUSE_DOUBLE_CLICK, sendX, sendY);
 	}
 }
 
@@ -547,7 +571,7 @@ var networking = {
 						lastY: 0
 					},  	
 				};
-				for(brush in paintBrushes)
+				for(brush in paintBrushes) {
 					if(paintBrushes[brush].usesCustomData) {
 						var dataSet = {};
 						var defaultSet = paintBrushes[brush].defaultCustomData
@@ -555,6 +579,9 @@ var networking = {
 							dataSet[attrib] = defaultSet[attrib];
 						from.brushData.customData[brush] = dataSet;
 					}
+					if(paintBrushes[brush].setup)
+						paintBrushes[brush].setup(from);
+				}
 				break;
 			case EVENT_LEAVE:
 				paintUsers[payload[0]] = null;
@@ -591,6 +618,7 @@ var networking = {
 			case EVENT_MOUSE_MOVE:
 			case EVENT_MOUSE_DOWN:
 			case EVENT_MOUSE_UP:
+			case EVENT_MOUSE_DOUBLE_CLICK:
 				this.recvBrushEvent(from, eventype, payload[1], payload[2]);
 				break;
 			case EVENT_WIDTH:
@@ -603,7 +631,7 @@ var networking = {
 				if(!from.brushData.customData[payload[1]])
 					from.brushData.customData[payload[1]] = {};
 				from.brushData.customData[payload[1]][payload[2]] = payload[3];
-				break;
+				break;			
 			case EVENT_BRUSH:
 				from.brushData.brush = paintBrushes[payload[1]];
 				break;
@@ -633,6 +661,9 @@ var networking = {
 				break;
 			case EVENT_MOUSE_MOVE:
 				brush.move(x, y, from, backgroundCanvasCTX);
+				break;
+			case EVENT_MOUSE_DOUBLE_CLICK:
+				brush.doubleClick(x, y, from, backgroundCanvasCTX);
 				break;
 		}
 		
@@ -807,18 +838,18 @@ function setupColorSelector() {
 	var oSelectorDown;
 	
 	function setHSLColor(h, s, l, o) {
-		var colStr = "hsla("+h+", "+s+"%, "+l+"%, "+o+")";
-		localUser.brushData.setColor(colStr);
-		
-		hlSelector.style.outlineColor = colStr;
-		sSelector.style.outlineColor = colStr;
-		oSelector.style.outlineColor = colStr;
+		localUser.brushData.setColor(
+			hlSelector.style.outlineColor =
+			sSelector.style.outlineColor =
+			oSelector.style.outlineColor =
+			"hsla("+h+", "+s+"%, "+l+"%, "+o+")"
+		);
 	}
 	var hlSelectorMouseMoveListener;
 	var sSelectorMouseMoveListener;
 	var oSelectorMouseMoveListener;
 	
-	hlSelector.addEventListener("mousedown", function(event) { if(event.button == 0) { hlSelectorDown = true; hlSelectorMouseMoveListener(event) } });
+	hlSelector.addEventListener("mousedown", function(event) { if(event.button == 0) { hlSelectorDown = true; hlSelectorMouseMoveListener.call(this, event); } });
 	hlSelector.addEventListener("mouseup", function(event) { if(event.button == 0) hlSelectorDown = false; });
 	hlSelector.addEventListener("mousemove", hlSelectorMouseMoveListener = function(event) {
 		if(!hlSelectorDown)
@@ -835,7 +866,7 @@ function setupColorSelector() {
 		setHSLColor(hue, saturisation, lightness, opacity);
 	});
 	
-	sSelector.addEventListener("mousedown", function(event) { if(event.button == 0) { sSelectorDown = true; sSelectorMouseMoveListener(event) }});
+	sSelector.addEventListener("mousedown", function(event) { if(event.button == 0) { sSelectorDown = true; sSelectorMouseMoveListener.call(this, event); }});
 	sSelector.addEventListener("mouseup", function(event) { if(event.button == 0) sSelectorDown = false; });
 	sSelector.addEventListener("mousemove", sSelectorMouseMoveListener = function(event) {
 		if(!sSelectorDown)
@@ -852,7 +883,7 @@ function setupColorSelector() {
 		setHSLColor(hue, saturisation, lightness, opacity);
 	});
 	
-	oSelector.addEventListener("mousedown", function(event) { if(event.button == 0) { oSelectorDown = true; oSelectorMouseMoveListener(event) }});
+	oSelector.addEventListener("mousedown", function(event) { if(event.button == 0) { oSelectorDown = true; oSelectorMouseMoveListener.call(this, event); }});
 	oSelector.addEventListener("mouseup", function(event) { if(event.button == 0) oSelectorDown = false; });
 	oSelector.addEventListener("mousemove", oSelectorMouseMoveListener = function(event) {
 		if(!oSelectorDown)
@@ -868,15 +899,15 @@ function setupColorSelector() {
 
 function setupBrushes() {
 	for(brush in paintBrushes) {
-		if(paintBrushes[brush].setup)
-			paintBrushes[brush].setup();
 		if(paintBrushes[brush].usesCustomData) {
 			var dataSet = {};
-			var defaultSet = paintBrushes[brush].defaultCustomData
+			var defaultSet = paintBrushes[brush].defaultCustomData;
 			for(attrib in paintBrushes[brush].defaultCustomData)
 				dataSet[attrib] = defaultSet[attrib];
 			localUser.brushData.customData[brush] = dataSet;
 		}
+		if(paintBrushes[brush].setup)
+			paintBrushes[brush].setup(localUser);
 	}
 }
 

@@ -85,6 +85,8 @@ local EVENT_LEAVE = "l"
 local EVENT_ERROR = "e"
 local EVENT_IMGBURST = "i"
 
+local EVENT_MOUSE_DOUBLE_CLICK = "F"
+
 local cEVENT_JOIN = EVENT_JOIN:byte()
 local cEVENT_MOUSE_CURSOR = EVENT_MOUSE_CURSOR:byte()
 
@@ -95,7 +97,8 @@ local valid_brushes = {
 	line = true,
 	erase = true,
 	text = true,
-	restore = true
+	restore = true,
+	polygon = true
 }
 
 local chr_a,chr_f,chr_0,chr_9 = ("af09"):byte(1,4)
@@ -231,6 +234,7 @@ local event_handlers = {
 event_handlers[EVENT_MOUSE_UP] = event_handlers[EVENT_MOUSE_CURSOR]
 event_handlers[EVENT_MOUSE_DOWN] = event_handlers[EVENT_MOUSE_CURSOR]
 event_handlers[EVENT_MOUSE_MOVE] = event_handlers[EVENT_MOUSE_CURSOR]
+event_handlers[EVENT_MOUSE_DOUBLE_CLICK] = event_handlers[EVENT_MOUSE_CURSOR]
 do
 	local evthdl = event_handlers
 	event_handlers = {}

@@ -84,17 +84,22 @@ $(document).ready(function(){
 	
 	var useSSL = (window.location.protocol == "https:");
 	var port = (useSSL ? 443 : 80);
-
-    var pushstream = new PushStream({
-      host: window.location.hostname,
-      port: port,
-	  useSSL: useSSL,
-	  urlPrefixStream: "/push/stream",
-	  urlPrefixEventsource: "/push/eventsource",
-	  urlPrefixLongpolling: "/push/longpolling",
-	  urlPrefixWebsocket: "/push/websocket"
-    });
-    pushstream.onmessage = messageReceived;
-    pushstream.addChannel(PUSH_CHANNEL);
-    pushstream.connect();
+	var pushstream = new PushStream({
+		host: window.location.hostname,
+		port: port,
+		useSSL: useSSL,
+		urlPrefixStream: "/push/stream",
+		urlPrefixEventsource: "/push/eventsource",
+		urlPrefixLongpolling: "/push/longpolling",
+		urlPrefixWebsocket: "/push/websocket"
+	});
+	pushstream.onmessage = messageReceived;
+	pushstream.addChannel(PUSH_CHANNEL);
+	try {
+		pushstream.connect();
+	} catch(e) {
+		setTimeout(500, function() {
+			pushstream.connect();
+		});
+	}
 });
