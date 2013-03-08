@@ -381,6 +381,8 @@ var paintBrushes = {
 			foregroundCanvasCTX.fill();
 		},
 		doubleClick: function(x, y, user, backgroundCanvasCTX) {
+			backgroundCanvasCTX.strokeStyle = user.brushData.color;
+		
 			var verts = user.brushData.customData.polygon.verts;
 			if(verts.length == 0)
 				return;

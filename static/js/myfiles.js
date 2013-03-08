@@ -67,7 +67,6 @@ function processNextFile() {
 		};
 		dropZoneFileReader.readAsArrayBuffer(theFile);
 	} else if(typeof theFile == "string") {
-		debugger;
 		var t = new Date();
 		fileUpload("Paste-"+
 			formatZeros(t.getDate(), 2)+"."+

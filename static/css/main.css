@@ -140,7 +140,7 @@ body {
 }
 
 #uploader {
-	border: 2px dashed #555;
+	border: 2px solid #bbb;
 	border-radius: 7px;
     font-weight: bold;
     text-align: center;
