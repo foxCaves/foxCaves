@@ -19,14 +19,14 @@ function ngx.ctx.login(username_or_id, password, nosession, login_with_id)
 	if not username_or_id then
 		return ngx.ctx.LOGIN_BAD_PASSWORD
 	end
-	
+
 	if not login_with_id then
 		username_or_id = database:get(database.KEYS.USERNAME_TO_ID .. username_or_id:lower())
 		if (not username_or_id) or (username_or_id == ngx.null) then
 			return ngx.ctx.LOGIN_BAD_PASSWORD
 		end
 	end
-	
+
 	local result = database:hgetall(database.KEYS.USERS .. username_or_id)
 	if result then
 		if result.active then
@@ -53,14 +53,14 @@ function ngx.ctx.login(username_or_id, password, nosession, login_with_id)
 				end
 				if sessionid then
 					ngx.header['Set-Cookie'] = {"sessionid=" .. sessionid .. "; HttpOnly"}
-					result.sessionid = sessionid					
-					
+					result.sessionid = sessionid
+
 					sessionid = database.KEYS.SESSIONS .. sessionid
 					database:set(sessionid, username_or_id)
 					database:expire(sessionid, SESSION_EXPIRE_DELAY)
 				end
 			end
-			
+
 			result.id = username_or_id
 			result.pro_expiry = tonumber(result.pro_expiry or 0)
 			result.usedbytes = tonumber(result.usedbytes or 0)
@@ -73,7 +73,7 @@ function ngx.ctx.login(username_or_id, password, nosession, login_with_id)
 			end
 			result.totalbytes = result.totalbytes + result.bonusbytes
 			ngx.ctx.user = result
-			
+
 			return ngx.ctx.LOGIN_SUCCESS
 		end
 	end
@@ -115,10 +115,10 @@ function ngx.ctx.make_new_login_key(userdata)
 	local str = randstr(64)
 	local str_pchan = randstr(32)
 	database:hmset(database.KEYS.USERS .. userdata.id, "loginkey", str, "pushchan", str_pchan)
-	
+
 	local allsessions = database:keys(database.KEYS.SESSIONS .. "*")
 	if type(allsessions) ~= "table" then allsessions = {} end
-	
+
 	if send_userdata then
 		database:multi()
 		for _,v in next, allsessions do

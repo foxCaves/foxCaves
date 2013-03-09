@@ -10,16 +10,16 @@ var sizePostFixes = [" B", " kB", " MB", " GB", " TB", " PB", " EB", " ZB", " YB
 
 function formatSize(size) {
 	var sinc = 0;
-	
+
 	while(size > 1024) {
 		sinc = sinc + 1;
 		size = size / 1024;
 		if(sinc == 8)
 			break;
 	}
-	
+
 	size = Math.ceil(size * 100.0) / 100.0;
-	
+
 	return size + sizePostFixes[sinc];
 }
 
@@ -37,7 +37,7 @@ function docReady() {
 			loadDone();
 		});
 	}
-	
+
 	if(loadingEles <= 0) {
 		loadingEles = 1;
 		loadDone();
@@ -49,7 +49,7 @@ $(document).ready(function(){
 
 	if(PUSH_CHANNEL == "")
 		return;
-	
+
 	pushHandlers.push(function(action, usedbytes) {
 		if(action != "U")
 			return false;
@@ -57,13 +57,13 @@ $(document).ready(function(){
 		$('#used_bytes_bar').css('width', Math.ceil((usedbytes / TOTALBYTES) * 100.0) + '%');
 		return true;
 	});
-	
+
 	/*TODO: Fix history API with this
 	$("a:not([href=#])").click(function(ev) {
 		preventDefault(ev);
 		loadPage(ev.currentTarget.href);
 	});*/
-	
+
 	function messageReceived(text, id, channel) {
 		var cmds = text.split("|");
 
@@ -81,7 +81,7 @@ $(document).ready(function(){
 					break;
 		}
 	};
-	
+
 	var useSSL = (window.location.protocol == "https:");
 	var port = (useSSL ? 443 : 80);
 	var pushstream = new PushStream({

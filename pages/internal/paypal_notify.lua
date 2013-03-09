@@ -19,7 +19,7 @@ end
 if not userid then
 	ngx.req.discard_body()
 	paypal_result("Code: #INVALID", true)
-	return ngx.eof()	
+	return ngx.eof()
 end
 
 ngx.req.read_body()
@@ -54,7 +54,9 @@ if (not item) or item.price ~= tonumber(args.mc_gross) then
 end
 
 args.cmd = "_notify-validate"
-local res = ngx.location.capture("/scripts/paypal_webscr", { method = ngx.HTTP_POST, body = ngx.encode_args(args) }).body
+local res = ngx.location.capture("/scripts/paypal_webscr", {
+	method = ngx.HTTP_POST, body = ngx.encode_args(args)
+}).body
 if not res:find("VERIFIED", 1, true) then
 	paypal_result("Code: #NOTVERIFIED")
 	return ngx.eof()

@@ -29,7 +29,7 @@ if args and args.old_password then
 		message = "<div class='alert alert-error'>Current password is wrong</div>"
 	elseif args.change_password then
 		if (not args.password) or args.password == "" then
-			message = "<div class='alert alert-error'>New password may not be empty</div>"				
+			message = "<div class='alert alert-error'>New password may not be empty</div>"
 		elseif args.password ~= args.password_confirm then
 			message = "<div class='alert alert-error'>Password and confirmation do not match</div>"
 		else

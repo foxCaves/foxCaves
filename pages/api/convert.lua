@@ -19,7 +19,7 @@ local newextension = args.newtype:lower()
 if newextension ~= "jpg" and newextension ~= "png" and newextension ~= "gif" and newextension ~= "bmp" then
 	ngx.status = 400
 	ngx.print("badreq")
-	return ngx.eof()	
+	return ngx.eof()
 end
 newextension = "." .. newextension
 

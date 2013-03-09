@@ -12,7 +12,7 @@ if args.delete then
 	if res and res ~= ngx.null and res ~= 0 then
 		database:del(database.KEYS.LINKS .. args.delete)
 		message = '<div class="alert alert-success">Deleted ' .. args.delete .. '<a href="/myfiles" class="close" data-dismiss="alert">x</a></div>'
-	else	
+	else
 		message = '<div class="alert alert-error">Could not delete the link :(<a href="/myfiles" class="close" data-dismiss="alert">x</a></div>'
 	end
 elseif args.create then
@@ -30,7 +30,7 @@ elseif args.create then
 	if not linkid then
 		return ngx.exec("/error/500")
 	end
-	
+
 	database:set(database.KEYS.LINKS .. linkid, args.create)
 	database:zadd(database.KEYS.USER_LINKS .. ngx.ctx.user.id, ngx.time(), linkid)
 end

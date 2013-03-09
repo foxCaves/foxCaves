@@ -19,7 +19,7 @@ local function s3_request_multi(tbl)
 		elseif req.method == ngx.HTTP_DELETE then
 			method_str = "DELETE"
 		end
-		
+
 		table.insert(reqParams, {"/scripts/amazon_s3", {
 			ctx = {
 				amz_content_type = (req.content_type or ""),
@@ -34,9 +34,9 @@ local function s3_request_multi(tbl)
 			body = req.body or ""
 		}})
 	end
-	
+
 	local resps = {ngx.location.capture_multi(reqParams)}
-	
+
 	for _,res in next, resps do
 		if res.status ~= 200 and res.status ~= 204 then
 			local err = ""
@@ -54,7 +54,7 @@ local function s3_request_multi(tbl)
 			error("Request failed: " .. err)
 		end
 	end
-	
+
 	return resps
 end
 local function s3_request(file, method, content_type, cache_control, body, content_disposition)
@@ -123,7 +123,7 @@ local S3_PARTSIZE = 6 * 1024 * 1024
 
 function file_upload(fileid, filename, extension, thumbnail, filetype, thumbtype)
 	local fullname = fileid .. extension
-	
+
 	local fileContent = file_fullread("files/" .. fullname)
 	local fileSize = fileContent:len()
 	if fileSize <= S3_PARTSIZE then
@@ -137,7 +137,7 @@ function file_upload(fileid, filename, extension, thumbnail, filetype, thumbtype
 		)
 	else
 		local fName = fileid .. "/file" .. extension
-	
+
 		local uploadID = s3_request(
 			fName .. "?uploads",
 			ngx.HTTP_POST,
@@ -148,11 +148,11 @@ function file_upload(fileid, filename, extension, thumbnail, filetype, thumbtype
 		)
 		uploadID = ngx.re.match(uploadID.body, "<UploadId>([^<]+)</UploadId>", "o")
 		uploadID = "uploadId=" .. uploadID[1]
-		
+
 		local partCount = math.floor(fileSize / S3_PARTSIZE)
-		
+
 		local completeReply = {"<CompleteMultipartUpload>"}
-		
+
 		local requests = {}
 		for partNumber = 1,partCount do
 			local startPos = ((partNumber - 1) * S3_PARTSIZE) + 1
@@ -162,26 +162,26 @@ function file_upload(fileid, filename, extension, thumbnail, filetype, thumbtype
 			else
 				endPos = fileSize
 			end
-			
+
 			requests[partNumber] = {
 				file = fName .. "?partNumber=" .. partNumber .. "&" .. uploadID,
 				method = ngx.HTTP_PUT,
 				body = fileContent:sub(startPos, endPos)
 			}
 		end
-		
+
 		local res = s3_request_multi(requests)
-		for partNumber,reply in next, res do	
+		for partNumber,reply in next, res do
 			table.insert(completeReply, "<Part><PartNumber>")
 			table.insert(completeReply, partNumber)
 			table.insert(completeReply, "</PartNumber><ETag>")
 			table.insert(completeReply, reply.header.ETag)
 			table.insert(completeReply, "</ETag></Part>")
 		end
-		
+
 		table.insert(completeReply, "</CompleteMultipartUpload>")
 		completeReply = table.concat(completeReply)
-		
+
 		s3_request(
 			fName .. "?" .. uploadID,
 			ngx.HTTP_POST,

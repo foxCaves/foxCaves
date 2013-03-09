@@ -1,8 +1,8 @@
 $(document).ready(function() {
 	var previewWrapper = document.getElementById("preview-wrapper");
-	
+
 	var preview = previewWrapper.childNodes[1];
-	
+
 	switch(preview.tagName.toLowerCase()) {
 		case 'audio':
 			break;
@@ -21,7 +21,7 @@ $(document).ready(function() {
 						video.mozCancelFullScreen();
 					else if(video.webkitCancelFullScreen)
 						video.webkitCancelFullScreen();
-						
+
 				} else {
 					if(video.mozRequestFullScreen) 
 						video.mozRequestFullScreen();

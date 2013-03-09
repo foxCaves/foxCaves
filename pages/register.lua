@@ -60,11 +60,11 @@ if args and args.register then
 						message = "<div class='alert alert-error'>Internal error. Please try again</div>"
 					else
 						local userid = database:incr(database.KEYS.NEXTUSERID)
-					
+
 						database:hmset(database.KEYS.USERS .. userid, "username", args.username, "email", email, "password", ngx.hmac_sha1(args.username, args.password))
 						database:sadd(database.KEYS.EMAILS, email:lower())
 						database:set(database.KEYS.USERNAME_TO_ID .. args.username:lower(), userid)
-						
+
 						local email_text = "Hello, " .. args.username .. "!\n\nYou have recently registered on foxCaves.\nPlease click the following link to activate your account:\n"
 						email_text = email_text .. "https://foxcav.es/emailcode?" .. emailid .. "\n\n"
 						email_text = email_text .. "Kind regards,\nfoxCaves Support"

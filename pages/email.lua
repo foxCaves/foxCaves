@@ -60,7 +60,7 @@ if args and args.send then
 						emailid = nil
 					end
 				end
-				
+
 				if not emailid then
 					message = "<div class='alert alert-error'>Internal error. Please try again</div>"
 				else
@@ -77,7 +77,7 @@ if args and args.send then
 
 					database:hmset(database.KEYS.EMAILKEYS .. emailid, "user", userid, "action", action)
 					database:expire(172800) --48 hours
-					
+
 					message = "<div class='alert alert-warning'>E-Mail sent.</div>"
 					template_name = "message"
 					ses_mail(userdata.email, subject, email, "noreply@foxcav.es", "foxCaves")

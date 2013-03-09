@@ -11,9 +11,9 @@ $(function() {
 			return false;
 		})
 		.next().addClass("ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom").hide();
-		
+
 	$(".autoclick").click();
-		
+
 	 $.fn.styleTable = function (options) {
 		var defaults = {
 			css: 'ui-styled-table ui-widget'
@@ -34,8 +34,8 @@ $(function() {
 			$this.find("tr:last-child").addClass("last-child");
 		});
 	};
-	
+
 	$("table").styleTable();
-	
+
 	window.prettyPrint && prettyPrint();
 });

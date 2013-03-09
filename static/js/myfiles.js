@@ -9,7 +9,7 @@ var dropZoneFileCount = 0;
 function handleDropFileSelect(evt) {
 	var dropZone = document.getElementById("uploader");
 	handleDragOver(evt);
-	
+
 	var datTrans = evt.originalEvent.dataTransfer;
 
 	if(datTrans.files.length > 0) { 
@@ -41,25 +41,25 @@ function abortCurrentFileUpload() {
 
 function processNextFile() {
 	if(dropZoneTransferInProgress) return;
-	
+
 	resetDropZone();
-	
+
 	var dropZone = document.getElementById("uploader_cur");
-	
+
 	if(dropZoneUploads.length <= 0) {
 		dropZoneFileNumber = 0;
 		dropZoneFileCount = 0;
 		dropZone.innerHTML = "";
 		return;
 	}
-	
+
 	var theFile = dropZoneUploads.shift();
-	
+
 	dropZoneTransferInProgress = true;
 	if(dropZoneFileNumber == 0) {
 		dropZone.innerHTML = '<div class="container">Uploading<br />File: <span id="curFileName">N/A</span><div id="barUpload" style="margin-left: 50px; margin-right: 50px;" class="progress progress-striped"><div class="bar" style="width: 0%;"></div></div><br />Total: <div id="barUploadTotal" style="margin-left: 50px; margin-right: 50px;" class="progress progress-striped"><div class="bar" style="width: 0%;"></div></div><input type="button"  value="Abort upload" class="btn" onclick="abortCurrentFileUpload();" /></div>';
 	}
-	
+
 	if(typeof theFile == "object") {
 		var dropZoneFileReader = new FileReader();
 		dropZoneFileReader.onloadend = function (evt) {
@@ -80,7 +80,7 @@ function processNextFile() {
 	}
 }
 
-function fileUpload(name, fileData) {	
+function fileUpload(name, fileData) {
 	$('#curFileName').text(name);
 
 	var xhr = new XMLHttpRequest();
@@ -90,10 +90,10 @@ function fileUpload(name, fileData) {
 	xhr.onreadystatechange = function() {
 		if(xhr.readyState == 4) {
 			dropZoneTransferInProgress = false;
-			
+
 			dropZoneFileNumber++;
 			$('#barUploadTotal div.bar').css("width", ((dropZoneFileNumber / dropZoneFileCount) * 100.0) + "%");
-			
+
 			if(xhr.status == 200) {
 				//Comes from long-polling!
 				//var file = xhr.responseText.split("\n");
@@ -134,9 +134,9 @@ function _setUploadProgress(progress_percent) {
 function resetDropZone() {
 	var dropZone = document.getElementById("uploader");
 	var dropZoneSub = document.getElementById('uploader_sub');
-	
+
 	dropZoneSub.innerHTML = dropZoneDefaultInnerHTML;
-	
+
 	$(dropZone).removeClass("active");
 
 	dropZoneTransferInProgress = false;
@@ -145,13 +145,13 @@ function resetDropZone() {
 function handleDragOver(evt, evttype) {
 	evt.stopPropagation();
 	evt.preventDefault();
-	
+
 	if(!evttype)
 		evttype = evt.type;
-	
+
 	var dropZone = document.getElementById("uploader");
 	var dropZoneSub = document.getElementById("uploader_sub");
-	
+
 	if(evttype == "dragenter") {
 		if(currFileDrag)
 			return;
@@ -160,10 +160,10 @@ function handleDragOver(evt, evttype) {
 	} else if(evttype == "dragleave") {
 		if(evt.originalEvent && evt.originalEvent.pageX != "0" && evt.originalEvent.pageX != 0)
 			return;
-			
+
 		resetDropZone();
 	}
-	
+
 	if(evt.originalEvent)
 		evt.originalEvent.dataTransfer.dropEffect = (evttype == "dragenter" ? "copy" : "");
 
@@ -173,15 +173,15 @@ function handleDragOver(evt, evttype) {
 function setupDropZone() {
 	var dropZoneMain = document.getElementById('uploader');
 	dropZoneMain.innerHTML = "<div id='uploader_sub'>Drag & drop files anywhere on this page to upload them</div><div id='uploader_cur'></div>";
-	
+
 	dropZoneDefaultInnerHTML = document.getElementById('uploader_sub').innerHTML;
-	
+
 	var docSel = $("*:not(#recycle_bin)");
 	docSel.bind("dragenter.dropZone", handleDragOver);
 	docSel.bind("dragleave.dropZone", handleDragOver);
 	docSel.bind("dragover.dropZone", preventDefault);
 	docSel.bind("drop.dropZone", handleDropFileSelect);
-	
+
 	document.getElementsByTagName("body")[0].addEventListener("mouseout", function(e) { resetDropZone(); }, false);
 }
 
@@ -197,30 +197,30 @@ function refreshFiles() {
 			if(!document.getElementById("file_"+fileid))
 				addFileLI(fileid);
 		}
-		
+
 		$('#file_manage_div > li').each(function(i, ele) {
 			var fileid = $(ele).attr('id').substr(5);
 			if(!files_rev[fileid])
 				removeFileLI(fileid);
 		});
 	});
-	
+
 	return false;
 }
 
 function getFileLI(fileid, func) {
 	$.get("/api/filehtml?" + fileid, function(data) {
 		data = data.trim();
-		
+
 		if(data[0] == '-') {
 			func(null);
 			return;
 		}
-	
+
 		var newFile = document.createElement("ul");//Fake
 		newFile.innerHTML = data;
 		newFile = newFile.firstChild;
-		
+
 		$(newFile).find(".image_manage_top, .image_manage_bottom").each(function(idx, elem) {
 			elem.style.cursor="move";
 		});
@@ -260,9 +260,9 @@ function refreshFileLI(fileid) {
 function deleteFile(fileid, filename) {
 	if(filename && !window.confirm('Do you really want to delete '+filename+'?'))
 		return false;
-	
+
 	$("#file_"+fileid).css("border", "1px solid red");//Highlight file deletion
-	
+
 	$.get('/api/delete?'+fileid, function(data) {
 		if(data.charAt(0) != '+') {
 			refreshFileLI(fileid);
@@ -272,7 +272,7 @@ function deleteFile(fileid, filename) {
 		refreshFileLI(fileid);
 		alert("Error deleting file :(");
 	});
-	
+
 	return false;
 }
 
@@ -282,7 +282,7 @@ function setupFileDragging() {
 	$(".image_manage_top, .image_manage_bottom").each(function(idx, elem) {
 		elem.style.cursor="move";
 	});
-	
+
 	var trashBin = document.getElementById("recycle_bin");
 
 	function startFileDrag(ev) {
@@ -290,13 +290,13 @@ function setupFileDragging() {
 		window.setTimeout("currFileDrag.style.opacity = '0.2';", 1);
 		trashBin.style.opacity = "0.7";
 	}
-	
+
 	function endFileDrag(ev) {
 		currFileDrag.style.opacity = "1";
 		currFileDrag = false;
 		trashBin.style.opacity = "0.5";
 	}
-	
+
 	$(".image_manage_ul li").each(function(idx, elem) {
 		elem.addEventListener("dragstart", startFileDrag, false);
 		elem.addEventListener("dragend", endFileDrag, false);
@@ -304,18 +304,18 @@ function setupFileDragging() {
 
 
 	trashBin.style.display = "";
-	
+
 	trashBin.addEventListener("dragover", preventDefault);
 
 	trashBin.addEventListener("dragenter", function(ev) {
 		ev.stopPropagation();
 		ev.preventDefault();
-		
+
 		handleDragOver(ev, "dragleave");
-		
+
 		if(!currFileDrag)
 			return;
-		
+
 		ev.dataTransfer.dropEffect = "move";
 		ev.target.style.opacity = "1";
 	}, false);
@@ -323,7 +323,7 @@ function setupFileDragging() {
 	trashBin.addEventListener("dragleave", function(ev) {
 		ev.stopPropagation();
 		ev.preventDefault();
-		
+
 		ev.dataTransfer.dropEffect = "";
 		trashBin.style.opacity = "0.7";
 	}, false);
@@ -331,10 +331,10 @@ function setupFileDragging() {
 	trashBin.addEventListener("drop", function(ev) {
 		ev.stopPropagation();
 		ev.preventDefault();
-		
+
 		if(!currFileDrag)
 			return;
-			
+
 		deleteFile(currFileDrag.id.substr(5));
 		trashBin.style.opacity = "";
 	}, false);
@@ -355,7 +355,7 @@ function setupOptionMenu() {
 			text.rows = "20";
 			text.cols = "100";
 			text.value = data;
-			
+
 			text.style.width = "60%";
 		});
 	}
@@ -396,15 +396,15 @@ function setupSearch() {
 function setupMassOperations() {
 	var form = document.getElementById("file-mass-action-form");
 	form.addEventListener("submit", function(event) {
-	
+
 		event.preventDefault();
-		
+
 		var operation = this.action.value;
-		
+
 		var count = 0;
-		
+
 		var str = "";
-		
+
 		var elems = $(".image_manage_ul > li[id^=file_]").each(function(k, v) {
 			console.log(v);
 			if(v.style.display == "none")
@@ -412,10 +412,10 @@ function setupMassOperations() {
 			str += ("|" + v.getAttribute("data-file-id"));
 			count++;
 		});
-		
+
 		if(!confirm("Are you sure you want to " + operation + " all selected(" + count + ") files?"))
 			return
-		
+
 		$.ajax({
 			method: "POST",
 			url: "/api/deletemulti",
@@ -433,13 +433,13 @@ $(document).ready(function() {
 
 	setupDropZone();
 	setupFileDragging();
-	
+
 	setupPasting();
-	
+
 	setupSearch();
-	
+
 	setupMassOperations();
-	
+
 	pushHandlers.push(function(action, file) {
 		if(action == '+') {
 			addFileLI(file, true);

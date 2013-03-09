@@ -28,7 +28,8 @@
 "use strict";
 
 /* prevent duplicate declaration */
-if (window.PushStream) { return; }
+if (window.PushStream)
+	return;
 
 var days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -1014,7 +1015,10 @@ PushStream.unload = function() {
 window.PushStream = PushStream;
 window.PushStreamManager = PushStreamManager;
 
-if (window.attachEvent) { window.attachEvent("onunload", PushStream.unload); }
-if (window.addEventListener) { window.addEventListener.call(window, "unload", PushStream.unload, false); }
+if (window.attachEvent) 
+	window.attachEvent("onunload", PushStream.unload);
+
+if (window.addEventListener) 
+	window.addEventListener.call(window, "unload", PushStream.unload, false);
 
 })(window, document);

@@ -2,7 +2,7 @@ var pushHandlers = new Array();
 
 function preventDefault(evt) {
 	evt.stopPropagation();
-	evt.preventDefault();	
+	evt.preventDefault();
 }
 
 window.addEventListener("popstate", function(ev) {
@@ -14,7 +14,7 @@ window.addEventListener("popstate", function(ev) {
 
 function loadPage(href, fromHistory) {
 	var container = $('#main-container');
-	
+
 	$.ajax({
 		url: href,
 		beforeSend: function(xhr) {
@@ -22,9 +22,9 @@ function loadPage(href, fromHistory) {
 		},
 		success: function(data, status, xhr) {
 			var xSplit = data.lastIndexOf("|");
-			
+
 			var json = $.parseJSON(data.substring(xSplit + 1));
-			
+
 			for(var idx in json) {
 				if(!json.hasOwnProperty(idx))
 					continue;
@@ -33,7 +33,7 @@ function loadPage(href, fromHistory) {
 					case "pushchan":
 						if(val != PUSH_CHANNEL) {
 							document.location.reload();
-							return;							
+							return;
 						}
 						break;
 					case "active_nav":
@@ -48,19 +48,19 @@ function loadPage(href, fromHistory) {
 						break;
 				}
 			}
-			
+
 			$('[data-toggle="dropdown"]').parent().removeClass('open');
-			
+
 			data = data.substring(0, xSplit - 1);
 
 			container.html(data);
 			container.css("opacity", "1");
-			
+
 			if(!fromHistory)
 				history.pushState({url: href}, document.title, href);
 			else
 				history.replaceState({url: href}, document.title, href);
-			
+
 			docReady();
 		},
 		error: function() {

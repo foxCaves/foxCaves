@@ -10,13 +10,13 @@ if res and res.user and res ~= ngx.null then
 	local userID = database.KEYS.USERS .. res.user
 
 	local userdata = database:hgetall(userID)
-	
+
 	if res.action == "activation" then
 		actiontitle = "Activation"
-		
+
 		if userdata.active and userdata.active ~= "0" and userdata.active ~= 0 then
 			message = "<div class='alert alert-success'>Your account was already active or is banned</div>"
-		else		
+		else
 			message = "<div class='alert alert-success'>Your account has been activated. Please <a href='/login'>login</a> now.</div>"
 			database:hset(userID, "active", 1)
 		end

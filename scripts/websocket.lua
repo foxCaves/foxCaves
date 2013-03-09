@@ -28,8 +28,8 @@ do
 	local dbpass = G.dbpass
 	local dbkeys = G.dbkeys
 
-	database = { ping = function() return false end }
-	
+	database = {ping = function() return false end}
+
 	local reconntries = 0
 	function database_ping()
 		local ret = database:ping()
@@ -146,13 +146,13 @@ local event_handlers = {
 		if #data ~= 3 then
 			error("Invalid payload")
 		end
-		
+
 		if data[1] == "" or data[2] == "" or data[3] == "" then
 			error("Missing payload data")
 		end
-	
+
 		database_ping() --Ensure database exists
-		
+
 		local tempvar = data[1]
 		if tempvar ~= "GUEST" then
 			--Session => User
@@ -167,10 +167,10 @@ local event_handlers = {
 			user.name = result
 			--End session => User
 		end
-	
+
 		tempvar = data[2]
 		user.globkey = string_format("%s_%s", tempvar, data[3])
-		
+
 		user.ws_data = ws_data_global[user.globkey]
 		if not user.ws_data then
 			--Sanity check for the FileID
@@ -179,7 +179,7 @@ local event_handlers = {
 				error("Invalid FileID")
 			end
 			--End sanity check
-		
+
 			user.ws_data = {}
 			user.history = {"r0|"}
 			history_global[user.globkey] = user.history
@@ -187,24 +187,24 @@ local event_handlers = {
 		else
 			user.history = history_global[user.globkey]
 		end
-		
+
 		local wsid = last_wsid[user.globkey] or 1
 		while user.ws_data[wsid] do
 			wsid = wsid + 1
 		end
 		last_wsid[user.globkey] = wsid + 1
-		
+
 		if not user.name then
 			user.name = string_format("Guest %i", wsid)
 		end
-		
+
 		user.image = data[2]
 		user.drawingsession = data[3]
 		user.id = wsid
 		user.isjoined = true
-		
+
 		user.ws_data[wsid] = user
-		
+
 		--local imgburst_found = false
 		for uid, udata in next, user.ws_data do
 			if uid ~= wsid then
@@ -228,13 +228,13 @@ local event_handlers = {
 						imgburst_found = true
 						user:send(EVENT_IMGBURST .. "r|" .. user.id .. "|")
 					end]]
-				end				
+				end
 			end
 		end
-		
+
 		user.historyburst = true
-		print("Join: ", user.name, user.id, user.image, user.drawingsession)		
-		
+		print("Join: ", user.name, user.id, user.image, user.drawingsession)
+
 		return string_format(
 			"%s|%i|%s|%s|%i|%i",
 			user.name,
@@ -271,16 +271,16 @@ function USERMETA:kick()
 	if self.id then
 		self.ws_data[self.id] = nil
 	end
-	
+
 	if self.isjoined then
-		print("Leave: ", self.name, self.id, self.image, self.drawingsession)		
+		print("Leave: ", self.name, self.id, self.image, self.drawingsession)
 		self.isjoined = false
-		
+
 		if(next(self.ws_data) == nil) then
 			ws_data_global[self.globkey] = nil
 			history_global[self.globkey] = nil
 			last_wsid[self.globkey] = nil
-			
+
 			print("Unsetting globkey: ", self.globkey)
 		else
 			last_wsid[self.globkey] = self.id
@@ -289,12 +289,12 @@ function USERMETA:kick()
 		self.id = nil
 		return
 	end
-	
+
 	if self.socket then
 		self.socket:close(0)
 		self.socket = nil
 	end
-	
+
 	self.id = nil
 end
 function USERMETA:broadcast_others(data, nohistory)
@@ -319,7 +319,7 @@ function USERMETA:event_received(ws, rawdata)
 	else
 		rawdata = ""
 	end
-	
+
 	if (evid == cEVENT_JOIN) == self.isjoined then
 		error("Invalid state for this packet: " .. evid .. "|" .. tostring(self.isjoined))
 	else
@@ -337,7 +337,7 @@ function USERMETA:event_received(ws, rawdata)
 	end
 	if not self.id then return end
 	self:broadcast_others(string_format("%c%i|%s", evid, self.id, rawdata), (evid == cEVENT_MOUSE_CURSOR))
-	
+
 	if historyburst then
 		self:send(table_concat(self.history ,"\n"))
 		self:send(string_format("%s%i|", EVENT_LEAVE, self.id))
@@ -355,7 +355,7 @@ function USERMETA:socket_onrecv(ws, data)
 			newlen = data:find("\n", newlen, true)
 			if newlen then datalen = newlen end
 		end
-		
+
 		if datalen then
 			self.databuff = data:sub(1, datalen)
 			data = data:sub(datalen + 1)
@@ -383,15 +383,15 @@ local function paint_cb(ws)
 		isjoined = false,
 		databuff = ""
 	}, USERMETA)
-	
+
 	ws:on_receive(function(ws, data)
 		user:socket_onrecv(ws, data)
 	end)
-	
+
 	ws:on_closed(function()
 		user:kick()
 	end)
-	
+
 	ws:on_broadcast(websockets.WRITE_TEXT)
 end
 

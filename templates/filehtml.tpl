@@ -28,7 +28,7 @@
 					<% end %>
 				</ul>
 			</div>
-			
+
 			<a href="#" title="Delete" onclick="return deleteFile('<%= fileid %>','<%= escaped_name_js %>');" href="/myfiles?delete=<%= fileid %>"><i class="icon-remove icon-white"></i> </a>
 		</span>
 		<%= G.ngx.ctx.format_size(file.size) %>

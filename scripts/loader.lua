@@ -15,7 +15,7 @@ local function makeTableRecurse(var, done)
 			table.insert(ret, "</tbody></table>")
 			return table.concat(ret, "")
 		end
-		
+
 		return "DONE"
 	elseif(t == "function") then
 		return escape_html(tostring(var))
@@ -37,7 +37,7 @@ local function getFunctionCode(info)
 	if endline and maxline > endline then
 		maxline = endline
 	end
-	
+
 	if endline ~= -1 then
 		local out = {"<h3><a href='#'>Code</a></h3><div><pre class='prettyprint lang-lua'><ol class='linenums'>"}
 		local source = info.short_src
@@ -156,14 +156,14 @@ local function debug_trace(err)
 	local cur = nil
 	for level = 2, 100 do
 		cur = debug.getinfo(level)
-		
+
 		if not cur then break end
-		
+
 		local src_file = cur.short_src
 		if src_file:sub(1, 9) == '[string "' then
 			src_file = src_file:sub(10, -3)
 		end
-		
+
 		if level <= 2 then
 			table.insert(out, "<h3 class='autoclick'><a href='#'>Level " .. tostring(level) .. "</a></h3><div><div class='accordion'>")
 		else
@@ -178,10 +178,10 @@ local function debug_trace(err)
 		table.insert(out, getLocals(level))
 		table.insert(out, getUpValues(cur.func))
 		table.insert(out, getFunctionCode(cur))
-		
+
 		table.insert(out, "</div></div>")
 	end
-	
+
 	table.insert(out, "</body></html>")
 	return table.concat(out, "")
 end
@@ -203,7 +203,7 @@ local function sendAttachmentMail(attachment)
 
 	local mp = buildMultipart(nil, "See attachment", boundry)
 	mp = mp .. buildMultipart("error.html", attachment, boundry)
-	
+
 	mail(
 		"development@foxcav.es",
 		"[foxCaves] Error report",
