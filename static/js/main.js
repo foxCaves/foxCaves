@@ -80,7 +80,7 @@ $(document).ready(function(){
 				if(pushHandlers[j](action, param))
 					break;
 		}
-    };
+	};
 	
 	var useSSL = (window.location.protocol == "https:");
 	var port = (useSSL ? 443 : 80);

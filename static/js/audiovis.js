@@ -5,7 +5,7 @@ var MathPI2 = Math.PI * 2.0;
 var MathPIHalf = Math.PI / 2.0;
 var MLOG10 = Math.log(10);
 function log10(val) {
-  return Math.log(val) / MLOG10;
+ return Math.log(val) / MLOG10;
 }
 
 function angleOptimize(angle, targetAngle) {

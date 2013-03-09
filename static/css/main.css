@@ -5,20 +5,20 @@ html::-webkit-scrollbar {
 
 html::-webkit-scrollbar-track {
 	background-color: darkgrey;
-	-webkit-box-shadow: inset 2px 2px 6px rgba(0,0,0,0.4);
+	-webkit-box-shadow: inset 2px 2px 6px rgba(0, 0, 0, 0.4);
 }
 html::-webkit-scrollbar-track:hover {
-	-webkit-box-shadow: inset 2px 2px 6px rgba(0,0,0,0.6);
+	-webkit-box-shadow: inset 2px 2px 6px rgba(0, 0, 0, 0.6);
 }
 
 html::-webkit-scrollbar-thumb {
 	background-color: grey;
-	-webkit-box-shadow: inset 2px 2px 6px rgba(0,0,0,0.4); 
+	-webkit-box-shadow: inset 2px 2px 6px rgba(0, 0, 0, 0.4); 
 	border-radius: 8px;
 }
 
 html::-webkit-scrollbar-thumb:active {
-	-webkit-box-shadow: inset 2px 2px 6px rgba(0,0,0,0.8); 
+	-webkit-box-shadow: inset 2px 2px 6px rgba(0, 0, 0, 0.8); 
 }
 
 html::-webkit-scrollbar-button,
@@ -122,10 +122,10 @@ body {
 }
 
 .navbar .nav > li > a {
-  -webkit-transition: border-color linear .2s;
-  -moz-transition: border-color linear .2s;
-  -o-transition: border-color linear .2s;
-  transition: border-color linear .2s;
+-webkit-transition: border-color linear .2s;
+-moz-transition: border-color linear .2s;
+-o-transition: border-color linear .2s;
+transition: border-color linear .2s;
 }
 
 .navbar-fixed-bottom .nav li a {
@@ -136,10 +136,10 @@ body {
 #uploader {
 	border: 2px solid #bbb;
 	border-radius: 7px;
-    font-weight: bold;
-    text-align: center;
-    color: #555;
-    padding: 1em 0;
+	font-weight: bold;
+	text-align: center;
+	color: #555;
+	padding: 1em 0;
 	transition: border-color 1s, color 1s;
 	-moz-transition: border-color 1s, color 1s;
 	-webkit-transition: border-color 1s, color 1s;

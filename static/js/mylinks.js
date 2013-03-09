@@ -1,6 +1,7 @@
 function newLink() {
 	var res = prompt("Please enter the link to shorten:", "http://");
-	if(!res) return;
+	if(!res)
+		return;
 	createLink(res);
 }
 

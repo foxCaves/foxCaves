@@ -7,6 +7,7 @@
 		<% for _,answer in next, ANSWERS do %>
 		<option><%= answer %></option>
 		<% end %>
+	</select>
 <% else %>
 	<input type="text" name="captcha_result" />
 <% end %>

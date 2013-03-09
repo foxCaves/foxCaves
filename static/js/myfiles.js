@@ -143,8 +143,8 @@ function resetDropZone() {
 }
 
 function handleDragOver(evt, evttype) {
-    evt.stopPropagation();
-    evt.preventDefault();
+	evt.stopPropagation();
+	evt.preventDefault();
 	
 	if(!evttype)
 		evttype = evt.type;
@@ -167,7 +167,7 @@ function handleDragOver(evt, evttype) {
 	if(evt.originalEvent)
 		evt.originalEvent.dataTransfer.dropEffect = (evttype == "dragenter" ? "copy" : "");
 
-    dropZone.className = (evttype == "dragenter" ? "hover" : "");
+	dropZone.className = (evttype == "dragenter" ? "hover" : "");
 }
 
 function setupDropZone() {

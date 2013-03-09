@@ -26,7 +26,7 @@ $(function() {
 
 			$this.on('mouseover mouseout', 'tbody tr', function (event) {
 				$(this).children().toggleClass("ui-state-hover",
-											   event.type == 'mouseover');
+												event.type == 'mouseover');
 			});
 
 			$this.find("th").addClass("ui-widget ui-state-default");

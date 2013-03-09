@@ -8,7 +8,6 @@
 			<input type="password" name="old_password" value="" /> (Required to change your E-Mail or password)
 		</div>
 	</div>
-
 	<legend>Change password</legend>
 	<div class="control-group">
 		<label class="control-label" for="newpass">New password</label>

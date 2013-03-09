@@ -6,7 +6,7 @@
 	<input id="name-filter" type="text" placeholder="filter" class="input-medium search-query">
 </form>
 <ul class="image_manage_ul" id="file_manage_div">
-	<% for _,fileid in next, FILES do
+	<% for _, fileid in next, FILES do
 		local file = file_get(fileid) %>
 		<%+ filehtml %>
 	<% end %>

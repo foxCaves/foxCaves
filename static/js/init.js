@@ -1,8 +1,8 @@
 var pushHandlers = new Array();
 
 function preventDefault(evt) {
-    evt.stopPropagation();
-    evt.preventDefault();	
+	evt.stopPropagation();
+	evt.preventDefault();	
 }
 
 window.addEventListener("popstate", function(ev) {

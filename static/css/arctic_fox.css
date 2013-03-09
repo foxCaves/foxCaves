@@ -60,13 +60,13 @@ a,
 
 .expanded {
 	background-color: transparent !important;
-	background-image: -moz-linear-gradient(top, #000 45px, rgba(0,0,0,0.25) 90%, #0CF 100%);
-	background-image: -webkit-gradient(linear, left top, left bottom, color-stop(45px,#000), color-stop(90%,rgba(0,0,0,0.25)), color-stop(100%,#0CF));
-	background-image: -webkit-linear-gradient(top, #000 45px,rgba(0,0,0,0.25) 90%,#0CF 100%);
-	background-image: -o-linear-gradient(top, #000 45px,rgba(0,0,0,0.25) 90%,#0CF 100%);
-	background-image: -ms-linear-gradient(top, #000 45px,rgba(0,0,0,0.25) 90%,#0CF 100%);
-	background-image: linear-gradient(to bottom, #000 45px,rgba(0,0,0,0.25) 90%,#0CF 100%);
-	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#000000', endColorstr='#770077',GradientType=0 );
+	background-image: -moz-linear-gradient(top, #000 45px, rgba(0, 0, 0, 0.25) 90%, #0CF 100%);
+	background-image: -webkit-gradient(linear, left top, left bottom, color-stop(45px, #000), color-stop(90%, rgba(0, 0, 0, 0.25)), color-stop(100%, #0CF));
+	background-image: -webkit-linear-gradient(top, #000 45px, rgba(0, 0, 0, 0.25) 90%, #0CF 100%);
+	background-image: -o-linear-gradient(top, #000 45px, rgba(0, 0, 0, 0.25) 90%, #0CF 100%);
+	background-image: -ms-linear-gradient(top, #000 45px, rgba(0, 0, 0, 0.25) 90%, #0CF 100%);
+	background-image: linear-gradient(to bottom, #000 45px, rgba(0, 0, 0, 0.25) 90%, #0CF 100%);
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#000000', endColorstr='#770077', GradientType=0 );
 }
 
 .navbar .nav > .active > a, .navbar .nav > li > a:hover {

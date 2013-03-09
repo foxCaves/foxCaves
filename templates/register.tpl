@@ -26,11 +26,9 @@
 			<input type="text" name="email" id="emails" value="<%= G.ngx.ctx.escape_html(EMAIL) %>" />
 		</div>
 	</div>
-
 	<div class="control-group">
 		<%= CAPTCHA %>
 	</div>
-
 	<div class="control-group">
 		<div class="controls">
 			<input type="submit" class="btn" name="register" value="Register" id="postbut" />
