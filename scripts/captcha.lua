@@ -5,7 +5,7 @@ local function mktimecode()
 	return bit.arshift(ngx.time(), 6)
 end
 local function mkhash(timecode, result)
-	return ngx.hmac_sha1(secret_key, timecode..result..ngx.var.remote_addr)
+	return ngx.hmac_sha1(secret_key, timecode .. result .. ngx.var.remote_addr)
 end
 function check_captcha(POST)
 	local timecode = mktimecode()
@@ -29,9 +29,9 @@ function check_captcha(POST)
 end
 
 local operators = {
-	{"+", function(a,b) return a+b end},
-	{"-", function(a,b) return a-b end},
-	{"*", function(a,b) return a*b end}
+	{"+", function(a, b) return a + b end},
+	{"-", function(a, b) return a - b end},
+	{"*", function(a, b) return a * b end}
 }
 local operators_len = #operators
 local range_min = 0
@@ -42,7 +42,7 @@ local questions = {
 		local a = math.random(range_min, range_max)
 		local b = math.random(range_min, range_max)
 		local o = operators[math.random(operators_len)]
-		return "Calculate "..tostring(a)..o[1]..tostring(b), o[2](a,b)
+		return "Calculate " .. tostring(a) .. o[1] .. tostring(b), o[2](a, b)
 	end,
 	function()
 		return "Are you a spambot?", "no", {"yes", "no"}
@@ -62,17 +62,17 @@ local questions = {
 		local o = operators[math.random(operators_len)]
 		local res, answer
 		if math.random() > 0.5 then
-			res = o[2](a,b)
+			res = o[2](a, b)
 			answer = "yes"
 		else
-			res = math.random(range_min*-2, range_max*range_max)
-			if o[2](a,b) == res then
+			res = math.random(range_min * -2, range_max * range_max)
+			if o[2](a, b) == res then
 				answer = "yes"
 			else
 				answer = "no"
 			end
 		end
-		return tostring(a)..o[1]..tostring(b).."="..res..". Correct?", answer, {"yes", "no"}
+		return tostring(a) .. o[1] .. tostring(b) .. "=" .. res .. ". Correct?", answer, {"yes", "no"}
 	end
 }
 local questions_len = #questions

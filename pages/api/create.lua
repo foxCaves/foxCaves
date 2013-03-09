@@ -1,4 +1,4 @@
-dofile(ngx.var.main_root.."/scripts/global.lua")
+dofile(ngx.var.main_root .. "/scripts/global.lua")
 dofile("scripts/api_login.lua")
 if not ngx.ctx.user then return end
 
@@ -26,7 +26,7 @@ end
 local fileid
 for i=1, 10 do
 	fileid = randstr(10)
-	local res = database:exists(database.KEYS.FILES..fileid)
+	local res = database:exists(database.KEYS.FILES .. fileid)
 	if (not res) or (res == ngx.null) or (res == 0) then
 		break
 	else
@@ -98,7 +98,7 @@ local FILE_TYPE_IFRAME = 5
 local mimeHandlers = {
 	image = function()
 		local thumbext = ".png"
-		local thumbnail = fileid..thumbext
+		local thumbnail = fileid .. thumbext
 		os.execute(
 			string.format(
 				'/usr/bin/convert "files/%s%s" -thumbnail x300 -resize "300x<" -resize 50%% -gravity center -crop 150x150+0+0 +repage -format png "thumbs/%s"',
@@ -108,14 +108,14 @@ local mimeHandlers = {
 			)
 		)
 		
-		if not lfs.attributes("thumbs/"..thumbnail, "size") then
+		if not lfs.attributes("thumbs/" .. thumbnail, "size") then
 			return FILE_TYPE_IMAGE, nil, nil
 		end
 		return FILE_TYPE_IMAGE, "image/png", thumbext
 	end,
 	
 	text = function()
-		local fh = io.open("files/"..fileid..extension, "r")
+		local fh = io.open("files/" .. fileid .. extension, "r")
 		local content = fh:read(4096):gsub("[&<>]", {
 			["&"] = "&amp;",
 			["<"] = "&lt;",
@@ -131,7 +131,7 @@ local mimeHandlers = {
 			content = content:sub(4)
 		end
 
-		fh = io.open("thumbs/"..fileid..extension, "w")
+		fh = io.open("thumbs/" .. fileid .. extension, "w")
 		fh:write(content)
 		fh:close()
 
@@ -161,15 +161,15 @@ local fileType, thumbnailType, thumbnail = mimeHandlers[prefix](suffix)
 dofile("scripts/fileapi.lua")
 file_upload(fileid, name, extension, thumbnail, mtype, thumbnailType)
 
-local fileKeyID = database.KEYS.FILES..fileid
+local fileKeyID = database.KEYS.FILES .. fileid
 
 database:hmset(fileKeyID, "name", name, "user", ngx.ctx.user.id, "extension", extension, "type", fileType, "size", filesize, "time", ngx.time())
 if thumbnail and thumbnailType then
 	database:hset(fileKeyID, "thumbnail", thumbnail)
 end
-database:zadd(database.KEYS.USER_FILES..ngx.ctx.user.id, ngx.time(), fileid)
+database:zadd(database.KEYS.USER_FILES .. ngx.ctx.user.id, ngx.time(), fileid)
 
-database:hincrby(database.KEYS.USERS..ngx.ctx.user.id, "usedbytes", filesize)
+database:hincrby(database.KEYS.USERS .. ngx.ctx.user.id, "usedbytes", filesize)
 ngx.ctx.user.usedbytes = ngx.ctx.user.usedbytes + filesize
 
 file_push_action(fileid, '+')

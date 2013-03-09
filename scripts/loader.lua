@@ -8,7 +8,7 @@ local function makeTableRecurse(var, done)
 			done[var] = true
 			local ret = {"<table><thead><tr><th>Name</th><th>Type</th><th>Value</th></tr></thead><tbody>"}
 			for k, v in next, var do
-				table.insert(ret, "<tr><td>"..tostring(k).."</td><td>"..type(v).."</td><td>")
+				table.insert(ret, "<tr><td>" .. tostring(k) .. "</td><td>" .. type(v) .. "</td><td>")
 				table.insert(ret, makeTableRecurse(v, done))
 				table.insert(ret, "</td></tr>")
 			end
@@ -56,14 +56,14 @@ local function getFunctionCode(info)
 				end
 			end
 			if(minline ~= startline) then
-				table.insert(out, "<li class=\"L0\" value=\""..startline.."\">")
+				table.insert(out, "<li class=\"L0\" value=\"" .. startline .. "\">")
 				table.insert(out, funcStart)
 				table.insert(out, "<span class='nocode'>\n...</span></li>")
 			end
 			for i = minline, maxline do
-				table.insert(out, "<li class=\"L0\" value=\""..i.."\">")
+				table.insert(out, "<li class=\"L0\" value=\"" .. i.."\">")
 				if(curr == i) then
-					table.insert(out, "<span class=\"errorline\">"..escape_html(iter()).."</span></li>")
+					table.insert(out, "<span class=\"errorline\">" .. escape_html(iter()) .. "</span></li>")
 				else
 					table.insert(out, escape_html(iter()))
 				end
@@ -81,7 +81,7 @@ local function getFunctionCode(info)
 						break
 					end
 				end
-				table.insert(out, "<span class='nocode'>\n...</span></li><li class=\"L0\" value=\""..endline.."\">"..funcEnd.."</li>")
+				table.insert(out, "<span class='nocode'>\n...</span></li><li class=\"L0\" value=\"" .. endline .. "\">" .. funcEnd .. "</li>")
 			else
 				table.insert(out, "</li>")
 			end
@@ -96,7 +96,7 @@ local function getFunctionCode(info)
 end
 
 local function getLocals(level)
-	if(debug.getlocal(level+1, 1)) then
+	if(debug.getlocal(level + 1, 1)) then
 		local out = {"<h3><a href='#'>Locals</a></h3><div>"}
 		local tbl = {}
 		for i = 1, 100 do
@@ -165,15 +165,15 @@ local function debug_trace(err)
 		end
 		
 		if level <= 2 then
-			table.insert(out, "<h3 class='autoclick'><a href='#'>Level "..tostring(level).."</a></h3><div><div class='accordion'>")
+			table.insert(out, "<h3 class='autoclick'><a href='#'>Level " .. tostring(level) .. "</a></h3><div><div class='accordion'>")
 		else
-			table.insert(out, "<h3><a href='#'>Level "..tostring(level).."</a></h3><div><div class='accordion'>")
+			table.insert(out, "<h3><a href='#'>Level " .. tostring(level) .. "</a></h3><div><div class='accordion'>")
 		end
-		table.insert(out, "<h3 class='autoclick'><a href='#'>Base</a></h3><div><ul><li>Where: "..src_file.."</li>")
+		table.insert(out, "<h3 class='autoclick'><a href='#'>Base</a></h3><div><ul><li>Where: " .. src_file .. "</li>")
 		if(cur.currentline ~= -1) then
-			table.insert(out, "<li>Line: "..cur.currentline.."</li>")
+			table.insert(out, "<li>Line: " .. cur.currentline .. "</li>")
 		end
-		table.insert(out, "<li>What: "..(cur.name and "In function '"..cur.name.."'" or "In main chunk").."</li></ul></div>")
+		table.insert(out, "<li>What: " .. (cur.name and "In function '" .. cur.name .. "'" or "In main chunk") .. "</li></ul></div>")
 
 		table.insert(out, getLocals(level))
 		table.insert(out, getUpValues(cur.func))
@@ -191,15 +191,15 @@ local isok, err = xpcall(dofile, debug_trace, ngx.var.run_lua_file)
 local function buildMultipart(name, content, boundry)
 	local str
 	if(name) then
-		str = "Content-Type: application/octet-stream; name=\""..name.."\"\r\nContent-Transfer-Encoding: base64\r\n\r\n"..ngx.encode_base64(content)
+		str = "Content-Type: application/octet-stream; name=\"" .. name .. "\"\r\nContent-Transfer-Encoding: base64\r\n\r\n" .. ngx.encode_base64(content)
 	else
-		str = "Content-Type: text/html\r\nContent-Transfer-Encoding: base64\r\n\r\n"..ngx.encode_base64(content)
+		str = "Content-Type: text/html\r\nContent-Transfer-Encoding: base64\r\n\r\n" .. ngx.encode_base64(content)
 	end
-	return str.."\r\n--"..boundry.."\r\n"; 
+	return str .. "\r\n--" .. boundry .. "\r\n"; 
 end
 
 local function sendAttachmentMail(attachment)
-	local boundry = "b"..randstr(16)
+	local boundry = "b" .. randstr(16)
 
 	local mp = buildMultipart(nil, "See attachment", boundry)
 	mp = mp .. buildMultipart("error.html", attachment, boundry)
@@ -210,7 +210,7 @@ local function sendAttachmentMail(attachment)
 		"",
 		"noreply@foxcav.es",
 		"foxCaves",
-		"MIME-Version: 1.0\r\nContent-Type: multipart/mixed; boundary = "..boundry.."\r\n\r\nThis is a MIME encoded message.\r\n\r\n--"..boundry.."\r\n"..mp
+		"MIME-Version: 1.0\r\nContent-Type: multipart/mixed; boundary = " .. boundry .. "\r\n\r\nThis is a MIME encoded message.\r\n\r\n--" .. boundry .. "\r\n" .. mp
 	)
 end
 

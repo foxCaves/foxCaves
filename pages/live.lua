@@ -1,4 +1,4 @@
-dofile(ngx.var.main_root.."/scripts/global.lua")
+dofile(ngx.var.main_root .. "/scripts/global.lua")
 --if not ngx.ctx.user then return ngx.redirect("/login") end
 
 local name = ngx.var.REQUEST_URI
@@ -12,7 +12,7 @@ local sid = nameregex[3]
 nameregex = nameregex[1]
 
 if (not sid) or sid == "" then
-	return ngx.redirect("/live/"..nameregex.."?"..randstr(10))
+	return ngx.redirect("/live/" .. nameregex .. "?" .. randstr(10))
 end
 
 dofile("scripts/fileapi.lua")

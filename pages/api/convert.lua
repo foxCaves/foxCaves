@@ -1,4 +1,4 @@
-dofile(ngx.var.main_root.."/scripts/global.lua")
+dofile(ngx.var.main_root .. "/scripts/global.lua")
 dofile("scripts/api_login.lua")
 if not ngx.ctx.user then return end
 
@@ -21,7 +21,7 @@ if newextension ~= "jpg" and newextension ~= "png" and newextension ~= "gif" and
 	ngx.print("badreq")
 	return ngx.eof()	
 end
-newextension = "."..newextension
+newextension = "." .. newextension
 
 dofile("scripts/fileapi.lua")
 
@@ -33,29 +33,29 @@ if(not succ) or dbdata.extension == newextension or dbdata.type ~= 1 then
 end
 
 local newfilename = dbdata.name
-newfilename = newfilename:sub(1, newfilename:len() - dbdata.extension:len())..newextension
+newfilename = newfilename:sub(1, newfilename:len() - dbdata.extension:len()) .. newextension
 
 local database = ngx.ctx.database
 
-local fh = io.open("files/"..args.fileid..dbdata.extension, "w")
+local fh = io.open("files/" .. rgs.fileid .. dbdata.extension, "w")
 fh:write(data)
 fh:close()
-os.execute('/usr/bin/convert "files/'..args.fileid..dbdata.extension..'" -format '..newextension:sub(2)..' "files/'..args.fileid..newextension..'"')
+os.execute('/usr/bin/convert "files/' .. rgs.fileid .. dbdata.extension .. '" -format ' .. newextension:sub(2) .. ' "files/' .. rgs.fileid .. newextension .. '"')
 os.remove("files/" .. args.fileid .. dbdata.extension)
 
 dofile("scripts/mimetypes.lua")
 
-local newsize = lfs.attributes("files/"..args.fileid..newextension, "size")
+local newsize = lfs.attributes("files/" .. rgs.fileid .. newextension, "size")
 if not newsize then
 	ngx.status = 500
 	ngx.print("failed")
 	return ngx.eof()
 end
 
-database:hmset(database.KEYS.FILES..args.fileid, "extension", newextension, "name", newfilename, "size", newsize)
+database:hmset(database.KEYS.FILES .. args.fileid, "extension", newextension, "name", newfilename, "size", newsize)
 newsize = newsize - dbdata.size
 ngx.ctx.user.usedbytes = ngx.ctx.user.usedbytes + newsize
-database:hincrby(database.KEYS.USERS..ngx.ctx.user.id, newsize)
+database:hincrby(database.KEYS.USERS .. ngx.ctx.user.id, newsize)
 
 file_upload(args.fileid, newfilename, newextension, "", mimetypes[newextension], nil)
 file_manualdelete(args.fileid .. "/file" .. dbdata.extension)

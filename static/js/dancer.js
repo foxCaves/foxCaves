@@ -16,7 +16,7 @@
 
   Dancer.prototype = {
 
-    load : function ( source ) {
+    load : function (source) {
       var path;
 
       // Loading an Audio element

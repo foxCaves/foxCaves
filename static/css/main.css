@@ -2,9 +2,7 @@
 html::-webkit-scrollbar {
 	width: 24px;
 }
-html::-webkit-scrollbar-button {
-	display: none;
-}
+
 html::-webkit-scrollbar-track {
 	background-color: darkgrey;
 	-webkit-box-shadow: inset 2px 2px 6px rgba(0,0,0,0.4);
@@ -23,9 +21,8 @@ html::-webkit-scrollbar-thumb:active {
 	-webkit-box-shadow: inset 2px 2px 6px rgba(0,0,0,0.8); 
 }
 
-html::-webkit-scrollbar-corner {
-	display: none;
-}
+html::-webkit-scrollbar-button,
+html::-webkit-scrollbar-corner,
 html::-webkit-resizer {
 	display: none;
 }
@@ -74,6 +71,7 @@ html::-webkit-resizer {
 
 .image_manage_bottom {
 	overflow: visible;
+	text-decoration: none;
 }
 
 .image_manage_main > a {
@@ -98,10 +96,6 @@ html::-webkit-resizer {
 .image_manage_ul {
 	margin-top: 20px;
 	list-style: none;
-}
-
-.image_manage_bottom a {
-	text-decoration: none;
 }
 
 body {

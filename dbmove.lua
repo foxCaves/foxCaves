@@ -1,9 +1,9 @@
-dofile(ngx.var.main_root.."/scripts/dbconfig.lua")
-dofile(ngx.var.main_root.."/scripts/dbconfig_mysql.lua")
+dofile(ngx.var.main_root .. "/scripts/dbconfig.lua")
+dofile(ngx.var.main_root .. "/scripts/dbconfig_mysql.lua")
 
 local function print(...)
 	for k,v in pairs({...}) do
-		ngx.print(tostring(v).." ")
+		ngx.print(tostring(v) .. " ")
 	end
 	ngx.print("\n")
 end
@@ -33,9 +33,9 @@ for _,row in pairs(res) do
 	if id > maxuid then maxuid = id end
 	row.id = nil
 	row.totalbytes = nil
-	db_redis:set(dbkeys.USERNAME_TO_ID..row.username:lower(), id)
+	db_redis:set(dbkeys.USERNAME_TO_ID .. row.username:lower(), id)
 	db_redis:sadd(dbkeys.EMAILS, row.email:lower())
-	db_redis:hmset(dbkeys.USERS..id, row)
+	db_redis:hmset(dbkeys.USERS .. id, row)
 end
 db_redis:set(dbkeys.NEXTUSERID, maxuid)
 print("Max UID: ", maxuid)
@@ -44,8 +44,8 @@ res = db_mysql:query("SELECT * FROM files")
 for _,row in pairs(res) do
 	local fileid = row.fileid
 	row.fileid = nil
-	db_redis:zadd(dbkeys.USER_FILES..row.user, tonumber(row.time), fileid)
-	db_redis:hmset(dbkeys.FILES..fileid, row)
+	db_redis:zadd(dbkeys.USER_FILES .. row.user, tonumber(row.time), fileid)
+	db_redis:hmset(dbkeys.FILES .. fileid, row)
 end
 
 res = db_mysql:query("SELECT * FROM usedinvoices")

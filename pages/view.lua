@@ -1,4 +1,4 @@
-dofile(ngx.var.main_root.."/scripts/global.lua")
+dofile(ngx.var.main_root .. "/scripts/global.lua")
 
 local name = ngx.var.REQUEST_URI
 local nameregex = ngx.re.match(name, "view/([a-zA-Z0-9]+)$", "o")
@@ -16,7 +16,7 @@ if not file then
 end
 
 local database = ngx.ctx.database
-local fileowner = database:hget(database.KEYS.USERS..file.user, "username")
+local fileowner = database:hget(database.KEYS.USERS .. file.user, "username")
 
 dofile("scripts/navtbl.lua")
 dofile("scripts/mimetypes.lua")

@@ -1,4 +1,4 @@
-dofile(ngx.var.main_root.."/scripts/global.lua")
+dofile(ngx.var.main_root .. "/scripts/global.lua")
 if ngx.ctx.user then return ngx.redirect("/myaccount") end
 
 local database = ngx.ctx.database
@@ -40,10 +40,10 @@ if args and args.send then
 		if not valid then
 			message = "<div class='alert alert-error'>Error validating your CAPTCHA</div>"
 		else
-			local userid = database:get(database.KEYS.USERNAME_TO_ID..username:lower())
+			local userid = database:get(database.KEYS.USERNAME_TO_ID .. username:lower())
 			local userdata
 			if userid and userid ~= ngx.null then
-				userdata = database:hgetall(database.KEYS.USERS..userid)
+				userdata = database:hgetall(database.KEYS.USERS .. userid)
 			else
 				userid = nil
 			end
@@ -53,7 +53,7 @@ if args and args.send then
 				local emailid
 				for i=1,10 do
 					emailid = randstr(32)
-					local res = database:exists(database.KEYS.EMAILKEYS..emailid)
+					local res = database:exists(database.KEYS.EMAILKEYS .. emailid)
 					if (not res) or (res == ngx.null) or (res == 0) then
 						break
 					else
@@ -64,7 +64,7 @@ if args and args.send then
 				if not emailid then
 					message = "<div class='alert alert-error'>Internal error. Please try again</div>"
 				else
-					local email = "Hello, "..userdata.username.."!\n\nYou have recently requested to "
+					local email = "Hello, " .. userdata.username .. "!\n\nYou have recently requested to "
 					local subject
 					if action == "activation" then
 						email = email .. " have your activation E-Mail resent. To activate your user account"
@@ -73,9 +73,9 @@ if args and args.send then
 						email = email .. " reset your password. To have a random password sent to you E-Mail"
 						subject = "foxCaves - Reset your password"
 					end
-					email = email .. " just click on the following link:\nhttps://foxcav.es/emailcode?"..emailid.."\n\nKind regards,\nfoxCaves Support"
+					email = email .. " just click on the following link:\nhttps://foxcav.es/emailcode?" .. emailid .. "\n\nKind regards,\nfoxCaves Support"
 
-					database:hmset(database.KEYS.EMAILKEYS..emailid, "user", userid, "action", action)
+					database:hmset(database.KEYS.EMAILKEYS .. emailid, "user", userid, "action", action)
 					database:expire(172800) --48 hours
 					
 					message = "<div class='alert alert-warning'>E-Mail sent.</div>"

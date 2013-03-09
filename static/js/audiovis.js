@@ -34,7 +34,7 @@ function audiovisUpdate() {
 	
 	var b1, b0, sum, sc, y;
 	b0 = 0;
-	for(var i=0;i<128;i++) {
+	for(var i=0;i < 128;i++) {
 		sum = 0;
 		b1 = Math.pow(2, i * 10.0 / (128 - 1));
 		
@@ -47,7 +47,8 @@ function audiovisUpdate() {
 		}
 		y = (Math.sqrt(sum / log10(sc)) * 1.7 * SPECHEIGHT) - 4;
 		if(y < 1) y = 1;
-		if(y > SPECHEIGHT) y = SPECHEIGHT;
+		if(y > SPECHEIGHT)
+			y = SPECHEIGHT;
 		
 		snakeWidths[i] = y;
 	}
@@ -81,14 +82,14 @@ function audiovisUpdate() {
 		}
 	}
 
-	for(var i=0;i<allSnakeStates.length;i++) {
+	for(var i = 0;i < allSnakeStates.length;i++) {
 		audiovisUpdateSnake(allSnakeStates[i], speed);
 	}
 }
 
 function audiovisUpdateSnake(cSnake, speed) {
 	var cPos, cPosNext;
-	for(var i=0;i<128;i++) {
+	for(var i = 0;i < 128;i++) {
 		cPos = cSnake.positions[i];
 		cPosNext = cSnake.positions[i + 1];
 		
@@ -156,7 +157,7 @@ function snakeMergeDoMovement(cSnake) {
 	cSnake.targetAngle = cSnake.targetSnake.targetAngle;
 	cSnake.angle = cSnake.targetSnake.angle;
 	if(cSnake.mergeFrames > 130) {
-		for(var i=0;i<allSnakeStates.length;i++) {
+		for(var i = 0;i < allSnakeStates.length;i++) {
 			if(allSnakeStates[i].id == cSnake.id) {
 				allSnakeStates.splice(i, 1);
 				break;
@@ -239,7 +240,7 @@ function makeSnake(bx, by) {
 	if(!by)
 		by = (Math.random() * (canvasMaxY - TURNSPACE)) + TURNSPACE;
 	
-	for(var i=0;i<129;i++) {
+	for(var i = 0;i < 129;i++) {
 		cSnake.positions.push({x: bx, y: by});
 	}
 	
@@ -288,11 +289,11 @@ $(document).ready(function() {
 	
 	dancer = new Dancer();
 	
-	for(var j=0;j<2;j++) {
+	for(var j = 0;j < 2;j++) {
 		makeSnake();
 	}
 	
-	for(var i=0;i<129;i++) {
+	for(var i = 0;i < 129;i++) {
 		snakeColors.push("rgb(0, 255, 0)");
 		snakeWidths.push(0);
 	}
@@ -301,7 +302,7 @@ $(document).ready(function() {
 		onKick: function() {
 			snakeColors[0] = "rgb(255, 0, 255)";
 			
-			for(var j=0;j<allSnakeStates.length;j++) {
+			for(var j = 0;j < allSnakeStates.length;j++) {
 				var cSnake = allSnakeStates[j];
 				if(!cSnake.angleLock) {
 					cSnake.angle += (Math.random() * Math.PI) - MathPIHalf;

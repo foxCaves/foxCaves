@@ -67,7 +67,7 @@ $(document).ready(function(){
 	function messageReceived(text, id, channel) {
 		var cmds = text.split("|");
 
-		for(var i=0;i<cmds.length;i++) {
+		for(var i = 0;i < cmds.length;i++) {
 			var action = cmds[i].trim();
 
 			if(action == "")
@@ -76,7 +76,7 @@ $(document).ready(function(){
 			var param = action.substr(1);
 			action = action.charAt(0);
 
-			for(var j=0;j<pushHandlers.length;j++)
+			for(var j = 0;j < pushHandlers.length;j++)
 				if(pushHandlers[j](action, param))
 					break;
 		}

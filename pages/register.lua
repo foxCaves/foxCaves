@@ -1,4 +1,4 @@
-dofile(ngx.var.main_root.."/scripts/global.lua")
+dofile(ngx.var.main_root .. "/scripts/global.lua")
 if ngx.ctx.user then return ngx.redirect("/myaccount") end
 --do ngx.print("Disabled") return ngx.eof() end
 
@@ -46,9 +46,9 @@ if args and args.register then
 				else
 
 					local emailid
-					for i=1,10 do
+					for i=1, 10 do
 						emailid = randstr(32)
-						local res = database:exists(database.KEYS.EMAILKEYS..emailid)
+						local res = database:exists(database.KEYS.EMAILKEYS .. emailid)
 						if (not res) or (res == ngx.null) or (res == 0) then
 							break
 						else
@@ -61,15 +61,15 @@ if args and args.register then
 					else
 						local userid = database:incr(database.KEYS.NEXTUSERID)
 					
-						database:hmset(database.KEYS.USERS..userid, "username", args.username, "email", email, "password", ngx.hmac_sha1(args.username, args.password))
+						database:hmset(database.KEYS.USERS .. userid, "username", args.username, "email", email, "password", ngx.hmac_sha1(args.username, args.password))
 						database:sadd(database.KEYS.EMAILS, email:lower())
-						database:set(database.KEYS.USERNAME_TO_ID..args.username:lower(), userid)
+						database:set(database.KEYS.USERNAME_TO_ID .. args.username:lower(), userid)
 						
-						local email_text = "Hello, "..args.username.."!\n\nYou have recently registered on foxCaves.\nPlease click the following link to activate your account:\n"
-						email_text = email_text .. "https://foxcav.es/emailcode?"..emailid.."\n\n"
+						local email_text = "Hello, " .. args.username .. "!\n\nYou have recently registered on foxCaves.\nPlease click the following link to activate your account:\n"
+						email_text = email_text .. "https://foxcav.es/emailcode?" .. emailid .. "\n\n"
 						email_text = email_text .. "Kind regards,\nfoxCaves Support"
 
-						database:hmset(database.KEYS.EMAILKEYS..emailid, "user", userid, "action", "activation")
+						database:hmset(database.KEYS.EMAILKEYS .. emailid, "user", userid, "action", "activation")
 						database:expire(172800) --48 hours
 
 						ses_mail(email, "foxCaves - Welcome!", email_text, "noreply@foxcav.es", "foxCaves")

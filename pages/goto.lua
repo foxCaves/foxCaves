@@ -1,4 +1,4 @@
-dofile(ngx.var.main_root.."/scripts/global.lua")
+dofile(ngx.var.main_root .. "/scripts/global.lua")
 
 local name = ngx.var.REQUEST_URI
 local nameregex = ngx.re.match(name, "g/([a-zA-Z0-9]+)$", "o")
@@ -11,7 +11,7 @@ nameregex = nameregex[1]
 
 local database = ngx.ctx.database
 
-local link = database:get(database.KEYS.LINKS..nameregex)
+local link = database:get(database.KEYS.LINKS .. nameregex)
 if (not link) or (link == ngx.null) then
 	return ngx.exec("/error/404")
 end

@@ -189,7 +189,7 @@ function refreshFiles() {
 	$.get('/api/list?idonly', function(data) {
 		var files = data.split("\n");
 		var files_rev = new Array();
-		for(var i=0;i<files.length;i++) {
+		for(var i = 0;i < files.length;i++) {
 			var fileid = files[i];
 			if(!fileid || fileid == "")
 				continue;
@@ -350,7 +350,7 @@ function setupOptionMenu() {
 
 	handleBase64Request = function(event) {
 		var fileName = getFileLIFromEvt(event).getAttribute("data-file-id");
-		$.get("/api/base64?"+fileName, function(data) {
+		$.get("/api/base64?" + fileName, function(data) {
 			var text = document.createElement("textarea");
 			text.rows = "20";
 			text.cols = "100";
@@ -362,7 +362,7 @@ function setupOptionMenu() {
 }
 
 function hasValidType(types) {
-	for(var i=0;types.length>i;++i)
+	for(var i = 0;types.length > i;++i)
 		if(types[i] == "text/plain")
 			return true;
 	return false;
@@ -413,7 +413,7 @@ function setupMassOperations() {
 			count++;
 		});
 		
-		if(!confirm("Are you sure you want to "+operation+" all selected("+count+") files?"))
+		if(!confirm("Are you sure you want to " + operation + " all selected(" + count + ") files?"))
 			return
 		
 		$.ajax({

@@ -43,7 +43,7 @@ var localUser = {
 			networking.sendDrawEvent(EVENT_BRUSH, brush);
 		},
 		setBrushAttribsLocal: function() {
-			backgroundCanvasCTX.lineWidth = this.width*scaleFactor;
+			backgroundCanvasCTX.lineWidth = this.width * scaleFactor;
 			if(localUser.brushData.brush && localUser.brushData.brush.keepBackgroundStrokeStyle != true)
 				backgroundCanvasCTX.strokeStyle = this.color;
 			backgroundCanvasCTX.fillStyle = this.color;
@@ -51,7 +51,7 @@ var localUser = {
 			foregroundCanvasCTX.strokeStyle = this.color;
 			foregroundCanvasCTX.fillStyle = this.color;
 			if(localUser.brushData.brush && localUser.brushData.brush.keepLineWidth != true)
-				foregroundCanvasCTX.lineWidth = this.width*scaleFactor;
+				foregroundCanvasCTX.lineWidth = this.width * scaleFactor;
 		}
 	},
 	cursorData: {
@@ -87,7 +87,7 @@ var paintBrushes = {
 	rectangle: {
 		select: function(user, foregroundCanvasCTX, backgroundCanvasCTX) {
 			backgroundCanvasCTX.lineCap = "butt";
-			foregroundCanvasCTX.lineWidth = user.brushData.width*scaleFactor;
+			foregroundCanvasCTX.lineWidth = user.brushData.width * scaleFactor;
 		},
 		down: function(x, y, user) {
 			user.cursorData.lastX = x;
@@ -115,7 +115,7 @@ var paintBrushes = {
 	circle: {
 		select: function(user, foregroundCanvasCTX, backgroundCanvasCTX) {
 			backgroundCanvasCTX.lineCap = "butt";
-			foregroundCanvasCTX.lineWidth = user.brushData.width*scaleFactor;
+			foregroundCanvasCTX.lineWidth = user.brushData.width * scaleFactor;
 		},
 		down: function(x, y, user) {
 			this.active = true;
@@ -132,7 +132,7 @@ var paintBrushes = {
 			backgroundCanvasCTX.beginPath();
 			x = user.cursorData.lastX - x;
 			y = user.cursorData.lastY - y;
-			backgroundCanvasCTX.arc(user.cursorData.lastX, user.cursorData.lastY, Math.sqrt(x*x + y*y), 0, MathPI2, false);
+			backgroundCanvasCTX.arc(user.cursorData.lastX, user.cursorData.lastY, Math.sqrt(x * x + y * y), 0, MathPI2, false);
 			backgroundCanvasCTX.stroke();
 			this.active = false;
 		},
@@ -145,14 +145,14 @@ var paintBrushes = {
 			foregroundCanvasCTX.beginPath();
 			x = user.cursorData.lastX - x;
 			y = user.cursorData.lastY - y;
-			foregroundCanvasCTX.arc(user.cursorData.lastX, user.cursorData.lastY, Math.sqrt(x*x + y*y), 0, MathPI2, false);
+			foregroundCanvasCTX.arc(user.cursorData.lastX, user.cursorData.lastY, Math.sqrt(x * x + y * y), 0, MathPI2, false);
 			foregroundCanvasCTX.stroke();
 		}
 	},
 	brush: {
 		keepLineWidth: true,
 		select: function(user, foregroundCanvasCTX, backgroundCanvasCTX) {
-			foregroundCanvasCTX.lineWidth = 1/scaleFactor;
+			foregroundCanvasCTX.lineWidth = 1 / scaleFactor;
 		},
 		down: function(x, y, user) {
 			user.cursorData.lastX = x;
@@ -179,14 +179,14 @@ var paintBrushes = {
 		},
 		preview: function(x, y, user, foregroundCanvasCTX) {
 			foregroundCanvasCTX.beginPath();
-			foregroundCanvasCTX.arc(x, y, (user.brushData.width/2)*scaleFactor, 0, 2*Math.PI);
+			foregroundCanvasCTX.arc(x, y, (user.brushData.width / 2 ) * scaleFactor, 0, MathPI2);
 			foregroundCanvasCTX.stroke();
 		}
 	},
 	erase: {
 		keepLineWidth: true,
 		select: function(user, foregroundCanvasCTX, backgroundCanvasCTX) {
-			foregroundCanvasCTX.lineWidth = 1/scaleFactor;
+			foregroundCanvasCTX.lineWidth = 1 / scaleFactor;
 			foregroundCanvasCTX.strokeStyle = "black";
 		},
 		down: function(x, y, user) {
@@ -213,7 +213,7 @@ var paintBrushes = {
 		},
 		preview: function(x, y, user, foregroundCanvasCTX) {
 			foregroundCanvasCTX.beginPath();
-			foregroundCanvasCTX.arc(x, y, (user.brushData.width/2)*scaleFactor, 0, 2*Math.PI);
+			foregroundCanvasCTX.arc(x, y, (user.brushData.width / 2 ) * scaleFactor, 0, MathPI2);
 			foregroundCanvasCTX.stroke();
 		}
 	},
@@ -221,7 +221,7 @@ var paintBrushes = {
 		keepLineWidth: true,
 		keepBackgroundStrokeStyle: true,
 		select: function(user, foregroundCanvasCTX, backgroundCanvasCTX) {
-			foregroundCanvasCTX.lineWidth = 1/scaleFactor;
+			foregroundCanvasCTX.lineWidth = 1 / scaleFactor;
 			foregroundCanvasCTX.strokeStyle = "black";
 		},
 		down: function(x, y, user) {
@@ -238,7 +238,7 @@ var paintBrushes = {
 		},
 		move: function(x, y, user, backgroundCanvasCTX) {
 			backgroundCanvasCTX.strokeStyle = imagePattern;
-			backgroundCanvasCTX.lineWidth = user.brushData.width*scaleFactor;
+			backgroundCanvasCTX.lineWidth = user.brushData.width * scaleFactor;
 			backgroundCanvasCTX.lineCap = "round";
 			
 			backgroundCanvasCTX.beginPath();
@@ -250,7 +250,7 @@ var paintBrushes = {
 		},
 		preview: function(x, y, user, foregroundCanvasCTX) {
 			foregroundCanvasCTX.beginPath();
-			foregroundCanvasCTX.arc(x, y, (user.brushData.width/2)*scaleFactor, 0, 2*Math.PI);
+			foregroundCanvasCTX.arc(x, y, (user.brushData.width / 2) * scaleFactor, 0, MathPI2);
 			foregroundCanvasCTX.stroke();
 		}
 	},
@@ -320,7 +320,7 @@ var paintBrushes = {
 		down: function() {
 		},
 		up: function(x, y, user, backgroundCanvasCTX) {
-			backgroundCanvasCTX.font = (scaleFactor * user.brushData.width) + "px "+user.brushData.customData.text.font;
+			backgroundCanvasCTX.font = (scaleFactor * user.brushData.width) + "px " + user.brushData.customData.text.font;
 			backgroundCanvasCTX.textAlign = "left";
 			backgroundCanvasCTX.textBaseline = "top";
 			backgroundCanvasCTX.fillText(
@@ -333,7 +333,7 @@ var paintBrushes = {
 			return true;
 		},
 		preview: function(x, y, user, foregroundCanvasCTX) {
-			foregroundCanvasCTX.font = (scaleFactor * user.brushData.width) + "px "+user.brushData.customData.text.font;
+			foregroundCanvasCTX.font = (scaleFactor * user.brushData.width) + "px " + user.brushData.customData.text.font;
 			foregroundCanvasCTX.fillText(
 				user.brushData.customData.text.text,
 				x,
@@ -388,7 +388,7 @@ var paintBrushes = {
 				return;
 			backgroundCanvasCTX.beginPath();
 				backgroundCanvasCTX.moveTo(verts[0].x, verts[0].y);
-			for(var i = 1;verts.length>i;++i)
+			for(var i = 1;verts.length > i;++i)
 				backgroundCanvasCTX.lineTo(verts[i].x, verts[i].y);
 			backgroundCanvasCTX.lineTo(verts[0].x, verts[0].y);
 			backgroundCanvasCTX.fill();
@@ -442,8 +442,8 @@ var liveDrawInput = {
 		
 		setOffsetXAndY(event);
 		
-		var sendX = event.myOffsetX/scaleFactor;
-		var sendY = event.myOffsetY/scaleFactor;
+		var sendX = event.myOffsetX / scaleFactor;
+		var sendY = event.myOffsetY / scaleFactor;
 		
 		if(!localUser.brushData.brush.down(event.myOffsetX, event.myOffsetY, localUser))
 			networking.sendBrushEvent(EVENT_MOUSE_DOWN, sendX, sendY);
@@ -460,8 +460,8 @@ var liveDrawInput = {
 			return
 		this.isDrawing = false;
 		
-		var sendX = event.myOffsetX/scaleFactor;
-		var sendY = event.myOffsetY/scaleFactor;
+		var sendX = event.myOffsetX / scaleFactor;
+		var sendY = event.myOffsetY / scaleFactor;
 		
 		if(!localUser.brushData.brush.up(event.myOffsetX, event.myOffsetY, localUser, backgroundCanvasCTX))
 			networking.sendBrushEvent(EVENT_MOUSE_UP, sendX, sendY);
@@ -479,8 +479,8 @@ var liveDrawInput = {
 		this.cursorX = event.myOffsetX;
 		this.cursorY = event.myOffsetY;
 		
-		var sendX = event.myOffsetX/scaleFactor;
-		var sendY = event.myOffsetY/scaleFactor;
+		var sendX = event.myOffsetX / scaleFactor;
+		var sendY = event.myOffsetY / scaleFactor;
 		
 		if(!this.isDrawing) {
 			networking.sendBrushEvent(EVENT_MOUSE_CURSOR, sendX, sendY);
@@ -495,11 +495,11 @@ var liveDrawInput = {
 	mouseScroll: function(event) {
 		var delta;
 		if ('wheelDelta' in event)
-			delta = sign(event.wheelDelta)*2;
+			delta = sign(event.wheelDelta) * 2;
 		else
-			delta = sign(-event.detail)*2;
+			delta = sign(-event.detail) * 2;
 			
-		localUser.brushData.setWidth(clamp(localUser.brushData.width+delta, 1, maxBrushWidth))
+		localUser.brushData.setWidth(clamp(localUser.brushData.width + delta, 1, maxBrushWidth))
 		event.preventDefault();
 		//return false;
 	},
@@ -512,8 +512,8 @@ var liveDrawInput = {
 		this.cursorX = event.myOffsetX;
 		this.cursorY = event.myOffsetY;
 		
-		var sendX = event.myOffsetX/scaleFactor;
-		var sendY = event.myOffsetY/scaleFactor;
+		var sendX = event.myOffsetX / scaleFactor;
+		var sendY = event.myOffsetY / scaleFactor;
 			
 		event.preventDefault();
 		networking.sendBrushEvent(EVENT_MOUSE_DOUBLE_CLICK, sendX, sendY);
@@ -526,7 +526,7 @@ var liveDrawInterface = {
 		/*xhr.upload.addEventListener("loadstart", uploadStart, false);
 		xhr.upload.addEventListener("progress", uploadProgress, false);*/
 		xhr.upload.addEventListener("load", function(ev){ console.log("Upload complete"); }, false);
-		xhr.open("PUT", "/api/create?"+escape(LIVEDRAW_FILEID + "-edited.png"));//LIVEDRAW_FILEID defined in love.tpl
+		xhr.open("PUT", "/api/create?" + escape(LIVEDRAW_FILEID + "-edited.png"));//LIVEDRAW_FILEID defined in love.tpl
 		xhr.setRequestHeader("x-is-base64","yes");
 		xhr.send(finalCanvas.toDataURL("image/png").replace(/^data:image\/png;base64,/, "").replace(/[\r\n]/g,""));
 	}
@@ -567,8 +567,8 @@ var networking = {
 						customData: {}
 					},
 					cursorData: {
-						x: parseFloat(payload[5])*scaleFactor,
-						y: parseFloat(payload[6])*scaleFactor,
+						x: parseFloat(payload[5]) * scaleFactor,
+						y: parseFloat(payload[6]) * scaleFactor,
 						lastX: 0,
 						lastY: 0
 					},  	
@@ -590,7 +590,7 @@ var networking = {
 				break;
 			case EVENT_IMGBURST:
 				if(payload[0] == "r")
-					this.sendDrawEvent(EVENT_IMGBURST, payload[1]+"|"+finalCanvas.toDataURL("image/png").replace(/[\r\n]/g,"")+"|");
+					this.sendDrawEvent(EVENT_IMGBURST, payload[1] + "|" + finalCanvas.toDataURL("image/png").replace(/[\r\n]/g,"") + "|");
 				else if(payload[1] == "a") {
 					var toSet = new Image();
 					toSet.onload = function() {
@@ -608,14 +608,14 @@ var networking = {
 		this.sendRaw(eventype + payload);
 	},
 	sendBrushEvent: function(eventype, x, y) {
-		this.sendDrawEvent(eventype, x+"|"+y);
+		this.sendDrawEvent(eventype, x + "|" + y);
 	},
 	recvDrawEvent: function(eventype, payload) {
 		var from = paintUsers[payload[0]];
 		switch(eventype) {
 			case EVENT_MOUSE_CURSOR:
-				from.cursorData.x = parseFloat(payload[1])*scaleFactor;
-				from.cursorData.y = parseFloat(payload[2])*scaleFactor;
+				from.cursorData.x = parseFloat(payload[1]) * scaleFactor;
+				from.cursorData.y = parseFloat(payload[2]) * scaleFactor;
 				break;
 			case EVENT_MOUSE_MOVE:
 			case EVENT_MOUSE_DOWN:
@@ -648,7 +648,7 @@ var networking = {
 		from.cursorData.y = y;
 		
 		var brush = from.brushData.brush;
-		backgroundCanvasCTX.lineWidth = from.brushData.width*scaleFactor;//Needed in order to draw correctly
+		backgroundCanvasCTX.lineWidth = from.brushData.width * scaleFactor;//Needed in order to draw correctly
 		backgroundCanvasCTX.strokeStyle = from.brushData.color;
 		backgroundCanvasCTX.fillStyle = from.brushData.color;
 		
@@ -681,7 +681,7 @@ var networking = {
 		var webSocket = new WebSocket("wss://foxcav.es:8002/", "paint");
 		
 		webSocket.onmessage = function(event) {
-			var data = webSocket_buffer+event.data;
+			var data = webSocket_buffer + event.data;
 			var datalen = data.length;
 			if(data.charAt(datalen - 1) != "\n") {
 				datalen = data.lastIndexOf("\n");
@@ -695,7 +695,7 @@ var networking = {
 			}
 			
 			data = data.split("\n");
-			for(var i=0;i<data.length;i++)
+			for(var i = 0;i < data.length;i++)
 				networking.recvRaw(data[i]);
 		};
 		
@@ -707,7 +707,7 @@ var networking = {
 		}
 		
 		webSocket.onopen = function(event) {
-			networking.sendDrawEvent(EVENT_JOIN, SESSIONID+"|"+LIVEDRAW_FILEID+"|"+LIVEDRAW_SID);
+			networking.sendDrawEvent(EVENT_JOIN, SESSIONID + "|" + LIVEDRAW_FILEID + "|" + LIVEDRAW_SID);
 			localUser.brushData.setColor("black");
 			localUser.brushData.setWidth(10.0);
 			localUser.brushData.setBrush("brush");
@@ -722,7 +722,7 @@ var networking = {
 		msg = msg.trim();
 		if(msg.length == 0)
 			return;
-		this.socket.send(msg+"\n");
+		this.socket.send(msg + "\n");
 	}
 }
 
@@ -732,6 +732,7 @@ function paintCanvas() {
 	requestAnimationFrame(paintCanvas);
 	if(!localUser.brushData.brush)
 		return;
+		
 	foregroundCanvasCTX.clearRect(0, 0, foregroundCanvas.width, foregroundCanvas.height);
 	
 	localUser.brushData.brush.select(localUser, foregroundCanvasCTX, backgroundCanvasCTX);
@@ -742,7 +743,7 @@ function paintCanvas() {
 	
 	var user;
 	
-	for(var i=0;i<paintUsers.length;++i)
+	for(var i= 0 ;i < paintUsers.length;++i)
 		if(paintUsers[i]) {
 			user = paintUsers[i];
 				
@@ -778,15 +779,15 @@ function loadImage() {
 		else
 			scaleFactor = 1.00;
 			
-		defaultFont = (12/scaleFactor)+"px Verdana";
+		defaultFont = (12 / scaleFactor) + "px Verdana";
 		
 		networking.connect();
 		
 		backgroundCanvas.width = foregroundCanvas.width = finalCanvas.width = this.width;
 		backgroundCanvas.height = foregroundCanvas.height = finalCanvas.height = this.height;
 		
-		finalCanvas.style.width = (finalCanvas.width*scaleFactor)+"px";
-		finalCanvas.style.height = (finalCanvas.height*scaleFactor)+"px";
+		finalCanvas.style.width = (finalCanvas.width * scaleFactor) + "px";
+		finalCanvas.style.height = (finalCanvas.height * scaleFactor) + "px";
 		
 		canvasPos = $(finalCanvas).position();
 		
@@ -844,7 +845,7 @@ function setupColorSelector() {
 			hlSelector.style.outlineColor =
 			sSelector.style.outlineColor =
 			oSelector.style.outlineColor =
-			"hsla("+h+", "+s+"%, "+l+"%, "+o+")"
+			"hsla(" + h + ", " + s + "%, " + l + "%, " + o + ")"
 		);
 	}
 	var hlSelectorMouseMoveListener;
@@ -857,13 +858,15 @@ function setupColorSelector() {
 		if(!hlSelectorDown)
 			return;
 	
-		hue = (event.offsetX/this.offsetWidth)*360;
-		lightness = (event.offsetY/this.offsetHeight)*100;
-		sSelector.style.backgroundImage = "-webkit-linear-gradient(top, hsl("+hue+", 100%, "+lightness+"%), hsl("+hue+", 0%, "+lightness+"%))";
-		oSelector.style.backgroundImage = "-webkit-linear-gradient(top, hsl("+hue+", 100%, "+lightness+"%), hsla("+hue+", 0%, "+lightness+"%, "+opacity+"))";
+		hue = (event.offsetX / this.offsetWidth) * 360;
+		lightness = (event.offsetY / this.offsetHeight) * 100;
 		
-		hlSelectorMarker.style.left = (event.offsetX-5)+"px";
-		hlSelectorMarker.style.top = (event.offsetY-5)+"px";
+		var buildStr = "-webkit-linear-gradient(top, hsl(" + hue + ", 100%, " + lightness + "%), hsl";
+		sSelector.style.backgroundImage = buildStr + "(" + hue + ", 0%, " + lightness + "%))";
+		oSelector.style.backgroundImage = buildStr + "a(" + hue + ", 0%, " + lightness + "%, " + opacity + "))";
+		
+		hlSelectorMarker.style.left = (event.offsetX - 5) + "px";
+		hlSelectorMarker.style.top = (event.offsetY - 5) + "px";
 		
 		setHSLColor(hue, saturisation, lightness, opacity);
 	});
@@ -874,13 +877,13 @@ function setupColorSelector() {
 		if(!sSelectorDown)
 			return;
 			
-		saturisation = (1-event.offsetY/this.offsetHeight)*100;
+		saturisation = (1 - event.offsetY / this.offsetHeight) * 100;
 		
-		sSelectorMarker.style.top = event.offsetY+"px";
+		sSelectorMarker.style.top = event.offsetY + "px";
 		
 		hlSelector.style.backgroundImage="-webkit-linear-gradient(top, black, transparent, white),\
-		-webkit-linear-gradient(left, hsl(0, "+saturisation+"%, 50%), hsl(60, "+saturisation+"%, 50%), hsl(120, "+saturisation+"%, 50%),\
-		hsl(180, "+saturisation+"%, 50%), hsl(240, "+saturisation+"%, 50%), hsl(300, "+saturisation+"%, 50%), hsl(0, "+saturisation+"%, 50%))";
+		-webkit-linear-gradient(left, hsl(0, " + saturisation + "%, 50%), hsl(60, " + saturisation + "%, 50%), hsl(120, " + saturisation + "%, 50%),\
+		hsl(180, " + saturisation + "%, 50%), hsl(240, " + saturisation + "%, 50%), hsl(300, " + saturisation + "%, 50%), hsl(0, " + saturisation + "%, 50%))";
 		
 		setHSLColor(hue, saturisation, lightness, opacity);
 	});
@@ -891,9 +894,9 @@ function setupColorSelector() {
 		if(!oSelectorDown)
 			return;
 			
-		opacity = (1-event.offsetY/this.offsetHeight);
+		opacity = (1 - event.offsetY / this.offsetHeight);
 		
-		oSelectorMarker.style.top = event.offsetY+"px";
+		oSelectorMarker.style.top = event.offsetY + "px";
 		
 		setHSLColor(hue, saturisation, lightness, opacity);
 	});

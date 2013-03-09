@@ -122,7 +122,8 @@ input[type="url"],
 input[type="search"],
 input[type="tel"],
 input[type="color"],
-.uneditable-input {
+.uneditable-input,
+#pdf-view {
 	border-color: #B333E5;
 }
 
@@ -175,10 +176,6 @@ video {
 #uploader.hover {
 	border-color: #B333E5;
 	color: #B333E5;
-}
-
-#pdf-view {
-	border-color: #B333E5;
 }
 
 .image_manage_main {

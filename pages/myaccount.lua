@@ -1,4 +1,4 @@
-dofile(ngx.var.main_root.."/scripts/global.lua")
+dofile(ngx.var.main_root .. "/scripts/global.lua")
 if not ngx.ctx.user then return ngx.redirect("/login") end
 
 local database = ngx.ctx.database
@@ -8,7 +8,7 @@ local args = ngx.req.get_uri_args()
 if(args and args.setstyle) then
 	local style = args.setstyle
 	if(style == "purple_fox" or style == "red_fox" or style == "arctic_fox") then
-		database:hset(database.KEYS.USERS..ngx.ctx.user.id, "style", style)
+		database:hset(database.KEYS.USERS .. ngx.ctx.user.id, "style", style)
 		if(args.js) then
 			ngx.print("success")
 			return ngx.eof()
@@ -34,7 +34,7 @@ if args and args.old_password then
 			message = "<div class='alert alert-error'>Password and confirmation do not match</div>"
 		else
 			local newpw = ngx.hmac_sha1(ngx.ctx.user.username, args.password)
-			database:hset(database.KEYS.USERS..ngx.ctx.user.id, "password", newpw)
+			database:hset(database.KEYS.USERS .. ngx.ctx.user.id, "password", newpw)
 			message = "<div class='alert alert-success'>Password changed</div>"
 			ngx.ctx.user.password = newpw
 			ngx.ctx.make_new_login_key()
@@ -51,7 +51,7 @@ if args and args.old_password then
 			else
 				database:sadd(database.KEYS.EMAILS, args.email:lower())
 				database:srem(database.KEYS.EMAILS, ngx.ctx.user.email:lower())
-				database:hset(database.KEYS.USERS..ngx.ctx.user.id, "email", args.email)
+				database:hset(database.KEYS.USERS .. ngx.ctx.user.id, "email", args.email)
 				message = "<div class='alert alert-success'>E-Mail changed</div>"
 				ngx.ctx.user.email = args.email
 			end

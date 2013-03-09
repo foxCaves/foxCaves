@@ -12,7 +12,7 @@ local string_format = string.format
 local time = os.time
 
 local lfs = require("lfs")
-lfs.chdir("..")
+lfs.chdir(" .. ")
 local websockets = require("websockets")
 local redis = require("redis")
 lfs = nil
@@ -54,13 +54,13 @@ G = nil
 database_ping()
 
 local function explode(div,str) -- credit: http://richard.warburton.it
-	local pos,arr = 0,{}
+	local pos, arr = 0, {}
 	-- for each divider found
-	for st,sp in function() return str:find(div,pos,true) end do
+	for st, sp in function() return str:find(div,pos,true) end do
 		table_insert(arr,str:sub(pos,st-1)) -- Attach chars left of current divider
 		pos = sp + 1 -- Jump past current divider
 	end
-	table_insert(arr,str:sub(pos)) -- Attach chars right of last divider
+	table_insert(arr, str:sub(pos)) -- Attach chars right of last divider
 	return arr
 end
 
@@ -101,7 +101,7 @@ local valid_brushes = {
 	polygon = true
 }
 
-local chr_a,chr_f,chr_0,chr_9 = ("af09"):byte(1,4)
+local chr_a, chr_f, chr_0, chr_9 = ("af09"):byte(1, 4)
 
 local event_handlers = {
 	[EVENT_BRUSH] = function(user, data)
@@ -135,7 +135,7 @@ local event_handlers = {
 	end,
 	--[[[EVENT_IMGBURST] = function(user, data)
 		local other = user.ws_data[tonumber(data[1])]
-		other:send(EVENT_IMGBURST.."a|"..data[2].."|")
+		other:send(EVENT_IMGBURST .. "a|" .. data[2] .. "|")
 		return false
 	end,]]
 	[EVENT_LEAVE] = function(user, data)
@@ -156,11 +156,11 @@ local event_handlers = {
 		local tempvar = data[1]
 		if tempvar ~= "GUEST" then
 			--Session => User
-			local result = database:get(database.KEYS.SESSIONS..tempvar)
+			local result = database:get(database.KEYS.SESSIONS .. tempvar)
 			if not result then
 				error("Invalid session")
 			end
-			result = database:hget(database.KEYS.USERS..result, "username")
+			result = database:hget(database.KEYS.USERS .. result, "username")
 			if not result then
 				error("Invalid user")
 			end
@@ -174,7 +174,7 @@ local event_handlers = {
 		user.ws_data = ws_data_global[user.globkey]
 		if not user.ws_data then
 			--Sanity check for the FileID
-			local result = database:hget(database.KEYS.FILES..tempvar, "type")
+			local result = database:hget(database.KEYS.FILES .. tempvar, "type")
 			if (not result) or tonumber(result) ~= 1  then
 				error("Invalid FileID")
 			end
@@ -206,18 +206,27 @@ local event_handlers = {
 		user.ws_data[wsid] = user
 		
 		--local imgburst_found = false
-		for uid,udata in next, user.ws_data do
+		for uid, udata in next, user.ws_data do
 			if uid ~= wsid then
 				if udata.name == user.name then
-					udata:send(EVENT_ERROR.."Logged in from another location")
+					udata:send(EVENT_ERROR .. "Logged in from another location")
 					udata:kick()
 				else
-					user:send(string_format("%s%i|%s|%i|%s|%s|%i|%i",EVENT_JOIN,
-						udata.id,udata.name,(udata.width or 0),(udata.color or "000"),(udata.brush or "brush"),(udata.cursorX or 0),(udata.cursorY or 0)
+					user:send(
+						string_format(
+							"%s%i|%s|%i|%s|%s|%i|%i",
+							EVENT_JOIN,
+							udata.id,
+							udata.name,
+							(udata.width or 0),
+							(udata.color or "000"),
+							(udata.brush or "brush"),
+							(udata.cursorX or 0),
+							(udata.cursorY or 0)
 					))
 					--[[if uid ~= user.id and not imgburst_found then
 						imgburst_found = true
-						user:send(EVENT_IMGBURST.."r|"..user.id.."|")
+						user:send(EVENT_IMGBURST .. "r|" .. user.id .. "|")
 					end]]
 				end				
 			end
@@ -226,8 +235,14 @@ local event_handlers = {
 		user.historyburst = true
 		print("Join: ", user.name, user.id, user.image, user.drawingsession)		
 		
-		return string_format("%s|%i|%s|%s|%i|%i",
-			user.name,(user.width or 0),(user.color or "000"),(user.brush or "brush"),(user.cursorX or 0),(user.cursorY or 0)
+		return string_format(
+			"%s|%i|%s|%s|%i|%i",
+			user.name,
+			user.width or 0,
+			user.color or "000",
+			user.brush or "brush",
+			user.cursorX or 0,
+			user.cursorY or 0
 		)
 	end
 }
@@ -238,7 +253,7 @@ event_handlers[EVENT_MOUSE_DOUBLE_CLICK] = event_handlers[EVENT_MOUSE_CURSOR]
 do
 	local evthdl = event_handlers
 	event_handlers = {}
-	for k,v in next, evthdl do
+	for k, v in next, evthdl do
 		event_handlers[k:byte()] = v
 	end
 end
@@ -248,9 +263,10 @@ USERMETA = {}
 USERMETA.__index = USERMETA
 function USERMETA:send(data)
 	if self.socket then
-		self.socket:write(data.."\n", websockets.WRITE_TEXT)
+		self.socket:write(data .. "\n", websockets.WRITE_TEXT)
 	end
 end
+
 function USERMETA:kick()
 	if self.id then
 		self.ws_data[self.id] = nil
@@ -305,7 +321,7 @@ function USERMETA:event_received(ws, rawdata)
 	end
 	
 	if (evid == cEVENT_JOIN) == self.isjoined then
-		error("Invalid state for this packet: "..evid.."|"..tostring(self.isjoined))
+		error("Invalid state for this packet: " .. evid .. "|" .. tostring(self.isjoined))
 	else
 		local evthandl = event_handlers[evid]
 		if evthandl then
@@ -316,7 +332,7 @@ function USERMETA:event_received(ws, rawdata)
 				rawdata = ret
 			end
 		else
-			error("Invalid packet: "..evid)
+			error("Invalid packet: " .. evid)
 		end
 	end
 	if not self.id then return end
@@ -330,7 +346,7 @@ function USERMETA:event_received(ws, rawdata)
 end
 
 function USERMETA:socket_onrecv(ws, data)
-	data = self.databuff..data
+	data = self.databuff .. data
 	local datalen = data:len()
 	if data:sub(datalen, datalen) ~= "\n" then
 		datalen = nil
@@ -354,7 +370,7 @@ function USERMETA:socket_onrecv(ws, data)
 			local isok, err = pcall(self.event_received, self, ws, v)
 			if not isok then
 				print("EVTErr: ", err)
-				self:send(EVENT_ERROR..err)
+				self:send(EVENT_ERROR .. err)
 				self:kick()
 			end
 		end

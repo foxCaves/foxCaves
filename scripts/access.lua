@@ -12,6 +12,7 @@ ngx.ctx.LOGIN_SUCCESS = 1
 ngx.ctx.LOGIN_USER_INACTIVE = 0
 ngx.ctx.LOGIN_USER_BANNED = -1
 ngx.ctx.LOGIN_BAD_PASSWORD = -10
+
 function ngx.ctx.login(username_or_id, password, nosession, login_with_id)
 	if ngx.ctx.user then return ngx.ctx.LOGIN_SUCCESS end
 
@@ -20,13 +21,13 @@ function ngx.ctx.login(username_or_id, password, nosession, login_with_id)
 	end
 	
 	if not login_with_id then
-		username_or_id = database:get(database.KEYS.USERNAME_TO_ID..username_or_id:lower())
+		username_or_id = database:get(database.KEYS.USERNAME_TO_ID .. username_or_id:lower())
 		if (not username_or_id) or (username_or_id == ngx.null) then
 			return ngx.ctx.LOGIN_BAD_PASSWORD
 		end
 	end
 	
-	local result = database:hgetall(database.KEYS.USERS..username_or_id)
+	local result = database:hgetall(database.KEYS.USERS .. username_or_id)
 	if result then
 		if result.active then
 			result.active = tonumber(result.active)
@@ -41,9 +42,9 @@ function ngx.ctx.login(username_or_id, password, nosession, login_with_id)
 		if login_with_id or result.password == ngx.hmac_sha1(result.username, password) then
 			if not nosession then
 				local sessionid
-				for i=1,10 do
+				for i=1, 10 do
 					sessionid = randstr(32)
-					local res = database:exists(database.KEYS.SESSIONS..sessionid)
+					local res = database:exists(database.KEYS.SESSIONS .. sessionid)
 					if (not res) or (res == ngx.null) or (res == 0) then
 						break
 					else
@@ -51,10 +52,10 @@ function ngx.ctx.login(username_or_id, password, nosession, login_with_id)
 					end
 				end
 				if sessionid then
-					ngx.header['Set-Cookie'] = {"sessionid="..sessionid.."; HttpOnly"}
+					ngx.header['Set-Cookie'] = {"sessionid=" .. sessionid .. "; HttpOnly"}
 					result.sessionid = sessionid					
 					
-					sessionid = database.KEYS.SESSIONS..sessionid
+					sessionid = database.KEYS.SESSIONS .. sessionid
 					database:set(sessionid, username_or_id)
 					database:expire(sessionid, SESSION_EXPIRE_DELAY)
 				end
@@ -83,15 +84,15 @@ end
 function ngx.ctx.logout()
 	ngx.header['Set-Cookie'] = {"sessionid=NULL", "loginkey=NULL"}
 	if (not ngx.ctx.user) or (not ngx.ctx.user.sessionid) then return end
-	database:del(database.KEYS.SESSIONS..ngx.ctx.user.sessionid)
+	database:del(database.KEYS.SESSIONS .. ngx.ctx.user.sessionid)
 	ngx.ctx.user = nil
 end
 
 function ngx.ctx.send_login_key()
 	if not ngx.ctx.user.remember_me then return end
-	local expires = "; Expires="..ngx.cookie_time(ngx.time() + (30 * 24 * 60 * 60))
+	local expires = "; Expires=" .. ngx.cookie_time(ngx.time() + (30 * 24 * 60 * 60))
 	local hdr = ngx.header['Set-Cookie']
-	expires = "loginkey="..ngx.ctx.user.id.."."..ngx.encode_base64(hash_login_key())..expires.."; HttpOnly"
+	expires = "loginkey=" .. ngx.ctx.user.id .. "." .. ngx.encode_base64(hash_login_key()) .. expires .. "; HttpOnly"
 	if type(hdr) == "table" then
 		table.insert(hdr, expires)
 	elseif hdr then
@@ -113,9 +114,9 @@ function ngx.ctx.make_new_login_key(userdata)
 
 	local str = randstr(64)
 	local str_pchan = randstr(32)
-	database:hmset(database.KEYS.USERS..userdata.id, "loginkey", str, "pushchan", str_pchan)
+	database:hmset(database.KEYS.USERS .. userdata.id, "loginkey", str, "pushchan", str_pchan)
 	
-	local allsessions = database:keys(database.KEYS.SESSIONS.."*")
+	local allsessions = database:keys(database.KEYS.SESSIONS .. "*")
 	if type(allsessions) ~= "table" then allsessions = {} end
 	
 	if send_userdata then
@@ -146,12 +147,12 @@ if cookies then
 	if auth then
 		auth = auth[2]
 		if auth then
-			local sessID = database.KEYS.SESSIONS..auth
+			local sessID = database.KEYS.SESSIONS .. auth
 			local result = database:get(sessID)
 			if result and result ~= ngx.null then
 				ngx.ctx.login(result, nil, true, true)
 				ngx.ctx.user.sessionid = auth
-				ngx.header['Set-Cookie'] = {"sessionid="..auth.."; HttpOnly"}
+				ngx.header['Set-Cookie'] = {"sessionid=" .. auth .. "; HttpOnly"}
 				database:expire(sessID, SESSION_EXPIRE_DELAY)
 			end
 		end
@@ -166,7 +167,7 @@ if cookies then
 			local uid = auth[2]
 			auth = auth[3]
 			if uid and auth then
-				local result = database:hget(database.KEYS.USERS..uid, "loginkey")
+				local result = database:hget(database.KEYS.USERS .. uid, "loginkey")
 				if result and result ~= ngx.null then
 					if hash_login_key(result) == ngx.decode_base64(auth) then
 						ngx.ctx.login(uid, nil, false, true)

@@ -1,13 +1,13 @@
 if not ngx then
 	local lfs = require("lfs")
-	lfs.chdir(ngx.var.main_root.."")
+	lfs.chdir(ngx.var.main_root .. "")
 end
 
 local database = ngx.ctx.database
 
 local function s3_request_multi(tbl)
 	local reqParams = {}
-	for _,req in pairs(tbl) do
+	for _,req in next, tbl do
 		req.method = req.method or ngx.HTTP_GET
 		local method_str
 		if req.method == ngx.HTTP_GET then
@@ -51,7 +51,7 @@ local function s3_request_multi(tbl)
 			else
 				err = err .. "\nFILLED BODY"
 			end
-			error("Request failed: "..err)
+			error("Request failed: " .. err)
 		end
 	end
 	
@@ -75,7 +75,7 @@ end
 
 function file_get(fileid, user)
 	if not fileid then return nil end
-	local file = database:hgetall(database.KEYS.FILES..fileid)
+	local file = database:hgetall(database.KEYS.FILES .. fileid)
 	if (not file) or (file == ngx.null) or (not file.name) then return nil end
 	if user and file.user ~= user then return nil end
 	file.type = tonumber(file.type)
@@ -96,11 +96,11 @@ function file_delete(fileid, user)
 	end
 	file_manualdelete(fileid)
 
-	database:zrem(database.KEYS.USER_FILES..file.user, fileid)
-	database:del(database.KEYS.FILES..fileid)
+	database:zrem(database.KEYS.USER_FILES .. file.user, fileid)
+	database:del(database.KEYS.FILES .. fileid)
 
 	if file.user then
-		database:hincrby(database.KEYS.USERS..file.user, "usedbytes", -file.size)
+		database:hincrby(database.KEYS.USERS .. file.user, "usedbytes", -file.size)
 		if file.user == ngx.ctx.user.id then
 			ngx.ctx.user.usedbytes = ngx.ctx.user.usedbytes - file.size
 			file_push_action(fileid, '-')
@@ -133,7 +133,7 @@ function file_upload(fileid, filename, extension, thumbnail, filetype, thumbtype
 			filetype or "application/octet-stream",
 			"public, max-age=86400",
 			fileContent,
-			'inline; filename="'..filename:gsub('"',"'")..'"'
+			'inline; filename="' .. filename:gsub('"',"'") .. '"'
 		)
 	else
 		local fName = fileid .. "/file" .. extension
@@ -144,7 +144,7 @@ function file_upload(fileid, filename, extension, thumbnail, filetype, thumbtype
 			filetype or "application/octet-stream",
 			"public, max-age=86400",
 			nil,
-			'inline; filename="'..filename:gsub('"',"'")..'"'
+			'inline; filename="' .. filename:gsub('"',"'") .. '"'
 		)
 		uploadID = ngx.re.match(uploadID.body, "<UploadId>([^<]+)</UploadId>", "o")
 		uploadID = "uploadId=" .. uploadID[1]
@@ -183,12 +183,12 @@ function file_upload(fileid, filename, extension, thumbnail, filetype, thumbtype
 		completeReply = table.concat(completeReply)
 		
 		s3_request(
-				fName .. "?" .. uploadID,
-				ngx.HTTP_POST,
-				nil,
-				nil,
-				completeReply,
-				nil
+			fName .. "?" .. uploadID,
+			ngx.HTTP_POST,
+			nil,
+			nil,
+			completeReply,
+			nil
 		)
 	end
 
@@ -203,10 +203,10 @@ function file_upload(fileid, filename, extension, thumbnail, filetype, thumbtype
 		os.remove("thumbs/" .. fileid .. thumbnail)
 	end
 
-	os.remove("files/"..fullname)
+	os.remove("files/" .. fullname)
 end
 
 function file_push_action(fileid, action)
 	action = action or '='
-	raw_push_action(action..fileid..'|U'..tostring(ngx.ctx.user.usedbytes))
+	raw_push_action(action .. fileid .. '|U' .. tostring(ngx.ctx.user.usedbytes))
 end

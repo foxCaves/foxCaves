@@ -182,12 +182,7 @@ legend, label {
 	color: #222;
 }
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
+h1, h2, h3, h4, h5, h6 {
 	color: #222;
 }
 
@@ -200,20 +195,11 @@ a:hover {
 	border: 1px solid #aaa;
 }
 
-body {
-	background-color: #EEE;
-	background-image: -moz-linear-gradient(top, #EEE, #8F8F8F);
-	background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#EEE), to(#8F8F8F));
-	background-image: -webkit-linear-gradient(top, #EEE, #8F8F8F);
-	background-image: -o-linear-gradient(top, #EEE, #8F8F8F);
-	background-image: linear-gradient(to bottom, #EEE, #8F8F8F);
-	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff8F8F8F', endColorstr='#ff8F8F8F', GradientType=0);
-}
-
 .navbar .nav > .active > a, .navbar .nav > .active > a:hover, .navbar .nav > .active > a:focus {
 	background-color: #aaa;
 }
 
+body,
 .navbar-inner {
 	background-color: #EEE;
 	background-image: -moz-linear-gradient(top, #EEE, #8F8F8F);

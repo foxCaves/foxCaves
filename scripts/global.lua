@@ -75,7 +75,7 @@ function ngx.ctx.check_username(username)
 		return ngx.ctx.EMAIL_INVALID
 	end
 
-	local res = database:exists(database.KEYS.USERS..username:lower())
+	local res = database:exists(database.KEYS.USERS .. username:lower())
 	if res and res ~= 0 and res ~= ngx.null then
 		return ngx.ctx.EMAIL_TAKEN
 	end
@@ -118,7 +118,7 @@ end
 
 function raw_push_action(action)
 	action = action or '='
-	local res = ngx.location.capture("/scripts/longpoll_push?"..ngx.ctx.user.id.."_"..ngx.ctx.user.pushchan, { method = ngx.HTTP_POST, body = action.."|" })
+	local res = ngx.location.capture("/scripts/longpoll_push?" .. ngx.ctx.user.id .. "_" .. ngx.ctx.user.pushchan, { method = ngx.HTTP_POST, body = action .. "|" })
 end
 
 dofile("scripts/access.lua")

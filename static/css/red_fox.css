@@ -43,7 +43,10 @@
 .nav-pills li > a:hover,
 .nav-tabs li > a:hover,
 .nav-tabs li.active > a,
-.nav-tabs li.active > a:hover {
+.nav-tabs li.active > a:hover,
+#uploader.hover,
+a.thumbnail:hover,
+#pdf-view {
 	background-color: #DF6200;
 }
 
@@ -91,12 +94,6 @@ blockquote {
 
 blockquote.pull-right {
 	border-right: 5px solid #DF6200;
-}
-
-#uploader.hover,
-a.thumbnail:hover,
-#pdf-view {
-	border-color: #DF6200;
 }
 
 .navbar-fixed-bottom .navbar-inner {
@@ -182,12 +179,7 @@ legend, label {
 	color: #222;
 }
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
+h1, h2, h3, h4, h5, h6 {
 	color: #222;
 }
 
