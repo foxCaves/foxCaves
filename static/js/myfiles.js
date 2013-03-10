@@ -4,7 +4,6 @@ var dropZoneTransferInProgress = false;
 var dropZoneUploads = new Array();
 
 var dropZoneFileNumber = 0;
-var dropZoneFileCount = 0;
 
 function handleDropFileSelect(evt) {
 	var dropZone = document.getElementById("uploader");
@@ -14,14 +13,10 @@ function handleDropFileSelect(evt) {
 
 	if(datTrans.files.length > 0) { 
 		var files = datTrans.files;
-		for(var i=0;i<files.length;i++) {
+		for(var i = 0;i < files.length;i++)
 			dropZoneUploads.push(files[i]);
-			dropZoneFileCount++;
-		}
-	} else if(datTrans.items.length > 0) {
+	} else if(datTrans.items.length > 0)
 		dropZoneUploads.push(datTrans.getData("text/plain"));
-		dropZoneFileCount++;
-	}
 	processNextFile();
 }
 
@@ -48,7 +43,6 @@ function processNextFile() {
 
 	if(dropZoneUploads.length <= 0) {
 		dropZoneFileNumber = 0;
-		dropZoneFileCount = 0;
 		dropZone.innerHTML = "";
 		return;
 	}
@@ -56,9 +50,8 @@ function processNextFile() {
 	var theFile = dropZoneUploads.shift();
 
 	dropZoneTransferInProgress = true;
-	if(dropZoneFileNumber == 0) {
+	if(dropZoneFileNumber == 0)
 		dropZone.innerHTML = '<div class="container">Uploading<br />File: <span id="curFileName">N/A</span><div id="barUpload" style="margin-left: 50px; margin-right: 50px;" class="progress progress-striped"><div class="bar" style="width: 0%;"></div></div><br />Total: <div id="barUploadTotal" style="margin-left: 50px; margin-right: 50px;" class="progress progress-striped"><div class="bar" style="width: 0%;"></div></div><input type="button"  value="Abort upload" class="btn" onclick="abortCurrentFileUpload();" /></div>';
-	}
 
 	if(typeof theFile == "object") {
 		var dropZoneFileReader = new FileReader();
@@ -92,7 +85,7 @@ function fileUpload(name, fileData) {
 			dropZoneTransferInProgress = false;
 
 			dropZoneFileNumber++;
-			$('#barUploadTotal div.bar').css("width", ((dropZoneFileNumber / dropZoneFileCount) * 100.0) + "%");
+			$('#barUploadTotal div.bar').css("width", ((dropZoneFileNumber / dropZoneUploads.length) * 100.0) + "%");
 
 			if(xhr.status == 200) {
 				//Comes from long-polling!
@@ -302,7 +295,6 @@ function setupFileDragging() {
 		elem.addEventListener("dragend", endFileDrag, false);
 	});
 
-
 	trashBin.style.display = "";
 
 	trashBin.addEventListener("dragover", preventDefault);
@@ -340,15 +332,13 @@ function setupFileDragging() {
 	}, false);
 }
 
-var handleBase64Request;
-var handleImageEdit;
 
 function setupOptionMenu() {
 	function getFileLIFromEvt(ev) {
 		return ev.target.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode;
 	}
 
-	handleBase64Request = function(event) {
+	var handleBase64Request = function(event) {
 		var fileName = getFileLIFromEvt(event).getAttribute("data-file-id");
 		$.get("/api/base64?" + fileName, function(data) {
 			var text = document.createElement("textarea");
@@ -374,7 +364,6 @@ function setupPasting() {
 			if(!hasValidType(ev.clipboardData.types))
 				return;
 			dropZoneUploads.push(ev.clipboardData.getData("text/plain"));//Upload clipboard contents
-			dropZoneFileCount++;
 			processNextFile();
 		}
 	}, false);
@@ -390,7 +379,7 @@ function setupSearch() {
 				nodes[i].style.display = "none";
 			else if(nodes[i].nodeType == 1 && nodes[i].style.display == "none")
 				nodes[i].style.display = "inline-block";
-	})
+	});
 }
 
 function setupMassOperations() {
@@ -429,7 +418,7 @@ function setupMassOperations() {
 }
 
 $(document).ready(function() {
-	setupOptionMenu();
+	//setupOptionMenu();
 
 	setupDropZone();
 	setupFileDragging();

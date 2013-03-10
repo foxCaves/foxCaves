@@ -5,20 +5,20 @@ html::-webkit-scrollbar {
 
 html::-webkit-scrollbar-track {
 	background-color: darkgrey;
-	-webkit-box-shadow: inset 2px 2px 6px rgba(0, 0, 0, 0.4);
+	box-shadow: inset 2px 2px 6px rgba(0, 0, 0, 0.4);
 }
 html::-webkit-scrollbar-track:hover {
-	-webkit-box-shadow: inset 2px 2px 6px rgba(0, 0, 0, 0.6);
+	box-shadow: inset 2px 2px 6px rgba(0, 0, 0, 0.6);
 }
 
 html::-webkit-scrollbar-thumb {
 	background-color: grey;
-	-webkit-box-shadow: inset 2px 2px 6px rgba(0, 0, 0, 0.4); 
+	box-shadow: inset 2px 2px 6px rgba(0, 0, 0, 0.4); 
 	border-radius: 8px;
 }
 
 html::-webkit-scrollbar-thumb:active {
-	-webkit-box-shadow: inset 2px 2px 6px rgba(0, 0, 0, 0.8); 
+	box-shadow: inset 2px 2px 6px rgba(0, 0, 0, 0.8); 
 }
 
 html::-webkit-scrollbar-button,

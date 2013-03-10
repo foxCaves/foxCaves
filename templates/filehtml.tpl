@@ -15,7 +15,6 @@
 					<li><a class="rename" href="#">Rename</a></li>
 					<li><a href="/live/<%= fileid %>">Edit</a></li>
 <% if file.type == 1 and G.ngx.ctx.user.is_pro then %>
-					<li><a onclick="handleBase64Request(window.event);" href="#">Get Base64</a></li>
 					<li class="dropdown-submenu">
 						<a href="#">Convert to</a>
 						<ul class="dropdown-menu">
