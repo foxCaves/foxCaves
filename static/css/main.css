@@ -74,6 +74,10 @@ html::-webkit-resizer {
 	overflow: visible;
 }
 
+.image_manage_bottom > span {
+	float: right;
+}
+
 .image_manage_bottom > span > a:hover, .image_manage_bottom > span > div > a:hover {
 	text-decoration: none;
 }

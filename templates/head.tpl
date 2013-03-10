@@ -60,7 +60,6 @@ local usedperc = G.math.ceil((usedbytes / totalbytes) * 100) %>
 						</ul>
 					</div>
 				</div>
-				<div id="head-util-container" style="margin: auto; display:none;"><input type="button" value="Close" onclick="headUtil.hide();" /></div>
 			</div>
 		</div>
 		<div class="container" id="main-container">

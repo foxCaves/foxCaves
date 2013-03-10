@@ -256,10 +256,7 @@ function refreshFileLI(fileid) {
 	});
 }
 
-function deleteFile(fileid, filename) {
-	if(filename && !window.confirm('Do you really want to delete '+filename+'?'))
-		return false;
-
+function deleteFile(fileid) {
 	$("#file_"+fileid).css("border", "1px solid red");//Highlight file deletion
 
 	$.get('/api/delete?'+fileid, function(data) {
@@ -280,6 +277,10 @@ var currFileDrag;
 function setupFileDragging() {
 	$(".image_manage_top, .image_manage_bottom").each(function(idx, elem) {
 		elem.style.cursor="move";
+	});
+	
+	$(".image_manage_bottom > span > a[title=Delete]").click(function() {
+		deleteFile(this.getAttribute('1HAjQUBWPp'));
 	});
 
 	var trashBin = document.getElementById("recycle_bin");
