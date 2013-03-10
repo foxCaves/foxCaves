@@ -1,31 +1,21 @@
 <%+ head %>
 <h1>foxScreen information (<a href="<%= STATIC_URL_PREFIX %>/dls/foxScreen.exe?v=<%= G.ngx.time() %>">Download here</a>)</h1>
-<h3>
-	When you first start foxScreen, you will be presented with the main window of foxScreen:<br />
-</h3>
+<h3>When you first start foxScreen, you will be presented with the main window of foxScreen:</h3>
 <img src="<%= STATIC_URL_PREFIX %>/img/foxscreen/main_window.png" />
-<h4>
-	Just enter your login details and click "Save credentials".
-</h4>
-<h3>
-	You may notice a little tray icon of foxScreen:
-</h3>
+<h4>Just enter your login details and click "Save credentials".</h4>
+<h3>You may notice a little tray icon of foxScreen:</h3>
 <img src="<%= STATIC_URL_PREFIX %>/img/foxscreen/notify_bar.png" />
 <h4>
 	If you double-click it, that will hide/show the main window<br />
 	If you click it once, it will hide/show the drop area (explained later)
 </h4>
-<h3>
-	The drop area of foxScreen looks like the following
-</h3>
+<h3>The drop area of foxScreen looks like the following</h3>
 <img src="<%= STATIC_URL_PREFIX %>/img/foxscreen/drop_area.png" />
 <h4>
 	Any file you drop onto it (out of a explorer window, etc) will be uploaded to your foxCaves account.<br />
 	The uploaded file's link will be automatically copied into your clipboard
 </h4>
-<h3>
-	foxScreen also has a few key combinations for making screenshots faster
-</h3>
+<h3>foxScreen also has a few key combinations for making screenshots faster</h3>
 <h4>
 	PrintScreen uploads a screenshot of your entire screen to foxCaves<br />
 	Alt+PrintScreen makes a screenshot of the currently selected window<br />
@@ -33,9 +23,7 @@
 	<h5>Just click and drag a rectangle. Screenshot will be made once you release your mouse button. Use escape to cancel.</h5>
 </h4>
 <br /><br /><br />
-<h3>
-	Licensing information
-</h3>
+<h3>Licensing information</h3>
 <pre>
 foxScreen Copyright (c) Doridian
 All rights reserved.
@@ -83,10 +71,6 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 </pre>
-<h3>
-	Can I get the source code anywhere?
-</h3>
-<h4>
-	Sure, you can get all the source code at <a href="https://github.com/foxCaves">https://github.com/foxCaves</a>
-</h4>
+<h3>Can I get the source code anywhere?</h3>
+<h4>Sure, you can get all the source code at <a href="https://github.com/foxCaves">github.com/foxCaves</a></h4>
 <%+ foot %>

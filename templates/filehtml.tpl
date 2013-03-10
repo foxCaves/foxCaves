@@ -7,10 +7,10 @@
 	<a href="/view/<%= fileid %>"></a>
 	<div class="image_manage_bottom">
 		<span style="position: relative; float: right;">
-			<a title="View" href="/view/<%= fileid %>"><i class="icon-picture icon-white"></i></a>
+			<a title="View" href="/view/<%= fileid %>"><i class="icon-picture icon-white"></i> </a>
 			<a title="Download" href="https://d16l38yicn0lym.cloudfront.net/d<%= fileid %><%= file.extension %>"><i class="icon-download icon-white"></i> </a>
 			<div class="dropdown">
-				<a title="Options" class="dropdown-toggle" data-toggle="dropdown" href=""><i class="icon-wrench icon-white"></i></a>
+				<a title="Options" class="dropdown-toggle" data-toggle="dropdown" href=""><i class="icon-wrench icon-white"></i> </a>
 				<ul class="dropdown-menu">
 					<li><a class="rename" href="#">Rename</a></li>
 					<li><a href="/live/<%= fileid %>">Edit</a></li>
@@ -25,11 +25,11 @@
 							<li><a href="#">bmp</a></li>
 						</ul>
 					</li>
-<% end %>
+					<% end %>
 				</ul>
 			</div>
 
-			<a href="#" title="Delete" onclick="return deleteFile('<%= fileid %>','<%= escaped_name_js %>');" href="/myfiles?delete=<%= fileid %>"><i class="icon-remove icon-white"></i></a>
+			<a href="#" title="Delete" onclick="return deleteFile('<%= fileid %>','<%= escaped_name_js %>');" href="/myfiles?delete=<%= fileid %>"><i class="icon-remove icon-white"></i> </a>
 		</span>
 <%= G.ngx.ctx.format_size(file.size) %>
 	</div>
