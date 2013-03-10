@@ -4,9 +4,9 @@
 <div class="controls">
 <% if ANSWERS then %>
 	<select name="captcha_result">
-		<% for _,answer in next, ANSWERS do %>
+<% for _,answer in next, ANSWERS do %>
 		<option><%= answer %></option>
-		<% end %>
+<% end %>
 	</select>
 <% else %>
 	<input type="text" name="captcha_result" />

@@ -4,49 +4,31 @@
 	<div class="well well-small" style="text-align: left;">
 		<form class="form-horizontal">
 			<div class="control-group">
-				<label class="control-label">
-					Uploaded by
-				</label>
-				<div class="controls" style="padding-top: 5px;">
-					<%= FILEOWNER %>
-				</div>
+				<label class="control-label">Uploaded by</label>
+				<div class="controls" style="padding-top: 5px;"><%= FILEOWNER %></div>
 			</div>
 			<div class="control-group">
-				<label class="control-label">
-					Uploaded on
-				</label>
-				<div class="controls" style="padding-top: 5px;">
-					<%= G.os.date("%d.%m.%Y %H:%M", FILE.time) %>
-				</div>
+				<label class="control-label">Uploaded on</label>
+				<div class="controls" style="padding-top: 5px;"><%= G.os.date("%d.%m.%Y %H:%M", FILE.time) %></div>
 			</div>
 			<div class="control-group">
-				<label class="control-label">
-					Size
-				</label>
-				<div class="controls" style="padding-top: 5px;">
-					<%= G.ngx.ctx.format_size(FILE.size) %>
-				</div>
+				<label class="control-label">Size</label>
+				<div class="controls" style="padding-top: 5px;"><%= G.ngx.ctx.format_size(FILE.size) %></div>
 			</div>
 			<div class="control-group">
-				<label class="control-label" for="view-link">
-					View link
-				</label>
+				<label class="control-label" for="view-link">View link</label>
 				<div class="controls">
 					<input readonly="readonly" id="view-link" type="text" value="http://fox.gy/v<%= FILEID %>" />
 				</div>
 			</div>
 			<div class="control-group">
-				<label class="control-label" for="direct-link">
-					Direct link
-				</label>
+				<label class="control-label" for="direct-link">Direct link</label>
 				<div class="controls">
 					<input readonly="readonly" id="direct-link" type="text" value="http://fox.gy/f<%= FILEID %><%= FILE.extension %>" />
 				</div>
 			</div>
 			<div class="control-group">
-				<label class="control-label" for="download-link">
-					Download link
-				</label>
+				<label class="control-label" for="download-link">Download link</label>
 				<div class="controls">
 					<input readonly="readonly" id="download-link" type="text" value="http://fox.gy/d<%= FILEID %><%= FILE.extension %>" />
 				</div>
@@ -75,8 +57,7 @@
 		<script type="text/javascript" src="<%= STATIC_URL_PREFIX %>/js/dancer.js"></script>
 		<script type="text/javascript" src="<%= STATIC_URL_PREFIX %>/js/audiovis.js"></script>
 	<% elseif FILE.type == FILE_TYPE_IFRAME then %>
-		<iframe id="pdf-view" src="https://d16l38yicn0lym.cloudfront.net/f<%= RAWNAME %>" type="<%= MIMETYPES[FILE.extension] %>"> 
-		</iframe>
+		<iframe id="pdf-view" src="https://d16l38yicn0lym.cloudfront.net/f<%= RAWNAME %>" type="<%= MIMETYPES[FILE.extension] %>"></iframe>
 	<% else %>
 		<h5>File cannot be viewed. Download it.</h5>
 	<% end %>

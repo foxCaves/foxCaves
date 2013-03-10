@@ -16,7 +16,7 @@
 	</div>
 
 	<div class="control-group">
-		<%= CAPTCHA %>
+<%= CAPTCHA %>
 	</div>
 
 	<div class="control-group">
