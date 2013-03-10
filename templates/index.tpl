@@ -9,4 +9,3 @@
 <h3>How exactly does foxScreen work?</h3>
 <h4>Just <a href="/foxscreen">click here</a> to get help and information about foxScreen!</h4>
 <%+ foot %>
-
