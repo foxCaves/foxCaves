@@ -70,7 +70,6 @@ html::-webkit-resizer {
 }
 
 .image_manage_bottom {
-	
 	overflow: visible;
 }
 
@@ -226,7 +225,10 @@ input[type="submit"] {
 }
 
 .btn {
-	box-shadow: 0.2s linear;
+	transition: box-shadow 0.2s linear;
+	-moz-transition: box-shadow 0.2s linear;
+	-webkit-transition: box-shadow 0.2s linear;
+	-o-transition: box-shadow 0.2s linear;
 }
 
 #pdf-view {
@@ -240,7 +242,7 @@ input[type="submit"] {
 
 #live-draw-options > fieldset {
 	display: inline;
-	vertical-align:text-top;
+	vertical-align: text-top;
 }
 
 #color-selector, #saturisation-selector, #opacity-selector {
@@ -251,13 +253,13 @@ input[type="submit"] {
 	-ms-user-select: none;
 	user-select: none;
 	
-	height:150px;
+	height: 150px;
 	display: inline-block;
 	outline: 3px solid black;
 }
 
 #color-selector {
-	width:250px;
+	width: 250px;
 	
 	background-image:	-webkit-linear-gradient(top, black, transparent, white),
 						-webkit-linear-gradient(left, #F00, #FF0, #0F0, #0FF, #00F, #F0F, #F00);
@@ -275,12 +277,12 @@ input[type="submit"] {
 
 #saturisation-selector {
 	width: 20px;
-	background-image: -webkit-linear-gradient(top, hsl(0, 100%, 50%), hsl(0, 100%, 0%));	
+	background-image: -webkit-linear-gradient(top, hsl(0, 100%, 50%), transparent);	
 }
 
 #opacity-selector {
 	width: 20px;
-	background-image: -webkit-linear-gradient(top, hsl(0, 100%, 50%), hsla(0, 100%, 0%, 0));
+	background-image: -webkit-linear-gradient(top, hsl(0, 100%, 50%), transparent);
 }
 
 #saturisation-selector-inner, #opacity-selector-inner {

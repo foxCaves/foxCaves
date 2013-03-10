@@ -1818,7 +1818,7 @@ table [class*=span],
 	background-image: url("../img/glyphicons-halflings-white.png");
 }
 .icon-glass {
-	background-position: 0			0;
+	background-position: 0 0;
 }
 .icon-music {
 	background-position: -24px 0;
@@ -2339,7 +2339,7 @@ table [class*=span],
 .open {
 	*z-index: 1000;
 }
-.open	> .dropdown-menu {
+.open > .dropdown-menu {
 	display: block;
 }
 .pull-right > .dropdown-menu {

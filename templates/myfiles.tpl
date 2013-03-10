@@ -5,7 +5,7 @@
 <form id="filter-form" style="display:none;margin-top:10px;" class="form-search">
 	<input id="name-filter" type="text" placeholder="filter" class="input-medium search-query">
 </form>
-<ul class="image_manage_ul" id="file_manage_div">
+<ul id="file_manager">
 <% for _, fileid in next, FILES do
 		local file = file_get(fileid) %>
 <%+ filehtml %>

@@ -197,7 +197,7 @@ function refreshFiles() {
 				addFileLI(fileid);
 		}
 
-		$('#file_manage_div > li').each(function(i, ele) {
+		$('#file_manager > li').each(function(i, ele) {
 			var fileid = $(ele).attr('id').substr(5);
 			if(!files_rev[fileid])
 				removeFileLI(fileid);
@@ -234,7 +234,7 @@ function addFileLI(fileid, no_refresh_if_exist) {
 			refreshFileLI(fileid);
 		return;
 	}
-	var ele = document.getElementById("file_manage_div");
+	var ele = document.getElementById("file_manager");
 	getFileLI(fileid, function(newFile) {
 		if(!newFile)
 			return;
@@ -256,7 +256,10 @@ function refreshFileLI(fileid) {
 	});
 }
 
-function deleteFile(fileid) {
+function deleteFile(fileid, doConfirm) {
+	if(doConfirm)
+		if(!confirm("Are you sure you want to delete this file"))
+			return;
 	$("#file_"+fileid).css("border", "1px solid red");//Highlight file deletion
 
 	$.get('/api/delete?'+fileid, function(data) {
@@ -280,7 +283,7 @@ function setupFileDragging() {
 	});
 	
 	$(".image_manage_bottom > span > a[title=Delete]").click(function() {
-		deleteFile(this.getAttribute('1HAjQUBWPp'));
+		deleteFile(this.parentNode.parentNode.parentNode.getAttribute("data-file-id"), true);
 	});
 
 	var trashBin = document.getElementById("recycle_bin");
@@ -297,7 +300,7 @@ function setupFileDragging() {
 		trashBin.style.opacity = "0.5";
 	}
 
-	$(".image_manage_ul li").each(function(idx, elem) {
+	$("#image_manager li").each(function(idx, elem) {
 		elem.addEventListener("dragstart", startFileDrag, false);
 		elem.addEventListener("dragend", endFileDrag, false);
 	});
@@ -379,7 +382,7 @@ function setupPasting() {
 
 function setupSearch() {
 	document.getElementById("filter-form").style.display = "inline";
-	var previewWrapper = document.getElementById("file_manage_div");
+	var previewWrapper = document.getElementById("file_manager");
 	document.getElementById("name-filter").addEventListener("keyup", function(){
 		var nodes = previewWrapper.childNodes;
 		var val = this.value.toLowerCase();
@@ -403,7 +406,7 @@ function setupMassOperations() {
 
 		var str = "";
 
-		var elems = $(".image_manage_ul > li[id^=file_]").each(function(k, v) {
+		var elems = $("#image_manager > li[id^=file_]").each(function(k, v) {
 			if(v.style.display == "none")
 				return true;
 			str += ("|" + v.getAttribute("data-file-id"));
