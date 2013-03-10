@@ -4,19 +4,24 @@ var dropZoneTransferInProgress = false;
 var dropZoneUploads = new Array();
 
 var dropZoneFileNumber = 0;
+var dropZoneFileCount = 0;
 
-function handleDropFileSelect(evt) {
+function handleDropFileSelect(event) {
 	var dropZone = document.getElementById("uploader");
-	handleDragOver(evt);
+	handleDragOver(event);
 
-	var datTrans = evt.originalEvent.dataTransfer;
+	var datTrans = event.originalEvent.dataTransfer;
 
 	if(datTrans.files.length > 0) { 
 		var files = datTrans.files;
-		for(var i = 0;i < files.length;i++)
+		for(var i=0;i<files.length;i++) {
 			dropZoneUploads.push(files[i]);
-	} else if(datTrans.items.length > 0)
+			dropZoneFileCount++;
+		}
+	} else if(datTrans.items.length > 0) {
 		dropZoneUploads.push(datTrans.getData("text/plain"));
+		dropZoneFileCount++;
+	}
 	processNextFile();
 }
 
@@ -43,6 +48,7 @@ function processNextFile() {
 
 	if(dropZoneUploads.length <= 0) {
 		dropZoneFileNumber = 0;
+		dropZoneFileCount = 0;
 		dropZone.innerHTML = "";
 		return;
 	}
@@ -55,8 +61,8 @@ function processNextFile() {
 
 	if(typeof theFile == "object") {
 		var dropZoneFileReader = new FileReader();
-		dropZoneFileReader.onloadend = function (evt) {
-			fileUpload(theFile.name, new Int8Array(evt.target.result));
+		dropZoneFileReader.onloadend = function (event) {
+			fileUpload(theFile.name, new Int8Array(event.target.result));
 		};
 		dropZoneFileReader.readAsArrayBuffer(theFile);
 	} else if(typeof theFile == "string") {
@@ -85,7 +91,7 @@ function fileUpload(name, fileData) {
 			dropZoneTransferInProgress = false;
 
 			dropZoneFileNumber++;
-			$('#barUploadTotal div.bar').css("width", ((dropZoneFileNumber / dropZoneUploads.length) * 100.0) + "%");
+			$('#barUploadTotal div.bar').css("width", ((dropZoneFileNumber / dropZoneFileCount) * 100.0) + "%");
 
 			if(xhr.status == 200) {
 				//Comes from long-polling!
@@ -106,17 +112,17 @@ function fileUpload(name, fileData) {
 	xhr.send(fileData);
 }
 
-function uploadStart(evt) {
+function uploadStart(event) {
 	_setUploadProgress(0);
 }
 
-function uploadComplete(evt) {
+function uploadComplete(event) {
 	_setUploadProgress(100);
 }
 
-function uploadProgress(evt) {
-	if(evt.lengthComputable) {
-		_setUploadProgress((evt.loaded / evt.total) * 100.0);
+function uploadProgress(event) {
+	if(event.lengthComputable) {
+		_setUploadProgress((event.loaded / event.total) * 100.0);
 	}
 }
 
@@ -135,32 +141,32 @@ function resetDropZone() {
 	dropZoneTransferInProgress = false;
 }
 
-function handleDragOver(evt, evttype) {
-	evt.stopPropagation();
-	evt.preventDefault();
+function handleDragOver(event, eventtype) {
+	event.stopPropagation();
+	event.preventDefault();
 
-	if(!evttype)
-		evttype = evt.type;
+	if(!eventtype)
+		eventtype = event.type;
 
 	var dropZone = document.getElementById("uploader");
 	var dropZoneSub = document.getElementById("uploader_sub");
 
-	if(evttype == "dragenter") {
+	if(eventtype == "dragenter") {
 		if(currFileDrag)
 			return;
 		dropZoneSub.innerHTML = 'Drop file now to upload';
 		$(dropZone).addClass("active");
-	} else if(evttype == "dragleave") {
-		if(evt.originalEvent && evt.originalEvent.pageX != "0" && evt.originalEvent.pageX != 0)
+	} else if(eventtype == "dragleave") {
+		if(event.originalEvent && event.originalEvent.pageX != "0" && event.originalEvent.pageX != 0)
 			return;
 
 		resetDropZone();
 	}
 
-	if(evt.originalEvent)
-		evt.originalEvent.dataTransfer.dropEffect = (evttype == "dragenter" ? "copy" : "");
+	if(event.originalEvent)
+		event.originalEvent.dataTransfer.dropEffect = (eventtype == "dragenter" ? "copy" : "");
 
-	dropZone.className = (evttype == "dragenter" ? "hover" : "");
+	dropZone.className = eventtype == "dragenter" ? "hover" : "";
 }
 
 function setupDropZone() {
@@ -334,12 +340,12 @@ function setupFileDragging() {
 
 
 function setupOptionMenu() {
-	function getFileLIFromEvt(ev) {
+	function getFileLIFromevent(ev) {
 		return ev.target.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode;
 	}
 
 	var handleBase64Request = function(event) {
-		var fileName = getFileLIFromEvt(event).getAttribute("data-file-id");
+		var fileName = getFileLIFromevent(event).getAttribute("data-file-id");
 		$.get("/api/base64?" + fileName, function(data) {
 			var text = document.createElement("textarea");
 			text.rows = "20";
@@ -359,11 +365,12 @@ function hasValidType(types) {
 }
 
 function setupPasting() {
-	document.getElementsByTagName("body")[0].addEventListener("paste", function(ev) {
-		if(ev.clipboardData.items.length >= 1) {
-			if(!hasValidType(ev.clipboardData.types))
+	document.getElementsByTagName("body")[0].addEventListener("paste", function(event) {
+		if(event.clipboardData.items.length >= 1) {
+			if(!hasValidType(event.clipboardData.types))
 				return;
-			dropZoneUploads.push(ev.clipboardData.getData("text/plain"));//Upload clipboard contents
+			dropZoneUploads.push(event.clipboardData.getData("text/plain"));//Upload clipboard contents
+			dropZoneFileCount++;
 			processNextFile();
 		}
 	}, false);
@@ -371,21 +378,22 @@ function setupPasting() {
 
 function setupSearch() {
 	document.getElementById("filter-form").style.display = "inline";
+	var previewWrapper = document.getElementById("file_manage_div");
 	document.getElementById("name-filter").addEventListener("keyup", function(){
-		var nodes = document.getElementById("file_manage_div").childNodes;
+		var nodes = previewWrapper.childNodes;
 		var val = this.value.toLowerCase();
-		for(i = 0;i<nodes.length;++i)
-			if(nodes[i].nodeType == 1 && nodes[i].firstChild.nextSibling.title.toLowerCase().indexOf(val) == -1)
-				nodes[i].style.display = "none";
-			else if(nodes[i].nodeType == 1 && nodes[i].style.display == "none")
-				nodes[i].style.display = "inline-block";
+		for(i = 0;i < nodes.length;++i)
+			if(nodes[i].nodeType == 1)
+				if(nodes[i].firstChild.nextSibling.title.toLowerCase().indexOf(val) == -1)
+					nodes[i].style.display = "none";
+				else if(nodes[i].style.display == "none")
+					nodes[i].style.display = "inline-block";
 	});
 }
 
 function setupMassOperations() {
 	var form = document.getElementById("file-mass-action-form");
 	form.addEventListener("submit", function(event) {
-
 		event.preventDefault();
 
 		var operation = this.action.value;
@@ -395,7 +403,6 @@ function setupMassOperations() {
 		var str = "";
 
 		var elems = $(".image_manage_ul > li[id^=file_]").each(function(k, v) {
-			console.log(v);
 			if(v.style.display == "none")
 				return true;
 			str += ("|" + v.getAttribute("data-file-id"));

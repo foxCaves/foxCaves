@@ -70,7 +70,11 @@ html::-webkit-resizer {
 }
 
 .image_manage_bottom {
+	
 	overflow: visible;
+}
+
+.image_manage_bottom > span > a:hover, .image_manage_bottom > span > div > a:hover {
 	text-decoration: none;
 }
 

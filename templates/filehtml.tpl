@@ -6,7 +6,7 @@
 	<div class="image_manage_top" title="<%= G.os.date("%d.%m.%Y %H:%M", file.time) %> [<%= escaped_name %>]"><span><%= escaped_name %></span></div>
 	<a href="/view/<%= fileid %>"></a>
 	<div class="image_manage_bottom">
-		<span style="position: relative; float: right;">
+		<span style="float: right;">
 			<a title="View" href="/view/<%= fileid %>"><i class="icon-picture icon-white"></i> </a>
 			<a title="Download" href="https://d16l38yicn0lym.cloudfront.net/d<%= fileid %><%= file.extension %>"><i class="icon-download icon-white"></i> </a>
 			<div class="dropdown">
