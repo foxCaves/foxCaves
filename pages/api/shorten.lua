@@ -10,8 +10,6 @@ for i=1, 10 do
 	local res = database:exists(database.KEYS.LINKS .. linkid)
 	if (not res) or (res == ngx.null) or (res == 0) then
 		break
-	else
-		linkid = nil
 	end
 end
 

@@ -42,23 +42,19 @@ function ngx.ctx.login(username_or_id, password, nosession, login_with_id)
 		if login_with_id or result.password == ngx.hmac_sha1(result.username, password) then
 			if not nosession then
 				local sessionid
-				for i=1, 10 do
+				for i=1, 999 do
 					sessionid = randstr(32)
 					local res = database:exists(database.KEYS.SESSIONS .. sessionid)
 					if (not res) or (res == ngx.null) or (res == 0) then
 						break
-					else
-						sessionid = nil
 					end
 				end
-				if sessionid then
-					ngx.header['Set-Cookie'] = {"sessionid=" .. sessionid .. "; HttpOnly"}
-					result.sessionid = sessionid
+				ngx.header['Set-Cookie'] = {"sessionid=" .. sessionid .. "; HttpOnly"}
+				result.sessionid = sessionid
 
-					sessionid = database.KEYS.SESSIONS .. sessionid
-					database:set(sessionid, username_or_id)
-					database:expire(sessionid, SESSION_EXPIRE_DELAY)
-				end
+				sessionid = database.KEYS.SESSIONS .. sessionid
+				database:set(sessionid, username_or_id)
+				database:expire(sessionid, SESSION_EXPIRE_DELAY)
 			end
 
 			result.id = username_or_id

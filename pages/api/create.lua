@@ -116,11 +116,7 @@ local mimeHandlers = {
 	
 	text = function()
 		local fh = io.open("files/" .. fileid .. extension, "r")
-		local content = fh:read(4096):gsub("[&<>]", {
-			["&"] = "&amp;",
-			["<"] = "&lt;",
-			[">"] = "&gt;",
-		})
+		local content = ngx.ctx.escape_html(fh:read(4096))
 		
 		if fh:read(1) then
 			content = content .. "\n<i>[...]</i>"

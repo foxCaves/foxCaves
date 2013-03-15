@@ -300,7 +300,7 @@ function setupFileDragging() {
 		trashBin.style.opacity = "0.5";
 	}
 
-	$("#image_manager li").each(function(idx, elem) {
+	$("#file_manager li").each(function(idx, elem) {
 		elem.addEventListener("dragstart", startFileDrag, false);
 		elem.addEventListener("dragend", endFileDrag, false);
 	});
