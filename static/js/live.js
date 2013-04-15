@@ -728,6 +728,10 @@ var networking = {
 
 var defaultFont = "24px Verdana";
 
+var requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame ||
+                              window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
+window.requestAnimationFrame = requestAnimationFrame;
+
 function paintCanvas() {
 	requestAnimationFrame(paintCanvas);
 	if(!localUser.brushData.brush)
@@ -794,6 +798,8 @@ function loadImage() {
 		backgroundCanvasCTX.drawImage(this, 0, 0);
 
 		imagePattern = backgroundCanvasCTX.createPattern(this, "no-repeat");
+		
+		
 
 		requestAnimationFrame(paintCanvas);
 

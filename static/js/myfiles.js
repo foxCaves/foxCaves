@@ -406,7 +406,7 @@ function setupMassOperations() {
 
 		var str = "";
 
-		var elems = $("#image_manager > li[id^=file_]").each(function(k, v) {
+		var elems = $("#file_manager > li[id^=file_]").each(function(k, v) {
 			if(v.style.display == "none")
 				return true;
 			str += ("|" + v.getAttribute("data-file-id"));

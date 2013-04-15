@@ -44,5 +44,11 @@
 			<input type="submit" name="kill_sessions" class="btn" value="Kill all other sessions" />
 		</div>
 	</div>
+	<legend>Delete Account</legend>
+	<div class="control-group">
+		<div class="controls">
+			<input type="submit" name="delete_account" class="btn" value="Delete Account">
+		</div>
+	</div>
 </form>
 <%+ foot %>

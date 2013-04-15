@@ -19,10 +19,22 @@ end
 
 local message = ""
 
+local function deleteUser()
+	local files = database:zrevrange(database.KEYS.USER_FILES .. ngx.ctx.user.id, 0, -1)
+	dofile("scripts/fileapi.lua")
+	for k, fileId in next, files do
+		--file_delete(fileId, ngx.ctx.user.id)
+	end
+	error("fuck!")
+	--database:hmdeleteset(database.KEYS.USERS .. ngx.ctx.user.id)--is this even correct?
+end
+
 ngx.req.read_body()
 args = ngx.ctx.get_post_args()
 if args and args.old_password then
-	if args.kill_sessions then
+	if args.delete_account then
+		deleteUser()
+	elseif args.kill_sessions then
 		message = "<div class='alert alert-success'>All other sessions have been killed</div>"
 		ngx.ctx.make_new_login_key()
 	elseif ngx.hmac_sha1(ngx.ctx.user.username, args.old_password) ~= ngx.ctx.user.password then
