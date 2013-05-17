@@ -2,8 +2,8 @@
 	local escaped_name = file.name
 	local escaped_name_js = escaped_name:gsub("'", "\\'")
 %>
-<li draggable="true" id="file_<%= fileid %>" data-file-id="<%= fileid %>" data-file-extension="<%= file.extension %>" class="image_manage_main" style="background-image:url('<% if file.type == 1 and file.thumbnail and file.thumbnail ~= "" then %>https://d16l38yicn0lym.cloudfront.net/thumbs/<%= fileid %><%= file.thumbnail %><% elseif G.lfs.attributes("static/img/thumbs/ext_" .. file.extension .. ".png", "size") then %><%= STATIC_URL_PREFIX %>/img/thumbs/ext_<%= file.extension %>.png<% else %><%= STATIC_URL_PREFIX %>/img/thumbs/nothumb.png<% end %>')">
-	<div class="image_manage_top" title="<%= G.os.date("%d.%m.%Y %H:%M", file.time) %> [<%= escaped_name %>]"><span><%= escaped_name %></span></div>
+<li draggable="true" id="file_<%= fileid %>" class="image_manage_main" style="background-image:url('<% if file.type == 1 and file.thumbnail and file.thumbnail ~= "" then %>https://d16l38yicn0lym.cloudfront.net/thumbs/<%= fileid %><%= file.thumbnail %><% elseif G.lfs.attributes("static/img/thumbs/ext_" .. file.extension .. ".png", "size") then %><%= STATIC_URL_PREFIX %>/img/thumbs/ext_<%= file.extension %>.png<% else %><%= STATIC_URL_PREFIX %>/img/thumbs/nothumb.png<% end %>')">
+	<div class="image_manage_top" title="<%= G.os.date("%d.%m.%Y %H:%M", file.time) %> [<%= escaped_name %>]"><%= escaped_name %></div>
 	<a href="/view/<%= fileid %>"></a>
 	<div class="image_manage_bottom">
 		<span>

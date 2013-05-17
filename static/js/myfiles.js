@@ -25,6 +25,14 @@ function handleDropFileSelect(event) {
 	processNextFile();
 }
 
+function getDownloadURLFromImageManager(object) {
+	return object.children[2].children[0].children[1].href;
+}
+
+function getFileIDFromID(id) {
+	return id.substr(5);
+}
+
 function formatZeros(val, len) {
 	var val = val.toString();
 	return (new Array(len - val.length + 1).join("0"))+val;
@@ -283,13 +291,19 @@ function setupFileDragging() {
 	});
 	
 	$(".image_manage_bottom > span > a[title=Delete]").click(function() {
-		deleteFile(this.parentNode.parentNode.parentNode.getAttribute("data-file-id"), true);
+		deleteFile(getFileIDFromID(this.parentNode.parentNode.parentNode.id), true);
 	});
 
 	var trashBin = document.getElementById("recycle_bin");
 
-	function startFileDrag(ev) {
-		currFileDrag = ev.target;
+	function startFileDrag(event) {
+		currFileDrag = this;
+		var fileName = this.children[0].innerText;
+		console.log(fileName);
+		event.dataTransfer.setData(
+			"DownloadURL", 
+			"application/octet-stream:" + fileName + ":" + getDownloadURLFromImageManager(this)
+		);
 		window.setTimeout("currFileDrag.style.opacity = '0.2';", 1);
 		trashBin.style.opacity = "0.7";
 	}
@@ -349,7 +363,7 @@ function setupOptionMenu() {
 	}
 
 	var handleBase64Request = function(event) {
-		var fileName = getFileLIFromevent(event).getAttribute("data-file-id");
+		var fileName = getFileIDFromID(getFileLIFromevent(event).id);
 		$.get("/api/base64?" + fileName, function(data) {
 			var text = document.createElement("textarea");
 			text.rows = "20";
@@ -409,7 +423,7 @@ function setupMassOperations() {
 		$("#file_manager > li[id^=file_]").each(function(k, v) {
 			if(v.style.display == "none")
 				return true;
-			str += ("|" + v.getAttribute("data-file-id"));
+			str += ("|" + getFileIDFromID(v.id));
 			count++;
 		});
 
