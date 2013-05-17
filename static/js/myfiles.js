@@ -6,6 +6,49 @@ var dropZoneUploads = new Array();
 var dropZoneFileNumber = 0;
 var dropZoneFileCount = 0;
 
+var mimetypes = {
+	"bmp" : "image/bmp",
+	"c" : "text/plain",
+	"cpp" : "text/plain",
+	"cpp" : "text/plain",
+	"cs" : "text/plain",
+	"css" : "text/css",
+	"gif" : "image/gif",
+	"h" : "text/plain",
+	"htaccess" : "text/plain",
+	"htm" : "text/html",
+	"html" : "text/html",
+	"java" : "text/plain",
+	"jpeg" : "image/jpeg",
+	"jpg" : "image/jpeg",
+	"js" : "text/javascript",
+	"lua" : "text/plain",
+	"mp3" : "audio/mpeg",
+	"mp4" : "video/mp4",
+	"ogg" : "audio/ogg",
+	"pdf" : "application/pdf",
+	"php" : "text/plain",
+	"php3" : "text/plain",
+	"php4" : "text/plain",
+	"php5" : "text/plain",
+	"php6" : "text/plain",
+	"phtm" : "text/plain",
+	"phtml" : "text/plain",
+	"pl" : "text/plain",
+	"png" : "image/png",
+	"py" : "text/plain",
+	"shtm" : "text/html",
+	"shtml" : "text/html",
+	"txt" : "text/plain",
+	"vb" : "text/plain",
+	"wav" : "audio/wav",
+	"webm" : "video/webm"
+}
+
+function getMimeTypeFromFile(file) {
+	return mimetypes[/([\d\w]+)$/.exec(file)] || "application/octet-stream";
+}
+
 function handleDropFileSelect(event) {
 	var dropZone = document.getElementById("uploader");
 	handleDragOver(event);
@@ -198,7 +241,7 @@ function refreshFiles() {
 		var files_rev = new Array();
 		for(var i = 0;i < files.length;i++) {
 			var fileid = files[i];
-			if(!fileid || fileid == "")
+			if(!fileid)
 				continue;
 			files_rev[fileid] = true;
 			if(!document.getElementById("file_"+fileid))
@@ -302,7 +345,7 @@ function setupFileDragging() {
 		console.log(fileName);
 		event.dataTransfer.setData(
 			"DownloadURL", 
-			"application/octet-stream:" + fileName + ":" + getDownloadURLFromImageManager(this)
+			getMimeTypeFromFile(fileName) + fileName + ":" + getDownloadURLFromImageManager(this)
 		);
 		window.setTimeout("currFileDrag.style.opacity = '0.2';", 1);
 		trashBin.style.opacity = "0.7";
