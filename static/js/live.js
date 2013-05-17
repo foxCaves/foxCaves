@@ -142,6 +142,16 @@ var paintBrushes = {
 		preview: function(x, y, user, foregroundCanvasCTX) {
 			if(!this.active)
 				return;
+				
+			var radius = Math.sqrt(x * x + y * y);
+				
+			foregroundCanvasCTX.font = "10px Verdana";
+			foregroundCanvasCTX.fillText(
+				"Radius: " + radius + "px",
+				user.cursorData.lastX,
+				user.cursorData.lastY
+			)
+				
 			foregroundCanvasCTX.beginPath();
 			x = user.cursorData.lastX - x;
 			y = user.cursorData.lastY - y;

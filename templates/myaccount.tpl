@@ -5,20 +5,20 @@
 	<div class="control-group">
 		<label class="control-label">Current password</label>
 		<div class="controls">
-			<input type="password" name="old_password" value="" /> (Required to change your E-Mail or password)
+			<input type="password" name="old_password" placeholder="Current password" value="" /> (Required to change your E-Mail or password)
 		</div>
 	</div>
 	<legend>Change password</legend>
 	<div class="control-group">
 		<label class="control-label" for="newpass">New password</label>
 		<div class="controls">
-			<input type="password" name="password" id="newpass" value="" />
+			<input type="password" name="password" id="newpass" pattern=".{5}" placeholder="New password" value="" />
 		</div>
 	</div>
 	<div class="control-group">
 		<label class="control-label" for="newpassconf">Confirm new password</label>
 		<div class="controls">
-			<input type="password" name="password_confirm" id="newpassconf" value="" />
+			<input type="password" name="password_confirm" id="newpassconf" pattern=".{5}" placeholder="New password confirm" value="" />
 		</div>
 	</div>
 	<div class="control-group">
@@ -30,7 +30,7 @@
 	<div class="control-group">
 		<label class="control-label" for="newemail">New E-Mail</label>
 		<div class="controls">
-			<input type="email" name="email" id="newemail" value="<%= G.ngx.ctx.escape_html(G.ngx.ctx.user.email) %>" />
+			<input type="email" name="email" id="newemail" placeholder="New email" value="<%= G.ngx.ctx.escape_html(G.ngx.ctx.user.email) %>" />
 		</div>
 	</div>
 	<div class="control-group">
