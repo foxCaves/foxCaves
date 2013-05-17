@@ -180,6 +180,8 @@ input:invalid {
 	-webkit-box-shadow: 0 0 15px red !important;
 	-moz-box-shadow: 0 0 15px red !important;
 	box-shadow: 0 0 15px red !important;
+	
+	border-color: red !important;
 }
 
 
