@@ -46,7 +46,7 @@ var mimetypes = {
 }
 
 function getMimeTypeFromFile(file) {
-	return mimetypes[/([\d\w]+)$/.exec(file)] || "application/octet-stream";
+	return mimetypes[/([\d\w]+)$/.exec(file)[0]] || "application/octet-stream";
 }
 
 function handleDropFileSelect(event) {
@@ -354,7 +354,7 @@ function setupFileDragging() {
 	function endFileDrag(ev) {
 		currFileDrag.style.opacity = "1";
 		currFileDrag = false;
-		trashBin.style.opacity = "0.5";
+		trashBin.style.opacity = "0.05";
 	}
 
 	$("#file_manager li").each(function(idx, elem) {

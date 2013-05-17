@@ -12,13 +12,13 @@
 	<div class="control-group">
 		<label class="control-label" for="newpass">New password</label>
 		<div class="controls">
-			<input type="password" name="password" id="newpass" pattern=".{5}" placeholder="New password" value="" />
+			<input type="password" name="password" id="newpass" pattern=".{5,}" placeholder="New password" value="" />
 		</div>
 	</div>
 	<div class="control-group">
 		<label class="control-label" for="newpassconf">Confirm new password</label>
 		<div class="controls">
-			<input type="password" name="password_confirm" id="newpassconf" pattern=".{5}" placeholder="New password confirm" value="" />
+			<input type="password" name="password_confirm" id="newpassconf" pattern=".{5,}" placeholder="New password confirm" value="" />
 		</div>
 	</div>
 	<div class="control-group">

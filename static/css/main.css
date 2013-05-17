@@ -201,7 +201,7 @@ input[type="submit"] {
 	-webkit-transition: opacity .5s ease;
 	-moz-transition: opacity .5s ease;
 	-o-transition: opacity .5s ease;
-	opacity: 0.5;
+	opacity: 0.05;
 	z-index: 200;
 }
 
