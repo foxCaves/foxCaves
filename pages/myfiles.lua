@@ -17,9 +17,6 @@ if args.delete then
 	end
 end
 
-dofile("scripts/navtbl.lua")
-navtbl[2].active = true
 local files = database:zrevrange(database.KEYS.USER_FILES .. ngx.ctx.user.id, 0, -1)
 dofile("scripts/fileapi.lua")
-ngx.print(load_template("myfiles", {MAINTITLE = "My files", MESSAGE = message, ADDLINKS = build_nav(navtbl), FILES = files, file_get = file_get}))
-ngx.eof()
+printTemplateAndClose("myfiles", {MAINTITLE = "My files", MESSAGE = message, FILES = files, file_get = file_get})

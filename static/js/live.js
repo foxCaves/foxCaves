@@ -687,52 +687,61 @@ var networking = {
 		this.sendRaw(EVENT_CUSTOM + brushName + "|" + key + "|" + val);
 	},
 	connect: function() {
-		this.shouldConnect = true;
-		var webSocket = new WebSocket("wss://foxcav.es:8002/", "paint");
+		try {
+			this.shouldConnect = true;
+			var webSocket = new WebSocket("wss://foxcav.es:8002/", "paint");
 
-		webSocket.onmessage = function(event) {
-			var data = webSocket_buffer + event.data;
-			var datalen = data.length;
-			if(data.charAt(datalen - 1) != "\n") {
-				datalen = data.lastIndexOf("\n");
-				if(datalen) {
-					webSocket_buffer = data.substring(0, datalen);
-					data = data.substring(datalen + 1);
-				} else {
-					webSocket_buffer = data;
-					return;
+			webSocket.onmessage = function(event) {
+				var data = webSocket_buffer + event.data;
+				var datalen = data.length;
+				if(data.charAt(datalen - 1) != "\n") {
+					datalen = data.lastIndexOf("\n");
+					if(datalen) {
+						webSocket_buffer = data.substring(0, datalen);
+						data = data.substring(datalen + 1);
+					} else {
+						webSocket_buffer = data;
+						return;
+					}
 				}
+
+				data = data.split("\n");
+				for(var i = 0;i < data.length;i++)
+					networking.recvRaw(data[i]);
+			};
+
+			webSocket.onclose = webSocket.onerror = function(event) {//Unwanted disconnect
+				if(!networking.shouldConnect)
+					return;
+				window.setTimeout(function() { networking.connect() }, 200);
+				webSocket.close();
 			}
 
-			data = data.split("\n");
-			for(var i = 0;i < data.length;i++)
-				networking.recvRaw(data[i]);
-		};
-
-		webSocket.onclose = webSocket.onerror = function(event) {//Unwanted disconnect
-			if(!networking.shouldConnect)
-				return;
-			window.setTimeout(function() { networking.connect() }, 200);
-			webSocket.close();
+			webSocket.onopen = function(event) {
+				networking.sendDrawEvent(EVENT_JOIN, SESSIONID + "|" + LIVEDRAW_FILEID + "|" + LIVEDRAW_SID);
+				localUser.brushData.setColor("black");
+				localUser.brushData.setWidth(10.0);
+				localUser.brushData.setBrush("brush");
+			};
+			this.socket = webSocket;
+		} catch() {
 		}
-
-		webSocket.onopen = function(event) {
-			networking.sendDrawEvent(EVENT_JOIN, SESSIONID + "|" + LIVEDRAW_FILEID + "|" + LIVEDRAW_SID);
-			localUser.brushData.setColor("black");
-			localUser.brushData.setWidth(10.0);
-			localUser.brushData.setBrush("brush");
-		};
-		this.socket = webSocket;
 	},
 	close: function() {
 		this.shouldConnect = false;
-		this.socket.close();
+		try {
+			this.socket.close();
+		} catch() {
+		}
 	},
 	sendRaw: function(msg) {
 		msg = msg.trim();
 		if(msg.length == 0)
 			return;
-		this.socket.send(msg + "\n");
+		try {
+			this.socket.send(msg + "\n");
+		} catch() {
+		}
 	}
 }
 
@@ -808,8 +817,6 @@ function loadImage() {
 		backgroundCanvasCTX.drawImage(this, 0, 0);
 
 		imagePattern = backgroundCanvasCTX.createPattern(this, "no-repeat");
-		
-		
 
 		requestAnimationFrame(paintCanvas);
 

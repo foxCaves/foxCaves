@@ -2,7 +2,6 @@ lfs.chdir(ngx.var.main_root)
 dofile("config/main.lua")
 
 ngx.ctx.user = nil
-ngx.ctx.req_starttime = socket.gettime()
 
 local redis = require("resty.redis")
 
@@ -118,12 +117,16 @@ end
 
 function raw_push_action(action)
 	action = action or '='
-	local res = ngx.location.capture("/scripts/longpoll_push?" .. ngx.ctx.user.id .. "_" .. ngx.ctx.user.pushchan, {
+	ngx.location.capture("/scripts/longpoll_push?" .. ngx.ctx.user.id .. "_" .. ngx.ctx.user.pushchan, {
 		method = ngx.HTTP_POST,
 		body = action .. "|"
 	})
 end
 
+function printTemplateAndClose(name, params)
+	ngx.print(load_template(name, params))
+	ngx.eof()
+end
 dofile("scripts/access.lua")
 
 _G.ngx = ngx

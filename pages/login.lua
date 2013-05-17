@@ -42,7 +42,4 @@ else
 	end
 end
 
-dofile("scripts/navtbl.lua")
-navtbl[2].active = true
-ngx.print(load_template("login", {MAINTITLE = "Login", MESSAGE = message, ADDLINKS = build_nav(navtbl)}))
-ngx.eof()
+printTemplateAndClose("login", {MAINTITLE = "Login", MESSAGE = message})

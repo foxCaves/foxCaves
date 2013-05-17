@@ -41,5 +41,4 @@ else
 	message = "<div class='alert alert-error'>Sorry, but your code is invalid or expired</div>"
 end
 
-dofile("scripts/navtbl.lua")
-ngx.print(load_template("message", {MAINTITLE = actiontitle, MESSAGE = message, ADDLINKS = build_nav(navtbl)}))
+printTemplateAndClose("message", {MAINTITLE = actiontitle, MESSAGE = message})

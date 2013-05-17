@@ -18,11 +18,9 @@ end
 local database = ngx.ctx.database
 local fileowner = database:hget(database.KEYS.USERS .. file.user, "username")
 
-dofile("scripts/navtbl.lua")
 dofile("scripts/mimetypes.lua")
-ngx.print(load_template("view", {
+printTemplateAndClose("view", {
 	MAINTITLE = "View file - " .. file.name,
-	ADDLINKS = build_nav(navtbl),
 	FILE = file,
 	FILEID = nameregex,
 	FILEOWNER = fileowner,
@@ -33,5 +31,4 @@ ngx.print(load_template("view", {
 	FILE_TYPE_VIDEO = 3,
 	FILE_TYPE_AUDIO = 4,
 	FILE_TYPE_IFRAME = 5
-}))
-ngx.eof()
+})

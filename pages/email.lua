@@ -87,6 +87,4 @@ if args and args.send then
 	end
 end
 
-dofile("scripts/navtbl.lua")
-ngx.print(load_template(template_name, {MAINTITLE = actiontitle, MESSAGE = message, ADDLINKS = build_nav(navtbl), USERNAME = username, EMAIL = email, CAPTCHA = generate_captcha(captcha_error)}))
-ngx.eof()
+printTemplateAndClose(template_name, {MAINTITLE = actiontitle, MESSAGE = message, USERNAME = username, EMAIL = email, CAPTCHA = generate_captcha(captcha_error)})

@@ -18,6 +18,4 @@ if not invoiceid then
 end
 
 dofile("scripts/items.lua")
-dofile("scripts/navtbl.lua")
-ngx.print(load_template("gopro", {MAINTITLE = "Go pro", ADDLINKS = build_nav(navtbl), ITEMS = ITEMS, INVOICEID = invoiceid, HIDE_GOPRO_LINKS = true}))
-ngx.eof()
+printTemplateAndClose("gopro", {MAINTITLE = "Go pro", ITEMS = ITEMS, INVOICEID = invoiceid, HIDE_GOPRO_LINKS = true})

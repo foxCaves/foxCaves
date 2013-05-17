@@ -25,13 +25,10 @@ if file.type ~= 1 then
 	return ngx.exec("/error/400")
 end
 
-dofile("scripts/navtbl.lua")
-ngx.print(load_template("live", {
+printTemplateAndClose("live", {
 	MAINTITLE = "Live drawing file - " .. file.name,
-	ADDLINKS = build_nav(navtbl),
 	FILE = file,
 	FILEID = nameregex,
 	LDSID = sid,
 	MAX_BRUSH_WIDTH = 200
-}))
-ngx.eof()
+})

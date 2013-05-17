@@ -85,7 +85,4 @@ if args and args.register then
 	end
 end
 
-dofile("scripts/navtbl.lua")
-navtbl[3].active = true
-ngx.print(load_template(template_name, {MAINTITLE = "Register", MESSAGE = message, ADDLINKS = build_nav(navtbl), USERNAME = username, EMAIL = email, CAPTCHA = generate_captcha(captcha_error)}))
-ngx.eof()
+printTemplateAndClose(template_name, {MAINTITLE = "Register", MESSAGE = message, USERNAME = username, EMAIL = email, CAPTCHA = generate_captcha(captcha_error)})

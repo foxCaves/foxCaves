@@ -43,9 +43,6 @@ local function link_get(linkid)
 	return link
 end
 
-dofile("scripts/navtbl.lua")
-navtbl[3].active = true
 local links = database:zrevrange(database.KEYS.USER_LINKS .. ngx.ctx.user.id, 0, -1)
 dofile("scripts/fileapi.lua")
-ngx.print(load_template("mylinks", {MAINTITLE = "My links", MESSAGE = message, ADDLINKS = build_nav(navtbl), LINKS = links, link_get = link_get}))
-ngx.eof()
+printTemplateAndClose("mylinks", {MAINTITLE = "My links", MESSAGE = message, LINKS = links, link_get = link_get})

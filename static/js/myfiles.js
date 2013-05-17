@@ -445,10 +445,10 @@ function setupSearch() {
 		var val = this.value.toLowerCase();
 		for(i = 0;i < nodes.length;++i)
 			if(nodes[i].nodeType == 1)
-				if(nodes[i].firstChild.nextSibling.title.toLowerCase().indexOf(val) == -1)
+				if(nodes[i].children[0].innerText.toLowerCase().indexOf(val) == -1)
 					nodes[i].style.display = "none";
 				else if(nodes[i].style.display == "none")
-					nodes[i].style.display = "inline-block";
+					nodes[i].style.display = "";
 	});
 }
 

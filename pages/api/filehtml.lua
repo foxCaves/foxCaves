@@ -13,5 +13,4 @@ if not file then
 	return ngx.eof()
 end
 
-ngx.print(load_template("filehtml", {fileid = fileid, file = file}))
-ngx.eof()
+printTemplateAndClose("filehtml", {fileid = fileid, file = file})
