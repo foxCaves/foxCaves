@@ -14,7 +14,7 @@
 		</form>
 	</div>
 	<div style="text-align:center;" id="livedraw-wrapper">
-		<canvas id="livedraw" style="margin:auto" data-file-url="https://d16l38yicn0lym.cloudfront.net/f<%= RAWNAME %>"></canvas>
+		<canvas id="livedraw" style="margin:auto" data-file-url="https://fox.gy/f<%= RAWNAME %>"></canvas>
 	</div>
 	<div id="live-draw-options">
 		<fieldset>
