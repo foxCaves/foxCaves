@@ -10,11 +10,13 @@ local table_insert = table.insert
 local table_concat = table.concat
 local string_format = string.format
 local time = os.time
+--local pairs = pairs
 
 local lfs = require("lfs")
 lfs.chdir(" .. ")
-local websockets = require("websockets")
+local websockets = require("websocket")
 local redis = require("redis")
+local ev = require("ev")
 lfs = nil
 
 dofile("config/database.lua")
@@ -263,7 +265,7 @@ USERMETA = {}
 USERMETA.__index = USERMETA
 function USERMETA:send(data)
 	if self.socket then
-		self.socket:write(data .. "\n", websockets.WRITE_TEXT)
+		self.socket:send(data .. "\n", websockets.TEXT)
 	end
 end
 
@@ -291,7 +293,7 @@ function USERMETA:kick()
 	end
 
 	if self.socket then
-		self.socket:close(0)
+		self.socket:close()
 		self.socket = nil
 	end
 
@@ -384,29 +386,28 @@ local function paint_cb(ws)
 		databuff = ""
 	}, USERMETA)
 
-	ws:on_receive(function(ws, data)
+	ws:on_message(function(ws, data)
 		user:socket_onrecv(ws, data)
 	end)
 
-	ws:on_closed(function()
+	ws:on_close(function()
 		user:kick()
 	end)
 
-	ws:on_broadcast(websockets.WRITE_TEXT)
+	--ws:on_broadcast(websockets.TEXT)
 end
 
-local context = websockets.context({
-	port = 8002,
-	on_http = function() end,
+local context = websockets.server.ev.listen({
+	port = 8003,
 	protocols = {
 		paint = paint_cb
 	},
-	ssl_cert_filepath = "/etc/apache2/ssl/foxcav_es.crt",
-	ssl_private_key_filepath = "/etc/apache2/ssl/foxcav_es.key",
-	gid = 33,
-	uid = 33
+	default = function(ws)
+		ws:send('goodbye strange client')
+		ws:close()
+	end
+--	ssl_cert_filepath = "/etc/nginx/ssl/foxcav_es.bundle.crt",
+--	ssl_private_key_filepath = "/etc/nginx/ssl/foxcav_es.key"
 })
 
-while true do
-	context:service(100000)
-end
+ev.Loop.default:loop()
