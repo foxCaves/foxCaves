@@ -20,6 +20,8 @@ local ev = require("ev")
 lfs = nil
 
 dofile("config/main.lua")
+local WS_BIND_PORT = WEBSOCKET_PORT + 1
+
 dofile("config/database.lua")
 
 module("liveedit_websocket")
@@ -397,7 +399,7 @@ local function paint_cb(ws)
 end
 
 local context = websockets.server.ev.listen({
-	port = G.WEBSOCKET_PORT + 1,
+	port = WS_BIND_PORT,
 	protocols = {
 		paint = paint_cb
 	},
