@@ -689,7 +689,7 @@ var networking = {
 	connect: function() {
 		try {
 			this.shouldConnect = true;
-			var webSocket = new WebSocket("wss://foxcav.es:8002/", "paint");
+			var webSocket = new WebSocket("wss://foxcav.es:" + WEBSOCKET_PORT + "/", "paint");
 
 			webSocket.onmessage = function(event) {
 				var data = webSocket_buffer + event.data;
@@ -724,14 +724,14 @@ var networking = {
 				localUser.brushData.setBrush("brush");
 			};
 			this.socket = webSocket;
-		} catch() {
+		} catch(e) {
 		}
 	},
 	close: function() {
 		this.shouldConnect = false;
 		try {
 			this.socket.close();
-		} catch() {
+		} catch(e) {
 		}
 	},
 	sendRaw: function(msg) {
@@ -740,7 +740,7 @@ var networking = {
 			return;
 		try {
 			this.socket.send(msg + "\n");
-		} catch() {
+		} catch(e) {
 		}
 	}
 }

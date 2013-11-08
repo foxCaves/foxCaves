@@ -19,6 +19,7 @@ local redis = require("redis")
 local ev = require("ev")
 lfs = nil
 
+dofile("config/main.lua")
 dofile("config/database.lua")
 
 module("liveedit_websocket")
@@ -393,12 +394,10 @@ local function paint_cb(ws)
 	ws:on_close(function()
 		user:kick()
 	end)
-
-	--ws:on_broadcast(websockets.TEXT)
 end
 
 local context = websockets.server.ev.listen({
-	port = 8003,
+	port = G.WEBSOCKET_PORT + 1,
 	protocols = {
 		paint = paint_cb
 	},
@@ -406,8 +405,6 @@ local context = websockets.server.ev.listen({
 		ws:send('goodbye strange client')
 		ws:close()
 	end
---	ssl_cert_filepath = "/etc/nginx/ssl/foxcav_es.bundle.crt",
---	ssl_private_key_filepath = "/etc/nginx/ssl/foxcav_es.key"
 })
 
 ev.Loop.default:loop()
