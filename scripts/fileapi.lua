@@ -65,10 +65,12 @@ end
 function file_upload(fileid, filename, extension, thumbnail, filetype, thumbtype)
 	lfs.mkdir(FILE_STORAGE_PATH .. fileid)
 
-	os.rename("files/" .. fileid .. extension, FILE_STORAGE_PATH .. fileid .. "/file" .. extension)
+	--os.rename("files/" .. fileid .. extension, FILE_STORAGE_PATH .. fileid .. "/file" .. extension)
+	os.execute("mv \"files/" .. fileid .. extension .. "\" \"" .. FILE_STORAGE_PATH .. fileid .. "/file" .. extension .. "\"")
 
 	if thumbnail and thumbnail ~= "" then
-		os.rename("thumbs/" .. fileid .. thumbnail, FILE_STORAGE_PATH .. fileid .. "/thumb" .. thumbnail)
+		--os.rename("thumbs/" .. fileid .. thumbnail, FILE_STORAGE_PATH .. fileid .. "/thumb" .. thumbnail)
+		os.execute("mv \"thumbs/" .. fileid .. thumbnail .. "\" \"" .. FILE_STORAGE_PATH .. fileid .. "/thumb" .. thumbnail .. "\"")
 	end
 end
 
