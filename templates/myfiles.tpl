@@ -21,5 +21,5 @@
 	</fieldset>
 </form>
 <div style="display: none;" id="recycle_bin"></div>
-<script type="text/javascript" src="<%= STATIC_URL_PREFIX %>/js/myfiles.min.js"></script>
+<script type="text/javascript" src="<%= STATIC_URL_PREFIX %>/js/myfiles.js"></script>
 <%+ foot %>

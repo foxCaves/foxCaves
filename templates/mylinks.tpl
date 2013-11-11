@@ -10,5 +10,5 @@
 		</tr>
 <% end %>
 </table>
-<script type="text/javascript" src="<%= STATIC_URL_PREFIX %>/js/mylinks.min.js"></script>
+<script type="text/javascript" src="<%= STATIC_URL_PREFIX %>/js/mylinks.js"></script>
 <%+ foot %>

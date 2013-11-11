@@ -62,5 +62,5 @@
 		<h5>File cannot be viewed. Download it.</h5>
 	<% end %>
 	</div>
-	<script type="text/javascript" src="<%= STATIC_URL_PREFIX %>/js/view.min.js"></script>
+	<script type="text/javascript" src="<%= STATIC_URL_PREFIX %>/js/view.js"></script>
 <%+ foot %>
