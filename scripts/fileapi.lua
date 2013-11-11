@@ -63,7 +63,7 @@ function file_download(fileid, user)
 end
 
 local function fixup_filename(name)
-	local res, n, err = ngx.re.gsub(name, '["\\]', '', 'o')
+	local res, n, err = ngx.re.gsub(name, '["\\\\]', '', 'o')
 	if not res then
 		error(err)
 	end
