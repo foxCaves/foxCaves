@@ -70,6 +70,7 @@ function file_upload(fileid, filename, extension, thumbnail, filetype, thumbtype
 	os.rename("files/" .. fullname, FILE_STORAGE_PATH .. fileid .. "/file" .. extension)
 
 	if thumbnail and thumbnail ~= "" then
+		print("thumbs/" .. fullname, FILE_STORAGE_PATH .. fileid .. "/thumb" .. thumbnail)
 		os.rename("thumbs/" .. fullname, FILE_STORAGE_PATH .. fileid .. "/thumb" .. thumbnail)
 	end
 end
