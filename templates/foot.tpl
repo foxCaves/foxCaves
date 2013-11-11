@@ -18,8 +18,7 @@ if not G.ngx.var.http_X_Is_Js_Request then %>
 						</ul>
 						<ul class="nav pull-right">
 							<li>
-								<a>foxCaves &copy; Doridian 2012</a>
-								<!--<a>Currently powering <span id="filecount"><%= filecount %></span> files and <span id="usercount"><%= usercount %></span> users</a>-->
+								<a>foxCaves &copy; 2013</a>
 							</li>
 							<li class="dropdown">
 								<a href="#" class="dropdown-toggle" data-toggle="dropdown">Style</a>
