@@ -689,7 +689,7 @@ var networking = {
 	connect: function() {
 		try {
 			this.shouldConnect = true;
-			var webSocket = new WebSocket("wss://foxcav.es:" + WEBSOCKET_PORT + "/", "paint");
+			var webSocket = new WebSocket("wss://ws.foxcav.es:" + WEBSOCKET_PORT + "/", "paint");
 
 			webSocket.onmessage = function(event) {
 				var data = webSocket_buffer + event.data;
