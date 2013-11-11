@@ -63,16 +63,12 @@ function file_download(fileid, user)
 end
 
 function file_upload(fileid, filename, extension, thumbnail, filetype, thumbtype)
-	local fullname = fileid .. extension
-	
 	lfs.mkdir(FILE_STORAGE_PATH .. fileid)
 
-	os.rename("files/" .. fullname, FILE_STORAGE_PATH .. fileid .. "/file" .. extension)
+	os.rename("files/" .. fileid .. extension, FILE_STORAGE_PATH .. fileid .. "/file" .. extension)
 
 	if thumbnail and thumbnail ~= "" then
-		ngx.say("thumbs/" .. fullname .. "\n")
-		ngx.say(FILE_STORAGE_PATH .. fileid .. "/thumb" .. thumbnail .. "\n")
-		os.rename("thumbs/" .. fullname, FILE_STORAGE_PATH .. fileid .. "/thumb" .. thumbnail)
+		os.rename("thumbs/" .. fileid .. thumbnail, FILE_STORAGE_PATH .. fileid .. "/thumb" .. thumbnail)
 	end
 end
 
