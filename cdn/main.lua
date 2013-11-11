@@ -8,7 +8,7 @@ function send_file(disposition_type)
 		return ngx.eof()
 	end
 	
-	ngx.header["Content-Dispotition"] = disposition_type .. "; filename=" .. file.name .. file.extension
+	ngx.header["Content-Dispotition"] = disposition_type .. "; filename=" .. file.name
 	
-	ngx.req.set_uri("/rawget/" .. fileid .. "/file" .. file.extension)
+	ngx.req.set_uri("/rawget/" .. fileid .. "/file" .. file.extension, true)
 end
