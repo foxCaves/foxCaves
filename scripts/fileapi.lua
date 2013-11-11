@@ -64,6 +64,8 @@ end
 
 function file_upload(fileid, filename, extension, thumbnail, filetype, thumbtype)
 	local fullname = fileid .. extension
+	
+	lfs.mkdir(FILE_STORAGE_PATH .. fileid)
 
 	os.rename("files/" .. fullname, FILE_STORAGE_PATH .. fileid .. "/file" .. extension)
 
