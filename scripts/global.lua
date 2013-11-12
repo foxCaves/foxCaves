@@ -119,7 +119,7 @@ function ngx.ctx.get_version()
 	local fh = io.open(".revision", "r")
 	local ret = fh:read("*all")
 	fh:close()
-	return ret:gsub("%s+", ""):sub(1,8)
+	return ret:gsub("%s+", "")
 end
 
 function raw_push_action(action)

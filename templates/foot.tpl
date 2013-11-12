@@ -15,7 +15,7 @@
 						</ul>
 						<ul class="nav pull-right">
 							<li>
-								<a>foxCaves <%# IS_DEVELOPMENT and ngx.ctx.get_version() or "1.0" %></a>
+								<a>foxCaves <%# IS_DEVELOPMENT and ngx.ctx.get_version():sub(1,8) or "&copy; 2013" %></a>
 							</li>
 							<li class="dropdown">
 								<a href="#" class="dropdown-toggle" data-toggle="dropdown">Style</a>
@@ -38,6 +38,7 @@
 		<script src="<%= STATIC_URL_PREFIX %>/js/main.js" type="text/javascript"></script>
 	</body>
 </html>
+<!-- GIT rev <%# ngx.ctx.get_version() %> -->
 <% else %>
 |{
 	"filecount": "<%= filecount %>",
