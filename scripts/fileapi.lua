@@ -1,10 +1,6 @@
 local lfs = require("lfs")
 local posix = require("posix")
 
-if not ngx then
-	lfs.chdir(ngx.var.main_root .. "")
-end
-
 local database = ngx.ctx.database
 
 local function file_fullread(filename)
