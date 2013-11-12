@@ -1,8 +1,5 @@
 <br /><br />
-<%
-local filecount = 0
-local usercount = 0
-if not G.ngx.var.http_X_Is_Js_Request then %>
+<% if not G.ngx.var.http_X_Is_Js_Request then %>
 		</div>
 		<div class="navbar navbar-fixed-bottom">
 			<div class="navbar-inner">
@@ -18,7 +15,7 @@ if not G.ngx.var.http_X_Is_Js_Request then %>
 						</ul>
 						<ul class="nav pull-right">
 							<li>
-								<a>foxCaves &copy; 2013</a>
+								<a>foxCaves v<%# G.ngx.ctx.get_version() %></a>
 							</li>
 							<li class="dropdown">
 								<a href="#" class="dropdown-toggle" data-toggle="dropdown">Style</a>

@@ -115,6 +115,13 @@ function ngx.ctx.get_post_args(...)
 	return ngx.req.get_post_args(...)
 end
 
+function ngx.ctx.get_version()
+	local fh = io.open(".revision", "r")
+	local ret = fh:read("*all")
+	fh:close()
+	return ret
+end
+
 function raw_push_action(action)
 	action = action or '='
 	ngx.location.capture("/scripts/longpoll_push?" .. ngx.ctx.user.id .. "_" .. ngx.ctx.user.pushchan, {
