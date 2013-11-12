@@ -70,6 +70,8 @@ function file_move(src, dst)
 	
 	fhsrc:close()
 	fhdst:close()
+	
+	os.remove(src)
 end
 
 function file_upload(fileid, filename, extension, thumbnail, filetype, thumbtype)
