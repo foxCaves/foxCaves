@@ -59,7 +59,7 @@ function file_download(fileid, user)
 	return true, file_fullread(FILE_STORAGE_PATH .. fileid .. "/file" .. file.extension), file
 end
 
-local function file_move(src, dst)
+function file_move(src, dst)
 	posix.exec("/bin/mv", src, dst)
 end
 

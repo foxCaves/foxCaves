@@ -69,6 +69,8 @@ else
 	extension = extension:lower()
 end
 
+dofile("scripts/fileapi.lua")
+
 local headers = ngx.req.get_headers()
 if headers.x_is_base64 == "yes" then
 	local f = io.open(file, "rb")
@@ -154,7 +156,6 @@ local prefix, suffix = mtype:match("([a-z]+)/([a-z]+)")
 
 local fileType, thumbnailType, thumbnail = mimeHandlers[prefix](suffix)
 
-dofile("scripts/fileapi.lua")
 file_upload(fileid, name, extension, thumbnail, mtype, thumbnailType)
 
 local fileKeyID = database.KEYS.FILES .. fileid
