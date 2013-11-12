@@ -60,7 +60,7 @@ function file_download(fileid, user)
 end
 
 function file_move(src, dst)
-	posix.exec("/bin/mv", src, dst)
+	posix.execp("/bin/mv", src, dst)
 end
 
 function file_upload(fileid, filename, extension, thumbnail, filetype, thumbtype)
