@@ -84,7 +84,7 @@ if headers.x_is_base64 == "yes" then
 	content = nil
 	f = nil
 else
-	file_move(file, "files/" .. fileid .. extension)
+	os.rename(file, "files/" .. fileid .. extension)
 end
 
 dofile("scripts/mimetypes.lua")

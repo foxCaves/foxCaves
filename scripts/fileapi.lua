@@ -60,13 +60,25 @@ function file_download(fileid, user)
 end
 
 function file_move(src, dst)
-	local cpid = posix.fork()
-	if cpid == 0 then
-		posix.exec("/bin/mv", src, dst)
-		posix._exit(0)
-	else
-		posix.wait(cpid)
+	local fhsrc = io.open(src, "rb")
+	local fhdst = io.open(dst, "wb")
+	
+	while true do
+		local buffer = fhsrc:read(4096)
+		if not buffer then break end
+		fhdst:write(buffer)
 	end
+	
+	fhsrc:close()
+	fhdst:close()
+
+	--local cpid = posix.fork()
+	--if cpid == 0 then
+	--	posix.exec("/bin/mv", src, dst)
+	--	posix._exit(0)
+	--else
+	--	posix.wait(cpid)
+	--end
 end
 
 function file_upload(fileid, filename, extension, thumbnail, filetype, thumbtype)
