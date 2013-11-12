@@ -60,7 +60,13 @@ function file_download(fileid, user)
 end
 
 function file_move(src, dst)
-	posix.execp("/bin/mv", src, dst)
+	local cpid = posix.fork()
+	if cpid == 0 then
+		posix.exec("/bin/mv", src, dst)
+		posix._exit(0)
+	else
+		posix.wait(cpid)
+	end
 end
 
 function file_upload(fileid, filename, extension, thumbnail, filetype, thumbtype)
