@@ -1,5 +1,4 @@
 local lfs = require("lfs")
-local posix = require("posix")
 
 local database = ngx.ctx.database
 
@@ -71,14 +70,6 @@ function file_move(src, dst)
 	
 	fhsrc:close()
 	fhdst:close()
-
-	--local cpid = posix.fork()
-	--if cpid == 0 then
-	--	posix.exec("/bin/mv", src, dst)
-	--	posix._exit(0)
-	--else
-	--	posix.wait(cpid)
-	--end
 end
 
 function file_upload(fileid, filename, extension, thumbnail, filetype, thumbtype)
