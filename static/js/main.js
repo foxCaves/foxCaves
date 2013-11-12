@@ -91,7 +91,7 @@ $(document).ready(function(){
 		urlPrefixStream: "/push/stream",
 		urlPrefixEventsource: "/push/eventsource",
 		urlPrefixLongpolling: "/push/longpolling",
-		urlPrefixWebsocket: "/push/websocket"
+		modes: "eventsource|stream|longpolling"
 	});
 	pushstream.onmessage = messageReceived;
 	pushstream.addChannel(PUSH_CHANNEL);
