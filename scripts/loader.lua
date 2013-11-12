@@ -134,14 +134,14 @@ end
 local function debug_trace(err)
 	local out = {
 		"<html><head>\
-		<script type=\"text/javascript\" src=\"http://cdnjs.cloudflare.com/ajax/libs/jquery/1.8.3/jquery.min.js\"></script>\
-		<script type=\"text/javascript\" src=\"http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js\"></script>\
-		<script src=\"http://cdnjs.cloudflare.com/ajax/libs/prettify/188.0.0/prettify.js\" type=\"text/javascript\"></script>\
-		<script src=\"http://cdnjs.cloudflare.com/ajax/libs/prettify/188.0.0/lang-lua.js\" type=\"text/javascript\"></script>\
-		<script type=\"text/javascript\" src=\"http://_static.staging.foxcav.es/errorpage/error.js\"></script>\
-		<link rel=\"stylesheet\" type=\"text/css\" href=\"http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/themes/base/jquery-ui.css\" />\
-		<link rel=\"stylesheet\" type=\"text/css\" href=\"http://_static.staging.foxcav.es/errorpage/error.css\" />\
-		<link rel=\"stylesheet\" type=\"text/css\" href=\"http://_static.staging.foxcav.es/css/prettify.css\" />\
+		<script type=\"text/javascript\" src=\"https://cdnjs.cloudflare.com/ajax/libs/jquery/1.8.3/jquery.min.js\"></script>\
+		<script type=\"text/javascript\" src=\"https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js\"></script>\
+		<script src=\"https://cdnjs.cloudflare.com/ajax/libs/prettify/188.0.0/prettify.js\" type=\"text/javascript\"></script>\
+		<script src=\"https://cdnjs.cloudflare.com/ajax/libs/prettify/188.0.0/lang-lua.js\" type=\"text/javascript\"></script>\
+		<script type=\"text/javascript\" src=\"https://foxcav.es/static/errorpage/error.js\"></script>\
+		<link rel=\"stylesheet\" type=\"text/css\" href=\"https://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/themes/base/jquery-ui.css\" />\
+		<link rel=\"stylesheet\" type=\"text/css\" href=\"https://foxcav.es/static/errorpage/error.css\" />\
+		<link rel=\"stylesheet\" type=\"text/css\" href=\"https://foxcav.es/static/css/prettify.css\" />\
 		</head><body><h1 class=\"ui-widget\">Original Error:",
 		err,
 		"</h1><div class='accordion'><h3 class='autoclick'><a href='#'>UserInfo</a></h3><div>",
