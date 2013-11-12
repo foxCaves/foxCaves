@@ -1,4 +1,5 @@
 local lfs = require("lfs")
+local posix = require("posix")
 
 if not ngx then
 	lfs.chdir(ngx.var.main_root .. "")
@@ -62,17 +63,8 @@ function file_download(fileid, user)
 	return true, file_fullread(FILE_STORAGE_PATH .. fileid .. "/file" .. file.extension), file
 end
 
-local function fixup_filename(name)
-	local res, n, err = ngx.re.gsub(name, '["\\\\]', '', 'o')
-	if not res then
-		error(err)
-	end
-	return res
-end
-
 function file_move(src, dst)
-	--os.rename(src, dst)
-	os.execute("mv \"" .. fixup_filename(src) .. "\" \"" .. fixup_filename(dst) .. "\"")
+	posix.exec("/bin/mv", src, dst)
 end
 
 function file_upload(fileid, filename, extension, thumbnail, filetype, thumbtype)
