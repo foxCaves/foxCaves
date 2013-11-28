@@ -90,7 +90,7 @@ $(document).ready(function(){
 		useSSL: useSSL,
 		urlPrefixStream: "/push/stream",
 		urlPrefixLongpolling: "/push/longpolling",
-		modes: "stream|longpolling"
+		modes: "longpolling"
 	});
 	pushstream.onmessage = messageReceived;
 	pushstream.addChannel(PUSH_CHANNEL);
