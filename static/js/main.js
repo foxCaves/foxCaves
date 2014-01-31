@@ -88,9 +88,8 @@ $(document).ready(function(){
 		host: window.location.hostname,
 		port: port,
 		useSSL: useSSL,
-		urlPrefixEventsource: "/push/eventsource",
 		urlPrefixLongpolling: "/push/longpolling",
-		modes: "eventsource|longpolling"
+		modes: "longpolling"
 	});
 	pushstream.onmessage = messageReceived;
 	pushstream.addChannel(PUSH_CHANNEL);

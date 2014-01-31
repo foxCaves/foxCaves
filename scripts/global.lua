@@ -3,7 +3,7 @@ dofile("config/main.lua")
 
 ngx.ctx.user = nil
 
-local redis = require("nginx.redis")
+local redis = require("resty.redis")
 
 local database, err = redis:new()
 if not database then
