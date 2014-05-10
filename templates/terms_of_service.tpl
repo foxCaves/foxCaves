@@ -9,7 +9,7 @@
 				<p>For the purpose of this document the following legal definitions are to be applied as appropriate</p>
 				<ol>
 					<li>"foxCaves" refers to foxcav.es and excludes its shareholders, owners, or operators.</li>
-					<li>"foxCaves Network" refers to any website, product, or service owned and/or operated under the foxcav.es or fox.gy domains</li>
+					<li>"foxCaves Network" refers to any website, product, or service owned and/or operated under the foxcav.es or fox.re domains</li>
 					<li>"Content" refers to any image file that is shared, uploaded, or distributed through the foxCaves Network. </li>
 					<li>"You", "Your" refers to the individual who uploads or has uploaded content to the foxCaves Network. </li>
 				</ol>

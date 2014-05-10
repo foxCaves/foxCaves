@@ -18,38 +18,38 @@
 			<div class="control-group">
 				<label class="control-label" for="view-link">View link</label>
 				<div class="controls">
-					<input readonly="readonly" id="view-link" type="text" value="https://fox.gy/v<%= FILEID %>" />
+					<input readonly="readonly" id="view-link" type="text" value="https://fox.re/v<%= FILEID %>" />
 				</div>
 			</div>
 			<div class="control-group">
 				<label class="control-label" for="direct-link">Direct link</label>
 				<div class="controls">
-					<input readonly="readonly" id="direct-link" type="text" value="https://fox.gy/f<%= FILEID %><%= FILE.extension %>" />
+					<input readonly="readonly" id="direct-link" type="text" value="https://fox.re/f<%= FILEID %><%= FILE.extension %>" />
 				</div>
 			</div>
 			<div class="control-group">
 				<label class="control-label" for="download-link">Download link</label>
 				<div class="controls">
-					<input readonly="readonly" id="download-link" type="text" value="https://fox.gy/d<%= FILEID %><%= FILE.extension %>" />
+					<input readonly="readonly" id="download-link" type="text" value="https://fox.re/d<%= FILEID %><%= FILE.extension %>" />
 				</div>
 			</div>
 		</form>
 	</div>
-	<a href="https://fox.gy/d<%= RAWNAME %>" class="btn btn-large btn-block btn-primary">Download file</a>
+	<a href="https://fox.re/d<%= RAWNAME %>" class="btn btn-large btn-block btn-primary">Download file</a>
 	<div id="preview-wrapper">
 	<% if FILE.type == FILE_TYPE_IMAGE then %>
-		<a href="https://fox.gy/f<%= RAWNAME %>"><img src="https://fox.gy/f<%= RAWNAME %>"></a>
+		<a href="https://fox.re/f<%= RAWNAME %>"><img src="https://fox.re/f<%= RAWNAME %>"></a>
 	<% elseif FILE.type == FILE_TYPE_TEXT then %>
 		<noscript>JavaScript required to preview code/text</noscript>
 		<pre class="prettyprint linenums" style="display: none;" data-thumbnail-source="<%= FILEID %><%= FILE.thumbnail %>"></pre>
 	<% elseif FILE.type == FILE_TYPE_VIDEO then %>
 		<video controls="controls">
-			<source src="https://fox.gy/f<%= RAWNAME %>" type="<%= MIMETYPES[FILE.extension] %>" />
+			<source src="https://fox.re/f<%= RAWNAME %>" type="<%= MIMETYPES[FILE.extension] %>" />
 			Your browser is too old.
 		</video>
 	<% elseif FILE.type == FILE_TYPE_AUDIO then %>
 		<audio id="audioplayer">
-			<source src="https://fox.gy/f<%= RAWNAME %>" type="<%= MIMETYPES[FILE.extension] %>" />
+			<source src="https://fox.re/f<%= RAWNAME %>" type="<%= MIMETYPES[FILE.extension] %>" />
 			Your browser is too old.
 		</audio>
 		<a href="#" onclick="return dancer_play();">Play</a>
@@ -57,7 +57,7 @@
 		<script type="text/javascript" src="<%= STATIC_URL_PREFIX %>/js/dancer.js"></script>
 		<script type="text/javascript" src="<%= STATIC_URL_PREFIX %>/js/audiovis.js"></script>
 	<% elseif FILE.type == FILE_TYPE_IFRAME then %>
-		<iframe id="pdf-view" src="https://fox.gy/f<%= RAWNAME %>" type="<%= MIMETYPES[FILE.extension] %>"></iframe>
+		<iframe id="pdf-view" src="https://fox.re/f<%= RAWNAME %>" type="<%= MIMETYPES[FILE.extension] %>"></iframe>
 	<% else %>
 		<h5>File cannot be viewed. Download it.</h5>
 	<% end %>

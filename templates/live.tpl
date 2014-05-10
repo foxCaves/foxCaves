@@ -8,13 +8,13 @@
 					Invite others to this livedraw:
 				</label>
 				<div class="controls">
-					<input type="text" readonly="readonly" id="inviteid" value="https://fox.gy/l<%= FILEID %>?<%= LDSID %>" />
+					<input type="text" readonly="readonly" id="inviteid" value="https://fox.re/l<%= FILEID %>?<%= LDSID %>" />
 				</div>
 			</div>
 		</form>
 	</div>
 	<div style="text-align:center;" id="livedraw-wrapper">
-		<canvas id="livedraw" style="margin:auto" data-file-url="https://fox.gy/f<%= RAWNAME %>"></canvas>
+		<canvas id="livedraw" style="margin:auto" data-file-url="https://fox.re/f<%= RAWNAME %>"></canvas>
 	</div>
 	<div id="live-draw-options">
 		<fieldset>
