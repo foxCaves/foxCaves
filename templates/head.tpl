@@ -9,6 +9,8 @@
 		<link rel="stylesheet" type="text/css" href="<%= STATIC_URL_PREFIX %>/css/prettify.css" />
 
 		<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/1.9.0/jquery.min.js" type="text/javascript"></script>
+		<script src="//cdn.ravenjs.com/1.1.15/console,jquery,native/raven.min.js" type="text/javascript"></script>
+		<script type="text/javascript">Raven.config('https://e830ac61d0d640adbcca8e5170720d1b@sentry.foxba.se/3').install();</script>
 		<script src="<%= STATIC_URL_PREFIX %>/js/init.js" type="text/javascript"></script>
 		<script type="text/javascript">var _gaq=_gaq||[];_gaq.push(['_setAccount','UA-9434636-6']);_gaq.push(['_setDomainName','foxcav.es']);_gaq.push(['_trackPageview']);(function(){var ga=document.createElement('script');ga.type='text/javascript';ga.async=true;ga.src=('https:'==document.location.protocol?'https://ssl':'http://www')+'.google-analytics.com/ga.js';var s=document.getElementsByTagName('script')[0];s.parentNode.insertBefore(ga,s);})();</script>
 		<title><%= MAINTITLE %> - foxCaves</title>
