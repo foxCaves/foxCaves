@@ -17,13 +17,20 @@ module.exports = function(grunt) {
 			}
 		},
 		uglify: {
+			options: {
+				beautify: false,
+				compress: true,
+				warnings: true,
+				mangle: true,
+				sourceMap: true
+			},
 			dist: {
 				files: [{
 					expand: true,
 					cwd: source_directory,
 					src: ['js/**/*.js'],
 					dest: target_directory,
-				}]
+				}],
 			}
 		},
 		cssmin: {
