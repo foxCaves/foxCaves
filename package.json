@@ -1,0 +1,23 @@
+{
+	"name": "foxCaves",
+	"version": "0.0.0",
+	"description": "",
+	"main": "Gruntfile.js",
+	"dependencies": {
+		"grunt": "~0.4.4",
+		"grunt-concurrent": "~0.5.0",
+		"grunt-contrib-clean": "~0.5.0",
+		"grunt-contrib-imagemin": "~0.7.0",
+		"grunt-contrib-uglify": "~0.4.0",
+		"grunt-contrib-cssmin": "~0.10.0"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/Doridian/foxCaves"
+	},
+	"author": "Mark Dietzer <mriq91@gmail.com>",
+	"license": "Proprietary",
+	"bugs": {
+		"url": "https://github.com/Doridian/foxCaves/issues"
+	}
+}
