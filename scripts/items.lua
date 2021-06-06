@@ -16,7 +16,7 @@ local THREEMONTH = 3 * ONEMONTH
 local SIXMONTH = 6 * ONEMONTH
 local TWELVEMONTH = 12 * ONEMONTH
 
-PAYPAL_EMAIL = "mriq91@gmail.com"
+PAYPAL_EMAIL = "foxcaves@doridian.net"
 
 ITEMS = {
 	{

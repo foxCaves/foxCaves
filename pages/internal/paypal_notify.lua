@@ -1,6 +1,7 @@
 dofile(ngx.var.main_root .. "/scripts/global.lua")
 local database = ngx.ctx.database
 
+--[[
 local userid = ngx.req.get_uri_args().userid
 local args
 
@@ -12,7 +13,7 @@ local function paypal_result(str, noemail)
 			table.insert(res, k .. " => ".. v .. "\n")
 		end
 	end
-	mail("mriq91@gmail.com", "[foxCaves] PayPal DEBUG", str .. "\nIP: " .. ngx.var.remote_addr .. "\nUserID: " .. (userid or "N/A") .. "\nPOST DATA\n" .. table.concat(res), "noreply@foxcav.es", "foxCaves")
+	mail("foxcaves@doridian.net", "[foxCaves] PayPal DEBUG", str .. "\nIP: " .. ngx.var.remote_addr .. "\nUserID: " .. (userid or "N/A") .. "\nPOST DATA\n" .. table.concat(res), "noreply@foxcav.es", "foxCaves")
 end
 
 
@@ -69,3 +70,4 @@ database:sadd(database.KEYS.USEDINVOICES, args.invoice)
 
 paypal_result("Code: #SUCCESS")
 ngx.eof()
+]]
