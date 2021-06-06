@@ -200,7 +200,7 @@ if IS_DEVELOPMENT then
 	end
 else
 	local raven = require("raven")
-	local rvn = raven:new("http://89c294b9de3042249b153e0a87d9f41b:d35ba471234648c4914f7df629dd8e78@sentry.doridian.net/2", {
+	local rvn = raven:new("https://5f77aea36e6c4aa2882adc43f9718c44@o804863.ingest.sentry.io/5803114", {
 		tags = {
 			environment = IS_DEVELOPMENT and "staging" or "prod",
 			file = ngx.var.run_lua_file,
