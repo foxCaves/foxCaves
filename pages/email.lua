@@ -80,7 +80,7 @@ if args and args.send then
 
 					message = "<div class='alert alert-warning'>E-Mail sent.</div>"
 					template_name = "message"
-					ses_mail(userdata.email, subject, email, "noreply@foxcav.es", "foxCaves")
+					mail(userdata.email, subject, email, "noreply@foxcav.es", "foxCaves")
 				end
 			end
 		end
