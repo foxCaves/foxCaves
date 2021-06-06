@@ -8,7 +8,7 @@ function newLink() {
 function createLink(linkurl) {
 	$.get("/api/shorten?"+linkurl, function(data) {
 		data = data.trim();
-		prompt("Here is your shortened link", "https://fox.re/g" + data);
+		prompt("Here is your shortened link", "https://f0x.es/g" + data);
 		document.location.reload();
 	});
 }

@@ -32,7 +32,7 @@ function docReady() {
 		ele.style.display = "";
 		ele.innerHTML = "[Loading preview...]";
 		loadingEles++;
-		$.get('https://fox.re/thumbs/'+src, function(data) {
+		$.get('https://f0x.es/thumbs/'+src, function(data) {
 			ele.innerHTML = data;
 			loadDone();
 		});
