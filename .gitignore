@@ -1,7 +1,5 @@
-/config/*
-/files/*
-/thumbs/*
-/static/dls/*
-/static/js/*.min.js
-/static/css/*.min.css
-Thumbs.db
+/config
+/files
+/thumbs
+/diststatic
+node_modules
