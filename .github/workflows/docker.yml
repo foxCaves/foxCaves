@@ -24,7 +24,8 @@ jobs:
         with:
           push: true
           build-args:
-            GIT_REVISION: ${{ github.sha }}
+            - name: GIT_REVISION
+              value: ${{ github.sha }}
           tags: |
             docker.pkg.github.com/foxcaves/site/foxcaves-site:${{ github.sha }}
             docker.pkg.github.com/foxcaves/site/foxcaves-site:latest
