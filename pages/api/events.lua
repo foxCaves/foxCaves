@@ -21,8 +21,10 @@ if err then
     return
 end
 
+local should_run = true
+
 local function websocket_read()
-    while true do
+    while should_run do
         local data, typ, err = ws:recv_frame()
         if ws.fatal or typ == "close" or typ == "error" then
             ws:send_close()
@@ -36,7 +38,7 @@ local function websocket_read()
 end
 
 local function redis_read()
-    while true do
+    while should_run do
         local res, err = database:read_reply()
         if err and err ~= "timeout" then
             ws:send_close()
@@ -51,5 +53,7 @@ end
 
 local redis_thread = ngx.thread.spawn(redis_read)
 websocket_read()
+should_run = false
 ngx.eof()
 ngx.thread.wait(redis_thread)
+database:close()
