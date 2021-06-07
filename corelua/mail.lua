@@ -31,7 +31,7 @@ end
 
 function mail(to_addr, subject, content, from_addr, from_name, headers)
 	local sock = ngx.socket.tcp()
-	
+
 	local ok, err = sock:connect(mailip, 465)
 	if not ok then
 		error("Failed to connect to SMTP: " .. err)

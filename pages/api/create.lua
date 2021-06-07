@@ -109,17 +109,17 @@ local mimeHandlers = {
 				thumbnail
 			)
 		)
-		
+
 		if not lfs.attributes("/tmp/fc_thumbs/" .. thumbnail, "size") then
 			return FILE_TYPE_IMAGE, nil, nil
 		end
 		return FILE_TYPE_IMAGE, "image/png", thumbext
 	end,
-	
+
 	text = function()
 		local fh = io.open("/tmp/fc_files/" .. fileid .. extension, "r")
 		local content = ngx.ctx.escape_html(fh:read(4096))
-		
+
 		if fh:read(1) then
 			content = content .. "\n<i>[...]</i>"
 		end
@@ -135,15 +135,15 @@ local mimeHandlers = {
 
 		return FILE_TYPE_TEXT, "text/plain", extension
 	end,
-	
+
 	video = function()
 		return FILE_TYPE_VIDEO, nil, nil
 	end,
-	
+
 	audio = function()
 		return FILE_TYPE_AUDIO, nil, nil
 	end,
-	
+
 	application = function(suffix)
 		if(suffix == "pdf") then
 			return FILE_TYPE_IFRAME, nil, nil

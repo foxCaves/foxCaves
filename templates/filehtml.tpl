@@ -31,4 +31,4 @@
 		</span>
 <%= G.ngx.ctx.format_size(file.size) %>
 	</div>
-</li>	
+</li>

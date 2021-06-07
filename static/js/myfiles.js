@@ -56,7 +56,7 @@ function handleDropFileSelect(event) {
 
 	var datTrans = event.originalEvent.dataTransfer;
 
-	if(datTrans.files.length > 0) { 
+	if(datTrans.files.length > 0) {
 		var files = datTrans.files;
 		for(var i=0;i<files.length;i++) {
 			dropZoneUploads.push(files[i]);
@@ -333,7 +333,7 @@ function setupFileDragging() {
 	$(".image_manage_top, .image_manage_bottom").each(function(idx, elem) {
 		elem.style.cursor="move";
 	});
-	
+
 	$(".image_manage_bottom > span > a[title=Delete]").click(function() {
 		deleteFile(getFileIDFromID(this.parentNode.parentNode.parentNode.id), true);
 	});
@@ -345,7 +345,7 @@ function setupFileDragging() {
 		var fileName = this.children[0].innerText;
 		console.log(fileName);
 		event.dataTransfer.setData(
-			"DownloadURL", 
+			"DownloadURL",
 			getMimeTypeFromFile(fileName) + fileName + ":" + getDownloadURLFromImageManager(this)
 		);
 		window.setTimeout("currFileDrag.style.opacity = '0.2';", 1);

@@ -13,12 +13,12 @@ html::-webkit-scrollbar-track:hover {
 
 html::-webkit-scrollbar-thumb {
 	background-color: grey;
-	box-shadow: inset 2px 2px 6px rgba(0, 0, 0, 0.4); 
+	box-shadow: inset 2px 2px 6px rgba(0, 0, 0, 0.4);
 	border-radius: 8px;
 }
 
 html::-webkit-scrollbar-thumb:active {
-	box-shadow: inset 2px 2px 6px rgba(0, 0, 0, 0.8); 
+	box-shadow: inset 2px 2px 6px rgba(0, 0, 0, 0.8);
 }
 
 html::-webkit-scrollbar-button,
@@ -40,17 +40,17 @@ html::-webkit-resizer {
 
 .image_manage_main {
 	display: inline-block;
-	
+
 	width: 150px;
 	height: 150px;
-	
+
 	margin: 0px 1px 10px 14px;
-	
+
 	border: 1px solid black;
 	overflow: hidden;
 	background: no-repeat;
 	background-position: center;
-	
+
 	overflow: visible;
 }
 
@@ -60,7 +60,7 @@ html::-webkit-resizer {
 	text-align: left;
 	padding-right: 5px;
 	padding-left: 4px;
-	
+
 	transition: background-color 0.2s ease;
 	-webkit-transition: background-color 0.2s ease;
 	-moz-transition: background-color 0.2s ease;
@@ -180,12 +180,12 @@ input:invalid {
 	-webkit-box-shadow: 0 0 15px red !important;
 	-moz-box-shadow: 0 0 15px red !important;
 	box-shadow: 0 0 15px red !important;
-	
+
 	border-color: red !important;
 }
 
 
-input[type="submit"] {	
+input[type="submit"] {
 	-webkit-transition: width 0.6s ease, box-shadow 0.6s ease;
 	-moz-transition: width 0.6s ease, box-shadow 0.6s ease;
 	-o-transition: width 0.6s ease, box-shadow 0.6s ease;
@@ -265,7 +265,7 @@ input[type="submit"] {
 	-moz-user-select: none;
 	-ms-user-select: none;
 	user-select: none;
-	
+
 	height: 150px;
 	display: inline-block;
 	outline: 3px solid black;
@@ -273,7 +273,7 @@ input[type="submit"] {
 
 #color-selector {
 	width: 250px;
-	
+
 	background-image:	-webkit-linear-gradient(top, black, transparent, white),
 						-webkit-linear-gradient(left, #F00, #FF0, #0F0, #0FF, #00F, #F0F, #F00);
 }
@@ -290,7 +290,7 @@ input[type="submit"] {
 
 #saturisation-selector {
 	width: 20px;
-	background-image: -webkit-linear-gradient(top, hsl(0, 100%, 50%), transparent);	
+	background-image: -webkit-linear-gradient(top, hsl(0, 100%, 50%), transparent);
 }
 
 #opacity-selector {

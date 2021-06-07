@@ -23,7 +23,7 @@ $(document).ready(function() {
 						video.webkitCancelFullScreen();
 
 				} else {
-					if(video.mozRequestFullScreen) 
+					if(video.mozRequestFullScreen)
 						video.mozRequestFullScreen();
 					else if(video.webkitEnterFullScreen)
 						video.webkitEnterFullScreen();

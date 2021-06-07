@@ -142,16 +142,16 @@ var paintBrushes = {
 		preview: function(x, y, user, foregroundCanvasCTX) {
 			if(!this.active)
 				return;
-				
+
 			var radius = Math.sqrt(x * x + y * y);
-				
+
 			foregroundCanvasCTX.font = "10px Verdana";
 			foregroundCanvasCTX.fillText(
 				"Radius: " + radius + "px",
 				user.cursorData.lastX,
 				user.cursorData.lastY
 			)
-				
+
 			foregroundCanvasCTX.beginPath();
 			x = user.cursorData.lastX - x;
 			y = user.cursorData.lastY - y;
@@ -581,7 +581,7 @@ var networking = {
 						y: parseFloat(payload[6]) * scaleFactor,
 						lastX: 0,
 						lastY: 0
-					},  
+					},
 				};
 				for(brush in paintBrushes) {
 					if(paintBrushes[brush].usesCustomData) {

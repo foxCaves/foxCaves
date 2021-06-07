@@ -40,7 +40,7 @@ function preprocessTemplate(code, insideother)
 		if codeBlock ~= "" then
 			table.insert(concatTbl, "tinsert(retTbl, [["..codeBlock.."]])")
 		end
-		
+
 		if(match ~= "") then
 			if(marker == "=") then
 				table.insert(concatTbl, "tinsert(retTbl, "..match..")")

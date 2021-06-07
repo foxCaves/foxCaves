@@ -62,16 +62,16 @@ end
 function file_move(src, dst)
 	local fhsrc = io.open(src, "rb")
 	local fhdst = io.open(dst, "wb")
-	
+
 	while true do
 		local buffer = fhsrc:read(4096)
 		if not buffer then break end
 		fhdst:write(buffer)
 	end
-	
+
 	fhsrc:close()
 	fhdst:close()
-	
+
 	os.remove(src)
 end
 

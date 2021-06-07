@@ -156,7 +156,7 @@ if IS_DEVELOPMENT then
 			),
 			"</tbody></table></div>"
 		}
-		
+
 		local cur = nil
 		for level = 2, 100 do
 			cur = debug.getinfo(level)
