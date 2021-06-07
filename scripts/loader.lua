@@ -1,12 +1,15 @@
 local IS_DEVELOPMENT = (ngx.var.IS_DEVELOPMENT == "true")
+
+ngx.header["Content-Type"] = "text/html"
+
 if IS_DEVELOPMENT then
 	local function makeTableRecurse(var, done)
 		local t = type(var)
-		if(t == "table") then
-			if(not done) then
+		if t == "table" then
+			if not done then
 				done = {}
 			end
-			if(not done[var]) then
+			if not done[var] then
 				done[var] = true
 				local ret = {"<table><thead><tr><th>Name</th><th>Type</th><th>Value</th></tr></thead><tbody>"}
 				for k, v in next, var do
@@ -19,7 +22,7 @@ if IS_DEVELOPMENT then
 			end
 
 			return "DONE"
-		elseif(t == "function") then
+		elseif t == "function" then
 			return escape_html(tostring(var))
 		else
 			return escape_html(tostring(var):sub(1, 1024))
@@ -98,7 +101,7 @@ if IS_DEVELOPMENT then
 	end
 
 	local function getLocals(level)
-		if(debug.getlocal(level + 1, 1)) then
+		if debug.getlocal(level + 1, 1) then
 			local out = {"<h3><a href='#'>Locals</a></h3><div>"}
 			local tbl = {}
 			for i = 1, 100 do
@@ -116,7 +119,7 @@ if IS_DEVELOPMENT then
 	end
 
 	local function getUpValues(func)
-		if(func and debug.getupvalue(func, 1)) then
+		if func and debug.getupvalue(func, 1) then
 			local out = {"<h3><a href='#'>UpValues</a></h3><div>"}
 			local tbl = {}
 			for i = 1, 100 do
@@ -155,6 +158,7 @@ if IS_DEVELOPMENT then
 			),
 			"</tbody></table></div>"
 		}
+		
 		local cur = nil
 		for level = 2, 100 do
 			cur = debug.getinfo(level)
@@ -177,9 +181,9 @@ if IS_DEVELOPMENT then
 			end
 			table.insert(out, "<li>What: " .. (cur.name and "In function '" .. cur.name .. "'" or "In main chunk") .. "</li></ul></div>")
 
-			table.insert(out, getLocals(level))
-			table.insert(out, getUpValues(cur.func))
-			table.insert(out, getFunctionCode(cur))
+			--table.insert(out, getLocals(level))
+			--table.insert(out, getUpValues(cur.func))
+			--table.insert(out, getFunctionCode(cur))
 
 			table.insert(out, "</div></div>")
 		end
@@ -190,19 +194,14 @@ if IS_DEVELOPMENT then
 
 	local isok, err = xpcall(dofile, debug_trace, ngx.var.run_lua_file)
 	if not isok then
-		if IS_DEVELOPMENT then
-			ngx.print(err)
-			return ngx.eof()
-		--[[else
-			sendAttachmentMail(err)
-			return ngx.exec("/error/500")]]
-		end
+		ngx.print(err)
+		return ngx.eof()
 	end
 else
 	local raven = require("raven")
 	local rvn = raven:new("https://5f77aea36e6c4aa2882adc43f9718c44@o804863.ingest.sentry.io/5803114", {
 		tags = {
-			environment = IS_DEVELOPMENT and "staging" or "prod",
+			environment = IS_DEVELOPMENT and "staging" or "production",
 			file = ngx.var.run_lua_file,
 			userid = ngx.ctx.user and ngx.ctx.user.id or "N/A",
 			ip = ngx.var.remote_addr,

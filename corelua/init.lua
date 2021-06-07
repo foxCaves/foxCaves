@@ -1,5 +1,4 @@
 lfs = require("lfs")
-socket = require("socket")
 
 function escape_html(str)
 	if (not str) or type(str) ~= "string" then
@@ -26,6 +25,9 @@ function dofile(file)
 	local code = filecache[cache_key]
 	if not code then
 		local fh = io.open(file, "r")
+		if not fh then
+			error("Could not open file: " .. file)
+		end
 		code = fh:read("*all")
 		fh:close()
 		local err

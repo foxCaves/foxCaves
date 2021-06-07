@@ -13,13 +13,13 @@ end
 database:set_timeout(60000)
 
 dofile("config/database.lua")
-local ok, err = database:connect(dbsocket)
+local ok, err = database:connect(dbip, dbport)
 if not ok then
 	ngx.print("Error connecting to DB: ", err)
 	return ngx.eof()
 end
 
-if database:get_reused_times() == 0 then
+if database:get_reused_times() == 0 and dbpass then
 	local ok, err = database:auth(dbpass)
 	if not ok then
 		ngx.print("Error connecting to DB: ", err)
@@ -29,10 +29,9 @@ end
 
 database.KEYS = dbkeys
 dbkeys = nil
-dbsocket = nil
-dbpass = nil
 dbip = nil
 dbport = nil
+dbpass = nil
 
 database.hgetall_real = database.hgetall
 function database:hgetall(key)
@@ -117,6 +116,9 @@ end
 
 function ngx.ctx.get_version()
 	local fh = io.open(".revision", "r")
+	if not fh then
+		return "UNKNOWN"
+	end
 	local ret = fh:read("*all")
 	fh:close()
 	return ret:gsub("%s+", "")
@@ -138,7 +140,6 @@ dofile("scripts/access.lua")
 
 _G.ngx = ngx
 _G.math = math
-_G.socket = socket
 _G.tonumber = tonumber
 _G.tostring = tostring
 _G.os = os
