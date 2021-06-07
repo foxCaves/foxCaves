@@ -1,5 +1,6 @@
 local lfs = require("lfs")
 
+local FILE_STORAGE_PATH = "/opt/foxcaves_storage/"
 local database = ngx.ctx.database
 
 local function file_fullread(filename)

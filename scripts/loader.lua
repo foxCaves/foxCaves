@@ -1,7 +1,5 @@
 local IS_DEVELOPMENT = (ngx.var.IS_DEVELOPMENT == "true")
 
-ngx.header["Content-Type"] = "text/html"
-
 if IS_DEVELOPMENT then
 	local function makeTableRecurse(var, done)
 		local t = type(var)

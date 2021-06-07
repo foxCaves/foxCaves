@@ -1,6 +1,6 @@
 FROM openresty/openresty:alpine-fat
 
-RUN apk update && apk add redis s6
+RUN apk update && apk add redis s6 imagemagick
 RUN /usr/local/openresty/bin/opm get openresty/lua-resty-redis openresty/lua-resty-websocket
 RUN /usr/local/openresty/luajit/bin/luarocks install luafilesystem
 RUN adduser --disabled-password www-data
