@@ -58,12 +58,6 @@ $(document).ready(function(){
 		return true;
 	});
 
-	/*TODO: Fix history API with this
-	$("a:not([href=#])").click(function(ev) {
-		preventDefault(ev);
-		loadPage(ev.currentTarget.href);
-	});*/
-
 	function messageReceived(e) {
 		var cmds = e.data.split("|");
 
