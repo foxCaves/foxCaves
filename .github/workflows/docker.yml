@@ -24,5 +24,5 @@ jobs:
         with:
           push: true
           tags: |
-            docker.pkg.github.com/${{ github.repository }}/foxcaves-site:${{ github.sha }}
-            docker.pkg.github.com/${{ github.repository }}/foxcaves-site:latest
+            docker.pkg.github.com/foxcaves/site/foxcaves-site:${{ github.sha }}
+            docker.pkg.github.com/foxcaves/site/foxcaves-site:latest
