@@ -1,3 +1,4 @@
 #!/bin/sh
 
+cd /var/lib/redis
 exec /usr/bin/redis-server
