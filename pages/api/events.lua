@@ -36,15 +36,16 @@ local function websocket_read()
 end
 
 local function redis_read()
-    -- TODO: Fix timeout causing reconnect
     while true do
         local res, err = database:read_reply()
-        if err then
+        if err and err ~= "timeout" then
             ws:send_close()
             ngx.eof()
             return
         end
-        ws:send_text(res[3])
+        if res then
+            ws:send_text(res[3])
+        end
     end
 end
 

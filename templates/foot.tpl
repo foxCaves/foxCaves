@@ -15,7 +15,7 @@
 						</ul>
 						<ul class="nav pull-right">
 							<li>
-								<a>foxCaves <%# IS_DEVELOPMENT and ngx.ctx.get_version():sub(1,7) or "&copy; 2013" %></a>
+								<a>foxCaves <%# IS_DEVELOPMENT and ngx.ctx.get_version():sub(1,7) or "&copy; 2021" %></a>
 							</li>
 							<li class="dropdown">
 								<a href="#" class="dropdown-toggle" data-toggle="dropdown">Style</a>
