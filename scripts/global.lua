@@ -27,8 +27,23 @@ if database:get_reused_times() == 0 and dbpass then
 	end
 end
 
-database.KEYS = dbkeys
-dbkeys = nil
+database.KEYS =  {
+    USERS = "users:",
+    USERNAME_TO_ID = "username_to_id:",
+    USEDINVOICES = "used_invoices:",
+    SESSIONS = "sessions:",
+    NEXTUSERID = "next_user_id:",
+    PUSH = "push:",
+
+    FILES = "files:",
+    USER_FILES = "user_files:",
+
+    EMAILS = "emails:",
+    EMAILKEYS = "email_keys:",
+
+    LINKS = "links:",
+    USER_LINKS = "user_links:"
+}
 dbip = nil
 dbport = nil
 dbpass = nil
