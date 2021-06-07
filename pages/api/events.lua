@@ -29,12 +29,13 @@ local function websocket_read()
         if ws.fatal or typ == "close" or typ == "error" then
             ws:send_close()
             ngx.eof()
-            return
+            break
         end
         if typ == "ping" then
             ws:send_pong(data)
         end
     end
+    should_run = false
 end
 
 local function redis_read()
@@ -43,17 +44,17 @@ local function redis_read()
         if err and err ~= "timeout" then
             ws:send_close()
             ngx.eof()
-            return
+            break
         end
         if res then
             ws:send_text(res[3])
         end
     end
+    should_run = false
 end
 
 local redis_thread = ngx.thread.spawn(redis_read)
 websocket_read()
-should_run = false
 ngx.eof()
 ngx.thread.wait(redis_thread)
 database:close()
