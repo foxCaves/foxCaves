@@ -5,10 +5,10 @@
 <% for _, linkid in next, LINKS do
 		local link = link_get(linkid) %>
 		<tr>
-			<td>https://f0x.es/g<%= linkid %></td><td><%= G.escape_html(link) %></td>
+			<td><%= SHORT_URL %>/g<%= linkid %></td><td><%= G.escape_html(link) %></td>
 			<td><a href="?delete=<%= linkid %>">Delete</a></td>
 		</tr>
 <% end %>
 </table>
-<script type="text/javascript" src="<%= STATIC_URL_PREFIX %>/js/mylinks.js"></script>
+<script type="text/javascript" src="/static/js/mylinks.js"></script>
 <%+ foot %>

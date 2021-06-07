@@ -109,7 +109,7 @@ function load_template(name, params)
 	params.tostring = tostring
 	params.tinsert = table.insert
 	params.tconcat = table.concat
-	params.STATIC_URL_PREFIX = STATIC_URL_PREFIX
+	params.SHORT_URL = SHORT_URL
 	params.G = _G
 
 	return setfenv(tpl, params)()

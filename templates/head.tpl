@@ -2,16 +2,16 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<link rel="stylesheet" type="text/css" href="<%= STATIC_URL_PREFIX %>/css/bootstrap.css" />
-		<link rel="stylesheet" type="text/css" href="<%= STATIC_URL_PREFIX %>/css/bootstrap-progressbar.css" />
-		<link rel="stylesheet" type="text/css" href="<%= STATIC_URL_PREFIX %>/css/main.css" />
-		<link rel="stylesheet" type="text/css" href="<%= STATIC_URL_PREFIX %>/css/<%= ((G.ngx.ctx.user and G.ngx.ctx.user.style) or "purple_fox") %>.css" />
-		<link rel="stylesheet" type="text/css" href="<%= STATIC_URL_PREFIX %>/css/prettify.css" />
+		<link rel="stylesheet" type="text/css" href="/static/css/bootstrap.css" />
+		<link rel="stylesheet" type="text/css" href="/static/css/bootstrap-progressbar.css" />
+		<link rel="stylesheet" type="text/css" href="/static/css/main.css" />
+		<link rel="stylesheet" type="text/css" href="/static/css/<%= ((G.ngx.ctx.user and G.ngx.ctx.user.style) or "purple_fox") %>.css" />
+		<link rel="stylesheet" type="text/css" href="/static/css/prettify.css" />
 
 		<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" type="text/javascript"></script>
 		<script src="//cdnjs.cloudflare.com/ajax/libs/raven.js/3.26.2/console/raven.min.js" type="text/javascript"></script>
 		<script type="text/javascript">Raven.config('https://5d99e8f38f4c48e8b9f2803cba13caad@o804863.ingest.sentry.io/5803116').install();</script>
-		<script src="<%= STATIC_URL_PREFIX %>/js/init.js" type="text/javascript"></script>
+		<script src="/static/js/init.js" type="text/javascript"></script>
 		<title><%= MAINTITLE %> - foxCaves</title>
 	</head>
 	<body data-spy="scroll" data-target=".bs-docs-sidebar">
