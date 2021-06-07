@@ -1,6 +1,6 @@
 dofile(ngx.var.main_root .. "/scripts/global.lua")
 
-local linkid = ngx.vars.linkid
+local linkid = ngx.var.linkid
 local database = ngx.ctx.database
 local dest = database:get(database.KEYS.LINKS .. linkid)
 if not dest then
