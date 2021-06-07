@@ -1,10 +1,6 @@
-FROM alpine AS builder
-RUN apk update && apk add git
-WORKDIR /opt/foxcaves
-COPY .git /opt/foxcaves/.git
-RUN git rev-parse --short HEAD > /opt/foxcaves/.revision
-
 FROM openresty/openresty:alpine-fat
+
+ARG GIT_REVISION=UNKNOWN
 
 RUN apk update && apk add redis s6 imagemagick
 RUN /usr/local/openresty/bin/opm get openresty/lua-resty-redis openresty/lua-resty-websocket
@@ -25,6 +21,8 @@ COPY --from=builder /opt/foxcaves/.revision  /var/www/foxcaves/.revision
 COPY html /var/www/foxcaves/html
 COPY static /var/www/foxcaves/html/static
 COPY diststatic /var/www/foxcaves/html/static
+
+RUN echo $GIT_REVISION > /var/www/foxcaves/.revision
 
 EXPOSE 80 443
 
