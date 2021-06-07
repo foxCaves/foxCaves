@@ -49,7 +49,9 @@ function mail(to_addr, subject, content, from_addr, from_name, headers)
 		from_name = from_addr
 	end
 
-	smtp_send_line(sock, "AUTH PLAIN "..ngx.encode_base64(string.format("%s\0%s\0%s", mailuser, mailuser, mailpass)))
+	if mailuser and mailpass then
+		smtp_send_line(sock, "AUTH PLAIN "..ngx.encode_base64(string.format("%s\0%s\0%s", mailuser, mailuser, mailpass)))
+	end
 
 	if from_addr then
 		smtp_send_line(sock, "MAIL FROM: "..from_addr)
