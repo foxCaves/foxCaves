@@ -1,3 +1,13 @@
+FROM node:current AS builder
+
+RUN mkdir /opt/stage
+WORKDIR /opt/stage
+COPY Gruntfile.js /opt/stage/
+COPY package.json /opt/stage/
+COPY package-lock.json /opt/stage/
+COPY static /opt/stage/static
+RUN npm ci && npm run build
+
 FROM openresty/openresty:alpine-fat
 
 ARG GIT_REVISION=UNKNOWN
@@ -18,7 +28,7 @@ COPY templates /var/www/foxcaves/templates
 
 COPY html /var/www/foxcaves/html
 COPY static /var/www/foxcaves/html/static
-COPY diststatic /var/www/foxcaves/html/static
+COPY --from=builder /opt/stage/diststatic /var/www/foxcaves/html/static
 
 RUN echo $GIT_REVISION > /var/www/foxcaves/.revision
 
