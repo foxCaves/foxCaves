@@ -1,1 +1,1 @@
-SHORT_URL = "https://f0x.es"
+SHORT_URL = "http://short.foxcaves"
