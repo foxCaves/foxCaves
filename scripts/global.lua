@@ -126,10 +126,7 @@ end
 
 function raw_push_action(action)
 	action = action or '='
-	ngx.location.capture("/scripts/longpoll_push?" .. ngx.ctx.user.id .. "_" .. ngx.ctx.user.pushchan, {
-		method = ngx.HTTP_POST,
-		body = action .. "|"
-	})
+	database:publish(database.KEYS.PUSH .. ngx.ctx.user.id .. "_" .. ngx.ctx.user.pushchan, action .. "|")
 end
 
 function printTemplateAndClose(name, params)

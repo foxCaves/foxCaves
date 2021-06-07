@@ -64,8 +64,8 @@ $(document).ready(function(){
 		loadPage(ev.currentTarget.href);
 	});*/
 
-	function messageReceived(text, id, channel) {
-		var cmds = text.split("|");
+	function messageReceived(e) {
+		var cmds = e.data.split("|");
 
 		for(var i = 0;i < cmds.length;i++) {
 			var action = cmds[i].trim();
@@ -82,22 +82,23 @@ $(document).ready(function(){
 		}
 	};
 
-	var useSSL = (window.location.protocol == "https:");
-	var port = (useSSL ? 443 : 80);
-	var pushstream = new PushStream({
-		host: window.location.hostname,
-		port: port,
-		useSSL: useSSL,
-		urlPrefixLongpolling: "/push/longpolling",
-		modes: "longpolling"
-	});
-	pushstream.onmessage = messageReceived;
-	pushstream.addChannel(PUSH_CHANNEL);
-	try {
-		pushstream.connect();
-	} catch(e) {
-		setTimeout(500, function() {
-			pushstream.connect();
-		});
-	}
+	var currentSocket;
+	function reconnectSocket(oldSocket) {
+		if (oldSocket && currentSocket !== oldSocket) {
+			return;
+		}
+		
+		var useSSL = (window.location.protocol == "https:");
+		var socket = new WebSocket((useSSL ? "wss:" : "ws:") + window.location.hostname + "/api/events?" + PUSH_CHANNEL);
+		currentSocket = socket;
+
+		function reconnectInner() {
+			reconnectSocket(socket);
+		}
+		socket.onmessage = messageReceived;
+		socket.onclose = reconnectInner;
+		socket.onerror = reconnectInner;
+	};
+
+	reconnectSocket();
 });

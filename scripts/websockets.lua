@@ -12,6 +12,8 @@ local string_format = string.format
 local time = os.time
 --local pairs = pairs
 
+-- TODO: Basically all of this needs to be redone for resty.websocket.server
+
 local lfs = require("lfs")
 lfs.chdir(" .. ")
 local websockets = require("websocket")
