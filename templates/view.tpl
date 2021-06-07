@@ -48,7 +48,7 @@
 			Your browser is too old.
 		</video>
 	<% elseif FILE.type == FILE_TYPE_AUDIO then %>
-		<audio id="audioplayer">
+		<audio id="audioplayer" crossOrigin="anonymous">
 			<source src="https://f0x.es/f<%= RAWNAME %>" type="<%= MIMETYPES[FILE.extension] %>" />
 			Your browser is too old.
 		</audio>
