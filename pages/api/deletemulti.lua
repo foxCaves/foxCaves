@@ -12,7 +12,7 @@ if(not data) then
 	return
 end
 
---local res, filename = file_delete(ngx.var.query_string, ngx.ctx.user.id)
+--local res, filename = file_delete(ngx.var.args, ngx.ctx.user.id)
 
 ngx.print("+")
 local id = ngx.ctx.user.id

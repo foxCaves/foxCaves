@@ -19,7 +19,7 @@ if not linkid then
 	return ngx.eof()
 end
 
-database:set(database.KEYS.LINKS .. linkid, ngx.var.query_string)
+database:set(database.KEYS.LINKS .. linkid, ngx.var.args)
 database:zadd(database.KEYS.USER_LINKS .. ngx.ctx.user.id, ngx.time(), linkid)
 
 ngx.print(linkid .. "\n")
