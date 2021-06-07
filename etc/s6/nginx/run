@@ -1,3 +1,6 @@
 #!/bin/sh
 
-exec /usr/local/openresty/nginx/sbin/nginx -g 'daemon off;'
+mkdir -p /tmp/fc_thumbs /tmp/fc_files
+chown www-data:www-data /tmp/fc_thumbs /tmp/fc_files
+
+exec /usr/local/openresty/nginx/sbin/nginx -g 'daemon off; user www-data;'

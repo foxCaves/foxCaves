@@ -77,10 +77,10 @@ end
 function file_upload(fileid, filename, extension, thumbnail, filetype, thumbtype)
 	lfs.mkdir(FILE_STORAGE_PATH .. fileid)
 
-	file_move("files/" .. fileid .. extension, FILE_STORAGE_PATH .. fileid .. "/file" .. extension)
+	file_move("/tmp/fc_files/" .. fileid .. extension, FILE_STORAGE_PATH .. fileid .. "/file" .. extension)
 
 	if thumbnail and thumbnail ~= "" then
-		file_move("thumbs/" .. fileid .. thumbnail, FILE_STORAGE_PATH .. fileid .. "/thumb" .. thumbnail)
+		file_move("/tmp/fc_thumbs/" .. fileid .. thumbnail, FILE_STORAGE_PATH .. fileid .. "/thumb" .. thumbnail)
 	end
 end
 

@@ -37,15 +37,15 @@ newfilename = newfilename:sub(1, newfilename:len() - dbdata.extension:len()) .. 
 
 local database = ngx.ctx.database
 
-local fh = io.open("files/" .. rgs.fileid .. dbdata.extension, "w")
+local fh = io.open("/tmp/fc_files/" .. rgs.fileid .. dbdata.extension, "w")
 fh:write(data)
 fh:close()
-os.execute('/usr/bin/convert "files/' .. rgs.fileid .. dbdata.extension .. '" -format ' .. newextension:sub(2) .. ' "files/' .. rgs.fileid .. newextension .. '"')
-os.remove("files/" .. args.fileid .. dbdata.extension)
+os.execute('/usr/bin/convert "/tmp/fc_files/' .. rgs.fileid .. dbdata.extension .. '" -format ' .. newextension:sub(2) .. ' "/tmp/fc_files/' .. rgs.fileid .. newextension .. '"')
+os.remove("/tmp/fc_files/" .. args.fileid .. dbdata.extension)
 
 dofile("scripts/mimetypes.lua")
 
-local newsize = lfs.attributes("files/" .. rgs.fileid .. newextension, "size")
+local newsize = lfs.attributes("/tmp/fc_files/" .. rgs.fileid .. newextension, "size")
 if not newsize then
 	ngx.status = 500
 	ngx.print("failed")
