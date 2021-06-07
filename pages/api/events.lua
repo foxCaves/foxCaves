@@ -36,6 +36,7 @@ local function websocket_read()
 end
 
 local function redis_read()
+    -- TODO: Fix timeout causing reconnect
     while true do
         local res, err = database:read_reply()
         if err then

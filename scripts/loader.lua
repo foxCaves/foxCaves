@@ -179,9 +179,9 @@ if IS_DEVELOPMENT then
 			end
 			table.insert(out, "<li>What: " .. (cur.name and "In function '" .. cur.name .. "'" or "In main chunk") .. "</li></ul></div>")
 
-			--table.insert(out, getLocals(level))
-			--table.insert(out, getUpValues(cur.func))
-			--table.insert(out, getFunctionCode(cur))
+			table.insert(out, getLocals(level))
+			table.insert(out, getUpValues(cur.func))
+			table.insert(out, getFunctionCode(cur))
 
 			table.insert(out, "</div></div>")
 		end

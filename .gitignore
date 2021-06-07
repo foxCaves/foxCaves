@@ -1,3 +1,5 @@
 /config
 /diststatic
+/storage
+/redis
 node_modules
