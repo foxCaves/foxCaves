@@ -16,8 +16,6 @@ COPY pages /var/www/foxcaves/pages
 COPY scripts /var/www/foxcaves/scripts
 COPY templates /var/www/foxcaves/templates
 
-COPY --from=builder /opt/foxcaves/.revision  /var/www/foxcaves/.revision
-
 COPY html /var/www/foxcaves/html
 COPY static /var/www/foxcaves/html/static
 COPY diststatic /var/www/foxcaves/html/static
