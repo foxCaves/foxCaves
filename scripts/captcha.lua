@@ -1,5 +1,5 @@
 --doriCAPTCHA
-local secret_key = "yiffPENIS2825987436SKLSDJFS$§/&%)%$&/"
+local secret_key = "yiffPENIS2825987436SKLSDJFS$/&%)%$&/"
 
 local function mktimecode()
 	return bit.arshift(ngx.time(), 6)

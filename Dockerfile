@@ -10,13 +10,12 @@ RUN npm ci && npm run build
 
 FROM openresty/openresty:alpine-fat
 
-ARG GIT_REVISION=UNKNOWN
-
 RUN apk update && apk add redis s6 imagemagick
 RUN /usr/local/openresty/bin/opm get openresty/lua-resty-redis openresty/lua-resty-websocket
 RUN /usr/local/openresty/luajit/bin/luarocks install luafilesystem
 RUN adduser --disabled-password www-data
 
+COPY etc/cfips.sh /etc/nginx/cfips.sh
 COPY etc/nginx.conf /etc/nginx/conf.d/foxcaves.conf
 COPY etc/s6 /etc/s6
 
@@ -30,7 +29,9 @@ COPY html /var/www/foxcaves/html
 COPY static /var/www/foxcaves/html/static
 COPY --from=builder /opt/stage/diststatic /var/www/foxcaves/html/static
 
+ARG GIT_REVISION=UNKNOWN
 RUN echo $GIT_REVISION > /var/www/foxcaves/.revision
+RUN /etc/nginx/cfips.sh
 
 EXPOSE 80 443
 
