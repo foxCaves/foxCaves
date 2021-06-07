@@ -6,6 +6,7 @@ mimetypes = {
 	[".cpp"] = "text/plain",
 	[".cs"] = "text/plain",
 	[".css"] = "text/css",
+	[".flac"] = "audio/flac",
 	[".gif"] = "image/gif",
 	[".h"] = "text/plain",
 	[".htaccess"] = "text/plain",

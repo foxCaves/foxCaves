@@ -201,6 +201,7 @@
   
 	var CODECS = {
 	  'mp3' : 'audio/mpeg;',
+	  'flac' : 'audio/flac;',
 	  'ogg' : 'audio/ogg; codecs="vorbis"',
 	  'wav' : 'audio/wav; codecs="1"',
 	  'aac' : 'audio/mp4; codecs="mp4a.40.2"'
