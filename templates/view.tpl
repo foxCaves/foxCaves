@@ -43,7 +43,7 @@
 		<noscript>JavaScript required to preview code/text</noscript>
 		<pre class="prettyprint linenums" style="display: none;" data-thumbnail-source="<%= FILEID %><%= FILE.thumbnail %>"></pre>
 	<% elseif FILE.type == FILE_TYPE_VIDEO then %>
-		<video controls="controls">
+		<video controls="controls" crossOrigin="anonymous">
 			<source src="https://f0x.es/f<%= RAWNAME %>" type="<%= MIMETYPES[FILE.extension] %>" />
 			Your browser is too old.
 		</video>
