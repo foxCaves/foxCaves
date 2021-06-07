@@ -15,8 +15,11 @@ RUN /usr/local/openresty/bin/opm get openresty/lua-resty-redis openresty/lua-res
 RUN /usr/local/openresty/luajit/bin/luarocks install luafilesystem
 RUN adduser --disabled-password www-data
 
+ARG BUILD_ENV=dev
+
 COPY etc/cfips.sh /etc/nginx/cfips.sh
 COPY etc/nginx.conf /etc/nginx/conf.d/foxcaves.conf
+COPY etc/nginx.listener.$BUILD_ENV.conf /etc/nginx/listener.conf
 COPY etc/s6 /etc/s6
 
 COPY cdn /var/www/foxcaves/cdn
