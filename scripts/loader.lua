@@ -137,10 +137,10 @@ if IS_DEVELOPMENT then
 	local function debug_trace(err)
 		local out = {
 			"<html><head>\
-			<script type=\"text/javascript\" src=\"https://cdnjs.cloudflare.com/ajax/libs/jquery/1.8.3/jquery.min.js\"></script>\
-			<script type=\"text/javascript\" src=\"https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js\"></script>\
-			<script src=\"https://cdnjs.cloudflare.com/ajax/libs/prettify/188.0.0/prettify.js\" type=\"text/javascript\"></script>\
-			<script src=\"https://cdnjs.cloudflare.com/ajax/libs/prettify/188.0.0/lang-lua.js\" type=\"text/javascript\"></script>\
+			<script type=\"text/javascript\" src=\"https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js\"></script>\
+			<script type=\"text/javascript\" src=\"https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js\"></script>\
+			<script src=\"https://cdnjs.cloudflare.com/ajax/libs/prettify/r298/prettify.min.js\" type=\"text/javascript\"></script>\
+			<script src=\"https://cdnjs.cloudflare.com/ajax/libs/prettify/r298/lang-lua.min.js\" type=\"text/javascript\"></script>\
 			<script type=\"text/javascript\" src=\"https://foxcav.es/static/errorpage/error.js\"></script>\
 			<link rel=\"stylesheet\" type=\"text/css\" href=\"https://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/themes/base/jquery-ui.css\" />\
 			<link rel=\"stylesheet\" type=\"text/css\" href=\"https://foxcav.es/static/errorpage/error.css\" />\

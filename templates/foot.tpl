@@ -31,9 +31,9 @@
 			</div>
 		</div>
 		<script type="text/javascript">var PUSH_CHANNEL="<% if G.ngx.ctx.user then %><%= G.ngx.ctx.user.id %>_<%= G.ngx.ctx.user.pushchan %><% end %>";</script>
-		<script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/2.2.1/bootstrap.min.js" type="text/javascript"></script>
-		<script src="//cdnjs.cloudflare.com/ajax/libs/prettify/188.0.0/prettify.js" type="text/javascript"></script>
-		<script src="//cdnjs.cloudflare.com/ajax/libs/prettify/188.0.0/lang-lua.js" type="text/javascript"></script>
+		<script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/2.3.2/js/bootstrap.min.js" type="text/javascript"></script>
+		<script src="//cdnjs.cloudflare.com/ajax/libs/prettify/r298/prettify.min.js" type="text/javascript"></script>
+		<script src="//cdnjs.cloudflare.com/ajax/libs/prettify/r298/lang-lua.min.js" type="text/javascript"></script>
 		<script src="<%= STATIC_URL_PREFIX %>/js/main.js" type="text/javascript"></script>
 	</body>
 </html>
