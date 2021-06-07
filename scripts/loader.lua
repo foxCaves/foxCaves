@@ -196,15 +196,17 @@ if IS_DEVELOPMENT then
 		return ngx.eof()
 	end
 else
-	local raven = require("raven")
-	local rvn = raven:new("https://5f77aea36e6c4aa2882adc43f9718c44@o804863.ingest.sentry.io/5803114", {
+	local rvn = require("raven").new({
+		sender = require("raven.senders.ngx").new({
+			dsn = "https://5f77aea36e6c4aa2882adc43f9718c44@o804863.ingest.sentry.io/5803114",
+		}),
 		tags = {
 			environment = IS_DEVELOPMENT and "staging" or "production",
 			file = ngx.var.run_lua_file,
 			userid = ngx.ctx.user and ngx.ctx.user.id or "N/A",
 			ip = ngx.var.remote_addr,
-			url = ngx.var.request_uri
-		}
+			url = ngx.var.request_uri,
+		},
 	})
 	local isok = rvn:call(dofile, ngx.var.run_lua_file)
 	if not isok then

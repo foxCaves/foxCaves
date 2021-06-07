@@ -42,7 +42,7 @@ database.KEYS =  {
     EMAILKEYS = "email_keys:",
 
     LINKS = "links:",
-    USER_LINKS = "user_links:"
+    USER_LINKS = "user_links:",
 }
 dbip = nil
 dbport = nil
