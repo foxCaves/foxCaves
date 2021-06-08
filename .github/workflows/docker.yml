@@ -27,5 +27,4 @@ jobs:
             GIT_REVISION=${{ github.sha }}
             BUILD_ENV=prod
           tags: |
-            docker.pkg.github.com/foxcaves/site/foxcaves-site:${{ github.sha }}
             docker.pkg.github.com/foxcaves/site/foxcaves-site:latest
