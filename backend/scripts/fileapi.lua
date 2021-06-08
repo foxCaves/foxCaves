@@ -45,7 +45,7 @@ function file_delete(fileid, user)
 		database:hincrby(database.KEYS.USERS .. file.user, "usedbytes", -file.size)
 		if file.user == ngx.ctx.user.id then
 			ngx.ctx.user.usedbytes = ngx.ctx.user.usedbytes - file.size
-			file_push_action(fileid, '-')
+			file_push_action(fileid, 'delete')
 		end
 	end
 
@@ -86,6 +86,12 @@ function file_upload(fileid, filename, extension, thumbnail, filetype, thumbtype
 end
 
 function file_push_action(fileid, action)
-	action = action or '='
-	raw_push_action(action .. fileid .. '|U' .. tostring(ngx.ctx.user.usedbytes))
+	raw_push_action({
+		action = "file:" .. action,
+		id = fileid,
+	})
+	raw_push_action({
+		type = "usedbytes",
+		usedbytes = ngx.ctx.user.usedbytes,
+	})
 end

@@ -50,30 +50,20 @@ $(document).ready(function(){
 	if(PUSH_CHANNEL == "")
 		return;
 
-	pushHandlers.push(function(action, usedbytes) {
-		if(action != "U")
-			return false;
-		$('#used_bytes_text').text(formatSize(usedbytes));
-		$('#used_bytes_bar').css('width', Math.ceil((usedbytes / TOTALBYTES) * 100.0) + '%');
+	pushHandlers.usedbytes = function(data) {
+		$('#used_bytes_text').text(formatSize(data.usedbytes));
+		$('#used_bytes_bar').css('width', Math.ceil((data.usedbytes / TOTALBYTES) * 100.0) + '%');
 		return true;
-	});
+	};
 
 	function messageReceived(e) {
-		var cmds = e.data.split("|");
+		var cmd = JSON.parse(e.data);
 
-		for(var i = 0;i < cmds.length;i++) {
-			var action = cmds[i].trim();
-
-			if(action == "")
-				continue;
-
-			var param = action.substr(1);
-			action = action.charAt(0);
-
-			for(var j = 0;j < pushHandlers.length;j++)
-				if(pushHandlers[j](action, param))
-					break;
+		var handler = pushHandlers[cmd.action];
+		if (!handler) {
+			return;
 		}
+		handler(cmd);
 	};
 
 	var currentSocket;

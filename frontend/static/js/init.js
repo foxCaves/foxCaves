@@ -1,4 +1,4 @@
-var pushHandlers = new Array();
+var pushHandlers = {};
 
 function preventDefault(evt) {
 	evt.stopPropagation();

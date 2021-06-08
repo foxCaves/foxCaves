@@ -169,7 +169,7 @@ database:zadd(database.KEYS.USER_FILES .. ngx.ctx.user.id, ngx.time(), fileid)
 database:hincrby(database.KEYS.USERS .. ngx.ctx.user.id, "usedbytes", filesize)
 ngx.ctx.user.usedbytes = ngx.ctx.user.usedbytes + filesize
 
-file_push_action(fileid, '+')
+file_push_action(fileid, 'create')
 
 ngx.header["Content-Type"] = "application/json"
 ngx.print(cjson.encode({

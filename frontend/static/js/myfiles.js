@@ -327,7 +327,7 @@ function setupFileDragging() {
 	});
 
 	$(".image_manage_bottom > span > a[title=Delete]").click(function(e) {
-		e.preventDefault();
+		preventDefault(e);
 		deleteFile(getFileIDFromID(this.parentNode.parentNode.parentNode.id), true);
 	});
 
@@ -491,17 +491,13 @@ $(document).ready(function() {
 
 	setupMassOperations();
 
-	pushHandlers.push(function(action, file) {
-		if(action == '+') {
-			addFileLI(file, true);
-			return true;
-		} else if(action == '-') {
-			removeFileLI(file);
-			return true;
-		} else if(action == '=') {
-			refreshFileLI(file);
-			return true;
-		}
-		return false;
-	});
+	pushHandlers.create = function (data) {
+		addFileLI(data.id, true);
+	};
+	pushHandlers.delete = function (data) {
+		removeFileLI(data.id);
+	};
+	pushHandlers.refresh = function (data) {
+		refreshFileLI(data.id);
+	};
 });
