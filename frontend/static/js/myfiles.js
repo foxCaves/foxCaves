@@ -491,13 +491,13 @@ $(document).ready(function() {
 
 	setupMassOperations();
 
-	pushHandlers.create = function (data) {
+	pushHandlers['file:create'] = function (data) {
 		addFileLI(data.id, true);
 	};
-	pushHandlers.delete = function (data) {
+	pushHandlers['file:delete'] = function (data) {
 		removeFileLI(data.id);
 	};
-	pushHandlers.refresh = function (data) {
+	pushHandlers['file:refresh'] = function (data) {
 		refreshFileLI(data.id);
 	};
 });
