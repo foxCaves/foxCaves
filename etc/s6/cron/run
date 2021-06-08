@@ -1,14 +1,14 @@
 #!/bin/sh
 
 # Initialize DDNS cron if needed
-echo > /etc/periodic/15min/dyndns
+echo '#!/bin/sh' > /etc/periodic/15min/dyndns
 if [ ! -z "${DDNS_URL_IPV4:-}" ]
 then
-    echo "*/5 * * * *  nobody /usr/bin/curl -m 60 -4 '$DDNS_URL_IPV4'" >> /etc/periodic/15min/dyndns
+    echo "/usr/bin/curl -m 60 -4 '$DDNS_URL_IPV4'" >> /etc/periodic/15min/dyndns
 fi
 if [ ! -z "${DDNS_URL_IPV6:-}" ]
 then
-    echo "*/5 * * * *  nobody /usr/bin/curl -m 60 -6 '$DDNS_URL_IPV6'" >> /etc/periodic/15min/dyndns
+    echo "/usr/bin/curl -m 60 -6 '$DDNS_URL_IPV6'" >> /etc/periodic/15min/dyndns
 fi
 chmod +x /etc/periodic/15min/dyndns
 
