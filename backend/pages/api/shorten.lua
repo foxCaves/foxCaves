@@ -23,4 +23,8 @@ database:set(database.KEYS.LINKS .. linkid, ngx.var.arg_url)
 database:zadd(database.KEYS.USER_LINKS .. ngx.ctx.user.id, ngx.time(), linkid)
 
 ngx.print(linkid .. "\n")
+ngx.print(cjson.encode({
+	id = linkid,
+	url = SHORT_URL .. "/g" .. linkid,
+}))
 ngx.eof()

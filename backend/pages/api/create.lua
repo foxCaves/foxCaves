@@ -171,17 +171,15 @@ ngx.ctx.user.usedbytes = ngx.ctx.user.usedbytes + filesize
 
 file_push_action(fileid, '+')
 
-ngx.print(
-	cjson.encode({
-		id = fileid,
-		name = name,
-		extension = extension,
-		size = filesize,
-		thumbnail = thumbnail or "",
-		type = fileType,
-		view_url = SHORT_URL .. "/v" .. fileid,
-		direct_url = SHORT_URL .. "/f" .. fileid .. extension,
-		download_url = SHORT_URL .. "/d" .. fileid .. extension,
-	})
-)
+ngx.print(cjson.encode({
+	id = fileid,
+	name = name,
+	extension = extension,
+	size = filesize,
+	thumbnail = thumbnail or "",
+	type = fileType,
+	view_url = SHORT_URL .. "/v" .. fileid,
+	direct_url = SHORT_URL .. "/f" .. fileid .. extension,
+	download_url = SHORT_URL .. "/d" .. fileid .. extension,
+}))
 ngx.eof()
