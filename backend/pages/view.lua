@@ -1,16 +1,13 @@
 dofile(ngx.var.main_root .. "/scripts/global.lua")
 
-local name = ngx.var.REQUEST_URI
-local nameregex = ngx.re.match(name, "view/([a-zA-Z0-9]+)$", "o")
+local fileid = ngx.var.fileid
 
-if (not nameregex) or (not nameregex[1]) then
-	return ngx.exec("/error/403")
+if not fileid then
+	return ngx.exec("/error/400")
 end
 
-nameregex = nameregex[1]
-
 dofile("scripts/fileapi.lua")
-local file = file_get(nameregex)
+local file = file_get(fileid)
 if not file then
 	return ngx.exec("/error/404")
 end
@@ -22,7 +19,7 @@ dofile("scripts/mimetypes.lua")
 printTemplateAndClose("view", {
 	MAINTITLE = "View file - " .. file.name,
 	FILE = file,
-	FILEID = nameregex,
+	FILEID = fileid,
 	FILEOWNER = fileowner,
 	MIMETYPES = mimetypes,
 	FILE_TYPE_OTHER = 0,
