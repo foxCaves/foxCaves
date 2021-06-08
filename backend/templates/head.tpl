@@ -8,7 +8,7 @@
 		<link rel="stylesheet" type="text/css" href="/static/css/<%= ((G.ngx.ctx.user and G.ngx.ctx.user.style) or "purple_fox") %>.css" />
 		<link rel="stylesheet" type="text/css" href="/static/css/prettify.css" />
 
-		<script type="text/javascript">window.SHORT_URL = "<%= SHORT_URL %>";</script>
+		<script type="text/javascript">window.SHORT_URL="<%= SHORT_URL %>";</script>
 		<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" type="text/javascript"></script>
 		<script src="//cdnjs.cloudflare.com/ajax/libs/raven.js/3.26.2/console/raven.min.js" type="text/javascript"></script>
 		<script type="text/javascript">Raven.config('https://5d99e8f38f4c48e8b9f2803cba13caad@o804863.ingest.sentry.io/5803116').install();</script>
@@ -51,7 +51,7 @@ local usedperc = G.math.ceil((usedbytes / totalbytes) * 100) %>
 							</li>
 <% end %>
 							<li class="dropdown">
-								<a href="#" class="dropdown-toggle" data-toggle="dropdown">Welcome, <% if G.ngx.ctx.user then %><%= G.ngx.ctx.escape_html(G.ngx.ctx.user.username) %><% if G.ngx.ctx.user.is_pro then %> <span class="badge badge-level badge-pro">Pro</span><% end %><% else %>Guest<% end %> <b class="caret"></b></a>
+								<a class="dropdown-toggle" data-toggle="dropdown">Welcome, <% if G.ngx.ctx.user then %><%= G.ngx.ctx.escape_html(G.ngx.ctx.user.username) %><% if G.ngx.ctx.user.is_pro then %> <span class="badge badge-level badge-pro">Pro</span><% end %><% else %>Guest<% end %> <b class="caret"></b></a>
 								<ul class="dropdown-menu">
 <% if G.ngx.ctx.user then %>
 									<li><a href="/myfiles">My files</a></li>

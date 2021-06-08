@@ -12,22 +12,22 @@
 			<div class="dropdown">
 				<a title="Options" class="dropdown-toggle" data-toggle="dropdown" href=""><i class="icon-wrench icon-white"></i> </a>
 				<ul class="dropdown-menu">
-					<li><a class="rename" href="#">Rename</a></li>
+					<li><a class="rename">Rename</a></li>
 					<li><a href="/live/<%= fileid %>">Edit</a></li>
 <% if file.type == 1 and G.ngx.ctx.user.is_pro then %>
 					<li class="dropdown-submenu">
-						<a href="#">Convert to</a>
+						<a>Convert to</a>
 						<ul class="dropdown-menu">
-							<li><a href="#">jpeg</a></li>
-							<li><a href="#">png</a></li>
-							<li><a href="#">gif</a></li>
-							<li><a href="#">bmp</a></li>
+							<li><a>jpeg</a></li>
+							<li><a>png</a></li>
+							<li><a>gif</a></li>
+							<li><a>bmp</a></li>
 						</ul>
 					</li>
 					<% end %>
 				</ul>
 			</div>
-			<a href="#" title="Delete" href="/myfiles?delete=<%= fileid %>"><i class="icon-remove icon-white"></i> </a>
+			<a title="Delete" href="/myfiles?delete=<%= fileid %>"><i class="icon-remove icon-white"></i> </a>
 		</span>
 <%= G.ngx.ctx.format_size(file.size) %>
 	</div>
