@@ -19,7 +19,7 @@ if not linkid then
 	return ngx.eof()
 end
 
-database:set(database.KEYS.LINKS .. linkid, ngx.var.arg_url)
+database:set(database.KEYS.LINKS .. linkid, ngx.unescape_uri(ngx.var.arg_url))
 database:zadd(database.KEYS.USER_LINKS .. ngx.ctx.user.id, ngx.time(), linkid)
 
 ngx.print(cjson.encode({

@@ -2,7 +2,7 @@ dofile(ngx.var.main_root .. "/scripts/global.lua")
 if ngx.ctx.user then return ngx.redirect("/myaccount") end
 local database = ngx.ctx.database
 
-local codeID = database.KEYS.EMAILKEYS .. ngx.var.arg_code
+local codeID = database.KEYS.EMAILKEYS .. ngx.unescape_uri(ngx.var.arg_code)
 local res = database:hgetall(codeID)
 
 local actiontitle, message
