@@ -171,6 +171,7 @@ ngx.ctx.user.usedbytes = ngx.ctx.user.usedbytes + filesize
 
 file_push_action(fileid, '+')
 
+ngx.header["Content-Type"] = "application/json"
 ngx.print(cjson.encode({
 	id = fileid,
 	name = name,
