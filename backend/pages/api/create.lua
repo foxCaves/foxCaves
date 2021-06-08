@@ -4,7 +4,7 @@ if not ngx.ctx.user then return end
 
 local database = ngx.ctx.database
 
-local name = ngx.unescape_uri(name)
+local name = ngx.var.arg_name
 
 if not name then
 	ngx.status = 403
