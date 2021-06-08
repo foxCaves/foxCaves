@@ -146,11 +146,6 @@ function fileUpload(name, fileData) {
 			$('#barUploadTotal div.bar').css("width", ((dropZoneFileNumber / dropZoneFileCount) * 100.0) + "%");
 
 			if(xhr.status == 200) {
-				//Comes from long-polling!
-				//var file = xhr.responseText.split("\n");
-				//var fileInfo = file[1].split(">");
-				//var fileid = fileInfo[0];
-				//addFileLI(fileid);
 				processNextFile();
 			} else {
 				processNextFile();
@@ -159,7 +154,7 @@ function fileUpload(name, fileData) {
 			}
 		}
 	};
-	xhr.open("PUT", "/api/create?"+escape(name));
+	xhr.open("PUT", "/api/create?name="+encodeURIComponent(name));
 	currentUpload = xhr;
 	xhr.send(fileData);
 }
@@ -237,7 +232,7 @@ function setupDropZone() {
 }
 
 function refreshFiles() {
-	$.get('/api/list?idonly', function(data) {
+	$.get('/api/list?type=idonly', function(data) {
 		var files = data.split("\n");
 		var files_rev = new Array();
 		for(var i = 0;i < files.length;i++) {
@@ -260,7 +255,7 @@ function refreshFiles() {
 }
 
 function getFileLI(fileid, func) {
-	$.get("/api/filehtml?" + fileid, function(data) {
+	$.get("/api/filehtml?id=" + fileid, function(data) {
 		data = data.trim();
 
 		if(data[0] == '-') {
@@ -314,7 +309,7 @@ function deleteFile(fileid, doConfirm) {
 			return;
 	$("#file_"+fileid).css("border", "1px solid red");//Highlight file deletion
 
-	$.get('/api/delete?'+fileid, function(data) {
+	$.get('/api/delete?id='+fileid, function(data) {
 		if(data.charAt(0) != '+') {
 			refreshFileLI(fileid);
 			alert("Error deleting file :(");
@@ -408,7 +403,7 @@ function setupOptionMenu() {
 
 	var handleBase64Request = function(event) {
 		var fileName = getFileIDFromID(getFileLIFromevent(event).id);
-		$.get("/api/base64?" + fileName, function(data) {
+		$.get("/api/base64?id=" + fileName, function(data) {
 			var text = document.createElement("textarea");
 			text.rows = "20";
 			text.cols = "100";

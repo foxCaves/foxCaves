@@ -83,7 +83,7 @@ $(document).ready(function(){
 		}
 
 		var useSSL = (window.location.protocol == "https:");
-		var socket = new WebSocket((useSSL ? "wss:" : "ws:") + window.location.hostname + "/api/events?" + PUSH_CHANNEL);
+		var socket = new WebSocket((useSSL ? "wss:" : "ws:") + window.location.hostname + "/api/events?channel=" + PUSH_CHANNEL);
 		currentSocket = socket;
 
 		function reconnectInner() {

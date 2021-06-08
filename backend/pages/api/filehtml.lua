@@ -4,7 +4,7 @@ if not ngx.ctx.user then return end
 
 dofile("scripts/fileapi.lua")
 
-local fileid = ngx.var.args
+local fileid = ngx.var.arg_id
 local file = file_get(fileid)
 
 if not file then

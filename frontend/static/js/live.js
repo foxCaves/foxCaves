@@ -533,10 +533,8 @@ var liveDrawInput = {
 var liveDrawInterface = {
 	save: function() {
 		var xhr = new XMLHttpRequest();
-		/*xhr.upload.addEventListener("loadstart", uploadStart, false);
-		xhr.upload.addEventListener("progress", uploadProgress, false);*/
 		xhr.upload.addEventListener("load", function(ev) { console.log("Upload complete"); }, false);
-		xhr.open("PUT", "/api/create?" + escape(LIVEDRAW_FILEID + "-edited.png"));//LIVEDRAW_FILEID defined in love.tpl
+		xhr.open("PUT", "/api/create?name=" + encodeURIComponent(LIVEDRAW_FILEID + "-edited.png"));//LIVEDRAW_FILEID defined in love.tpl
 		xhr.setRequestHeader("x-is-base64","yes");
 		xhr.send(finalCanvas.toDataURL("image/png").replace(/^data:image\/png;base64,/, "").replace(/[\r\n]/g,""));
 	}

@@ -4,7 +4,7 @@ if not ngx.ctx.user then return end
 
 dofile("scripts/fileapi.lua")
 
-local res, filename = file_delete(ngx.var.args, ngx.ctx.user.id)
+local res, filename = file_delete(ngx.var.arg_id, ngx.ctx.user.id)
 
 if res then
 	ngx.print("+" .. filename)

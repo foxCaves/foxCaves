@@ -5,7 +5,7 @@ if not ngx.ctx.user then return end
 local database = ngx.ctx.database
 local files = database:zrevrange(database.KEYS.USER_FILES .. ngx.ctx.user.id, 0, -1)
 
-if ngx.var.args == "idonly" then
+if ngx.var.arg_type == "idonly" then
 	ngx.print(table.concat(files, "\n") .. "\n")
 else
 	dofile("scripts/fileapi.lua")
