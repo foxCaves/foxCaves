@@ -1,6 +1,6 @@
 local IS_MAIL_DEVELOPMENT = false
 
-dofile("/opt/foxcaves_config/mail.lua")
+dofile("/var/www/foxcaves/config/mail.lua")
 local mailip = mailip
 local mailuser = mailuser
 local mailpass = mailpass

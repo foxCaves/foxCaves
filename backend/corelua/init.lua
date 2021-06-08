@@ -38,6 +38,6 @@ function dofile(file)
 	return setfenv(code(), getfenv())()
 end
 
-loadfile("/var/www/foxcaves/corelua/mail.lua")()
-loadfile("/var/www/foxcaves/corelua/random.lua")()
-loadfile("/var/www/foxcaves/corelua/template.lua")()
+loadfile("/var/www/foxcaves/lua/core/mail.lua")()
+loadfile("/var/www/foxcaves/lua/core/random.lua")()
+loadfile("/var/www/foxcaves/lua/core/template.lua")()

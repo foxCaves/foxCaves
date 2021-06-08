@@ -21,10 +21,10 @@ local redis = require("redis")
 local ev = require("ev")
 lfs = nil
 
-dofile("/opt/foxcaves_config/main.lua")
+dofile("/var/www/foxcaves/config/main.lua")
 local WS_BIND_PORT = WEBSOCKET_PORT + 1
 
-dofile("/opt/foxcaves_config/database.lua")
+dofile("/var/www/foxcaves/config/database.lua")
 
 module("liveedit_websocket")
 

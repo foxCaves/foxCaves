@@ -1,5 +1,3 @@
-/config
-/diststatic
-/storage
-/redis
+/backend/config
+/frontend/diststatic
 node_modules

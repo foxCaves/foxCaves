@@ -2,10 +2,10 @@ FROM node:current AS builder
 
 RUN mkdir /opt/stage
 WORKDIR /opt/stage
-COPY Gruntfile.js /opt/stage/
-COPY package.json /opt/stage/
-COPY package-lock.json /opt/stage/
-COPY static /opt/stage/static
+COPY frontend/Gruntfile.js /opt/stage/
+COPY frontend/package.json /opt/stage/
+COPY frontend/package-lock.json /opt/stage/
+COPY frontend/static /opt/stage/static
 RUN npm ci && npm run build
 
 FROM openresty/openresty:alpine-fat
@@ -24,24 +24,20 @@ COPY etc/nginx.conf /etc/nginx/conf.d/foxcaves.conf
 COPY etc/nginx.listener.$BUILD_ENV.conf /etc/nginx/listener.conf
 COPY etc/s6 /etc/s6
 
-COPY cdn /var/www/foxcaves/cdn
-COPY corelua /var/www/foxcaves/corelua
-COPY pages /var/www/foxcaves/pages
-COPY scripts /var/www/foxcaves/scripts
-COPY templates /var/www/foxcaves/templates
+COPY backend /var/www/foxcaves/lua
 
-COPY html /var/www/foxcaves/html
-COPY static /var/www/foxcaves/html/static
+COPY frontend/html /var/www/foxcaves/html
+COPY frontend/static /var/www/foxcaves/html/static
 COPY --from=builder /opt/stage/diststatic /var/www/foxcaves/html/static
 
 ARG GIT_REVISION=UNKNOWN
-RUN echo $GIT_REVISION > /var/www/foxcaves/.revision
+RUN echo $GIT_REVISION > /var/www/foxcaves/lua/.revision
 RUN /etc/nginx/cfips.sh
 
 EXPOSE 80 443
 
 VOLUME /var/lib/redis
-VOLUME /opt/foxcaves_storage
-VOLUME /opt/foxcaves_config
+VOLUME /var/www/foxcaves/storage
+VOLUME /var/www/foxcaves/config
 
 ENTRYPOINT ["s6-svscan", "/etc/s6"]

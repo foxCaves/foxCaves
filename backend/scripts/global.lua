@@ -1,5 +1,5 @@
 lfs.chdir(ngx.var.main_root)
-dofile("/opt/foxcaves_config/main.lua")
+dofile("/var/www/foxcaves/config/main.lua")
 
 ngx.ctx.user = nil
 
@@ -12,7 +12,7 @@ if not database then
 end
 database:set_timeout(60000)
 
-dofile("/opt/foxcaves_config/database.lua")
+dofile("/var/www/foxcaves/config/database.lua")
 local ok, err = database:connect(dbip, dbport)
 if not ok then
 	ngx.print("Error connecting to DB: ", err)

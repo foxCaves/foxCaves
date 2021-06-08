@@ -1,6 +1,6 @@
 local lfs = require("lfs")
 
-local FILE_STORAGE_PATH = "/opt/foxcaves_storage/"
+local FILE_STORAGE_PATH = "/var/www/foxcaves/storage/"
 local database = ngx.ctx.database
 
 local function file_fullread(filename)
@@ -78,10 +78,10 @@ end
 function file_upload(fileid, filename, extension, thumbnail, filetype, thumbtype)
 	lfs.mkdir(FILE_STORAGE_PATH .. fileid)
 
-	file_move("/tmp/fc_files/" .. fileid .. extension, FILE_STORAGE_PATH .. fileid .. "/file" .. extension)
+	file_move("/var/www/foxcaves/tmp/files/" .. fileid .. extension, FILE_STORAGE_PATH .. fileid .. "/file" .. extension)
 
 	if thumbnail and thumbnail ~= "" then
-		file_move("/tmp/fc_thumbs/" .. fileid .. thumbnail, FILE_STORAGE_PATH .. fileid .. "/thumb" .. thumbnail)
+		file_move("/var/www/foxcaves/tmp/thumbs/" .. fileid .. thumbnail, FILE_STORAGE_PATH .. fileid .. "/thumb" .. thumbnail)
 	end
 end
 

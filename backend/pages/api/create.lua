@@ -78,13 +78,13 @@ if headers.x_is_base64 == "yes" then
 	f:close()
 	os.remove(file)
 	content = ngx.decode_base64(content)
-	f = io.open("/tmp/fc_files/" .. fileid .. extension, "wb")
+	f = io.open("/var/www/foxcaves/tmp/files/" .. fileid .. extension, "wb")
 	f:write(content)
 	f:close()
 	content = nil
 	f = nil
 else
-	os.rename(file, "/tmp/fc_files/" .. fileid .. extension)
+	os.rename(file, "/var/www/foxcaves/tmp/files/" .. fileid .. extension)
 end
 
 dofile("scripts/mimetypes.lua")
@@ -103,21 +103,21 @@ local mimeHandlers = {
 		local thumbnail = fileid .. thumbext
 		os.execute(
 			string.format(
-				'/usr/bin/convert "/tmp/fc_files/%s%s" -thumbnail x300 -resize "300x<" -resize 50%% -gravity center -crop 150x150+0+0 +repage -format png "/tmp/fc_thumbs/%s"',
+				'/usr/bin/convert "/var/www/foxcaves/tmp/files/%s%s" -thumbnail x300 -resize "300x<" -resize 50%% -gravity center -crop 150x150+0+0 +repage -format png "/var/www/foxcaves/tmp/thumbs/%s"',
 				fileid,
 				extension,
 				thumbnail
 			)
 		)
 
-		if not lfs.attributes("/tmp/fc_thumbs/" .. thumbnail, "size") then
+		if not lfs.attributes("/var/www/foxcaves/tmp/thumbs/" .. thumbnail, "size") then
 			return FILE_TYPE_IMAGE, nil, nil
 		end
 		return FILE_TYPE_IMAGE, "image/png", thumbext
 	end,
 
 	text = function()
-		local fh = io.open("/tmp/fc_files/" .. fileid .. extension, "r")
+		local fh = io.open("/var/www/foxcaves/tmp/files/" .. fileid .. extension, "r")
 		local content = ngx.ctx.escape_html(fh:read(4096))
 
 		if fh:read(1) then
@@ -129,7 +129,7 @@ local mimeHandlers = {
 			content = content:sub(4)
 		end
 
-		fh = io.open("/tmp/fc_thumbs/" .. fileid .. extension, "w")
+		fh = io.open("/var/www/foxcaves/tmp/thumbs/" .. fileid .. extension, "w")
 		fh:write(content)
 		fh:close()
 
