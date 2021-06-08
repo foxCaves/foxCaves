@@ -326,7 +326,8 @@ function setupFileDragging() {
 		elem.style.cursor="move";
 	});
 
-	$(".image_manage_bottom > span > a[title=Delete]").click(function() {
+	$(".image_manage_bottom > span > a[title=Delete]").click(function(e) {
+		e.preventDefault();
 		deleteFile(getFileIDFromID(this.parentNode.parentNode.parentNode.id), true);
 	});
 
