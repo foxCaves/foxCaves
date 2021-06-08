@@ -314,9 +314,6 @@ function deleteFile(fileid, doConfirm) {
 			refreshFileLI(fileid);
 			alert("Error deleting file :(");
 		}
-	}).error(function() {
-		refreshFileLI(fileid);
-		alert("Error deleting file :(");
 	});
 
 	return false;

@@ -156,3 +156,4 @@ _G.tonumber = tonumber
 _G.tostring = tostring
 _G.os = os
 _G.lfs = lfs
+_G.cjson = cjson
