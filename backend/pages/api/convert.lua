@@ -62,5 +62,4 @@ file_manualdelete(args.fileid .. "/file" .. dbdata.extension)
 
 file_push_action(args.fileid, '=')
 
-ngx.print("+++")
 ngx.eof()

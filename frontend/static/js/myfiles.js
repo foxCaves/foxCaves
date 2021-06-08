@@ -233,7 +233,7 @@ function setupDropZone() {
 
 function refreshFiles() {
 	$.get('/api/list?type=idonly', function(data) {
-		var files = data.split("\n");
+		var files = JSON.parse(data);
 		var files_rev = new Array();
 		for(var i = 0;i < files.length;i++) {
 			var fileid = files[i];
@@ -304,16 +304,16 @@ function refreshFileLI(fileid) {
 }
 
 function deleteFile(fileid, doConfirm) {
-	if(doConfirm)
-		if(!confirm("Are you sure you want to delete this file"))
-			return;
+	if(doConfirm && !confirm("Are you sure you want to delete this file")) {
+		return;
+	}
+
 	$("#file_"+fileid).css("border", "1px solid red");//Highlight file deletion
 
-	$.get('/api/delete?id='+fileid, function(data) {
-		if(data.charAt(0) != '+') {
-			refreshFileLI(fileid);
-			alert("Error deleting file :(");
-		}
+	$.get('/api/delete?id='+fileid, function() {
+	}).fail(function() {
+		refreshFileLI(fileid);
+		alert("Error deleting file :(");
 	});
 
 	return false;
@@ -455,25 +455,25 @@ function setupMassOperations() {
 
 		var count = 0;
 
-		var str = "";
+		var data = [];
 
 		$("#file_manager > li[id^=file_]").each(function(k, v) {
 			if(v.style.display == "none")
 				return true;
-			str += ("|" + getFileIDFromID(v.id));
+			data.push(getFileIDFromID(v.id));
 			count++;
 		});
 
-		if(!confirm("Are you sure you want to " + operation + " all selected(" + count + ") files?"))
-			return
+		if(!confirm("Are you sure you want to " + operation + " all selected(" + count + ") files?")) {
+			return;
+		}
 
 		$.ajax({
 			method: "POST",
 			url: "/api/deletemulti",
-			data: str,
-			success: function(data) {
-				if(data == "+")
-					alert("Done.");
+			data: JSON.stringify(data),
+			success: function() {
+				alert('Done!');
 			}
 		});
 	});

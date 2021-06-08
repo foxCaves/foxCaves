@@ -6,12 +6,13 @@ local database = ngx.ctx.database
 local files = database:zrevrange(database.KEYS.USER_FILES .. ngx.ctx.user.id, 0, -1)
 
 if ngx.var.arg_type == "idonly" then
-	ngx.print(table.concat(files, "\n") .. "\n")
+	ngx.print(cjson.encode(files))
 else
 	dofile("scripts/fileapi.lua")
+	local results = {}
 	for _,fileid in next, files do
-		local row = file_get(fileid)
-		ngx.print(fileid .. ">" .. row.name .. ">" .. row.extension .. ">" .. row.size .. ">" .. row.thumbnail .. ">" .. row.type .. "\n")
+		results[fileid] = file_get(fileid)
 	end
+	ngx.print(cjson.encode(results))
 end
 ngx.eof()

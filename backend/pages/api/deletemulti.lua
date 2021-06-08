@@ -6,18 +6,20 @@ dofile("scripts/fileapi.lua")
 
 ngx.req.read_body()
 local data = ngx.req.get_body_data()
-if(not data) then
-	ngx.print("-")
+if not data then
+	ngx.status = 400
+	ngx.print("No body")
 	ngx.eof()
 	return
 end
 
---local res, filename = file_delete(ngx.var.arg_id, ngx.ctx.user.id)
+data = cjson.decode(data)
 
-ngx.print("+")
-local id = ngx.ctx.user.id
-for match in ngx.re.gmatch(data, "([a-zA-Z0-9]+)", "o") do
-	res, filename = file_delete(match[1], id)
+local results = {}
+local userid = ngx.ctx.user.id
+for _, fileid in pairs(data) do
+	local res, _ = file_delete(fileid, userid)
+	results[fileid] = res
 end
-
+ngx.print(cjson.encode(results))
 ngx.eof()
