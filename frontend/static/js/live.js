@@ -687,7 +687,8 @@ var networking = {
 	connect: function() {
 		try {
 			this.shouldConnect = true;
-			var webSocket = new WebSocket("wss://ws.foxcav.es:" + WEBSOCKET_PORT + "/", "paint");
+			var useSSL = (window.location.protocol == "https:");
+			var webSocket = new WebSocket((useSSL ? "wss:" : "ws:") + window.location.hostname + "/api/livedraw");
 
 			webSocket.onmessage = function(event) {
 				var data = webSocket_buffer + event.data;

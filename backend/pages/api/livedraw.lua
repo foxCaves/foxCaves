@@ -1,64 +1,29 @@
+dofile(ngx.var.main_root .. "/scripts/global.lua")
+dofile("scripts/api_login.lua")
+
 local next = next
 local tonumber = tonumber
 local tostring = tostring
 local setmetatable = setmetatable
-local print = print
-local error = error
 local pcall = pcall
-local G = _G
 local table_insert = table.insert
 local table_concat = table.concat
 local string_format = string.format
 local time = os.time
---local pairs = pairs
+local ngx = ngx
+local randstring = randstring
 
--- TODO: Basically all of this needs to be redone for resty.websocket.server
-
-local lfs = require("lfs")
-lfs.chdir(" .. ")
-local websockets = require("websocket")
-local redis = require("redis")
-local ev = require("ev")
-lfs = nil
-
-dofile("/var/www/foxcaves/config/main.lua")
-local WS_BIND_PORT = WEBSOCKET_PORT + 1
-
-dofile("/var/www/foxcaves/config/database.lua")
+local server = require("resty.websocket.server")
+local ws, err = server:new({
+    timeout = 5000,
+    max_payload_len = 65535,
+})
+if not ws then
+    ngx.exit(400)
+    return
+end
 
 module("liveedit_websocket")
-
-local database
-do
-	local dbip = G.dbip
-	local dbport = G.dbport
-	local dbpass = G.dbpass
-	local dbkeys = G.dbkeys
-
-	database = {ping = function() return false end}
-
-	local reconntries = 0
-	function database_ping()
-		local ret = database:ping()
-		if not ret then
-			if reconntries > 3 then
-				reconntries = 0
-				error("Sorry, database error")
-			end
-			reconntries = reconntries + 1
-			database = redis.connect(dbip, dbport)
-			database.KEYS = dbkeys
-			database:auth(dbpass)
-			print("Redis (re)connected successfully!")
-			return database_ping()
-		else
-			reconntries = 0
-			return ret
-		end
-	end
-end
-G = nil
-database_ping()
 
 local function explode(div,str) -- credit: http://richard.warburton.it
 	local pos, arr = 0, {}
@@ -70,10 +35,6 @@ local function explode(div,str) -- credit: http://richard.warburton.it
 	table_insert(arr, str:sub(pos)) -- Attach chars right of last divider
 	return arr
 end
-
-local ws_data_global = {}
-local history_global = {}
-local last_wsid = {}
 
 local EVENT_WIDTH = "w"
 local EVENT_COLOR = "c"
@@ -97,6 +58,18 @@ local EVENT_MOUSE_DOUBLE_CLICK = "F"
 local cEVENT_JOIN = EVENT_JOIN:byte()
 local cEVENT_MOUSE_CURSOR = EVENT_MOUSE_CURSOR:byte()
 
+local should_run = true
+
+local function close()
+	ws:send_close()
+	ngx.eof()
+end
+
+local function error(str)
+	ws:send_text(EVENT_ERROR .. str)
+	close()
+end
+
 local valid_brushes = {
 	brush = true,
 	circle = true,
@@ -109,6 +82,29 @@ local valid_brushes = {
 }
 
 local chr_a, chr_f, chr_0, chr_9 = ("af09"):byte(1, 4)
+
+local sub_database, sub_database_thread
+
+local function redis_read()
+	while should_run do
+        local res, err = self.sub_database:read_reply()
+        if err and err ~= "timeout" then
+            ws:send_close()
+            ngx.eof()
+            break
+        end
+        if res then
+            ws:send_text(res[3])
+        end
+	end
+	should_run = false
+end
+
+local function set_redis_read(channel)
+	sub_database = ngx.ctx.make_database()
+	sub_database:subscribe(database.KEYS.LIVEDRAW .. channel)
+	sub_database_thread = ngx.thread.spawn(redis_read)
+end
 
 local event_handlers = {
 	[EVENT_BRUSH] = function(user, data)
@@ -140,11 +136,6 @@ local event_handlers = {
 	[EVENT_RESET] = function(user, data)
 		if #data > 1 or (data[1] and data[1] ~= "") then error("Invalid payload") end
 	end,
-	--[[[EVENT_IMGBURST] = function(user, data)
-		local other = user.ws_data[tonumber(data[1])]
-		other:send(EVENT_IMGBURST .. "a|" .. data[2] .. "|")
-		return false
-	end,]]
 	[EVENT_LEAVE] = function(user, data)
 		self:kick()
 		return ""
@@ -157,8 +148,6 @@ local event_handlers = {
 		if data[1] == "" or data[2] == "" or data[3] == "" then
 			error("Missing payload data")
 		end
-
-		database_ping() --Ensure database exists
 
 		local tempvar = data[1]
 		if tempvar ~= "GUEST" then
@@ -175,34 +164,13 @@ local event_handlers = {
 			--End session => User
 		end
 
-		tempvar = data[2]
-		user.globkey = string_format("%s_%s", tempvar, data[3])
+		user.channel = string_format("%s_%s", data[2], data[3])
+		set_redis_read(user.channel)
 
-		user.ws_data = ws_data_global[user.globkey]
-		if not user.ws_data then
-			--Sanity check for the FileID
-			local result = database:hget(database.KEYS.FILES .. tempvar, "type")
-			if (not result) or tonumber(result) ~= 1  then
-				error("Invalid FileID")
-			end
-			--End sanity check
-
-			user.ws_data = {}
-			user.history = {"r0|"}
-			history_global[user.globkey] = user.history
-			ws_data_global[user.globkey] = user.ws_data
-		else
-			user.history = history_global[user.globkey]
-		end
-
-		local wsid = last_wsid[user.globkey] or 1
-		while user.ws_data[wsid] do
-			wsid = wsid + 1
-		end
-		last_wsid[user.globkey] = wsid + 1
+		local wsid = randstring(16)
 
 		if not user.name then
-			user.name = string_format("Guest %i", wsid)
+			user.name = string_format("Guest %s", wsid)
 		end
 
 		user.image = data[2]
@@ -210,34 +178,19 @@ local event_handlers = {
 		user.id = wsid
 		user.isjoined = true
 
-		user.ws_data[wsid] = user
-
 		--local imgburst_found = false
-		for uid, udata in next, user.ws_data do
-			if uid ~= wsid then
-				if udata.name == user.name then
-					udata:send(EVENT_ERROR .. "Logged in from another location")
-					udata:kick()
-				else
-					user:send(
-						string_format(
-							"%s%i|%s|%i|%s|%s|%i|%i",
-							EVENT_JOIN,
-							udata.id,
-							udata.name,
-							(udata.width or 0),
-							(udata.color or "000"),
-							(udata.brush or "brush"),
-							(udata.cursorX or 0),
-							(udata.cursorY or 0)
-					))
-					--[[if uid ~= user.id and not imgburst_found then
-						imgburst_found = true
-						user:send(EVENT_IMGBURST .. "r|" .. user.id .. "|")
-					end]]
-				end
-			end
-		end
+		user:broadcast_others(
+			string_format(
+				"%s%i|%s|%i|%s|%s|%i|%i",
+				EVENT_JOIN,
+				udata.id,
+				udata.name,
+				(udata.width or 0),
+				(udata.color or "000"),
+				(udata.brush or "brush"),
+				(udata.cursorX or 0),
+				(udata.cursorY or 0)
+		))
 
 		user.historyburst = true
 		print("Join: ", user.name, user.id, user.image, user.drawingsession)
@@ -269,55 +222,33 @@ end
 USERMETA = {}
 USERMETA.__index = USERMETA
 function USERMETA:send(data)
-	if self.socket then
-		self.socket:send(data .. "\n", websockets.TEXT)
-	end
+	ws:send_text(data .. "\n")
 end
 
 function USERMETA:kick()
-	if self.id then
-		self.ws_data[self.id] = nil
-	end
-
 	if self.isjoined then
 		print("Leave: ", self.name, self.id, self.image, self.drawingsession)
 		self.isjoined = false
-
-		if(next(self.ws_data) == nil) then
-			ws_data_global[self.globkey] = nil
-			history_global[self.globkey] = nil
-			last_wsid[self.globkey] = nil
-
-			print("Unsetting globkey: ", self.globkey)
-		else
-			last_wsid[self.globkey] = self.id
-		end
 	else
 		self.id = nil
 		return
 	end
 
-	if self.socket then
-		self.socket:close()
-		self.socket = nil
-	end
+	close()
 
 	self.id = nil
 end
 function USERMETA:broadcast_others(data, nohistory)
+	if not self.channel then
+		return
+	end
 	if not nohistory then
-		table_insert(self.history, data)
+		--TODO: table_insert(self.history, data)
 	end
-	for _,other in next, self.ws_data do
-		if other.id ~= self.id then
-			other:send(data)
-		end
-	end
+	database:publish(database.KEYS.LIVEDRAW .. self.channel, data)
 end
 
-function USERMETA:event_received(ws, rawdata)
-	self.socket = ws
-
+function USERMETA:event_received(rawdata)
 	local evid = rawdata:byte(1)
 	local data = {}
 	if rawdata:len() > 1 then
@@ -345,14 +276,16 @@ function USERMETA:event_received(ws, rawdata)
 	if not self.id then return end
 	self:broadcast_others(string_format("%c%i|%s", evid, self.id, rawdata), (evid == cEVENT_MOUSE_CURSOR))
 
+	--[[ TODO:
 	if historyburst then
-		self:send(table_concat(self.history ,"\n"))
-		self:send(string_format("%s%i|", EVENT_LEAVE, self.id))
+		self:send_text(table_concat(self.history ,"\n"))
+		self:send_text(string_format("%s%i|", EVENT_LEAVE, self.id))
 		historyburst = false
 	end
+	]]
 end
 
-function USERMETA:socket_onrecv(ws, data)
+function USERMETA:socket_onrecv(data)
 	data = self.databuff .. data
 	local datalen = data:len()
 	if data:sub(datalen, datalen) ~= "\n" then
@@ -376,39 +309,42 @@ function USERMETA:socket_onrecv(ws, data)
 		if v and v ~= "" then
 			local isok, err = pcall(self.event_received, self, ws, v)
 			if not isok then
-				print("EVTErr: ", err)
-				self:send(EVENT_ERROR .. err)
-				self:kick()
+				error(err)
 			end
 		end
 	end
 end
 
-local function paint_cb(ws)
-	local user = setmetatable({
-		historyburst = false,
-		isjoined = false,
-		databuff = ""
-	}, USERMETA)
+local user = setmetatable({
+	historyburst = false,
+	isjoined = false,
+	databuff = ""
+}, USERMETA)
 
-	ws:on_message(function(ws, data)
-		user:socket_onrecv(ws, data)
-	end)
+local function websocket_read()
+	while should_run do
+        local data, typ, err = ws:recv_frame()
+        if ws.fatal or typ == "close" or typ == "error" then
+            ws:send_close()
+            ngx.eof()
+            break
+        end
+        if typ == "ping" then
+            ws:send_pong(data)
+        end
+		if typ == "text" then
+			user:socket_onrecv(data)
+		end
+	end
 
-	ws:on_close(function()
-		user:kick()
-	end)
+	should_run = false
 end
 
-local context = websockets.server.ev.listen({
-	port = WS_BIND_PORT,
-	protocols = {
-		paint = paint_cb
-	},
-	default = function(ws)
-		ws:send('goodbye strange client')
-		ws:close()
-	end
-})
-
-ev.Loop.default:loop()
+websocket_read()
+ngx.eof()
+if sub_database_thread then
+	ngx.thread.wait(sub_database_thread)
+end
+if sub_database then
+	sub_database:close()
+end

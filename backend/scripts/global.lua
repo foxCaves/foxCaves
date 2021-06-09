@@ -5,69 +5,76 @@ ngx.ctx.user = nil
 
 local redis = require("resty.redis")
 
-local database, err = redis:new()
-if not database then
-	ngx.print("Error initializing DB: ", err)
-	return ngx.eof()
-end
-database:set_timeout(60000)
+function make_database()
+	local database, err = redis:new()
+	if not database then
+		ngx.print("Error initializing DB: ", err)
+		return ngx.eof()
+	end
+	database:set_timeout(60000)
 
-dofile("/var/www/foxcaves/config/database.lua")
-local ok, err = database:connect(dbip, dbport)
-if not ok then
-	ngx.print("Error connecting to DB: ", err)
-	return ngx.eof()
-end
-
-if database:get_reused_times() == 0 and dbpass then
-	local ok, err = database:auth(dbpass)
+	dofile("/var/www/foxcaves/config/database.lua")
+	local ok, err = database:connect(dbip, dbport)
 	if not ok then
 		ngx.print("Error connecting to DB: ", err)
 		return ngx.eof()
 	end
-end
 
-database.KEYS =  {
-    USERS = "users:",
-    USERNAME_TO_ID = "username_to_id:",
-    USEDINVOICES = "used_invoices:",
-    SESSIONS = "sessions:",
-    NEXTUSERID = "next_user_id:",
-    PUSH = "push:",
-
-    FILES = "files:",
-    USER_FILES = "user_files:",
-
-    EMAILS = "emails:",
-    EMAILKEYS = "email_keys:",
-
-    LINKS = "links:",
-    USER_LINKS = "user_links:",
-}
-dbip = nil
-dbport = nil
-dbpass = nil
-
-database.hgetall_real = database.hgetall
-function database:hgetall(key)
-	local res = self:hgetall_real(key)
-	if (not res) or (res == ngx.null) then
-		return res
-	end
-	local ret = {}
-	local k = nil
-	for _,v in next, res do
-		if not k then
-			k = v
-		else
-			ret[k] = v
-			k = nil
+	if database:get_reused_times() == 0 and dbpass then
+		local ok, err = database:auth(dbpass)
+		if not ok then
+			ngx.print("Error connecting to DB: ", err)
+			return ngx.eof()
 		end
 	end
-	return ret
+
+	database.KEYS =  {
+		USERS = "users:",
+		USERNAME_TO_ID = "username_to_id:",
+		USEDINVOICES = "used_invoices:",
+		SESSIONS = "sessions:",
+		NEXTUSERID = "next_user_id:",
+		PUSH = "push:",
+		LIVEDRAW = "livedraw:",
+
+		FILES = "files:",
+		USER_FILES = "user_files:",
+
+		EMAILS = "emails:",
+		EMAILKEYS = "email_keys:",
+
+		LINKS = "links:",
+		USER_LINKS = "user_links:",
+	}
+	dbip = nil
+	dbport = nil
+	dbpass = nil
+
+	database.hgetall_real = database.hgetall
+	function database:hgetall(key)
+		local res = self:hgetall_real(key)
+		if (not res) or (res == ngx.null) then
+			return res
+		end
+		local ret = {}
+		local k = nil
+		for _,v in next, res do
+			if not k then
+				k = v
+			else
+				ret[k] = v
+				k = nil
+			end
+		end
+		return ret
+	end
+
+	return database
 end
 
-ngx.ctx.database = database
+ngx.ctx.database = make_database()
+ngx.ctx.make_database = make_database
+local database = ngx.ctx.database
 
 ngx.ctx.EMAIL_INVALID = -1
 ngx.ctx.EMAIL_TAKEN = -2
