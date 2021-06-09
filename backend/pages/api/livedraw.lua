@@ -185,13 +185,13 @@ local event_handlers = {
 			string_format(
 				"%s%i|%s|%i|%s|%s|%i|%i",
 				EVENT_JOIN,
-				udata.id,
-				udata.name,
-				(udata.width or 0),
-				(udata.color or "000"),
-				(udata.brush or "brush"),
-				(udata.cursorX or 0),
-				(udata.cursorY or 0)
+				user.id,
+				user.name,
+				(user.width or 0),
+				(user.color or "000"),
+				(user.brush or "brush"),
+				(user.cursorX or 0),
+				(user.cursorY or 0)
 		))
 
 		user.historyburst = true
