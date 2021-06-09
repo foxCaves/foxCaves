@@ -135,10 +135,12 @@ local event_handlers = {
 	end,
 	[EVENT_MOUSE_CURSOR] = function(user, data)
 		if #data ~= 2 then error("Invalid payload") end
-		if (not user.cursorX) or (user.cursorX < 0) then error("Invalid X") end
-		if (not user.cursorY) or (user.cursorY < 0) then error("Invalid Y") end
-		user.cursorX = tonumber(data[1])
-		user.cursorY = tonumber(data[2])
+		local x = tonumber(data[1])
+		local y = tonumber(data[2])
+		if not x or x < 0 then error("Invalid X") end
+		if not y or y < 0 then error("Invalid Y") end
+		user.cursorX = x
+		user.cursorY = y
 		user:update()
 	end,
 	[EVENT_CUSTOM] = function(user, data)
