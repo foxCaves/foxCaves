@@ -181,6 +181,7 @@ local event_handlers = {
 		user.isjoined = true
 
 		--local imgburst_found = false
+		-- TODO: SEND OTHER USERS TO NEW USER
 		user:broadcast_others(
 			string_format(
 				"%s%i|%s|%i|%s|%s|%i|%i",
