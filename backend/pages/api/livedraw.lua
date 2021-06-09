@@ -94,7 +94,7 @@ local sub_database, sub_database_thread
 
 local function redis_read()
 	while should_run do
-        local res, err = self.sub_database:read_reply()
+        local res, err = sub_database:read_reply()
         if err and err ~= "timeout" then
             ws:send_close()
             ngx.eof()
