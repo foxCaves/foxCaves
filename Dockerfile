@@ -2,11 +2,12 @@ FROM node:current AS builder
 
 RUN mkdir /opt/stage
 WORKDIR /opt/stage
-COPY frontend/Gruntfile.js /opt/stage/
 COPY frontend/package.json /opt/stage/
 COPY frontend/package-lock.json /opt/stage/
+RUN npm ci
+COPY frontend/Gruntfile.js /opt/stage/
 COPY frontend/static /opt/stage/static
-RUN npm ci && npm run build
+RUN npm run build
 
 FROM openresty/openresty:alpine-fat
 
