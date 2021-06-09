@@ -237,11 +237,13 @@ function refreshFiles() {
 		var files_rev = new Array();
 		for(var i = 0;i < files.length;i++) {
 			var fileid = files[i];
-			if(!fileid)
+			if(!fileid) {
 				continue;
+			}
 			files_rev[fileid] = true;
-			if(!document.getElementById("file_"+fileid))
+			if(!document.getElementById("file_"+fileid)) {
 				addFileLI(fileid);
+			}
 		}
 
 		$('#file_manager > li').each(function(i, ele) {
@@ -275,17 +277,36 @@ function getFileLI(fileid, func) {
 	})
 }
 
+function setupFileJS(parent) {
+	if (!parent.find) {
+		parent = $(parent);
+	}
+
+	parent.find(".image_manage_bottom > span > a[title=Delete]").click(function(e) {
+		preventDefault(e);
+		deleteFile(getFileIDFromID(this.parentNode.parentNode.parentNode.id), true);
+	});
+
+	parent.find.each(function(idx, elem) {
+		elem.addEventListener("dragstart", startFileDrag, false);
+		elem.addEventListener("dragend", endFileDrag, false);
+	});
+}
+
 function addFileLI(fileid, no_refresh_if_exist) {
 	if(document.getElementById("file_"+fileid)) {
-		if(!no_refresh_if_exist)
+		if(!no_refresh_if_exist) {
 			refreshFileLI(fileid);
+		}
 		return;
 	}
 	var ele = document.getElementById("file_manager");
 	getFileLI(fileid, function(newFile) {
-		if(!newFile)
+		if(!newFile) {
 			return;
+		}
 		ele.insertBefore(newFile, ele.firstChild);
+		setupFileJS(newFile);
 	});
 }
 
@@ -300,6 +321,7 @@ function refreshFileLI(fileid) {
 			return;
 		}
 		$('#file_'+fileid).replaceWith(newFile);
+		setupFileJS(newFile);
 	});
 }
 
@@ -322,14 +344,7 @@ function deleteFile(fileid, doConfirm) {
 var currFileDrag;
 
 function setupFileDragging() {
-	$(".image_manage_top, .image_manage_bottom").each(function(idx, elem) {
-		elem.style.cursor="move";
-	});
-
-	$(".image_manage_bottom > span > a[title=Delete]").click(function(e) {
-		preventDefault(e);
-		deleteFile(getFileIDFromID(this.parentNode.parentNode.parentNode.id), true);
-	});
+	setupFileJS($(".image_manage_main"));
 
 	var trashBin = document.getElementById("recycle_bin");
 
@@ -350,11 +365,6 @@ function setupFileDragging() {
 		currFileDrag = false;
 		trashBin.style.opacity = "0.05";
 	}
-
-	$("#file_manager li").each(function(idx, elem) {
-		elem.addEventListener("dragstart", startFileDrag, false);
-		elem.addEventListener("dragend", endFileDrag, false);
-	});
 
 	trashBin.style.display = "";
 
