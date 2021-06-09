@@ -280,7 +280,6 @@ function getFileLI(fileid, func) {
 function startFileDrag(event) {
 	currFileDrag = this;
 	var fileName = this.children[0].innerText;
-	console.log(fileName);
 	event.dataTransfer.setData(
 		"DownloadURL",
 		getMimeTypeFromFile(fileName) + fileName + ":" + getDownloadURLFromImageManager(this)

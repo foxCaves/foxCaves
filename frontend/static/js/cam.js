@@ -1,7 +1,6 @@
 navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia;
 
 navigator.getUserMedia({video : true}, function(stream) {
-	console.log("FUCK");
 	var canvasElement = document.createElement("canvas");
 	var renderContext = canvasElement.getContext("2d");
 
