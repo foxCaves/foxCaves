@@ -91,7 +91,12 @@ local valid_brushes = {
 local chr_a, chr_f, chr_0, chr_9 = ("af09"):byte(1, 4)
 
 local sub_database, sub_database_thread
+local user
 
+function get_id_from_packet(str)
+    str = str:sub(2, str:find("|") - 1)
+    return str
+end
 local function redis_read()
 	while should_run do
         local res, err = sub_database:read_reply()
@@ -101,7 +106,11 @@ local function redis_read()
             break
         end
         if res then
-            ws:send_text(res[3])
+			res = res[3]
+			local id = get_id_from_packet(res)
+			if id ~= user.id then
+            	ws:send_text(res)
+			end
         end
 	end
 	should_run = false
@@ -147,7 +156,9 @@ local event_handlers = {
 		if #data ~= 3 then error("Invalid payload") end
 	end,
 	[EVENT_RESET] = function(user, data)
-		if #data > 1 or (data[1] and data[1] ~= "") then error("Invalid payload") end
+		if #data > 1 or (data[1] and data[1] ~= "") then
+			error("Invalid payload")
+		end
 	end,
 	[EVENT_LEAVE] = function(user, data)
 		user:kick()
@@ -224,7 +235,6 @@ USERMETA.__index = USERMETA
 function USERMETA:send(data)
 	ws:send_text(data .. "\n")
 end
-
 function USERMETA:serialize()
 	return string_format(
 		"%s|%s|%i|%s|%s|%i|%i",
@@ -237,9 +247,15 @@ function USERMETA:serialize()
 		self.cursorY or 0
 	)
 end
+function USERMETA:refresh()
+	if not self.channel then
+		return
+	end
+	database:expire(database.KEYS.LIVEDRAW .. self.channel, 3600)
+end
 function USERMETA:update()
 	database:hset(database.KEYS.LIVEDRAW .. self.channel, self.id, self:serialize())
-	database:expire(database.KEYS.LIVEDRAW .. self.channel, 3600)
+	self:refresh()
 end
 function USERMETA:kick()
 	close()
@@ -248,15 +264,6 @@ function USERMETA:kick()
 	end
 	database:hrem(database.KEYS.LIVEDRAW .. self.channel, self.id)
 	self.id = nil
-end
-function USERMETA:broadcast_others(data, nohistory)
-	if not self.channel then
-		return
-	end
-	if not nohistory then
-		--TODO: table_insert(self.history, data)
-	end
-	database:publish(database.KEYS.LIVEDRAW .. self.channel, data)
 end
 
 function USERMETA:event_received(rawdata)
@@ -280,8 +287,11 @@ function USERMETA:event_received(rawdata)
 	else
 		error("Invalid packet: " .. evid)
 	end
-	if not self.id then return end
-	self:broadcast_others(string_format("%c%s|%s", evid, self.id, rawdata), (evid == cEVENT_MOUSE_CURSOR))
+	if not self.id or not self.channel then return end
+	if evid ~= cEVENT_MOUSE_CURSOR then
+		--TODO: table_insert(self.history, data)
+	end
+	database:publish(database.KEYS.LIVEDRAW .. self.channel, string_format("%c%s|%s", evid, self.id, rawdata))
 
 	--[[ TODO:
 	if self.historyburst then
@@ -322,7 +332,7 @@ function USERMETA:socket_onrecv(data)
 	end
 end
 
-local user = setmetatable({
+user = setmetatable({
 	historyburst = false,
 	databuff = ""
 }, USERMETA)
@@ -337,6 +347,7 @@ local function websocket_read()
         end
         if typ == "ping" then
             ws:send_pong(data)
+			user:refresh()
         end
 		if typ == "text" then
 			user:socket_onrecv(data)
