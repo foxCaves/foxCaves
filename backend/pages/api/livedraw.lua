@@ -184,7 +184,7 @@ local event_handlers = {
 		-- TODO: SEND OTHER USERS TO NEW USER
 		user:broadcast_others(
 			string_format(
-				"%s%i|%s|%i|%s|%s|%i|%i",
+				"%s%s|%s|%i|%s|%s|%i|%i",
 				EVENT_JOIN,
 				user.id,
 				user.name,
