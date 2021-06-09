@@ -277,6 +277,24 @@ function getFileLI(fileid, func) {
 	})
 }
 
+function startFileDrag(event) {
+	currFileDrag = this;
+	var fileName = this.children[0].innerText;
+	console.log(fileName);
+	event.dataTransfer.setData(
+		"DownloadURL",
+		getMimeTypeFromFile(fileName) + fileName + ":" + getDownloadURLFromImageManager(this)
+	);
+	window.setTimeout("currFileDrag.style.opacity = '0.2';", 1);
+	trashBin.style.opacity = "0.7";
+}
+
+function endFileDrag(ev) {
+	currFileDrag.style.opacity = "1";
+	currFileDrag = false;
+	trashBin.style.opacity = "0.05";
+}
+
 function setupFileJS(parent) {
 	if (!parent.find) {
 		parent = $(parent);
@@ -347,24 +365,6 @@ function setupFileDragging() {
 	setupFileJS($(".image_manage_main"));
 
 	var trashBin = document.getElementById("recycle_bin");
-
-	function startFileDrag(event) {
-		currFileDrag = this;
-		var fileName = this.children[0].innerText;
-		console.log(fileName);
-		event.dataTransfer.setData(
-			"DownloadURL",
-			getMimeTypeFromFile(fileName) + fileName + ":" + getDownloadURLFromImageManager(this)
-		);
-		window.setTimeout("currFileDrag.style.opacity = '0.2';", 1);
-		trashBin.style.opacity = "0.7";
-	}
-
-	function endFileDrag(ev) {
-		currFileDrag.style.opacity = "1";
-		currFileDrag = false;
-		trashBin.style.opacity = "0.05";
-	}
 
 	trashBin.style.display = "";
 
