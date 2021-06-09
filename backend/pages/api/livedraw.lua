@@ -308,7 +308,7 @@ function USERMETA:socket_onrecv(data)
 	local data = explode("\n", data)
 	for _,v in next, data do
 		if v and v ~= "" then
-			local isok, err = pcall(self.event_received, self, ws, v)
+			local isok, err = pcall(self.event_received, self, v)
 			if not isok then
 				error(err)
 			end
