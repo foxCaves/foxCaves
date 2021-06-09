@@ -142,7 +142,7 @@ local event_handlers = {
 		user.width = data
 		user:update()
 	end,
-	[EVENT_MOUSE_CURSOR] = function(user, data)
+	[EVENT_MOUSE_MOVE] = function(user, data)
 		if #data ~= 2 then error("Invalid payload") end
 		local x = tonumber(data[1])
 		local y = tonumber(data[2])
@@ -151,6 +151,9 @@ local event_handlers = {
 		user.cursorX = x
 		user.cursorY = y
 		user:update()
+	end,
+	[EVENT_MOUSE_CURSOR] = function(user, data)
+		return false
 	end,
 	[EVENT_CUSTOM] = function(user, data)
 		if #data ~= 3 then error("Invalid payload") end
@@ -217,10 +220,9 @@ local event_handlers = {
 		return user:serialize()
 	end
 }
-event_handlers[EVENT_MOUSE_UP] = event_handlers[EVENT_MOUSE_CURSOR]
-event_handlers[EVENT_MOUSE_DOWN] = event_handlers[EVENT_MOUSE_CURSOR]
-event_handlers[EVENT_MOUSE_MOVE] = event_handlers[EVENT_MOUSE_CURSOR]
-event_handlers[EVENT_MOUSE_DOUBLE_CLICK] = event_handlers[EVENT_MOUSE_CURSOR]
+event_handlers[EVENT_MOUSE_UP] = event_handlers[EVENT_MOUSE_MOVE]
+event_handlers[EVENT_MOUSE_DOWN] = event_handlers[EVENT_MOUSE_MOVE]
+event_handlers[EVENT_MOUSE_DOUBLE_CLICK] = event_handlers[EVENT_MOUSE_MOVE]
 do
 	local evthdl = event_handlers
 	event_handlers = {}
