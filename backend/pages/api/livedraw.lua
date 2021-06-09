@@ -144,7 +144,7 @@ local event_handlers = {
 		if #data > 1 or (data[1] and data[1] ~= "") then error("Invalid payload") end
 	end,
 	[EVENT_LEAVE] = function(user, data)
-		self:kick()
+		user:kick()
 		return ""
 	end,
 	[EVENT_JOIN] = function(user, data)
@@ -154,6 +154,10 @@ local event_handlers = {
 
 		if data[1] == "" or data[2] == "" or data[3] == "" then
 			error("Missing payload data")
+		end
+
+		if user.id then
+			error("Invalid state")
 		end
 
 		local tempvar = data[1]
@@ -183,28 +187,29 @@ local event_handlers = {
 		user.image = data[2]
 		user.drawingsession = data[3]
 		user.id = wsid
-		user.isjoined = true
 
 		--local imgburst_found = false
-		-- TODO: SEND OTHER USERS TO NEW USER
+		--[[ TODO: SEND OTHER USERS TO NEW USER
 		user:broadcast_others(
 			string_format(
 				"%s%s|%s|%i|%s|%s|%i|%i",
 				EVENT_JOIN,
-				user.id,
-				user.name,
-				(user.width or 0),
-				(user.color or "000"),
-				(user.brush or "brush"),
-				(user.cursorX or 0),
-				(user.cursorY or 0)
+				other.id,
+				other.name,
+				(other.width or 0),
+				(other.color or "000"),
+				(other.brush or "brush"),
+				(other.cursorX or 0),
+				(other.cursorY or 0)
 		))
+		]]
 
 		user.historyburst = true
 		--print("Join: ", user.name, user.id, user.image, user.drawingsession)
 
 		return string_format(
-			"%s|%i|%s|%s|%i|%i",
+			"%s|%s|%i|%s|%s|%i|%i",
+			user.id,
 			user.name,
 			user.width or 0,
 			user.color or "000",
@@ -234,16 +239,10 @@ function USERMETA:send(data)
 end
 
 function USERMETA:kick()
-	if self.isjoined then
-		--print("Leave: ", self.name, self.id, self.image, self.drawingsession)
-		self.isjoined = false
-	else
-		self.id = nil
+	close()
+	if not self.id then
 		return
 	end
-
-	close()
-
 	self.id = nil
 end
 function USERMETA:broadcast_others(data, nohistory)
@@ -266,29 +265,25 @@ function USERMETA:event_received(rawdata)
 		rawdata = ""
 	end
 
-	if (evid == cEVENT_JOIN) == self.isjoined then
-		error("Invalid state for this packet: " .. evid .. "|" .. tostring(self.isjoined))
-	else
-		local evthandl = event_handlers[evid]
-		if evthandl then
-			local ret = evthandl(self, data)
-			if ret == false then
-				return
-			elseif ret then
-				rawdata = ret
-			end
-		else
-			error("Invalid packet: " .. evid)
+	local evthandl = event_handlers[evid]
+	if evthandl then
+		local ret = evthandl(self, data)
+		if ret == false then
+			return
+		elseif ret then
+			rawdata = ret
 		end
+	else
+		error("Invalid packet: " .. evid)
 	end
 	if not self.id then return end
 	self:broadcast_others(string_format("%c%s|%s", evid, self.id, rawdata), (evid == cEVENT_MOUSE_CURSOR))
 
 	--[[ TODO:
-	if historyburst then
+	if self.historyburst then
 		self:send_text(table_concat(self.history ,"\n"))
 		self:send_text(string_format("%s%i|", EVENT_LEAVE, self.id))
-		historyburst = false
+		self.historyburst = false
 	end
 	]]
 end
@@ -312,7 +307,7 @@ function USERMETA:socket_onrecv(data)
 			return
 		end
 	end
-	local data = explode("\n", data)
+	data = explode("\n", data)
 	for _,v in next, data do
 		if v and v ~= "" then
 			local isok, err = pcall(self.event_received, self, v)
@@ -325,7 +320,6 @@ end
 
 local user = setmetatable({
 	historyburst = false,
-	isjoined = false,
 	databuff = ""
 }, USERMETA)
 
