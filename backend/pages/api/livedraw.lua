@@ -12,7 +12,7 @@ local table_concat = table.concat
 local string_format = string.format
 local time = os.time
 local ngx = ngx
-local randstring = randstring
+local randstr = randstr
 local database = ngx.ctx.database
 
 local server = require("resty.websocket.server")
@@ -169,7 +169,7 @@ local event_handlers = {
 		user.channel = string_format("%s_%s", data[2], data[3])
 		set_redis_read(user.channel)
 
-		local wsid = randstring(16)
+		local wsid = randstr(16)
 
 		if not user.name then
 			user.name = string_format("Guest %s", wsid)
