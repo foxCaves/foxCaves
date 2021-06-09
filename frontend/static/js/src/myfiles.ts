@@ -1,15 +1,16 @@
-var dropZoneDefaultInnerHTML = "";
-var dropZoneTransferInProgress = false;
+let dropZoneDefaultInnerHTML = "";
+let dropZoneTransferInProgress = false;
 
-var dropZoneUploads = new Array();
+const dropZoneUploads: (File | string)[] = [];
 
-var dropZoneFileNumber = 0;
-var dropZoneFileCount = 0;
+let dropZoneFileNumber = 0;
+let dropZoneFileCount = 0;
 
-var mimetypes = {
+const mimetypes: {
+	[key: string]: string;
+} = {
 	"bmp" : "image/bmp",
 	"c" : "text/plain",
-	"cpp" : "text/plain",
 	"cpp" : "text/plain",
 	"cs" : "text/plain",
 	"css" : "text/css",
@@ -47,19 +48,18 @@ var mimetypes = {
 }
 
 function getMimeTypeFromFile(file) {
-	return mimetypes[/([\d\w]+)$/.exec(file)[0]] || "application/octet-stream";
+	return mimetypes[/([\d\w]+)$/.exec(file)![0]!] || "application/octet-stream";
 }
 
-function handleDropFileSelect(event) {
-	var dropZone = document.getElementById("uploader");
+function handleDropFileSelect(event: JQuery.DragEvent) {
 	handleDragOver(event);
 
-	var datTrans = event.originalEvent.dataTransfer;
+	var datTrans = (event.originalEvent as DragEvent).dataTransfer!;
 
 	if(datTrans.files.length > 0) {
 		var files = datTrans.files;
 		for(var i=0;i<files.length;i++) {
-			dropZoneUploads.push(files[i]);
+			dropZoneUploads.push(files[i]!);
 			dropZoneFileCount++;
 		}
 	} else if(datTrans.items.length > 0) {
@@ -73,16 +73,15 @@ function getDownloadURLFromImageManager(object) {
 	return object.children[2].children[0].children[1].href;
 }
 
-function getFileIDFromID(id) {
+function getFileIDFromID(id: string): string {
 	return id.substr(5);
 }
 
-function formatZeros(val, len) {
-	var val = val.toString();
-	return (new Array(len - val.length + 1).join("0"))+val;
+function formatZeros(val: number, len: number): string {
+	return val.toString().padStart(len, '0');
 }
 
-var currentUpload;
+var currentUpload: XMLHttpRequest;
 var wasAborted = false;
 
 function abortCurrentFileUpload() {
@@ -96,7 +95,7 @@ function processNextFile() {
 
 	resetDropZone();
 
-	var dropZone = document.getElementById("uploader_cur");
+	var dropZone = document.getElementById("uploader_cur")!;
 
 	if(dropZoneUploads.length <= 0) {
 		dropZoneFileNumber = 0;
@@ -122,7 +121,7 @@ function processNextFile() {
 		fileUpload("Paste-"+
 			formatZeros(t.getDate(), 2)+"."+
 			formatZeros(t.getMonth(), 2)+"."+
-			formatZeros(t.getYear(), 4)+" "+
+			formatZeros(t.getFullYear(), 4)+" "+
 			formatZeros(t.getHours(), 2)+"."+
 			formatZeros(t.getMinutes(), 2)+"."+
 			formatZeros(t.getSeconds(), 2)+".txt",
@@ -131,7 +130,7 @@ function processNextFile() {
 	}
 }
 
-function fileUpload(name, fileData) {
+function fileUpload(name: string, fileData) {
 	$('#curFileName').text(name);
 
 	var xhr = new XMLHttpRequest();
@@ -159,11 +158,11 @@ function fileUpload(name, fileData) {
 	xhr.send(fileData);
 }
 
-function uploadStart(event) {
+function uploadStart() {
 	_setUploadProgress(0);
 }
 
-function uploadComplete(event) {
+function uploadComplete() {
 	_setUploadProgress(100);
 }
 
@@ -173,13 +172,13 @@ function uploadProgress(event) {
 	}
 }
 
-function _setUploadProgress(progress_percent) {
+function _setUploadProgress(progress_percent: number) {
 	$('#barUpload div.bar').css("width", progress_percent + "%");
 }
 
 function resetDropZone() {
-	var dropZone = document.getElementById("uploader");
-	var dropZoneSub = document.getElementById('uploader_sub');
+	var dropZone = document.getElementById("uploader")!;
+	var dropZoneSub = document.getElementById('uploader_sub')!;
 
 	dropZoneSub.innerHTML = dropZoneDefaultInnerHTML;
 
@@ -188,15 +187,15 @@ function resetDropZone() {
 	dropZoneTransferInProgress = false;
 }
 
-function handleDragOver(event, eventtype) {
+function handleDragOver(event: JQuery.DragEvent | DragEvent, eventtype?: string) {
 	event.stopPropagation();
 	event.preventDefault();
 
 	if(!eventtype)
 		eventtype = event.type;
 
-	var dropZone = document.getElementById("uploader");
-	var dropZoneSub = document.getElementById("uploader_sub");
+	var dropZone = document.getElementById("uploader")!;
+	var dropZoneSub = document.getElementById("uploader_sub")!;
 
 	if(eventtype == "dragenter") {
 		if(currFileDrag)
@@ -217,10 +216,10 @@ function handleDragOver(event, eventtype) {
 }
 
 function setupDropZone() {
-	var dropZoneMain = document.getElementById('uploader');
+	var dropZoneMain = document.getElementById('uploader')!;
 	dropZoneMain.innerHTML = "<div id='uploader_sub'>Drag & drop files anywhere on this page to upload them</div><div id='uploader_cur'></div>";
 
-	dropZoneDefaultInnerHTML = document.getElementById('uploader_sub').innerHTML;
+	dropZoneDefaultInnerHTML = document.getElementById('uploader_sub')!.innerHTML;
 
 	var docSel = $("*:not(#recycle_bin)");
 	docSel.bind("dragenter.dropZone", handleDragOver);
@@ -228,13 +227,13 @@ function setupDropZone() {
 	docSel.bind("dragover.dropZone", preventDefault);
 	docSel.bind("drop.dropZone", handleDropFileSelect);
 
-	document.getElementsByTagName("body")[0].addEventListener("mouseout", function(e) { resetDropZone(); }, false);
+	document.body.addEventListener("mouseout", function() { resetDropZone(); }, false);
 }
 
 function refreshFiles() {
 	$.get('/api/list?type=idonly', function(data) {
-		var files = JSON.parse(data);
-		var files_rev = new Array();
+		var files = JSON.parse(data) as string[];
+		var files_rev: boolean[] = [];
 		for(var i = 0;i < files.length;i++) {
 			var fileid = files[i];
 			if(!fileid) {
@@ -256,7 +255,7 @@ function refreshFiles() {
 	return false;
 }
 
-function getFileLI(fileid, func) {
+function getFileLI(fileid, func: (newFile: HTMLElement | null) => void) {
 	$.get("/api/filehtml?id=" + fileid, function(data) {
 		data = data.trim();
 
@@ -267,7 +266,7 @@ function getFileLI(fileid, func) {
 
 		var newFile = document.createElement("ul");//Fake
 		newFile.innerHTML = data;
-		newFile = newFile.firstChild;
+		newFile = newFile.firstChild!;
 
 		$(newFile).find(".image_manage_top, .image_manage_bottom").each(function(idx, elem) {
 			elem.style.cursor="move";
@@ -277,10 +276,10 @@ function getFileLI(fileid, func) {
 	})
 }
 
-function startFileDrag(event) {
+function startFileDrag(this: HTMLElement, event: DragEvent) {
 	currFileDrag = this;
-	var fileName = this.children[0].innerText;
-	event.dataTransfer.setData(
+	var fileName = this.children[0]!.innerText;
+	event.dataTransfer!.setData(
 		"DownloadURL",
 		getMimeTypeFromFile(fileName) + fileName + ":" + getDownloadURLFromImageManager(this)
 	);
@@ -288,14 +287,14 @@ function startFileDrag(event) {
 	trashBin.style.opacity = "0.7";
 }
 
-function endFileDrag(ev) {
-	currFileDrag.style.opacity = "1";
-	currFileDrag = false;
+function endFileDrag() {
+	currFileDrag!.style.opacity = "1";
+	currFileDrag = undefined;
 	trashBin.style.opacity = "0.05";
 }
 
-function setupFileJS(parent) {
-	if (!parent.find) {
+function setupFileJS(parent: JQuery | HTMLElement) {
+	if (!('find' in parent)) {
 		parent = $(parent);
 	}
 
@@ -304,20 +303,20 @@ function setupFileJS(parent) {
 		deleteFile(getFileIDFromID(this.parentNode.parentNode.parentNode.id), true);
 	});
 
-	parent.each(function(idx, elem) {
+	parent.each(function(_idx, elem) {
 		elem.addEventListener("dragstart", startFileDrag, false);
 		elem.addEventListener("dragend", endFileDrag, false);
 	});
 }
 
-function addFileLI(fileid, no_refresh_if_exist) {
+function addFileLI(fileid: string, no_refresh_if_exist?: boolean) {
 	if(document.getElementById("file_"+fileid)) {
 		if(!no_refresh_if_exist) {
 			refreshFileLI(fileid);
 		}
 		return;
 	}
-	var ele = document.getElementById("file_manager");
+	var ele = document.getElementById("file_manager")!;
 	getFileLI(fileid, function(newFile) {
 		if(!newFile) {
 			return;
@@ -327,11 +326,11 @@ function addFileLI(fileid, no_refresh_if_exist) {
 	});
 }
 
-function removeFileLI(fileid) {
+function removeFileLI(fileid: string) {
 	$('#file_'+fileid).remove();
 }
 
-function refreshFileLI(fileid) {
+function refreshFileLI(fileid: string) {
 	getFileLI(fileid, function(newFile) {
 		if(!newFile) {
 			removeFileLI(fileid);
@@ -342,7 +341,7 @@ function refreshFileLI(fileid) {
 	});
 }
 
-function deleteFile(fileid, doConfirm) {
+function deleteFile(fileid: string, doConfirm?: boolean) {
 	if(doConfirm && !confirm("Are you sure you want to delete this file")) {
 		return;
 	}
@@ -358,12 +357,13 @@ function deleteFile(fileid, doConfirm) {
 	return false;
 }
 
-var currFileDrag;
+let currFileDrag: HTMLElement | undefined;
+let trashBin: HTMLElement;
 
 function setupFileDragging() {
 	setupFileJS($(".image_manage_main"));
 
-	var trashBin = document.getElementById("recycle_bin");
+	trashBin = document.getElementById("recycle_bin")!;
 
 	trashBin.style.display = "";
 
@@ -378,15 +378,15 @@ function setupFileDragging() {
 		if(!currFileDrag)
 			return;
 
-		ev.dataTransfer.dropEffect = "move";
-		ev.target.style.opacity = "1";
+		ev.dataTransfer!.dropEffect = "move";
+		ev.target!.style.opacity = "1";
 	}, false);
 
 	trashBin.addEventListener("dragleave", function(ev) {
 		ev.stopPropagation();
 		ev.preventDefault();
 
-		ev.dataTransfer.dropEffect = "";
+		ev.dataTransfer!.dropEffect = "none";
 		trashBin.style.opacity = "0.7";
 	}, false);
 
@@ -403,37 +403,13 @@ function setupFileDragging() {
 }
 
 
-function setupOptionMenu() {
-	function getFileLIFromevent(ev) {
-		return ev.target.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode;
-	}
-
-	var handleBase64Request = function(event) {
-		var fileName = getFileIDFromID(getFileLIFromevent(event).id);
-		$.get("/api/base64?id=" + fileName, function(data) {
-			var text = document.createElement("textarea");
-			text.rows = "20";
-			text.cols = "100";
-			text.value = data;
-
-			text.style.width = "60%";
-		});
-	}
-}
-
-function hasValidType(types) {
-	for(var i = 0;types.length > i;++i)
-		if(types[i] == "text/plain")
-			return true;
-	return false;
-}
 
 function setupPasting() {
-	document.getElementsByTagName("body")[0].addEventListener("paste", function(event) {
-		if(event.clipboardData.items.length >= 1) {
-			if(!hasValidType(event.clipboardData.types))
+	document.body.addEventListener("paste", function(event) {
+		if(event.clipboardData!.items.length >= 1) {
+			if(!event.clipboardData!.types.includes("text/plain"))
 				return;
-			dropZoneUploads.push(event.clipboardData.getData("text/plain"));//Upload clipboard contents
+			dropZoneUploads.push(event.clipboardData!.getData("text/plain"));//Upload clipboard contents
 			dropZoneFileCount++;
 			processNextFile();
 		}
@@ -441,12 +417,12 @@ function setupPasting() {
 }
 
 function setupSearch() {
-	document.getElementById("filter-form").style.display = "inline";
-	var previewWrapper = document.getElementById("file_manager");
-	document.getElementById("name-filter").addEventListener("keyup", function(){
+	document.getElementById("filter-form")!.style.display = "inline";
+	var previewWrapper = document.getElementById("file_manager")!;
+	document.getElementById("name-filter")!.addEventListener("keyup", function(){
 		var nodes = previewWrapper.childNodes;
 		var val = this.value.toLowerCase();
-		for(i = 0;i < nodes.length;++i)
+		for(let i = 0;i < nodes.length;++i)
 			if(nodes[i].nodeType == 1)
 				if(nodes[i].children[0].innerText.toLowerCase().indexOf(val) == -1)
 					nodes[i].style.display = "none";
@@ -456,19 +432,19 @@ function setupSearch() {
 }
 
 function setupMassOperations() {
-	var form = document.getElementById("file-mass-action-form");
+	var form = document.getElementById("file-mass-action-form")!;
 	form.addEventListener("submit", function(event) {
 		event.preventDefault();
 
-		var operation = this.action.value;
+		const operation = (this as HTMLFormElement).action.value;
 
-		var count = 0;
+		let count = 0;
 
-		var data = [];
+		var data: string[] = [];
 
-		$("#file_manager > li[id^=file_]").each(function(k, v) {
+		$("#file_manager > li[id^=file_]").each((_k, v) => {
 			if(v.style.display == "none")
-				return true;
+				return;
 			data.push(getFileIDFromID(v.id));
 			count++;
 		});
@@ -488,7 +464,11 @@ function setupMassOperations() {
 	});
 }
 
-$(document).ready(function() {
+interface FilePush {
+	id: string;
+}
+
+$(() => {
 	//setupOptionMenu();
 
 	setupDropZone();
@@ -500,13 +480,13 @@ $(document).ready(function() {
 
 	setupMassOperations();
 
-	pushHandlers['file:create'] = function (data) {
+	pushHandlers['file:create'] = function (data: FilePush) {
 		addFileLI(data.id, true);
 	};
-	pushHandlers['file:delete'] = function (data) {
+	pushHandlers['file:delete'] = function (data: FilePush) {
 		removeFileLI(data.id);
 	};
-	pushHandlers['file:refresh'] = function (data) {
+	pushHandlers['file:refresh'] = function (data: FilePush) {
 		refreshFileLI(data.id);
 	};
 });

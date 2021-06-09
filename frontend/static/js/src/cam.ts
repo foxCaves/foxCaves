@@ -1,20 +1,18 @@
-navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia;
-
 navigator.getUserMedia({video : true}, function(stream) {
-	var canvasElement = document.createElement("canvas");
-	var renderContext = canvasElement.getContext("2d");
+	const canvasElement = document.createElement("canvas");
+	const renderContext = canvasElement.getContext("2d")!;
 
-	var video = document.createElement("video");
+	const video = document.createElement("video");
 
 	video.src = window.URL.createObjectURL(stream);
 
-	body = document.getElementsByTagName("body")[0];
+	const body = document.body;
 
-	var button = document.createElement("input");
+	const button = document.createElement("input");
 
 	button.type = "button";
 
-	button.addEventListener("click", function(event) {
+	button.addEventListener("click", function() {
 		renderContext.drawImage(video, 0, 0);
 	});
 
@@ -30,4 +28,7 @@ navigator.getUserMedia({video : true}, function(stream) {
 		body.appendChild(button);
 	}, false);
 	video.play();
+}, (err) => {
+	console.error(err);
+	alert('could not access user video');
 })
