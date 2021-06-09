@@ -119,23 +119,27 @@ local event_handlers = {
 		data = data[1]
 		if not valid_brushes[data] then error("Invalid brush") end
 		user.brush = data
+		user:update()
 	end,
 	[EVENT_COLOR] = function(user, data)
 		if #data ~= 1 then error("Invalid payload") end
 		user.color = data[1]:lower()
+		user:update()
 	end,
 	[EVENT_WIDTH] = function(user, data)
 		if #data ~= 1 then error("Invalid payload") end
 		data = tonumber(data[1])
 		if (not data) or data <= 0 then error("Invalid width") end
 		user.width = data
+		user:update()
 	end,
 	[EVENT_MOUSE_CURSOR] = function(user, data)
 		if #data ~= 2 then error("Invalid payload") end
-		user.cursorX = tonumber(data[1])
 		if (not user.cursorX) or (user.cursorX < 0) then error("Invalid X") end
-		user.cursorY = tonumber(data[2])
 		if (not user.cursorY) or (user.cursorY < 0) then error("Invalid Y") end
+		user.cursorX = tonumber(data[1])
+		user.cursorY = tonumber(data[2])
+		user:update()
 	end,
 	[EVENT_CUSTOM] = function(user, data)
 		if #data ~= 3 then error("Invalid payload") end
@@ -188,35 +192,16 @@ local event_handlers = {
 		user.drawingsession = data[3]
 		user.id = wsid
 
-		--local imgburst_found = false
-		--[[ TODO: SEND OTHER USERS TO NEW USER
-		user:broadcast_others(
-			string_format(
-				"%s%s|%s|%i|%s|%s|%i|%i",
-				EVENT_JOIN,
-				other.id,
-				other.name,
-				(other.width or 0),
-				(other.color or "000"),
-				(other.brush or "brush"),
-				(other.cursorX or 0),
-				(other.cursorY or 0)
-		))
-		]]
+		local others = database:hgetall(database.KEYS.LIVEDRAW .. user.channel)
+		for _, other in next, others do
+			ws:send_text(string_format("%s%s", EVENT_JOIN, other))
+		end
 
 		user.historyburst = true
+		user:update()
 		--print("Join: ", user.name, user.id, user.image, user.drawingsession)
 
-		return string_format(
-			"%s|%s|%i|%s|%s|%i|%i",
-			user.id,
-			user.name,
-			user.width or 0,
-			user.color or "000",
-			user.brush or "brush",
-			user.cursorX or 0,
-			user.cursorY or 0
-		)
+		return user:serialize()
 	end
 }
 event_handlers[EVENT_MOUSE_UP] = event_handlers[EVENT_MOUSE_CURSOR]
@@ -238,11 +223,28 @@ function USERMETA:send(data)
 	ws:send_text(data .. "\n")
 end
 
+function USERMETA:serialize()
+	return string_format(
+		"%s|%s|%i|%s|%s|%i|%i",
+		self.id,
+		self.name,
+		self.width or 0,
+		self.color or "000",
+		self.brush or "brush",
+		self.cursorX or 0,
+		self.cursorY or 0
+	)
+end
+function USERMETA:update()
+	database:hset(database.KEYS.LIVEDRAW .. self.channel, self.id, self:serialize())
+	database:expire(database.KEYS.LIVEDRAW .. self.channel, 3600)
+end
 function USERMETA:kick()
 	close()
 	if not self.id then
 		return
 	end
+	database:hrem(database.KEYS.LIVEDRAW .. self.channel, self.id)
 	self.id = nil
 end
 function USERMETA:broadcast_others(data, nohistory)
