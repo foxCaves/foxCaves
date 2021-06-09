@@ -13,6 +13,7 @@ local string_format = string.format
 local time = os.time
 local ngx = ngx
 local randstring = randstring
+local database = ngx.ctx.database
 
 local server = require("resty.websocket.server")
 local ws, err = server:new({
