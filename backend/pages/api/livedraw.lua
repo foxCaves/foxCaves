@@ -196,7 +196,7 @@ local event_handlers = {
 		))
 
 		user.historyburst = true
-		print("Join: ", user.name, user.id, user.image, user.drawingsession)
+		--print("Join: ", user.name, user.id, user.image, user.drawingsession)
 
 		return string_format(
 			"%s|%i|%s|%s|%i|%i",
@@ -230,7 +230,7 @@ end
 
 function USERMETA:kick()
 	if self.isjoined then
-		print("Leave: ", self.name, self.id, self.image, self.drawingsession)
+		--print("Leave: ", self.name, self.id, self.image, self.drawingsession)
 		self.isjoined = false
 	else
 		self.id = nil
