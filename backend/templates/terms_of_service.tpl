@@ -14,17 +14,9 @@
 					<li>"You", "Your" refers to the individual who uploads or has uploaded content to the foxCaves Network. </li>
 				</ol>
 			</section>
-			<section id="legal-disclaimer">
-				<div class="page-header">
-					<h2>2. Digital Economy Act 2010</h2>
-				</div>
-				<p>These terms and conditions are governed by the laws of the Germany, regardless of any legal conflicts. You and foxCaves hereby agree to the exclusive jurisdiction of the courts located within Germany to resolve any dispute arising out of these terms or relating to the foxCaves Network.</p>
-				<p>Under the Digital Economy Act 2010, we will process all legitimate complaints from copyright owners for the removal of copyright content. As we are under the legislation of Germany, we are under no obligation to respond to United States DMCA requests, however will review all complaints made in a civilized manner regardless.</p>
-				<p class="alert alert-block"><strong>Please be aware</strong> We are <strong>UNABLE</strong> to process any copyright notice if the abuse form is not completed fully.</p>
-			</section>
 			<section id="cma-disclaimer">
 				<div class="page-header">
-					<h2>3. Computer Misuse Act 1990</h2>
+					<h2>2. Computer Misuse Act 1990</h2>
 				</div>
 				<p>Under the Computer Misuse Act, by using any of the foxCaves Network you agree to refrain from performing any illegal activity as listed in Sections 1 through 3 of the act. This includes but is not limited to the following activities:</p>
 				<ul>
@@ -35,7 +27,7 @@
 			</section>
 			<section id="liability">
 				<div class="page-header">
-					<h2>4. Limitation of Liability</h2>
+					<h2>3. Limitation of Liability</h2>
 				</div>
 				<p>You agree that the use of the foxCaves Network is entirely at your own risk. The foxCaves Network is provided on an "as is" basis without warranties of any kind, either expressed or implied, constructive, or statutory, including, without limitation, any implied warranties of merchantability, non-infringement or fitness for a particular purpose.</p>
 				<p>
@@ -46,29 +38,30 @@
 			</section>
 			<section id="indemnity">
 				<div class="page-header">
-					<h2>5. Indemnity</h2>
+					<h2>4. Indemnity</h2>
 				</div>
 				<p>You agree to indemnify and hold foxCaves harmless from any loss, liability, claims, damages and expenses, including attorneys fees, arising from or related to the content, use, or deletion of your content or use of any other feature or service.</p>
 			</section>
 			<section id="abuse">
 				<div class="page-header">
-					<h2>6. Abuse</h2>
+					<h2>5. Abuse</h2>
 				</div>
 				<p>The following types of content are considered as "abuse" by foxCaves and may not be uploaded to the foxCaves Network:</p>
 				<ul>
 					<li>Pornographic content. This includes, but is not limited to, content depicting genitalia, nudity, or sexual situations</li>
-					<li>Content that is deemed illegal in Germany</li>
+					<li>Content that is deemed illegal in the USA</li>
 					<li>Copyrighted content</li>
 					<li>Content that attacks or harasses any individual or group</li>
 					<li>Content used to promote, spam, or send unsolicited marketing messages</li>
 				</ul>
 				<p>Uploading content that violates any of the above may result in your immediate termination of your ability to use the foxCaves Network.</p>
+				<p>If you wish to report content that violates these terms, please report it to <a href="mailto:abuse@foxcav.es">abuse@foxcav.es</a></p>
 			</section>
 			<section id="misc">
 				<div class="page-header">
-					<h2>7. Miscellaneous</h2>
+					<h2>6. Miscellaneous</h2>
 				</div>
-				<p>foxCaves reserves the right to change this agreement at any time without prior notice. This agreement was last updated 27th August 2012.</p>
+				<p>foxCaves reserves the right to change this agreement at any time without prior notice. This agreement was last updated 8th June 2021.</p>
 			</section>
 		</div>
 	</div>
