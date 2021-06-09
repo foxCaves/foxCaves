@@ -457,8 +457,8 @@ var liveDrawInput = {
 
 		if(!localUser.brushData.brush.down(event.myOffsetX, event.myOffsetY, localUser))
 			networking.sendBrushEvent(EVENT_MOUSE_DOWN, sendX, sendY);
-		else
-			networking.sendBrushEvent(EVENT_MOUSE_CURSOR, sendX, sendY);
+		/*else
+			networking.sendBrushEvent(EVENT_MOUSE_CURSOR, sendX, sendY);*/
 	},
 	mouseUp: function(event, backgroundCanvasCTX) {
 		if(event.button != 0)
@@ -475,8 +475,8 @@ var liveDrawInput = {
 
 		if(!localUser.brushData.brush.up(event.myOffsetX, event.myOffsetY, localUser, backgroundCanvasCTX))
 			networking.sendBrushEvent(EVENT_MOUSE_UP, sendX, sendY);
-		else
-			networking.sendBrushEvent(EVENT_MOUSE_CURSOR, sendX, sendY);
+		/*else
+			networking.sendBrushEvent(EVENT_MOUSE_CURSOR, sendX, sendY);*/
 
 		localUser.cursorData.lastX = null;
 		localUser.cursorData.lastY = null;
@@ -493,14 +493,14 @@ var liveDrawInput = {
 		var sendY = event.myOffsetY / scaleFactor;
 
 		if(!this.isDrawing) {
-			networking.sendBrushEvent(EVENT_MOUSE_CURSOR, sendX, sendY);
+			//networking.sendBrushEvent(EVENT_MOUSE_CURSOR, sendX, sendY);
 			return;
 		}
 
 		if(!localUser.brushData.brush.move(event.myOffsetX, event.myOffsetY, localUser, backgroundCanvasCTX))
 			networking.sendBrushEvent(EVENT_MOUSE_MOVE, sendX, sendY);
-		else
-			networking.sendBrushEvent(EVENT_MOUSE_CURSOR, sendX, sendY);
+		/*else
+			networking.sendBrushEvent(EVENT_MOUSE_CURSOR, sendX, sendY);*/
 	},
 	mouseScroll: function(event) {
 		var delta;
