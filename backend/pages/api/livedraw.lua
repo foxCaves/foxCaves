@@ -72,6 +72,11 @@ local function error(str)
 	close()
 end
 
+local function internal_error(str)
+	error("Internal error")
+	ngx.log(ngx.WARN, "Livedraw lua error: " .. str)
+end
+
 local valid_brushes = {
 	brush = true,
 	circle = true,
@@ -312,7 +317,7 @@ function USERMETA:socket_onrecv(data)
 		if v and v ~= "" then
 			local isok, err = pcall(self.event_received, self, v)
 			if not isok then
-				error(err)
+				internal_error(err)
 			end
 		end
 	end
