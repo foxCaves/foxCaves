@@ -287,7 +287,7 @@ function setupFileJS(parent) {
 		deleteFile(getFileIDFromID(this.parentNode.parentNode.parentNode.id), true);
 	});
 
-	parent.find.each(function(idx, elem) {
+	parent.each(function(idx, elem) {
 		elem.addEventListener("dragstart", startFileDrag, false);
 		elem.addEventListener("dragend", endFileDrag, false);
 	});
