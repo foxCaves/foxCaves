@@ -51,6 +51,6 @@
 			<a class="btn" download="<%= LDSID %>-edited.png" onclick="this.href=finalCanvas.toDataURL('image/png')">Download</a>
 		</fieldset>
 	</div>
-	<script type="text/javascript">var SESSIONID = "<% if G.ngx.ctx.user then %><%= G.ngx.ctx.user.sessionid %><% else %>GUEST<% end %>"; var LIVEDRAW_FILEID = "<%= FILEID %>"; var LIVEDRAW_SID = "<%= LDSID %>"; var maxBrushWidth = <%= MAX_BRUSH_WIDTH %>; var WEBSOCKET_PORT = <%= G.WEBSOCKET_PORT %>;</script>
+	<script type="text/javascript">var SESSIONID = "<% if G.ngx.ctx.user then %><%= G.ngx.ctx.user.sessionid %><% else %>GUEST<% end %>"; var LIVEDRAW_FILEID = "<%= FILEID %>"; var LIVEDRAW_SID = "<%= LDSID %>"; var maxBrushWidth = <%= MAX_BRUSH_WIDTH %>;</script>
 	<script type="text/javascript" src="/static/js/live.js"></script>
 <%+ foot %>
