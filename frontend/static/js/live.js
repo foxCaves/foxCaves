@@ -686,7 +686,7 @@ var networking = {
 	},
 	connect: function() {
 		this.shouldConnect = true;
-		fetch('/api/livedraw?id=" + encodeURIComponent(LIVEDRAW_FILEID) + "&session=" + encodeURIComponent(LIVEDRAW_SID)')
+		fetch('/api/livedraw?id=' + encodeURIComponent(LIVEDRAW_FILEID) + "&session=" + encodeURIComponent(LIVEDRAW_SID))
 		.then(async (res) => {
 			const data = await res.json();
 			const webSocket = new WebSocket(data.url);
