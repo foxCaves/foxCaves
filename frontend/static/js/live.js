@@ -575,8 +575,8 @@ var networking = {
 						customData: {}
 					},
 					cursorData: {
-						x: parseFloat(payload[5]) * scaleFactor,
-						y: parseFloat(payload[6]) * scaleFactor,
+						x: parseFloat(payload[5] || '0') * scaleFactor,
+						y: parseFloat(payload[6] || '0') * scaleFactor,
 						lastX: 0,
 						lastY: 0
 					},

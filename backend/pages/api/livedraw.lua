@@ -148,9 +148,6 @@ local event_handlers = {
 		local y = tonumber(data[2])
 		if not x or x < 0 then error("Invalid X") end
 		if not y or y < 0 then error("Invalid Y") end
-		user.cursorX = x
-		user.cursorY = y
-		user:update()
 	end,
 	[EVENT_MOUSE_CURSOR] = function(user, data)
 		return false
@@ -239,14 +236,12 @@ function USERMETA:send(data)
 end
 function USERMETA:serialize()
 	return string_format(
-		"%s|%s|%i|%s|%s|%i|%i",
+		"%s|%s|%i|%s|%s",
 		self.id,
 		self.name,
 		self.width or 0,
 		self.color or "000",
-		self.brush or "brush",
-		self.cursorX or 0,
-		self.cursorY or 0
+		self.brush or "brush"
 	)
 end
 function USERMETA:refresh()
