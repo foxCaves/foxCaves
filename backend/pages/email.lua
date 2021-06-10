@@ -73,7 +73,7 @@ if args and args.send then
 						email = email .. " reset your password. To have a random password sent to you E-Mail"
 						subject = "foxCaves - Reset your password"
 					end
-					email = email .. " just click on the following link:\nhttps://foxcav.es/emailcode?code=" .. emailid .. "\n\nKind regards,\nfoxCaves Support"
+					email = email .. " just click on the following link:\n" .. MAIN_URL .."/emailcode?code=" .. emailid .. "\n\nKind regards,\nfoxCaves Support"
 
 					database:hmset(database.KEYS.EMAILKEYS .. emailid, "user", userid, "action", action)
 					database:expire(172800) --48 hours

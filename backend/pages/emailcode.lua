@@ -28,7 +28,7 @@ if res and res.user and res ~= ngx.null then
 
 		database:hset(userID, "password", ngx.hmac_sha1(userdata.username, newPassword))
 
-		local email = "Hello, " .. userdata.username .. "!\n\nHere is your new password:\n" .. newPassword .. "\nPlease log in at https://foxcav.es/login and change it as soon as possible.\n\nKind regards,\nfoxCaves Support"
+		local email = "Hello, " .. userdata.username .. "!\n\nHere is your new password:\n" .. newPassword .. "\nPlease log in at " .. MAIN_URL .. "/login and change it as soon as possible.\n\nKind regards,\nfoxCaves Support"
 		mail(userdata.email, "foxCaves - New password", email, "noreply@foxcav.es", "foxCaves")
 
 		userdata.id = userID

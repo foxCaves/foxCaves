@@ -66,7 +66,7 @@ if args and args.register then
 						database:set(database.KEYS.USERNAME_TO_ID .. args.username:lower(), userid)
 
 						local email_text = "Hello, " .. args.username .. "!\n\nYou have recently registered on foxCaves.\nPlease click the following link to activate your account:\n"
-						email_text = email_text .. "https://foxcav.es/emailcode?code=" .. emailid .. "\n\n"
+						email_text = email_text .. MAIN_URL .. "/emailcode?code=" .. emailid .. "\n\n"
 						email_text = email_text .. "Kind regards,\nfoxCaves Support"
 
 						database:hmset(database.KEYS.EMAILKEYS .. emailid, "user", userid, "action", "activation")
