@@ -1,6 +1,6 @@
 dofile(ngx.var.main_root .. "/scripts/global.lua")
 
-local fileid = ngx.var.fileid
+local fileid = ngx.var.path_element
 
 if not fileid then
 	return ngx.exec("/error/400")

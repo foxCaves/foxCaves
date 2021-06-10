@@ -1,7 +1,7 @@
 dofile(ngx.var.main_root .. "/scripts/global.lua")
 --if not ngx.ctx.user then return ngx.redirect("/login") end
 
-local fileid = ngx.var.fileid
+local fileid = ngx.var.path_element
 local sid = ngx.var.arg_sid
 
 if (not fileid) or fileid == "" then

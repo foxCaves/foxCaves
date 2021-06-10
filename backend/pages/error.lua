@@ -1,6 +1,6 @@
 dofile(ngx.var.main_root .. "/scripts/global.lua")
 
-local error_num = tonumber(ngx.var.error_code or "400")
+local error_num = tonumber(ngx.var.path_element or "400")
 
 ngx.status = error_num
 
