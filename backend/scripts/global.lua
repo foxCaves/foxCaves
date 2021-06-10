@@ -79,7 +79,7 @@ local database = ngx.ctx.database
 ngx.ctx.EMAIL_INVALID = -1
 ngx.ctx.EMAIL_TAKEN = -2
 function ngx.ctx.check_email(email)
-	if not ngx.re.match(email, "^[a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\\.[a-zA-Z]{2,4}$", "o") then
+	if not ngx.re.match(email, "^[a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\\.[a-zA-Z]{2,}$", "o") then
 		return ngx.ctx.EMAIL_INVALID
 	end
 
