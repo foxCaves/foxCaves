@@ -315,7 +315,7 @@ local others = database:hgetall(database.KEYS.LIVEDRAW .. user.channel)
 for _, other in next, others do
 	ws:send_text(string_format("%s%s", EVENT_JOIN, other))
 end
-database:publish(database.KEYS.LIVEDRAW .. user.channel, string_format("%c%s|%s", EVENT_JOIN, user.id, user:serialize()))
+database:publish(database.KEYS.LIVEDRAW .. user.channel, string_format("%s%s|%s", EVENT_JOIN, user.id, user:serialize()))
 
 local sub_database_thread = ngx.thread.spawn(redis_read)
 websocket_read()
