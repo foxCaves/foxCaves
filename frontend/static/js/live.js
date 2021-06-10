@@ -685,10 +685,11 @@ var networking = {
 		this.sendRaw(EVENT_CUSTOM + brushName + "|" + key + "|" + val);
 	},
 	connect: function() {
-		try {
-			this.shouldConnect = true;
-			var useSSL = (window.location.protocol == "https:");
-			var webSocket = new WebSocket((useSSL ? "wss:" : "ws:") + window.location.hostname + "/api/livedraw_ws?id=" + encodeURIComponent(LIVEDRAW_FILEID) + "&session=" + encodeURIComponent(LIVEDRAW_SID));
+		this.shouldConnect = true;
+		fetch('/api/livedraw?id=" + encodeURIComponent(LIVEDRAW_FILEID) + "&session=" + encodeURIComponent(LIVEDRAW_SID)')
+		.then(async (res) => {
+			const data = await res.json();
+			const webSocket = new WebSocket(data.url);
 
 			webSocket.onmessage = function(event) {
 				var data = webSocket_buffer + event.data;
@@ -722,8 +723,8 @@ var networking = {
 				localUser.brushData.setBrush("brush");
 			};
 			this.socket = webSocket;
-		} catch(e) {
-		}
+		})
+		.catch((e) => console.error(e));
 	},
 	close: function() {
 		this.shouldConnect = false;
