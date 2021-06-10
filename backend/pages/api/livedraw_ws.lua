@@ -50,6 +50,7 @@ local EVENT_RESET = "r"
 
 local EVENT_CUSTOM = "x"
 
+local EVENT_JOIN = "j"
 local EVENT_LEAVE = "l"
 local EVENT_ERROR = "e"
 local EVENT_IMGBURST = "i"
