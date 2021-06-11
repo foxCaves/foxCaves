@@ -14,6 +14,7 @@ local time = os.time
 local ngx = ngx
 local randstr = randstr
 local database = ngx.ctx.database
+local unpack = unpack
 
 local server = require("resty.websocket.server")
 local ws, err = server:new({
