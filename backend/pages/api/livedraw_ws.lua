@@ -231,7 +231,7 @@ local function websocket_read()
             ngx.eof()
             break
         end
-		if err then
+		if false and err then
 			ws:send_ping()
 		elseif typ == "ping" then
             ws:send_pong(data)
@@ -287,8 +287,8 @@ user.id = wsid
 
 sub_database:subscribe(database.KEYS.LIVEDRAW .. user.channel)
 
---user:send_data()
---user:publish(cEVENT_JOINDIRECT)
+user:send_data()
+user:publish(cEVENT_JOINDIRECT)
 
 local sub_database_thread = ngx.thread.spawn(redis_read)
 websocket_read()
