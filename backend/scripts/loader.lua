@@ -192,7 +192,7 @@ if IS_DEVELOPMENT then
 
 	local isok, err = xpcall(dofile, debug_trace, ngx.var.run_lua_file)
 	if not isok then
-		ngx.log(ngx.ERROR, "Lua error: " .. err)
+		ngx.log(ngx.ERR, "Lua error: " .. err)
 		ngx.print(err)
 		return ngx.eof()
 	end
@@ -211,7 +211,7 @@ else
 	})
 	local isok, err = rvn:call(dofile, ngx.var.run_lua_file)
 	if not isok then
-		ngx.log(ngx.ERROR, "Lua error: " .. err)
+		ngx.log(ngx.ERR, "Lua error: " .. err)
 		return ngx.eof()
 	end
 end
