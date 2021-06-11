@@ -230,22 +230,23 @@ end
 local user = setmetatable({}, USERMETA)
 
 local function websocket_read()
-	while should_run do
-        local data, typ, err = ws:recv_frame()
-        if ws.fatal or typ == "close" or typ == "error" then
-            ws:send_close()
-            ngx.eof()
-            break
-        end
-		if err then
-			ws:send_ping()
-		elseif typ == "ping" then
-            ws:send_pong(data)
-        elseif typ == "text" then
-			user:socket_onrecv(data)
+	pcall_internal(function()
+		while should_run do
+			local data, typ, err = ws:recv_frame()
+			if ws.fatal or typ == "close" or typ == "error" then
+				ws:send_close()
+				ngx.eof()
+				break
+			end
+			if err then
+				ws:send_ping()
+			elseif typ == "ping" then
+				ws:send_pong(data)
+			elseif typ == "text" then
+				user:socket_onrecv(data)
+			end
 		end
-	end
-
+	end)
 	should_run = false
 end
 
@@ -255,29 +256,30 @@ function get_id_from_packet(str)
     return str
 end
 local function redis_read()
-	while should_run do
-        local res, err = sub_database:read_reply()
-        if err and err ~= "timeout" then
-            ws:send_close()
-            ngx.eof()
-            break
-        end
-        if res then
-			local data = res[3]
-			local id = get_id_from_packet(data)
-			if id ~= user.id then
-				local evid = data:byte(1)
-				if evid == cEVENT_JOINDIRECT then
-					user:send_data()
-				else
-            		ws:send_text(data)
+	pcall_internal(function()
+		while should_run do
+			local res, err = sub_database:read_reply()
+			if err and err ~= "timeout" then
+				ws:send_close()
+				ngx.eof()
+				break
+			end
+			if res then
+				local data = res[3]
+				local id = get_id_from_packet(data)
+				if id ~= user.id then
+					local evid = data:byte(1)
+					if evid == cEVENT_JOINDIRECT then
+						user:send_data()
+					else
+						ws:send_text(data)
+					end
 				end
 			end
-        end
-	end
+		end
+	end)
 	should_run = false
 end
-
 
 pcall_internal(function()
 	user.image = ngx.var.arg_id
