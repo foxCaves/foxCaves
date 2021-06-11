@@ -288,7 +288,7 @@ user.id = wsid
 sub_database:subscribe(database.KEYS.LIVEDRAW .. user.channel)
 
 user:send_data()
-useR:publish(cEVENT_JOINDIRECT)
+user:publish(cEVENT_JOINDIRECT)
 
 local sub_database_thread = ngx.thread.spawn(redis_read)
 websocket_read()
