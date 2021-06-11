@@ -278,7 +278,7 @@ user.image = ngx.var.arg_id
 user.drawingsession = ngx.var.arg_session
 user.channel = string_format("%s:%s", user.image, user.drawingsession)
 if ngx.ctx.user then
-	user.name = ngx.ctx.user.name
+	user.name = ngx.ctx.user.username
 end
 
 local wsid = randstr(16)
