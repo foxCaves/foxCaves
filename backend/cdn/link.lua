@@ -5,6 +5,7 @@ local database = ngx.ctx.database
 local dest = database:get(database.KEYS.LINKS .. linkid)
 if not dest then
     ngx.exit(404)
+    return
 end
 
 ngx.status = 302

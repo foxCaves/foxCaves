@@ -1,4 +1,7 @@
-function send_file(disposition_type)
+dofile(ngx.var.main_root .. "/scripts/global.lua")
+dofile("scripts/fileapi.lua")
+
+local function send_file(disposition_type)
 	local fileid = ngx.var.fileid
 	local file = file_get(fileid)
 
@@ -11,4 +14,10 @@ function send_file(disposition_type)
 	ngx.header["Content-Dispotition"] = disposition_type .. "; filename=" .. file.name
 
 	ngx.req.set_uri("/rawget/" .. fileid .. "/file" .. file.extension, true)
+end
+
+if ngx.var.action == "f" then
+	send_file("inline")
+else
+	send_file("attachment")
 end
