@@ -168,7 +168,7 @@ function USERMETA:serialize()
 		self.color or "000",
 		self.brush or "brush",
 		self.cursorX or 0,
-		self.cursorY or 0,
+		self.cursorY or 0
 	)
 end
 function USERMETA:send_data()
