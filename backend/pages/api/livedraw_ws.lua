@@ -166,7 +166,7 @@ function USERMETA:serialize()
 		self.name,
 		self.width or 0,
 		self.color or "000",
-		self.brush or "brush"
+		self.brush or "brush",
 		self.cursorX or 0,
 		self.cursorY or 0,
 	)
