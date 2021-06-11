@@ -196,7 +196,7 @@ function USERMETA:publish(evid, data)
 	else
 		data = ""
 	end
-	database:publish(database.KEYS.LIVEDRAW .. user.channel, string_format("%c%s%s", evid, self.id, data))
+	database:publish(database.KEYS.LIVEDRAW .. self.channel, string_format("%c%s%s", evid, self.id, data))
 end
 function USERMETA:event_received(rawdata)
 	local evid = rawdata:byte(1)
