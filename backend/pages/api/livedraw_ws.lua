@@ -260,9 +260,9 @@ local function redis_read()
 		end
 		if res then
 			local data = res[3]
-			local evid = data:byte(1)
 			local id = get_id_from_packet(data)
-			if evid == cEVENT_JOIN or id ~= user.id then
+			if id ~= user.id then
+				local evid = data:byte(1)
 				if evid == cEVENT_JOINDIRECT then
 					user:send_data()
 				else
