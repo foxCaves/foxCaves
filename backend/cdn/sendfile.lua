@@ -19,5 +19,6 @@ end
 if ngx.var.action == "f" then
 	send_file("inline")
 else
+	ngx.header["Content-Type"] = "application/octet-stream"
 	send_file("attachment")
 end
