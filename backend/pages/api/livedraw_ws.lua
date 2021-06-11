@@ -58,7 +58,7 @@ local EVENT_LEAVE = "l"
 local EVENT_ERROR = "e"
 local EVENT_IMGBURST = "i"
 
-local cEVENT_JOIN = cEVENT_JOIN:byte()
+local cEVENT_JOIN = EVENT_JOIN:byte()
 local cEVENT_JOINDIRECT = EVENT_JOINDIRECT:byte()
 local cEVENT_LEAVE = EVENT_LEAVE:byte()
 local cEVENT_MOUSE_CURSOR = EVENT_MOUSE_CURSOR:byte()
@@ -230,23 +230,22 @@ end
 local user = setmetatable({}, USERMETA)
 
 local function websocket_read()
-	pcall_internal(function()
-		while should_run do
-			local data, typ, err = ws:recv_frame()
-			if ws.fatal or typ == "close" or typ == "error" then
-				ws:send_close()
-				ngx.eof()
-				break
-			end
-			if err then
-				ws:send_ping()
-			elseif typ == "ping" then
-				ws:send_pong(data)
-			elseif typ == "text" then
-				user:socket_onrecv(data)
-			end
+	while should_run do
+		local data, typ, err = ws:recv_frame()
+		if ws.fatal or typ == "close" or typ == "error" then
+			ws:send_close()
+			ngx.eof()
+			break
 		end
-	end)
+		if err then
+			ws:send_ping()
+		elseif typ == "ping" then
+			ws:send_pong(data)
+		elseif typ == "text" then
+			user:socket_onrecv(data)
+		end
+	end
+
 	should_run = false
 end
 
@@ -256,54 +255,51 @@ function get_id_from_packet(str)
     return str
 end
 local function redis_read()
-	pcall_internal(function()
-		while should_run do
-			local res, err = sub_database:read_reply()
-			if err and err ~= "timeout" then
-				ws:send_close()
-				ngx.eof()
-				break
-			end
-			if res then
-				local data = res[3]
-				local id = get_id_from_packet(data)
-				if id ~= user.id then
-					local evid = data:byte(1)
-					if evid == cEVENT_JOINDIRECT then
-						user:send_data()
-					else
-						ws:send_text(data)
-					end
+	while should_run do
+		local res, err = sub_database:read_reply()
+		if err and err ~= "timeout" then
+			ws:send_close()
+			ngx.eof()
+			break
+		end
+		if res then
+			local data = res[3]
+			local id = get_id_from_packet(data)
+			if id ~= user.id then
+				local evid = data:byte(1)
+				if evid == cEVENT_JOINDIRECT then
+					user:send_data()
+				else
+					ws:send_text(data)
 				end
 			end
 		end
-	end)
+	end
+
 	should_run = false
 end
 
-pcall_internal(function()
-	user.image = ngx.var.arg_id
-	user.drawingsession = ngx.var.arg_session
-	user.channel = string_format("%s:%s", user.image, user.drawingsession)
-	if ngx.ctx.user then
-		user.name = ngx.ctx.user.name
-	end
+user.image = ngx.var.arg_id
+user.drawingsession = ngx.var.arg_session
+user.channel = string_format("%s:%s", user.image, user.drawingsession)
+if ngx.ctx.user then
+	user.name = ngx.ctx.user.name
+end
 
-	local wsid = randstr(16)
-	if not user.name then
-		user.name = string_format("Guest %s", wsid)
-	end
-	user.id = wsid
+local wsid = randstr(16)
+if not user.name then
+	user.name = string_format("Guest %s", wsid)
+end
+user.id = wsid
 
-	sub_database:subscribe(database.KEYS.LIVEDRAW .. user.channel)
+sub_database:subscribe(database.KEYS.LIVEDRAW .. user.channel)
 
-	user:send_data()
-	user:publish(cEVENT_JOINDIRECT)
+user:send_data()
+user:publish(cEVENT_JOINDIRECT)
 
-	local sub_database_thread = ngx.thread.spawn(redis_read)
-	websocket_read()
-	ngx.eof()
-	user:publish(cEVENT_LEAVE)
-	ngx.thread.wait(sub_database_thread)
-	sub_database:close()
-end)
+local sub_database_thread = ngx.thread.spawn(redis_read)
+websocket_read()
+ngx.eof()
+user:publish(cEVENT_LEAVE)
+ngx.thread.wait(sub_database_thread)
+sub_database:close()
