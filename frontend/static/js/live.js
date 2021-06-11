@@ -716,8 +716,7 @@ var networking = {
 		this.shouldConnect = false;
 		try {
 			this.socket.close();
-		} catch(e) {
-		}
+		} catch(e) { }
 	},
 	sendRaw: function(msg) {
 		msg = msg.trim();

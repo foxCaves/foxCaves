@@ -231,10 +231,11 @@ local function websocket_read()
             ngx.eof()
             break
         end
-        if typ == "ping" then
+		if err then
+			ws:send_ping()
+		elseif typ == "ping" then
             ws:send_pong(data)
-        end
-		if typ == "text" then
+        elseif typ == "text" then
 			user:socket_onrecv(data)
 		end
 	end
