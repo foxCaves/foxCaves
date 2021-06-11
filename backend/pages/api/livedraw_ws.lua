@@ -41,22 +41,26 @@ end
 local EVENT_WIDTH = "w"
 local EVENT_COLOR = "c"
 local EVENT_BRUSH = "b"
+
 local EVENT_MOUSE_UP = "u"
 local EVENT_MOUSE_DOWN = "d"
 local EVENT_MOUSE_MOVE = "m"
 local EVENT_MOUSE_CURSOR = "p"
+local EVENT_MOUSE_DOUBLE_CLICK = "F"
 
 local EVENT_RESET = "r"
 
 local EVENT_CUSTOM = "x"
 
 local EVENT_JOIN = "j"
+local EVENT_JOINDIRECT = "J"
 local EVENT_LEAVE = "l"
 local EVENT_ERROR = "e"
 local EVENT_IMGBURST = "i"
 
-local EVENT_MOUSE_DOUBLE_CLICK = "F"
-
+local cEVENT_JOIN = cEVENT_JOIN:byte()
+local cEVENT_JOINDIRECT = EVENT_JOINDIRECT:byte()
+local cEVENT_LEAVE = EVENT_LEAVE:byte()
 local cEVENT_MOUSE_CURSOR = EVENT_MOUSE_CURSOR:byte()
 
 local should_run = true
@@ -95,19 +99,16 @@ local event_handlers = {
 		data = data[1]
 		if not valid_brushes[data] then error("Invalid brush") end
 		user.brush = data
-		user:update()
 	end,
 	[EVENT_COLOR] = function(user, data)
 		if #data ~= 1 then error("Invalid payload") end
 		user.color = data[1]:lower()
-		user:update()
 	end,
 	[EVENT_WIDTH] = function(user, data)
 		if #data ~= 1 then error("Invalid payload") end
 		data = tonumber(data[1])
 		if (not data) or data <= 0 then error("Invalid width") end
 		user.width = data
-		user:update()
 	end,
 	[EVENT_MOUSE_MOVE] = function(user, data)
 		if #data ~= 2 then error("Invalid payload") end
@@ -115,6 +116,8 @@ local event_handlers = {
 		local y = tonumber(data[2])
 		if not x or x < 0 then error("Invalid X") end
 		if not y or y < 0 then error("Invalid Y") end
+		user.cursorX = x
+		user.cursorY = y
 	end,
 	[EVENT_MOUSE_CURSOR] = function(user, data)
 		return false
@@ -129,7 +132,13 @@ local event_handlers = {
 	end,
 	[EVENT_LEAVE] = function(user, data)
 		user:kick()
-		return ""
+		return false
+	end,
+	[EVENT_JOIN] = function(user, data)
+		return false
+	end,
+	[EVENT_JOINDIRECT] = function(user, data)
+		return false
 	end,
 }
 event_handlers[EVENT_MOUSE_UP] = event_handlers[EVENT_MOUSE_MOVE]
@@ -148,37 +157,38 @@ end
 USERMETA = {}
 USERMETA.__index = USERMETA
 function USERMETA:send(data)
-	ws:send_text(data .. "\n")
+	ws:send_text(data)
 end
 function USERMETA:serialize()
 	return string_format(
-		"%s|%s|%i|%s|%s",
+		"%s|%s|%i|%s|%s|%i|%i",
 		self.id,
 		self.name,
 		self.width or 0,
 		self.color or "000",
 		self.brush or "brush"
+		self.cursorX or 0,
+		self.cursorY or 0,
 	)
 end
-function USERMETA:refresh()
-	if not self.channel then
-		return
-	end
-	database:expire(database.KEYS.LIVEDRAW .. self.channel, 3600)
-end
-function USERMETA:update()
-	database:hset(database.KEYS.LIVEDRAW .. self.channel, self.id, self:serialize())
-	self:refresh()
+function USERMETA:send_data()
+	self:publish(cEVENT_JOIN, self:serialize())
 end
 function USERMETA:kick()
 	close()
 	if not self.id then
 		return
 	end
-	database:hrem(database.KEYS.LIVEDRAW .. self.channel, self.id)
 	self.id = nil
 end
-
+function USERMETA:publish(evid, data)
+	if data then
+		data = "|" .. data
+	else
+		data = ""
+	end
+	database:publish(database.KEYS.LIVEDRAW .. user.channel, string_format("%c%s%s", evid, self.id, data)
+end
 function USERMETA:event_received(rawdata)
 	local evid = rawdata:byte(1)
 	local data = {}
@@ -201,54 +211,17 @@ function USERMETA:event_received(rawdata)
 		error("Invalid packet: " .. evid)
 	end
 	if not self.id or not self.channel then return end
-	if evid ~= cEVENT_MOUSE_CURSOR then
-		--TODO: table_insert(self.history, data)
-	end
-	database:publish(database.KEYS.LIVEDRAW .. self.channel, string_format("%c%s|%s", evid, self.id, rawdata))
-
-	--[[ TODO:
-	if self.historyburst then
-		self:send_text(table_concat(self.history ,"\n"))
-		self:send_text(string_format("%s%i|", EVENT_LEAVE, self.id))
-		self.historyburst = false
-	end
-	]]
+	self:publish(evid, rawdata)
 end
 
 function USERMETA:socket_onrecv(data)
-	data = self.databuff .. data
-	local datalen = data:len()
-	if data:sub(datalen, datalen) ~= "\n" then
-		datalen = nil
-		local newlen = 1
-		while newlen do
-			newlen = data:find("\n", newlen, true)
-			if newlen then datalen = newlen end
-		end
-
-		if datalen then
-			self.databuff = data:sub(1, datalen)
-			data = data:sub(datalen + 1)
-		else
-			self.databuff = data
-			return
-		end
-	end
-	data = explode("\n", data)
-	for _,v in next, data do
-		if v and v ~= "" then
-			local isok, err = pcall(self.event_received, self, v)
-			if not isok then
-				internal_error(err)
-			end
-		end
+	local isok, err = pcall(self.event_received, self, data)
+	if not isok then
+		internal_error(err)
 	end
 end
 
-local user = setmetatable({
-	historyburst = false,
-	databuff = ""
-}, USERMETA)
+local user = setmetatable({}, USERMETA)
 
 local function websocket_read()
 	while should_run do
@@ -260,7 +233,6 @@ local function websocket_read()
         end
         if typ == "ping" then
             ws:send_pong(data)
-			user:refresh()
         end
 		if typ == "text" then
 			user:socket_onrecv(data)
@@ -284,10 +256,15 @@ local function redis_read()
             break
         end
         if res then
-			res = res[3]
-			local id = get_id_from_packet(res)
+			local data = res[3]
+			local id = get_id_from_packet(data)
 			if id ~= user.id then
-            	ws:send_text(res)
+				local evid = data:byte(1)
+				if evid == cEVENT_JOINDIRECT then
+					user:send_data()
+				else
+            		ws:send_text(data)
+				end
 			end
         end
 	end
@@ -309,16 +286,12 @@ user.id = wsid
 
 sub_database:subscribe(database.KEYS.LIVEDRAW .. user.channel)
 
-user.historyburst = true
-user:update()
-local others = database:hgetall(database.KEYS.LIVEDRAW .. user.channel)
-for _, other in next, others do
-	ws:send_text(string_format("%s%s", EVENT_JOIN, other))
-end
-database:publish(database.KEYS.LIVEDRAW .. user.channel, string_format("%s%s|%s", EVENT_JOIN, user.id, user:serialize()))
+user:send_data()
+useR:publish(cEVENT_JOINDIRECT)
 
 local sub_database_thread = ngx.thread.spawn(redis_read)
 websocket_read()
 ngx.eof()
+user:publish(cEVENT_LEAVE)
 ngx.thread.wait(sub_database_thread)
 sub_database:close()

@@ -2,8 +2,6 @@ var MathPI2 = Math.PI * 2.0;
 
 var finalCanvas, canvasPos;
 
-var webSocket_buffer = "";
-
 var scaleFactor = 1.0;
 
 var imagePattern;
@@ -552,8 +550,9 @@ var networking = {
 	shouldConnect: false,
 	recvRaw: function(msg) {
 		msg = msg.trim();
-		if(msg.length < 1)
+		if(msg.length < 1) {
 			return;
+		}
 		this.recvDirectEvent(msg.charAt(0), msg.substr(1));
 	},
 	recvDirectEvent: function(eventype, payload) {
@@ -589,8 +588,9 @@ var networking = {
 							dataSet[attrib] = defaultSet[attrib];
 						from.brushData.customData[brush] = dataSet;
 					}
-					if(paintBrushes[brush].setup)
+					if(paintBrushes[brush].setup) {
 						paintBrushes[brush].setup(from);
+					}
 				}
 				break;
 			case EVENT_LEAVE:
@@ -638,8 +638,9 @@ var networking = {
 				from.brushData.color = payload[1];
 				break;
 			case EVENT_CUSTOM:
-				if(!from.brushData.customData[payload[1]])
+				if(!from.brushData.customData[payload[1]]) {
 					from.brushData.customData[payload[1]] = {};
+				}
 				from.brushData.customData[payload[1]][payload[2]] = payload[3];
 				break;
 			case EVENT_BRUSH:
@@ -692,22 +693,7 @@ var networking = {
 			const webSocket = new WebSocket(data.url);
 
 			webSocket.onmessage = function(event) {
-				var data = webSocket_buffer + event.data;
-				var datalen = data.length;
-				if(data.charAt(datalen - 1) != "\n") {
-					datalen = data.lastIndexOf("\n");
-					if(datalen) {
-						webSocket_buffer = data.substring(0, datalen);
-						data = data.substring(datalen + 1);
-					} else {
-						webSocket_buffer = data;
-						return;
-					}
-				}
-
-				data = data.split("\n");
-				for(var i = 0;i < data.length;i++)
-					networking.recvRaw(data[i]);
+				networking.recvRaw(event.data);
 			};
 
 			webSocket.onclose = webSocket.onerror = function(event) {//Unwanted disconnect
@@ -735,12 +721,12 @@ var networking = {
 	},
 	sendRaw: function(msg) {
 		msg = msg.trim();
-		if(msg.length == 0)
+		if(msg.length == 0) {
 			return;
-		try {
-			this.socket.send(msg + "\n");
-		} catch(e) {
 		}
+		try {
+			this.socket.send(msg);
+		} catch(e) { }
 	}
 }
 
