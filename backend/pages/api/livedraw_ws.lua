@@ -77,7 +77,7 @@ end
 
 local function internal_error(str)
 	error("Internal error")
-	ngx.log(ngx.WARN, "Livedraw lua error: " .. str)
+	ngx.log(ngx.ERROR, "Livedraw lua error: " .. str)
 end
 
 local function pcall_internal(...)
