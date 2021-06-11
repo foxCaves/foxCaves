@@ -80,6 +80,15 @@ local function internal_error(str)
 	ngx.log(ngx.WARN, "Livedraw lua error: " .. str)
 end
 
+local function pcall_internal(...)
+	local tbl = {pcall(...)}
+	if not tbl[1] then
+		internal_error(tbl[2])
+		return
+	end
+	return unpack(tbl)
+end
+
 local valid_brushes = {
 	brush = true,
 	circle = true,
@@ -215,10 +224,7 @@ function USERMETA:event_received(rawdata)
 end
 
 function USERMETA:socket_onrecv(data)
-	local isok, err = pcall(self.event_received, self, data)
-	if not isok then
-		internal_error(err)
-	end
+	pcall_internal(self.event_received, self, data)
 end
 
 local user = setmetatable({}, USERMETA)
@@ -231,7 +237,7 @@ local function websocket_read()
             ngx.eof()
             break
         end
-		if false and err then
+		if err then
 			ws:send_ping()
 		elseif typ == "ping" then
             ws:send_pong(data)
@@ -272,27 +278,30 @@ local function redis_read()
 	should_run = false
 end
 
-user.image = ngx.var.arg_id
-user.drawingsession = ngx.var.arg_session
-user.channel = string_format("%s:%s", user.image, user.drawingsession)
-if ngx.ctx.user then
-	user.name = ngx.ctx.user.name
-end
 
-local wsid = randstr(16)
-if not user.name then
-	user.name = string_format("Guest %s", wsid)
-end
-user.id = wsid
+pcall_internal(function()
+	user.image = ngx.var.arg_id
+	user.drawingsession = ngx.var.arg_session
+	user.channel = string_format("%s:%s", user.image, user.drawingsession)
+	if ngx.ctx.user then
+		user.name = ngx.ctx.user.name
+	end
 
-sub_database:subscribe(database.KEYS.LIVEDRAW .. user.channel)
+	local wsid = randstr(16)
+	if not user.name then
+		user.name = string_format("Guest %s", wsid)
+	end
+	user.id = wsid
 
-user:send_data()
-user:publish(cEVENT_JOINDIRECT)
+	sub_database:subscribe(database.KEYS.LIVEDRAW .. user.channel)
 
-local sub_database_thread = ngx.thread.spawn(redis_read)
-websocket_read()
-ngx.eof()
-user:publish(cEVENT_LEAVE)
-ngx.thread.wait(sub_database_thread)
-sub_database:close()
+	user:send_data()
+	user:publish(cEVENT_JOINDIRECT)
+
+	local sub_database_thread = ngx.thread.spawn(redis_read)
+	websocket_read()
+	ngx.eof()
+	user:publish(cEVENT_LEAVE)
+	ngx.thread.wait(sub_database_thread)
+	sub_database:close()
+end)
