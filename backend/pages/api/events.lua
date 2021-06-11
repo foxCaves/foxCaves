@@ -31,7 +31,9 @@ local function websocket_read()
             ngx.eof()
             break
         end
-        if typ == "ping" then
+		if err then
+			ws:send_ping()
+        elseif typ == "ping" then
             ws:send_pong(data)
         end
     end
