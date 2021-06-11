@@ -171,8 +171,7 @@ function USERMETA:send(data)
 end
 function USERMETA:serialize()
 	return string_format(
-		"%s|%s|%i|%s|%s|%i|%i",
-		self.id,
+		"%s|%i|%s|%s|%i|%i",
 		self.name,
 		self.width or 0,
 		self.color or "000",
