@@ -191,12 +191,7 @@ function USERMETA:kick()
 	self.id = nil
 end
 function USERMETA:publish(evid, data)
-	if data then
-		data = "|" .. data
-	else
-		data = ""
-	end
-	database:publish(database.KEYS.LIVEDRAW .. self.channel, string_format("%c%s%s", evid, self.id, data))
+	database:publish(database.KEYS.LIVEDRAW .. self.channel, string_format("%c%s|%s", evid, self.id, data or ""))
 end
 function USERMETA:event_received(rawdata)
 	local evid = rawdata:byte(1)
