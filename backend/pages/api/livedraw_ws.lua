@@ -264,6 +264,7 @@ local function redis_read()
 			if id ~= user.id then
 				local evid = data:byte(1)
 				if evid == cEVENT_JOINDIRECT then
+					ws:send_text(data)
 					user:send_data()
 				else
 					ws:send_text(data)
