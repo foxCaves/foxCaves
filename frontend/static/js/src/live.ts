@@ -6,6 +6,25 @@ let brushSizeSlider: HTMLInputElement;
 let backgroundCanvasCTX: CanvasRenderingContext2D, foregroundCanvasCTX: CanvasRenderingContext2D, finalCanvasCTX: CanvasRenderingContext2D;
 let backgroundCanvas: HTMLCanvasElement, foregroundCanvas: HTMLCanvasElement, finalCanvas: HTMLCanvasElement;
 
+const EVENT_WIDTH = "w";
+const EVENT_COLOR = "c";
+const EVENT_BRUSH = "b";
+const EVENT_MOUSE_UP = "u";
+const EVENT_MOUSE_DOWN = "d";
+const EVENT_MOUSE_MOVE = "m";
+const EVENT_MOUSE_CURSOR = "p";
+
+const EVENT_CUSTOM = "x";
+
+const EVENT_RESET = "r";
+const EVENT_JOIN = "j";
+const EVENT_LEAVE = "l";
+const EVENT_ERROR = "e";
+
+const EVENT_IMGBURST = "i";
+
+const EVENT_MOUSE_DOUBLE_CLICK = "F";
+
 const localUser = {
 	brushData: {
 		width: 0,
@@ -59,28 +78,9 @@ const localUser = {
 	}
 };
 
-var paintUsers = [];
+const paintUsers = [];
 
-var EVENT_WIDTH = "w";
-var EVENT_COLOR = "c";
-var EVENT_BRUSH = "b";
-var EVENT_MOUSE_UP = "u";
-var EVENT_MOUSE_DOWN = "d";
-var EVENT_MOUSE_MOVE = "m";
-var EVENT_MOUSE_CURSOR = "p";
-
-var EVENT_CUSTOM = "x";
-
-var EVENT_RESET = "r";
-var EVENT_JOIN = "j";
-var EVENT_LEAVE = "l";
-var EVENT_ERROR = "e";
-
-var EVENT_IMGBURST = "i";
-
-var EVENT_MOUSE_DOUBLE_CLICK = "F";
-
-var paintBrushes = {
+const paintBrushes = {
 	rectangle: {
 		select: function(user, foregroundCanvasCTX, backgroundCanvasCTX) {
 			backgroundCanvasCTX.lineCap = "butt";
@@ -431,7 +431,7 @@ function sign(x) { return x ? x < 0 ? -1 : 1 : 0; }
 
 function clamp(val, min, max) { return Math.max(min, Math.min(max, val)) }
 
-var liveDrawInput = {
+const liveDrawInput = {
 	cursorX: 0,
 	cursorY: 0,
 	isDrawing: false,
@@ -527,7 +527,7 @@ var liveDrawInput = {
 	}
 }
 
-var liveDrawInterface = {
+const liveDrawInterface = {
 	save: function() {
 		var xhr = new XMLHttpRequest();
 		xhr.upload.addEventListener("load", function(ev) { console.log("Upload complete"); }, false);
@@ -537,7 +537,7 @@ var liveDrawInterface = {
 	}
 };
 
-var networking = {
+const networking = {
 	shouldConnect: false,
 	recvRaw: function(msg) {
 		msg = msg.trim();
@@ -720,7 +720,7 @@ var networking = {
 	}
 }
 
-var defaultFont = "24px Verdana";
+const defaultFont = "24px Verdana";
 
 function paintCanvas() {
 	requestAnimationFrame(paintCanvas);
