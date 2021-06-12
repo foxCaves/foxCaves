@@ -3,10 +3,10 @@ let canvasEle: HTMLCanvasElement;
 
 let canvasMaxX: number;
 let canvasMaxY: number;
-let dancer: any;
 
 const MathPI2 = Math.PI * 2.0;
 const MathPIHalf = Math.PI / 2.0;
+let dancerInstance: dancer.Dancer;
 
 interface Position {
 	x: number;
@@ -51,7 +51,7 @@ const allSnakeStates = new Array();
 const snakeColors = new Array();
 const snakeWidths = new Array();
 
-function audiovisUpdate() {
+function audiovisUpdate(dancer: dancer.Dancer) {
 	const spectrum = dancer.getSpectrum();
 	canvasCTX.clearRect(0, 0, canvasEle.width, canvasEle.height);
 
@@ -65,7 +65,7 @@ function audiovisUpdate() {
 		if (b1 <= b0) b1 = b0 + 1;
 		const sc = 10 + b1 - b0;
 		while (b0 < b1) {
-			sum = sum + spectrum[2 + b0];
+			sum = sum + spectrum[2 + b0]!;
 			b0 = b0 + 1;
 		}
 		let y = (Math.sqrt(sum / Math.log10(sc)) * 1.7 * SPECHEIGHT) - 4;
@@ -249,7 +249,7 @@ function audiovisLoaded() {
 }
 
 function dancer_play() {
-	dancer.play();
+	dancerInstance.play();
 	return false;
 }
 
@@ -323,7 +323,7 @@ $(() => {
 
 	canvasCTX.lineCap = "round";
 
-	dancer = new Dancer();
+	dancerInstance = new dancer.Dancer();
 
 	for (let j = 0; j < 2; j++) {
 		makeSnake();
@@ -334,8 +334,8 @@ $(() => {
 		snakeWidths.push(0);
 	}
 
-	const kick = dancer.createKick({
-		onKick: function () {
+	const kick = dancerInstance.createKick({
+		onKick() {
 			snakeColors[0] = "rgb(255, 0, 255)";
 
 			for (let j = 0; j < allSnakeStates.length; j++) {
@@ -354,14 +354,14 @@ $(() => {
 				}
 			}
 		},
-		offKick: function () {
+		offKick() {
 			currentlyOnKick = false;
 		}
 	});
 
-	dancer.onceAt(0, function () { kick.on(); });
+	dancerInstance.onceAt(0, function () { kick.on(); });
 
-	dancer.bind("loaded", audiovisLoaded);
-	dancer.bind("update", audiovisUpdate);
-	dancer.load(document.getElementById("audioplayer"));
+	dancerInstance.bind("loaded", audiovisLoaded);
+	dancerInstance.bind("update", () => audiovisUpdate(dancerInstance));
+	dancerInstance.load(document.getElementById("audioplayer") as HTMLAudioElement);
 });
