@@ -30,7 +30,7 @@ module.exports = function(grunt) {
 					expand: true,
 					cwd: `${source_directory}/js/dist`,
 					src: ['**/*.js'],
-					dest: `${source_directory}/js`,
+					dest: `${target_directory}/js`,
 				}],
 			}
 		},
