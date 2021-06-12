@@ -2,18 +2,17 @@ const path = require('path');
 
 module.exports = function(grunt) {
 	const source_directory = 'static',
-		  target_directory = 'diststatic';
+		  target_directory = 'dist/static';
 
 	grunt.initConfig({
 		pkg: grunt.file.readJSON('package.json'),
-
 		imagemin: {
 			dist: {
 				files: [{
 					expand: true,
-					cwd: `${source_directory}/img`,
+					cwd: `${source_directory}/img/`,
 					src: ['**/*.{png,gif}'],
-					dest: `${target_directory}/img`,
+					dest: `${target_directory}/img/`,
 				}]
 			}
 		},
@@ -28,9 +27,9 @@ module.exports = function(grunt) {
 			dist: {
 				files: [{
 					expand: true,
-					cwd: `${source_directory}/js/dist`,
+					cwd: `${source_directory}/js/dist/`,
 					src: ['**/*.js'],
-					dest: `${target_directory}/js`,
+					dest: `${target_directory}/js/`,
 				}],
 			}
 		},
@@ -38,17 +37,27 @@ module.exports = function(grunt) {
 			dist: {
 				files: [{
 					expand: true,
-					cwd: `${source_directory}/css`,
+					cwd: `${source_directory}/css/`,
 					src: ['**/*.css'],
-					dest: `${target_directory}/css`,
+					dest: `${target_directory}/css/`,
+				}]
+			}
+		},
+		copy: {
+			dist: {
+				files: [{
+					expand: true,
+					cwd: 'html/',
+					src: ['**'],
+					dest: 'dist/'
 				}]
 			}
 		},
 		concurrent: {
-			dist: ['imagemin:dist', 'cssmin:dist', 'uglify:dist']
+			dist: ['imagemin:dist', 'cssmin:dist', 'uglify:dist', 'copy:dist']
 		},
 		clean: {
-			statics: [target_directory],
+			statics: ['dist'],
 			postbuild: ['.tmp']
 		},
 	});
@@ -58,6 +67,7 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks('grunt-contrib-imagemin');
 	grunt.loadNpmTasks('grunt-contrib-uglify');
 	grunt.loadNpmTasks('grunt-contrib-cssmin');
+	grunt.loadNpmTasks('grunt-contrib-copy');
 
 	grunt.registerTask('default', [
 		'clean:statics',

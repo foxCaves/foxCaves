@@ -27,8 +27,7 @@ COPY etc/s6 /etc/s6
 
 COPY backend /var/www/foxcaves/lua
 
-COPY frontend/html /var/www/foxcaves/html
-COPY --from=builder /opt/stage/diststatic /var/www/foxcaves/html/static
+COPY --from=builder /opt/stage/dist /var/www/foxcaves/html
 
 ARG GIT_REVISION=UNKNOWN
 RUN echo $GIT_REVISION > /var/www/foxcaves/lua/.revision
