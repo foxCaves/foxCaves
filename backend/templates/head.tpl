@@ -41,7 +41,7 @@ local format_size = G.ngx.ctx.format_size
 local usedperc = G.math.ceil((usedbytes / totalbytes) * 100) %>
 							<li>
 								<div class="progress" style="width: 200px; top: 10px; margin-right: 10px;">
-									<script type="text/javascript">var TOTALBYTES = <%= G.tostring(totalbytes) %>;</script>
+									<script type="text/javascript">const TOTALBYTES = <%= G.tostring(totalbytes) %>;</script>
 									<div class="bar bar-success" style="width: 100%;"></div>
 									<div class="bar bar-danger" id="used_bytes_bar" style="width: <%= usedperc %>%;"></div>
 									<div style="float: left; position: relative; width: 100%; text-align: center; color: white;">
