@@ -3,7 +3,7 @@ $(function() {
 	.find("> h3")
 		.addClass("ui-accordion-header ui-accordion-icons ui-helper-reset ui-state-default ui-corner-top ui-corner-bottom")
 		.prepend('<span class="ui-accordion-header-icon ui-icon ui-icon-triangle-1-e"/>')
-		.click(function() {
+		.on('click', function() {
 			$(this).toggleClass("ui-accordion-header-active").toggleClass("ui-state-active")
 				.toggleClass("ui-state-default").toggleClass("ui-corner-bottom")
 			.find("> .ui-icon").toggleClass("ui-icon-triangle-1-e").toggleClass("ui-icon-triangle-1-s")
@@ -12,7 +12,7 @@ $(function() {
 		})
 		.next().addClass("ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom").hide();
 
-	$(".autoclick").click();
+	$(".autoclick").trigger('click');
 	$("table").each(function() {
 		const $this = $(this);
 		$this.addClass('ui-styled-table ui-widget');
