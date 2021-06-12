@@ -1,3 +1,4 @@
+'use strict';
 /*
  * dancer - v0.4.0 - 2014-02-01
  * https://github.com/jsantell/dancer.js

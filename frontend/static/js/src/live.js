@@ -1,3 +1,5 @@
+'use strict';
+
 var MathPIDouble = Math.PI * 2.0;
 
 var finalCanvas, canvasPos;
@@ -906,7 +908,7 @@ function setupColorSelector() {
 }
 
 function setupBrushes() {
-	for(brush in paintBrushes) {
+	for(var brush in paintBrushes) {
 		if(paintBrushes[brush].usesCustomData) {
 			var dataSet = {};
 			var defaultSet = paintBrushes[brush].defaultCustomData;
