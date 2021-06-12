@@ -11,7 +11,7 @@
 		"grunt-contrib-uglify": "^5.0.1"
 	},
 	"scripts": {
-		"build": "grunt"
+		"build": "tsc --project ./static/js && grunt"
 	},
 	"repository": {
 		"type": "git",
