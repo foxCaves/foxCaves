@@ -11,7 +11,7 @@
 		"grunt-contrib-uglify": "^5.0.1"
 	},
 	"scripts": {
-		"build": "grunt"
+		"build": "tsc --project ./static/js && grunt"
 	},
 	"repository": {
 		"type": "git",
@@ -21,5 +21,9 @@
 	"license": "Proprietary",
 	"bugs": {
 		"url": "https://github.com/foxCaves/site/issues"
+	},
+	"devDependencies": {
+		"@types/jquery": "^3.5.5",
+		"typescript": "^4.3.2"
 	}
 }

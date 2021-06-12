@@ -1,15 +1,17 @@
-var loadingEles = 0;
+let loadingEles = 0;
 
 function loadDone() {
 	loadingEles--;
-	if(loadingEles == 0)
-		window.prettyPrint && prettyPrint();
+	const prettyPrint = (window as any).prettyPrint;
+	if(loadingEles == 0 && prettyPrint) {
+		prettyPrint();
+	}
 }
 
-var sizePostFixes = [" B", " kB", " MB", " GB", " TB", " PB", " EB", " ZB", " YB"];
+const sizePostFixes = [" B", " kB", " MB", " GB", " TB", " PB", " EB", " ZB", " YB"];
 
-function formatSize(size) {
-	var sinc = 0;
+function formatSize(size: number) {
+	let sinc = 0;
 
 	while(size > 1024) {
 		sinc = sinc + 1;
@@ -20,14 +22,14 @@ function formatSize(size) {
 
 	size = Math.ceil(size * 100.0) / 100.0;
 
-	return size + sizePostFixes[sinc];
+	return size + sizePostFixes[sinc]!;
 }
 
 function docReady() {
-	var eles = document.getElementsByTagName("pre");
-	for(i=0; i < eles.length; i++) {
-		var ele = eles[i];
-		var src = ele.getAttribute('data-thumbnail-source');
+	const eles = document.getElementsByTagName("pre");
+	for(let i=0; i < eles.length; i++) {
+		const ele = eles[i]!;
+		const src = ele.getAttribute('data-thumbnail-source');
 		if(!src) continue;
 		ele.style.display = "";
 		ele.innerHTML = "[Loading preview...]";
@@ -56,24 +58,24 @@ $(document).ready(function(){
 		return true;
 	};
 
-	function messageReceived(e) {
-		var cmd = JSON.parse(e.data);
+	function messageReceived(e: MessageEvent) {
+		const cmd = JSON.parse(e.data);
 
-		var handler = pushHandlers[cmd.action];
+		const handler = pushHandlers[cmd.action];
 		if (!handler) {
 			return;
 		}
 		handler(cmd);
 	};
 
-	var currentSocket;
-	function reconnectSocket(oldSocket) {
+	let currentSocket: WebSocket;
+	function reconnectSocket(oldSocket?: WebSocket) {
 		if (oldSocket && currentSocket !== oldSocket) {
 			return;
 		}
 
-		var useSSL = (window.location.protocol == "https:");
-		var socket = new WebSocket((useSSL ? "wss:" : "ws:") + window.location.hostname + "/api/events?channel=" + PUSH_CHANNEL);
+		const useSSL = (window.location.protocol == "https:");
+		const socket = new WebSocket((useSSL ? "wss:" : "ws:") + window.location.hostname + "/api/events?channel=" + PUSH_CHANNEL);
 		currentSocket = socket;
 
 		function reconnectInner() {

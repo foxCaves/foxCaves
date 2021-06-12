@@ -1,6 +1,8 @@
-var pushHandlers = {};
+const pushHandlers: {
+	[key: string]: (data: any) => boolean | void;
+} = {};
 
-function preventDefault(evt) {
+function preventDefault(evt: Event | JQuery.Event) {
 	evt.stopPropagation();
 	evt.preventDefault();
 }
@@ -12,23 +14,27 @@ window.addEventListener("popstate", function(ev) {
 	loadPage(ev.state.url, true);
 });
 
-function loadPage(href, fromHistory) {
-	var container = $('#main-container');
+declare const PUSH_CHANNEL: string;
+declare const SHORT_URL: string;
+declare const TOTALBYTES: number;
+
+function loadPage(href: string, fromHistory?: boolean) {
+	const container = $('#main-container');
 
 	$.ajax({
 		url: href,
-		beforeSend: function(xhr) {
+		beforeSend(xhr) {
 			xhr.setRequestHeader("X-Is-Js-Request", "1");
 		},
-		success: function(data, status, xhr) {
-			var xSplit = data.lastIndexOf("|");
+		success(data) {
+			const xSplit = data.lastIndexOf("|");
 
-			var json = $.parseJSON(data.substring(xSplit + 1));
+			const json = JSON.parse(data.substring(xSplit + 1));
 
-			for(var idx in json) {
+			for(const idx in json) {
 				if(!json.hasOwnProperty(idx))
 					continue;
-				var val = json[idx];
+				const val = json[idx];
 				switch(idx) {
 					case "pushchan":
 						if(val != PUSH_CHANNEL) {
@@ -63,7 +69,7 @@ function loadPage(href, fromHistory) {
 
 			docReady();
 		},
-		error: function() {
+		error() {
 			container.css("opacity", "1");
 			document.location.href = href;
 		},
