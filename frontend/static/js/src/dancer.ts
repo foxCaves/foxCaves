@@ -394,7 +394,7 @@ namespace dancer {
 
 
 			for (let i = channels; i--;) {
-				buffers.push(e.inputBuffer.getChannelData(i));
+				buffers[i] = e.inputBuffer.getChannelData(i);
 			}
 
 			for (let i = 0; i < resolution; i++) {
