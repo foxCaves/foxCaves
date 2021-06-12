@@ -787,7 +787,7 @@ class FourierTransform {
  */
 class FFT {
 	constructor(bufferSize, sampleRate) {
-		FourierTransform.call(this, bufferSize, sampleRate);
+		FourierTransform.constructor.call(this, bufferSize, sampleRate);
 
 		this.reverseTable = new Uint32Array(bufferSize);
 
