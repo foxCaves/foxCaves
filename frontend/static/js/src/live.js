@@ -927,8 +927,3 @@ $(document).ready(function() {
 	setupBrushes();
 	loadImage();
 });
-
-$(document).unload(function() {
-	networking.sendDrawEvent(EVENT_LEAVE, "");
-	networking.close();
-});
