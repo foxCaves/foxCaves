@@ -81,8 +81,8 @@ function formatZeros(val: number, len: number): string {
 	return val.toString().padStart(len, '0');
 }
 
-var currentUpload: XMLHttpRequest;
-var wasAborted = false;
+let currentUpload: XMLHttpRequest;
+let wasAborted = false;
 
 function abortCurrentFileUpload() {
 	wasAborted = true;
@@ -95,7 +95,7 @@ function processNextFile() {
 
 	resetDropZone();
 
-	var dropZone = document.getElementById("uploader_cur")!;
+	const dropZone = document.getElementById("uploader_cur")!;
 
 	if(dropZoneUploads.length <= 0) {
 		dropZoneFileNumber = 0;
@@ -104,7 +104,7 @@ function processNextFile() {
 		return;
 	}
 
-	var theFile = dropZoneUploads.shift();
+	const theFile = dropZoneUploads.shift();
 
 	dropZoneTransferInProgress = true;
 	if (dropZoneFileNumber == 0) {
@@ -112,14 +112,14 @@ function processNextFile() {
 	}
 
 	if (theFile instanceof File) {
-		var dropZoneFileReader = new FileReader();
+		const dropZoneFileReader = new FileReader();
 		const name = theFile.name;
 		dropZoneFileReader.onloadend = function (event) {
 			fileUpload(name, new Int8Array(<ArrayBuffer>event.target!.result!));
 		};
 		dropZoneFileReader.readAsArrayBuffer(theFile);
 	} else if (theFile) {
-		var t = new Date();
+		const t = new Date();
 		fileUpload("Paste-"+
 			formatZeros(t.getDate(), 2)+"."+
 			formatZeros(t.getMonth(), 2)+"."+
@@ -135,7 +135,7 @@ function processNextFile() {
 function fileUpload(name: string, fileData: ArrayBufferLike | string) {
 	$('#curFileName').text(name);
 
-	var xhr = new XMLHttpRequest();
+	const xhr = new XMLHttpRequest();
 	xhr.upload.addEventListener("loadstart", uploadStart, false);
 	xhr.upload.addEventListener("progress", uploadProgress, false);
 	xhr.upload.addEventListener("load", uploadComplete, false);
@@ -179,8 +179,8 @@ function _setUploadProgress(progress_percent: number) {
 }
 
 function resetDropZone() {
-	var dropZone = document.getElementById("uploader")!;
-	var dropZoneSub = document.getElementById('uploader_sub')!;
+	const dropZone = document.getElementById("uploader")!;
+	const dropZoneSub = document.getElementById('uploader_sub')!;
 
 	dropZoneSub.innerHTML = dropZoneDefaultInnerHTML;
 
@@ -200,8 +200,8 @@ function handleDragOver(event: DragEvent, eventtype?: string) {
 		eventtype = event.type;
 	}
 
-	var dropZone = document.getElementById("uploader")!;
-	var dropZoneSub = document.getElementById("uploader_sub")!;
+	const dropZone = document.getElementById("uploader")!;
+	const dropZoneSub = document.getElementById("uploader_sub")!;
 
 	if(eventtype == "dragenter") {
 		if(currFileDrag) {
@@ -222,12 +222,12 @@ function handleDragOver(event: DragEvent, eventtype?: string) {
 }
 
 function setupDropZone() {
-	var dropZoneMain = document.getElementById('uploader')!;
+	const dropZoneMain = document.getElementById('uploader')!;
 	dropZoneMain.innerHTML = "<div id='uploader_sub'>Drag & drop files anywhere on this page to upload them</div><div id='uploader_cur'></div>";
 
 	dropZoneDefaultInnerHTML = document.getElementById('uploader_sub')!.innerHTML;
 
-	var docSel = $("*:not(#recycle_bin)");
+	const docSel = $("*:not(#recycle_bin)");
 	docSel.bind("dragenter.dropZone", handleDragOverJQ);
 	docSel.bind("dragleave.dropZone", handleDragOverJQ);
 	docSel.bind("dragover.dropZone", preventDefault);
@@ -238,10 +238,10 @@ function setupDropZone() {
 
 function refreshFiles() {
 	$.get('/api/list?type=idonly', function(data) {
-		var files = JSON.parse(data) as string[];
-		var files_rev: { [key: string]: boolean } = {};
-		for(var i = 0;i < files.length;i++) {
-			var fileid = files[i];
+		const files = JSON.parse(data) as string[];
+		const files_rev: { [key: string]: boolean } = {};
+		for(let i = 0;i < files.length;i++) {
+			const fileid = files[i];
 			if(!fileid) {
 				continue;
 			}
@@ -252,7 +252,7 @@ function refreshFiles() {
 		}
 
 		$('#file_manager > li').each(function(_, ele) {
-			var fileid = $(ele).attr('id')!.substr(5);
+			const fileid = $(ele).attr('id')!.substr(5);
 			if(!files_rev[fileid])
 				removeFileLI(fileid);
 		});
@@ -284,7 +284,7 @@ function getFileLI(fileid: string, func: (newFile: HTMLElement | null) => void) 
 
 function startFileDrag(this: HTMLElement, event: DragEvent) {
 	currFileDrag = this;
-	var fileName = (this.children[0]! as HTMLElement).innerText;
+	const fileName = (this.children[0]! as HTMLElement).innerText;
 	event.dataTransfer!.setData(
 		"DownloadURL",
 		getMimeTypeFromFile(fileName) + fileName + ":" + getDownloadURLFromImageManager(this)
@@ -322,7 +322,7 @@ function addFileLI(fileid: string, no_refresh_if_exist?: boolean) {
 		}
 		return;
 	}
-	var ele = document.getElementById("file_manager")!;
+	const ele = document.getElementById("file_manager")!;
 	getFileLI(fileid, function(newFile) {
 		if(!newFile) {
 			return;
@@ -425,10 +425,10 @@ function setupPasting() {
 
 function setupSearch() {
 	document.getElementById("filter-form")!.style.display = "inline";
-	var previewWrapper = document.getElementById("file_manager")!;
+	const previewWrapper = document.getElementById("file_manager")!;
 	document.getElementById("name-filter")!.addEventListener("keyup", function(){
-		var nodes = previewWrapper.childNodes;
-		var val = (this as HTMLInputElement).value.toLowerCase();
+		const nodes = previewWrapper.childNodes;
+		const val = (this as HTMLInputElement).value.toLowerCase();
 		for(let i = 0;i < nodes.length;++i) {
 			const node = (nodes[i]! as HTMLElement);
 			if(node.nodeType != 1) {
@@ -444,7 +444,7 @@ function setupSearch() {
 }
 
 function setupMassOperations() {
-	var form = document.getElementById("file-mass-action-form")!;
+	const form = document.getElementById("file-mass-action-form")!;
 	form.addEventListener("submit", function(event) {
 		event.preventDefault();
 
@@ -452,7 +452,7 @@ function setupMassOperations() {
 
 		let count = 0;
 
-		var data: string[] = [];
+		const data: string[] = [];
 
 		$("#file_manager > li[id^=file_]").each((_k, v) => {
 			if(v.style.display == "none")
