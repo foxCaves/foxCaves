@@ -228,10 +228,10 @@ function setupDropZone() {
 	dropZoneDefaultInnerHTML = document.getElementById('uploader_sub')!.innerHTML;
 
 	const docSel = $("*:not(#recycle_bin)");
-	docSel.bind("dragenter.dropZone", handleDragOverJQ);
-	docSel.bind("dragleave.dropZone", handleDragOverJQ);
-	docSel.bind("dragover.dropZone", preventDefault);
-	docSel.bind("drop.dropZone", handleDropFileSelect);
+	docSel.on("dragenter", handleDragOverJQ);
+	docSel.on("dragleave.dropZone", handleDragOverJQ);
+	docSel.on("dragover.dropZone", preventDefault);
+	docSel.on("drop.dropZone", handleDropFileSelect);
 
 	document.body.addEventListener("mouseout", function() { resetDropZone(); }, false);
 }

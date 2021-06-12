@@ -46,7 +46,7 @@ function docReady() {
 	}
 }
 
-$(document).ready(function(){
+$(() => {
 	docReady();
 
 	if(PUSH_CHANNEL == "")
