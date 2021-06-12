@@ -582,11 +582,11 @@ var networking = {
 						lastY: 0
 					},
 				};
-				for(brush in paintBrushes) {
+				for(var brush in paintBrushes) {
 					if(paintBrushes[brush].usesCustomData) {
 						var dataSet = {};
 						var defaultSet = paintBrushes[brush].defaultCustomData
-						for(attrib in paintBrushes[brush].defaultCustomData)
+						for(var mattrib in paintBrushes[brush].defaultCustomData)
 							dataSet[attrib] = defaultSet[attrib];
 						from.brushData.customData[brush] = dataSet;
 					}
@@ -912,7 +912,7 @@ function setupBrushes() {
 		if(paintBrushes[brush].usesCustomData) {
 			var dataSet = {};
 			var defaultSet = paintBrushes[brush].defaultCustomData;
-			for(attrib in paintBrushes[brush].defaultCustomData)
+			for(var attrib in paintBrushes[brush].defaultCustomData)
 				dataSet[attrib] = defaultSet[attrib];
 			localUser.brushData.customData[brush] = dataSet;
 		}
