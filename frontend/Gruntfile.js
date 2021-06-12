@@ -11,9 +11,9 @@ module.exports = function(grunt) {
 			dist: {
 				files: [{
 					expand: true,
-					cwd: source_directory,
-					src: ['img/**/*.{png,gif}'],
-					dest: target_directory,
+					cwd: `${source_directory}/img`,
+					src: ['**/*.{png,gif}'],
+					dest: `${target_directory}/img`,
 				}]
 			}
 		},
@@ -23,17 +23,14 @@ module.exports = function(grunt) {
 				compress: true,
 				warnings: true,
 				mangle: true,
-				sourceMap: true
+				sourceMap: true,
 			},
 			dist: {
 				files: [{
 					expand: true,
-					cwd: source_directory,
-					src: ['js/dist/**/*.js'],
-					dest: target_directory,
-					rename(dest, matchedSrcPath, _options) {
-						return path.join(dest, matchedSrcPath.replace('/dist/', '/'));
-					},
+					cwd: `${source_directory}/js/dist`,
+					src: ['**/*.js'],
+					dest: `${source_directory}/js`,
 				}],
 			}
 		},
@@ -41,9 +38,9 @@ module.exports = function(grunt) {
 			dist: {
 				files: [{
 					expand: true,
-					cwd: source_directory,
-					src: ['css/**/*.css'],
-					dest: target_directory,
+					cwd: `${source_directory}/css`,
+					src: ['**/*.css'],
+					dest: `${target_directory}/css`,
 				}]
 			}
 		},
@@ -51,7 +48,7 @@ module.exports = function(grunt) {
 			dist: ['imagemin:dist', 'cssmin:dist', 'uglify:dist']
 		},
 		clean: {
-			statics: [target_directory + '/img', target_directory + '/css', target_directory + '/js', target_directory + '/font'],
+			statics: [target_directory],
 			postbuild: ['.tmp']
 		},
 	});
