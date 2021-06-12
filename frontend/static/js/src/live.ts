@@ -1,44 +1,41 @@
-'use strict';
+const MathPIDouble = Math.PI * 2.0;
+let canvasPos: JQuery.Coordinates;
+let scaleFactor = 1.0;
+let imagePattern: string;
+let brushSizeSlider: HTMLInputElement;
+let backgroundCanvasCTX: CanvasRenderingContext2D, foregroundCanvasCTX: CanvasRenderingContext2D, finalCanvasCTX: CanvasRenderingContext2D;
+let backgroundCanvas: HTMLCanvasElement, foregroundCanvas: HTMLCanvasElement, finalCanvas: HTMLCanvasElement;
 
-var MathPIDouble = Math.PI * 2.0;
-
-var finalCanvas, canvasPos;
-
-var scaleFactor = 1.0;
-
-var imagePattern;
-
-var brushSizeSlider;
-
-var localUser = {
+const localUser = {
 	brushData: {
 		width: 0,
 		color: "black",
-		brush: null,
-		customData: {
-		},
-		setWidth: function(bWidth) {
+		brush: undefined,
+		customData: {},
+		setWidth: function(bWidth: number) {
 			if(bWidth == this.width)
 				return;
 			this.width = bWidth;
-			brushSizeSlider.value = bWidth;
+			brushSizeSlider.value = `${bWidth}`;
 			this.setBrushAttribsLocal();
 			networking.sendDrawEvent(EVENT_WIDTH, bWidth);
 		},
-		setColor: function(bColor) {
+		setColor: function(bColor: string) {
 			this.color = bColor;
 			this.setBrushAttribsLocal();
 			networking.sendDrawEvent(EVENT_COLOR, bColor);
 		},
-		setBrush: function(brush) {
-			if(this.brush && this.brush.unselectLocal)
+		setBrush: function(brush: string) {
+			if(this.brush && this.brush.unselectLocal) {
 				this.brush.unselectLocal();
+			}
 
 			this.brush = paintBrushes[brush];
 			backgroundCanvasCTX.globalCompositeOperation = "source-over";
 
-			if(this.brush.selectLocal)
+			if(this.brush.selectLocal) {
 				this.brush.selectLocal(localUser, foregroundCanvasCTX, backgroundCanvasCTX);
+			}
 			this.brush.select(localUser, foregroundCanvasCTX, backgroundCanvasCTX);
 			networking.sendDrawEvent(EVENT_BRUSH, brush);
 		},
@@ -62,7 +59,7 @@ var localUser = {
 	}
 };
 
-var paintUsers = new Array();
+var paintUsers = [];
 
 var EVENT_WIDTH = "w";
 var EVENT_COLOR = "c";
@@ -540,14 +537,6 @@ var liveDrawInterface = {
 	}
 };
 
-var backgroundCanvasCTX;
-var foregroundCanvasCTX;
-var finalCanvasCTX;
-
-var backgroundCanvas;
-var foregroundCanvas;
-var finalCanvas;
-
 var networking = {
 	shouldConnect: false,
 	recvRaw: function(msg) {
@@ -922,7 +911,7 @@ function setupBrushes() {
 }
 
 $(document).ready(function() {
-	brushSizeSlider = document.getElementById("brush-width-slider");
+	brushSizeSlider = document.getElementById("brush-width-slider") as HTMLInputElement;
 
 	setupCanvas();
 	setupColorSelector();
