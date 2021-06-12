@@ -2,16 +2,8 @@
 	"name": "foxcaves",
 	"version": "0.0.0",
 	"description": "",
-	"dependencies": {
-		"grunt": "^1.4.1",
-		"grunt-concurrent": "^3.0.0",
-		"grunt-contrib-clean": "^2.0.0",
-		"grunt-contrib-cssmin": "^4.0.0",
-		"grunt-contrib-imagemin": "^4.0.0",
-		"grunt-contrib-uglify": "^5.0.1"
-	},
 	"scripts": {
-		"build": "tsc --project ./static/js && grunt"
+		"build": "rimraf ./static/js/dist && tsc --project ./static/js && grunt"
 	},
 	"repository": {
 		"type": "git",
@@ -24,6 +16,13 @@
 	},
 	"devDependencies": {
 		"@types/jquery": "^3.5.5",
-		"typescript": "^4.3.2"
+		"rimraf": "^3.0.2",
+		"typescript": "^4.3.2",
+		"grunt": "^1.4.1",
+		"grunt-concurrent": "^3.0.0",
+		"grunt-contrib-clean": "^2.0.0",
+		"grunt-contrib-cssmin": "^4.0.0",
+		"grunt-contrib-imagemin": "^4.0.0",
+		"grunt-contrib-uglify": "^5.0.1"
 	}
 }
