@@ -287,11 +287,6 @@ function makeSnake(bx?: number, by?: number): Snake {
 let currentlyOnKick = false;
 
 $(() => {
-	const Dancer = (window as any).Dancer;
-	if (!Dancer.isSupported()) {
-		return;
-	}
-
 	canvasEle = document.getElementById("audiovis") as HTMLCanvasElement;
 
 	let winH: number;
