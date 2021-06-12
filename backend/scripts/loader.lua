@@ -141,9 +141,9 @@ if IS_DEVELOPMENT then
 			<script type=\"text/javascript\" src=\"https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js\"></script>\
 			<script src=\"https://cdnjs.cloudflare.com/ajax/libs/prettify/r298/prettify.min.js\" type=\"text/javascript\"></script>\
 			<script src=\"https://cdnjs.cloudflare.com/ajax/libs/prettify/r298/lang-lua.min.js\" type=\"text/javascript\"></script>\
-			<script type=\"text/javascript\" src=\"https://foxcav.es/static/errorpage/error.js\"></script>\
+			<script type=\"text/javascript\" src=\"https://foxcav.es/static/js/errorpage.js\"></script>\
 			<link rel=\"stylesheet\" type=\"text/css\" href=\"https://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/themes/base/jquery-ui.css\" />\
-			<link rel=\"stylesheet\" type=\"text/css\" href=\"https://foxcav.es/static/errorpage/error.css\" />\
+			<link rel=\"stylesheet\" type=\"text/css\" href=\"https://foxcav.es/static/css/errorpage.css\" />\
 			<link rel=\"stylesheet\" type=\"text/css\" href=\"https://foxcav.es/static/css/prettify.css\" />\
 			</head><body><h1 class=\"ui-widget\">Original Error:",
 			err,

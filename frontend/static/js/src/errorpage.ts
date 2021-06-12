@@ -13,29 +13,22 @@ $(function() {
 		.next().addClass("ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom").hide();
 
 	$(".autoclick").click();
+	$("table").each(function() {
+		const $this = $(this);
+		$this.addClass('ui-styled-table ui-widget');
 
-	 $.fn.styleTable = function (options) {
-		var defaults = {
-			css: 'ui-styled-table ui-widget'
-		};
-		options = $.extend(defaults, options);
-
-		return this.each(function () {
-			$this = $(this);
-			$this.addClass(options.css);
-
-			$this.on('mouseover mouseout', 'tbody tr', function (event) {
-				$(this).children().toggleClass("ui-state-hover",
-												event.type == 'mouseover');
-			});
-
-			$this.find("th").addClass("ui-widget ui-state-default");
-			$this.find("td").addClass("ui-widget ui-widget-content");
-			$this.find("tr:last-child").addClass("last-child");
+		$this.on('mouseover mouseout', 'tbody tr', function (event) {
+			$(this).children().toggleClass("ui-state-hover",
+											event.type == 'mouseover');
 		});
-	};
 
-	$("table").styleTable();
+		$this.find("th").addClass("ui-widget ui-state-default");
+		$this.find("td").addClass("ui-widget ui-widget-content");
+		$this.find("tr:last-child").addClass("last-child");
+	});
 
-	window.prettyPrint && prettyPrint();
+	const prettyPrint = (window as any).prettyPrint;
+	if(prettyPrint) {
+		prettyPrint();
+	}
 });
