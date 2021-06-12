@@ -2,7 +2,7 @@ const pushHandlers: {
 	[key: string]: (data: any) => boolean | void;
 } = {};
 
-function preventDefault(evt: Event) {
+function preventDefault(evt: Event | JQuery.Event) {
 	evt.stopPropagation();
 	evt.preventDefault();
 }

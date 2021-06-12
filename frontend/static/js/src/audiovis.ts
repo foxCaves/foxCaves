@@ -3,7 +3,7 @@ let canvasEle: HTMLCanvasElement;
 
 let canvasMaxX: number;
 let canvasMaxY: number;
-let dancer;
+let dancer: any;
 
 const MathPI2 = Math.PI * 2.0;
 const MathPIHalf = Math.PI / 2.0;
@@ -287,8 +287,10 @@ function makeSnake(bx?: number, by?: number): Snake {
 let currentlyOnKick = false;
 
 $(document).ready(function () {
-	if (!Dancer.isSupported())
+	const Dancer = (window as any).Dancer;
+	if (!Dancer.isSupported()) {
 		return;
+	}
 
 	canvasEle = document.getElementById("audiovis") as HTMLCanvasElement;
 

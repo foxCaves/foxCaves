@@ -1,4 +1,4 @@
 /backend/config
 /frontend/diststatic
+/frontend/static/js/dist
 node_modules
-/frontend/js/dist

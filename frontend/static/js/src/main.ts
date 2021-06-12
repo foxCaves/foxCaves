@@ -2,8 +2,10 @@ let loadingEles = 0;
 
 function loadDone() {
 	loadingEles--;
-	if(loadingEles == 0)
-		window.prettyPrint && prettyPrint();
+	const prettyPrint = (window as any).prettyPrint;
+	if(loadingEles == 0 && prettyPrint) {
+		prettyPrint();
+	}
 }
 
 const sizePostFixes = [" B", " kB", " MB", " GB", " TB", " PB", " EB", " ZB", " YB"];

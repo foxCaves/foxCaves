@@ -14,7 +14,7 @@
 <form id="file-mass-action-form">
 	<fieldset>
 		<legend>Mass operation</legend>
-		<select name="action">
+		<select name="todo">
 			<option>delete</option>
 		</select>
 		<input type="submit" value="Execute" class="btn">

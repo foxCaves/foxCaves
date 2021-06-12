@@ -1,7 +1,8 @@
-module.exports = function(grunt) {
+const path = require('path');
 
-	var source_directory = 'static',
-		target_directory = 'diststatic';
+module.exports = function(grunt) {
+	const source_directory = 'static',
+		  target_directory = 'diststatic';
 
 	grunt.initConfig({
 		pkg: grunt.file.readJSON('package.json'),
@@ -30,6 +31,9 @@ module.exports = function(grunt) {
 					cwd: source_directory,
 					src: ['js/dist/**/*.js'],
 					dest: target_directory,
+					rename(dest, matchedSrcPath, _options) {
+						return path.join(dest, matchedSrcPath.replace('/dist/', '/'));
+					},
 				}],
 			}
 		},

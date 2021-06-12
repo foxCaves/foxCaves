@@ -1,4 +1,4 @@
-var MathPI2 = Math.PI * 2.0;
+var MathPIDouble = Math.PI * 2.0;
 
 var finalCanvas, canvasPos;
 
@@ -130,7 +130,7 @@ var paintBrushes = {
 			backgroundCanvasCTX.beginPath();
 			x = user.cursorData.lastX - x;
 			y = user.cursorData.lastY - y;
-			backgroundCanvasCTX.arc(user.cursorData.lastX, user.cursorData.lastY, Math.sqrt(x * x + y * y), 0, MathPI2, false);
+			backgroundCanvasCTX.arc(user.cursorData.lastX, user.cursorData.lastY, Math.sqrt(x * x + y * y), 0, MathPIDouble, false);
 			backgroundCanvasCTX.stroke();
 			this.active = false;
 		},
@@ -153,7 +153,7 @@ var paintBrushes = {
 			foregroundCanvasCTX.beginPath();
 			x = user.cursorData.lastX - x;
 			y = user.cursorData.lastY - y;
-			foregroundCanvasCTX.arc(user.cursorData.lastX, user.cursorData.lastY, Math.sqrt(x * x + y * y), 0, MathPI2, false);
+			foregroundCanvasCTX.arc(user.cursorData.lastX, user.cursorData.lastY, Math.sqrt(x * x + y * y), 0, MathPIDouble, false);
 			foregroundCanvasCTX.stroke();
 		}
 	},
@@ -187,7 +187,7 @@ var paintBrushes = {
 		},
 		preview: function(x, y, user, foregroundCanvasCTX) {
 			foregroundCanvasCTX.beginPath();
-			foregroundCanvasCTX.arc(x, y, (user.brushData.width / 2 ) * scaleFactor, 0, MathPI2);
+			foregroundCanvasCTX.arc(x, y, (user.brushData.width / 2 ) * scaleFactor, 0, MathPIDouble);
 			foregroundCanvasCTX.stroke();
 		}
 	},
@@ -221,7 +221,7 @@ var paintBrushes = {
 		},
 		preview: function(x, y, user, foregroundCanvasCTX) {
 			foregroundCanvasCTX.beginPath();
-			foregroundCanvasCTX.arc(x, y, (user.brushData.width / 2 ) * scaleFactor, 0, MathPI2);
+			foregroundCanvasCTX.arc(x, y, (user.brushData.width / 2 ) * scaleFactor, 0, MathPIDouble);
 			foregroundCanvasCTX.stroke();
 		}
 	},
@@ -258,7 +258,7 @@ var paintBrushes = {
 		},
 		preview: function(x, y, user, foregroundCanvasCTX) {
 			foregroundCanvasCTX.beginPath();
-			foregroundCanvasCTX.arc(x, y, (user.brushData.width / 2) * scaleFactor, 0, MathPI2);
+			foregroundCanvasCTX.arc(x, y, (user.brushData.width / 2) * scaleFactor, 0, MathPIDouble);
 			foregroundCanvasCTX.stroke();
 		}
 	},
@@ -730,10 +730,6 @@ var networking = {
 }
 
 var defaultFont = "24px Verdana";
-
-var requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame ||
-                              window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
-window.requestAnimationFrame = requestAnimationFrame;
 
 function paintCanvas() {
 	requestAnimationFrame(paintCanvas);

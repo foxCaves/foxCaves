@@ -47,18 +47,18 @@ const mimetypes: {
 	"webm" : "video/webm"
 }
 
-function getMimeTypeFromFile(file) {
+function getMimeTypeFromFile(file: string) {
 	return mimetypes[/([\d\w]+)$/.exec(file)![0]!] || "application/octet-stream";
 }
 
-function handleDropFileSelect(event: JQuery.DragEvent) {
-	handleDragOver(event);
+function handleDropFileSelect(event: JQuery.Event) {
+	handleDragOverJQ(event);
 
-	var datTrans = (event.originalEvent as DragEvent).dataTransfer!;
+	const datTrans = (event as JQuery.DragEvent).originalEvent!.dataTransfer!;
 
 	if(datTrans.files.length > 0) {
-		var files = datTrans.files;
-		for(var i=0;i<files.length;i++) {
+		const files = datTrans.files;
+		for(let i=0;i<files.length;i++) {
 			dropZoneUploads.push(files[i]!);
 			dropZoneFileCount++;
 		}
@@ -69,8 +69,8 @@ function handleDropFileSelect(event: JQuery.DragEvent) {
 	processNextFile();
 }
 
-function getDownloadURLFromImageManager(object) {
-	return object.children[2].children[0].children[1].href;
+function getDownloadURLFromImageManager(object: HTMLElement) {
+	return (object.children[2]!.children[0]!.children[1]! as HTMLAnchorElement).href;
 }
 
 function getFileIDFromID(id: string): string {
@@ -107,16 +107,18 @@ function processNextFile() {
 	var theFile = dropZoneUploads.shift();
 
 	dropZoneTransferInProgress = true;
-	if(dropZoneFileNumber == 0)
+	if (dropZoneFileNumber == 0) {
 		dropZone.innerHTML = '<div class="container">Uploading<br />File: <span id="curFileName">N/A</span><div id="barUpload" style="margin-left: 50px; margin-right: 50px;" class="progress progress-striped"><div class="bar" style="width: 0%;"></div></div><br />Total: <div id="barUploadTotal" style="margin-left: 50px; margin-right: 50px;" class="progress progress-striped"><div class="bar" style="width: 0%;"></div></div><input type="button"  value="Abort upload" class="btn" onclick="abortCurrentFileUpload();" /></div>';
+	}
 
-	if(typeof theFile == "object") {
+	if (theFile instanceof File) {
 		var dropZoneFileReader = new FileReader();
+		const name = theFile.name;
 		dropZoneFileReader.onloadend = function (event) {
-			fileUpload(theFile.name, new Int8Array(event.target.result));
+			fileUpload(name, new Int8Array(<ArrayBuffer>event.target!.result!));
 		};
 		dropZoneFileReader.readAsArrayBuffer(theFile);
-	} else if(typeof theFile == "string") {
+	} else if (theFile) {
 		var t = new Date();
 		fileUpload("Paste-"+
 			formatZeros(t.getDate(), 2)+"."+
@@ -130,7 +132,7 @@ function processNextFile() {
 	}
 }
 
-function fileUpload(name: string, fileData) {
+function fileUpload(name: string, fileData: ArrayBufferLike | string) {
 	$('#curFileName').text(name);
 
 	var xhr = new XMLHttpRequest();
@@ -166,7 +168,7 @@ function uploadComplete() {
 	_setUploadProgress(100);
 }
 
-function uploadProgress(event) {
+function uploadProgress(event: ProgressEvent) {
 	if(event.lengthComputable) {
 		_setUploadProgress((event.loaded / event.total) * 100.0);
 	}
@@ -187,30 +189,34 @@ function resetDropZone() {
 	dropZoneTransferInProgress = false;
 }
 
-function handleDragOver(event: JQuery.DragEvent | DragEvent, eventtype?: string) {
-	event.stopPropagation();
-	event.preventDefault();
+function handleDragOverJQ(event: JQuery.Event) {
+	handleDragOver((event as JQuery.DragEvent).originalEvent!);
+}
 
-	if(!eventtype)
+function handleDragOver(event: DragEvent, eventtype?: string) {
+	preventDefault(event);
+
+	if (!eventtype) {
 		eventtype = event.type;
+	}
 
 	var dropZone = document.getElementById("uploader")!;
 	var dropZoneSub = document.getElementById("uploader_sub")!;
 
 	if(eventtype == "dragenter") {
-		if(currFileDrag)
+		if(currFileDrag) {
 			return;
+		}
 		dropZoneSub.innerHTML = 'Drop file now to upload';
 		$(dropZone).addClass("active");
 	} else if(eventtype == "dragleave") {
-		if(event.originalEvent && event.originalEvent.pageX != "0" && event.originalEvent.pageX != 0)
+		if(event.pageX !== 0) {
 			return;
-
+		}
 		resetDropZone();
 	}
 
-	if(event.originalEvent)
-		event.originalEvent.dataTransfer.dropEffect = (eventtype == "dragenter" ? "copy" : "");
+	event.dataTransfer!.dropEffect = (eventtype == "dragenter" ? "copy" : "none");
 
 	dropZone.className = eventtype == "dragenter" ? "hover" : "";
 }
@@ -222,8 +228,8 @@ function setupDropZone() {
 	dropZoneDefaultInnerHTML = document.getElementById('uploader_sub')!.innerHTML;
 
 	var docSel = $("*:not(#recycle_bin)");
-	docSel.bind("dragenter.dropZone", handleDragOver);
-	docSel.bind("dragleave.dropZone", handleDragOver);
+	docSel.bind("dragenter.dropZone", handleDragOverJQ);
+	docSel.bind("dragleave.dropZone", handleDragOverJQ);
 	docSel.bind("dragover.dropZone", preventDefault);
 	docSel.bind("drop.dropZone", handleDropFileSelect);
 
@@ -233,7 +239,7 @@ function setupDropZone() {
 function refreshFiles() {
 	$.get('/api/list?type=idonly', function(data) {
 		var files = JSON.parse(data) as string[];
-		var files_rev: boolean[] = [];
+		var files_rev: { [key: string]: boolean } = {};
 		for(var i = 0;i < files.length;i++) {
 			var fileid = files[i];
 			if(!fileid) {
@@ -245,8 +251,8 @@ function refreshFiles() {
 			}
 		}
 
-		$('#file_manager > li').each(function(i, ele) {
-			var fileid = $(ele).attr('id').substr(5);
+		$('#file_manager > li').each(function(_, ele) {
+			var fileid = $(ele).attr('id')!.substr(5);
 			if(!files_rev[fileid])
 				removeFileLI(fileid);
 		});
@@ -255,7 +261,7 @@ function refreshFiles() {
 	return false;
 }
 
-function getFileLI(fileid, func: (newFile: HTMLElement | null) => void) {
+function getFileLI(fileid: string, func: (newFile: HTMLElement | null) => void) {
 	$.get("/api/filehtml?id=" + fileid, function(data) {
 		data = data.trim();
 
@@ -264,21 +270,21 @@ function getFileLI(fileid, func: (newFile: HTMLElement | null) => void) {
 			return;
 		}
 
-		var newFile = document.createElement("ul");//Fake
-		newFile.innerHTML = data;
-		newFile = newFile.firstChild!;
+		const newFileTmp = document.createElement("ul");//Fake
+		newFileTmp.innerHTML = data;
+		const newFile = newFileTmp.firstChild!;
 
-		$(newFile).find(".image_manage_top, .image_manage_bottom").each(function(idx, elem) {
+		$(newFile).find(".image_manage_top, .image_manage_bottom").each(function(_, elem) {
 			elem.style.cursor="move";
 		});
 
-		func(newFile);
+		func(newFile as HTMLElement);
 	})
 }
 
 function startFileDrag(this: HTMLElement, event: DragEvent) {
 	currFileDrag = this;
-	var fileName = this.children[0]!.innerText;
+	var fileName = (this.children[0]! as HTMLElement).innerText;
 	event.dataTransfer!.setData(
 		"DownloadURL",
 		getMimeTypeFromFile(fileName) + fileName + ":" + getDownloadURLFromImageManager(this)
@@ -300,7 +306,7 @@ function setupFileJS(parent: JQuery | HTMLElement) {
 
 	parent.find(".image_manage_bottom > span > a[title=Delete]").click(function(e) {
 		preventDefault(e);
-		deleteFile(getFileIDFromID(this.parentNode.parentNode.parentNode.id), true);
+		deleteFile(getFileIDFromID((this.parentNode!.parentNode!.parentNode! as HTMLElement).id), true);
 	});
 
 	parent.each(function(_idx, elem) {
@@ -379,7 +385,7 @@ function setupFileDragging() {
 			return;
 
 		ev.dataTransfer!.dropEffect = "move";
-		ev.target!.style.opacity = "1";
+		(ev.target! as HTMLElement).style.opacity = "1";
 	}, false);
 
 	trashBin.addEventListener("dragleave", function(ev) {
@@ -394,8 +400,9 @@ function setupFileDragging() {
 		ev.stopPropagation();
 		ev.preventDefault();
 
-		if(!currFileDrag)
+		if(!currFileDrag) {
 			return;
+		}	
 
 		deleteFile(currFileDrag.id.substr(5));
 		trashBin.style.opacity = "";
@@ -421,13 +428,18 @@ function setupSearch() {
 	var previewWrapper = document.getElementById("file_manager")!;
 	document.getElementById("name-filter")!.addEventListener("keyup", function(){
 		var nodes = previewWrapper.childNodes;
-		var val = this.value.toLowerCase();
-		for(let i = 0;i < nodes.length;++i)
-			if(nodes[i].nodeType == 1)
-				if(nodes[i].children[0].innerText.toLowerCase().indexOf(val) == -1)
-					nodes[i].style.display = "none";
-				else if(nodes[i].style.display == "none")
-					nodes[i].style.display = "";
+		var val = (this as HTMLInputElement).value.toLowerCase();
+		for(let i = 0;i < nodes.length;++i) {
+			const node = (nodes[i]! as HTMLElement);
+			if(node.nodeType != 1) {
+				continue;
+			}
+			if((node.children[0]! as HTMLElement).innerText.toLowerCase().indexOf(val) == -1) {
+				node.style.display = "none";
+			} else if(node.style.display == "none") {
+				node.style.display = "";
+			}
+		}		
 	});
 }
 
@@ -436,7 +448,7 @@ function setupMassOperations() {
 	form.addEventListener("submit", function(event) {
 		event.preventDefault();
 
-		const operation = (this as HTMLFormElement).action.value;
+		const operation = (this as HTMLFormElement).todo.value;
 
 		let count = 0;
 
