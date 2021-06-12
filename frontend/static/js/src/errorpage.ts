@@ -27,7 +27,6 @@ $(function() {
 		$this.find("tr:last-child").addClass("last-child");
 	});
 
-	const prettyPrint = (window as any).prettyPrint;
 	if(prettyPrint) {
 		prettyPrint();
 	}

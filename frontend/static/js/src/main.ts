@@ -1,8 +1,9 @@
+declare const prettyPrint: (() => void) |  undefined;
+
 let loadingEles = 0;
 
 function loadDone() {
 	loadingEles--;
-	const prettyPrint = (window as any).prettyPrint;
 	if(loadingEles == 0 && prettyPrint) {
 		prettyPrint();
 	}
