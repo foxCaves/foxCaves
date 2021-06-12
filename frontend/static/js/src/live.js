@@ -586,7 +586,7 @@ var networking = {
 					if(paintBrushes[brush].usesCustomData) {
 						var dataSet = {};
 						var defaultSet = paintBrushes[brush].defaultCustomData
-						for(var mattrib in paintBrushes[brush].defaultCustomData)
+						for(var attrib in paintBrushes[brush].defaultCustomData)
 							dataSet[attrib] = defaultSet[attrib];
 						from.brushData.customData[brush] = dataSet;
 					}
