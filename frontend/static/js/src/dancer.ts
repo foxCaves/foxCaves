@@ -385,13 +385,13 @@ namespace dancer {
 			return this.audio.currentTime;
 		}
 		update(e: AudioProcessingEvent) {
-			if (!this.isPlaying || !this.isLoaded)
+			if (!this.isPlaying || !this.isLoaded) {
 				return;
+			}
 
 			const channels = e.inputBuffer.numberOfChannels;
 			const buffers = new Array<Float32Array>(channels);
 			const resolution = SAMPLE_SIZE / channels;
-
 
 			for (let i = channels; i--;) {
 				buffers[i] = e.inputBuffer.getChannelData(i);
@@ -452,11 +452,12 @@ namespace dancer {
 			let rval = 0;
 			let ival = 0;
 			let mag = 0;
+			const bSi = 2 / bufferSize;
 
 			for (let i = 0, N = this.bufferSize / 2; i < N; i++) {
 				rval = real[i]!;
 				ival = imag[i]!;
-				mag = bufferSize * Math.sqrt(rval * rval + ival * ival);
+				mag = bSi * Math.sqrt(rval * rval + ival * ival);
 
 				if (mag > this.peak) {
 					// this.peakBand = i;
