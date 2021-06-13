@@ -38,6 +38,14 @@ html::-webkit-resizer {
 	user-select: none;
 }
 
+.pointer {
+	cursor: pointer;
+}
+
+.dropdown-toggle {
+	cursor: pointer;
+}
+
 .image_manage_main {
 	display: inline-block;
 
