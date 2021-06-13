@@ -26,7 +26,6 @@
 							<% if G.ngx.ctx.user then %>
 								<li data-menu-id="2"><a href="/myfiles">My files</a></li>
 								<li data-menu-id="3"><a href="/mylinks">My links</a></li>
-								<li data-menu-id="4"><a href="/myaccount">My account</a></li>
 							<% else %>
 								<li data-menu-id="2"><a href="/login">Login</a></li>
 								<li data-menu-id="3"><a href="/register">Register</a></li>
@@ -54,11 +53,10 @@ local usedperc = G.math.ceil((usedbytes / totalbytes) * 100) %>
 								<a class="dropdown-toggle" data-toggle="dropdown">Welcome, <% if G.ngx.ctx.user then %><%= G.ngx.ctx.escape_html(G.ngx.ctx.user.username) %><% if G.ngx.ctx.user.is_pro then %> <span class="badge badge-level badge-pro">Pro</span><% end %><% else %>Guest<% end %> <b class="caret"></b></a>
 								<ul class="dropdown-menu">
 <% if G.ngx.ctx.user then %>
-									<li><a href="/myfiles">My files</a></li>
 									<li><a href="/myaccount">My account</a></li>
+									<!--<li><a href="/gopro">Go pro</a></li>-->
 									<li class="divider"></li>
 									<li><a href="/cam">Camera Snapshot</a></li>
-									<!--<li><a href="/gopro">Go pro</a></li>-->
 									<li class="divider"></li>
 									<li><a href="/login?logout=1">Logout</a></li>
 <% else %>
