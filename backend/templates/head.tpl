@@ -53,8 +53,8 @@ local usedperc = G.math.ceil((usedbytes / totalbytes) * 100) %>
 <% if G.ngx.ctx.user then %>
 									<li><a href="/myaccount">My account</a></li>
 									<!--<li><a href="/gopro">Go pro</a></li>-->
-									<li class="divider"></li>
-									<li><a href="/cam">Camera Snapshot</a></li>
+									<!--<li class="divider"></li>
+									<li><a href="/cam">Camera Snapshot</a></li>-->
 									<li class="divider"></li>
 									<li><a href="/login?logout=1">Logout</a></li>
 <% else %>
