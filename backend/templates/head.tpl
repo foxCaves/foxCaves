@@ -22,7 +22,6 @@
 					<a class="brand" href="/">foxCaves</a>
 					<div class="nav-collapse">
 						<ul class="nav" id="nav-main">
-							<li data-menu-id="1"><a href="/">Home</a></li>
 							<% if G.ngx.ctx.user then %>
 								<li data-menu-id="2"><a href="/myfiles">My files</a></li>
 								<li data-menu-id="3"><a href="/mylinks">My links</a></li>
