@@ -198,10 +198,9 @@ function snakeMergeDoMovement(cSnake: Snake) {
 
 function snakeMergeInitMovement(cSnake: Snake) {
 	cSnake.angleLock = true;
-	while (cSnake.targetSnake?.targetSnake && cSnake.targetSnake.mergeFrames) {
+	while (cSnake.targetSnake && cSnake.targetSnake.targetSnake && cSnake.targetSnake.mergeFrames) {
 		cSnake.targetSnake = cSnake.targetSnake.targetSnake;
 	}
-
 
 	const yDiff = cSnake.targetSnake!.pos.y - cSnake.pos.y;
 	const xDiff = cSnake.targetSnake!.pos.x - cSnake.pos.x;
@@ -244,11 +243,9 @@ function snakeDefaultMovement(cSnake: Snake) {
 	}
 }
 
-function audiovisLoaded() {
-	//dancer.play();
-}
-
-function dancer_play() {
+function dancerPlay() {
+	dancerInstance.bind("update", () => audiovisUpdate(dancerInstance));
+	dancerInstance.load(document.getElementById("audioplayer") as HTMLAudioElement);
 	dancerInstance.play();
 	return false;
 }
@@ -355,8 +352,4 @@ $(() => {
 	});
 
 	dancerInstance.onceAt(0, function () { kick.on(); });
-
-	dancerInstance.bind("loaded", audiovisLoaded);
-	dancerInstance.bind("update", () => audiovisUpdate(dancerInstance));
-	dancerInstance.load(document.getElementById("audioplayer") as HTMLAudioElement);
 });
