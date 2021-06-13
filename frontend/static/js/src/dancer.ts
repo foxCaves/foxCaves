@@ -359,6 +359,7 @@ namespace dancer {
 			return this.audio;
 		}
 		play() {
+			this.context.resume();
 			this.audio.play();
 			this.isPlaying = true;
 		}
