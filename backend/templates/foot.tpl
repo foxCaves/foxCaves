@@ -1,5 +1,4 @@
 <br /><br />
-<% if not G.ngx.var.http_X_Is_Js_Request then %>
 		</div>
 		<div class="navbar navbar-fixed-bottom">
 			<div class="navbar-inner">
@@ -37,12 +36,3 @@
 		<script src="/static/js/main.js" type="text/javascript"></script>
 	</body>
 </html>
-<% else %>
-|{
-	"filecount": "<%= filecount %>",
-	"usercount": "<%= usercount %>",
-	"pushchan": "<% if G.ngx.ctx.user then %><%= G.ngx.ctx.user.id %>_<%= G.ngx.ctx.user.pushchan %><% end %>",
-	"active_nav": "<%= G.ngx.ctx.active_nav_entry %>",
-	"title": "<%= MAINTITLE %> - foxCaves"
-}
-<% end %>

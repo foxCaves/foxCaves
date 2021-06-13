@@ -1,4 +1,3 @@
-<% if not G.ngx.var.http_X_Is_Js_Request then %>
 <!DOCTYPE html>
 <html>
 	<head>
@@ -70,6 +69,5 @@ local usedperc = G.math.ceil((usedbytes / totalbytes) * 100) %>
 			</div>
 		</div>
 		<div class="container" id="main-container">
-<% end %>
 			<br />
 			<%= MESSAGE %>
