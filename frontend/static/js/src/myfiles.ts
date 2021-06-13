@@ -501,4 +501,6 @@ $(() => {
 	pushHandlers['file:refresh'] = function (data: FilePush) {
 		refreshFileLI(data.id);
 	};
+
+	refreshFiles();
 });
