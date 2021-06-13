@@ -19,12 +19,23 @@ if not linkid then
 	return ngx.eof()
 end
 
-database:set(database.KEYS.LINKS .. linkid, ngx.unescape_uri(ngx.var.arg_url))
+local url = ngx.unescape_uri(ngx.var.arg_url)
+local short_url = SHORT_URL .. "/g" .. linkid
+
+database:set(database.KEYS.LINKS .. linkid, url)
 database:zadd(database.KEYS.USER_LINKS .. ngx.ctx.user.id, ngx.time(), linkid)
+
+raw_push_action({
+	type = "link:create",
+	id = linkid,
+	url = url,
+	short_url = short_url,
+})
 
 ngx.header["Content-Type"] = "application/json"
 ngx.print(cjson.encode({
 	id = linkid,
-	url = SHORT_URL .. "/g" .. linkid,
+	url = url,
+	short_url = short_url,
 }))
 ngx.eof()
