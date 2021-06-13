@@ -125,7 +125,11 @@ namespace dancer {
 			return this;
 		}
 		trigger(name: string) {
-			for(const listener of this.events.get(name) ?? []) {
+			const listeners = this.events.get(name);
+			if (!listeners) {
+				return this;
+			}
+			for(const listener of listeners) {
 				listener();
 			}
 			return this;
