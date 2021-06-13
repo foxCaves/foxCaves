@@ -1,7 +1,9 @@
 <%+ head %>
 <%+ account_type %>
 <div id="uploader"></div>
+<br />
 <h2 id="file-refresh">Manage files (<a onclick="return refreshFiles();">Refresh</a>)</h2>
+<br />
 <form id="filter-form" style="display:none;margin-top:10px;" class="form-search">
 	<input id="name-filter" type="text" placeholder="filter" class="input-medium search-query">
 </form>
