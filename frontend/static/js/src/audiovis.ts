@@ -244,8 +244,6 @@ function snakeDefaultMovement(cSnake: Snake) {
 }
 
 function dancerPlay() {
-	dancerInstance.bind("update", () => audiovisUpdate(dancerInstance));
-	dancerInstance.load(document.getElementById("audioplayer") as HTMLAudioElement);
 	dancerInstance.play();
 	return false;
 }
@@ -352,4 +350,7 @@ $(() => {
 	});
 
 	dancerInstance.onceAt(0, function () { kick.on(); });
+
+	dancerInstance.bind("update", () => audiovisUpdate(dancerInstance));
+	dancerInstance.load(document.getElementById("audioplayer") as HTMLAudioElement);
 });
