@@ -8,10 +8,10 @@
 </form>
 <br />
 <ul id="file_manager">
-<% for _, fileid in next, FILES do
+	<% for _, fileid in next, FILES do
 		local file = file_get(fileid) %>
-<%+ filehtml %>
-<% end %>
+		<%+ filehtml %>
+	<% end %>
 </ul>
 <div style="display: none;" id="recycle_bin"></div>
 <script type="text/javascript" src="/static/js/myfiles.js"></script>

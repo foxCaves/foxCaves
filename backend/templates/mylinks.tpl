@@ -10,10 +10,10 @@
 		</tr>
 	</thread>
 	<tbody>
-	<% for _, linkid in next, LINKS do
+		<% for _, linkid in next, LINKS do
 			local link = link_get(linkid) %>
 			<%+ linkhtml %>
-	<% end %>
+		<% end %>
 	</tbody>
 </table>
 <script type="text/javascript" src="/static/js/mylinks.js"></script>
