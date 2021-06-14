@@ -41,7 +41,7 @@ end
 
 function execute_route()
     local override = ngx.var.run_lua_file
-    if override then
+    if override and override:len() > 0 then
         dofile(override)
         return
     end
