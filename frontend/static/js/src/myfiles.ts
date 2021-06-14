@@ -443,39 +443,6 @@ function setupSearch() {
 	});
 }
 
-function setupMassOperations() {
-	const form = document.getElementById("file-mass-action-form")!;
-	form.addEventListener("submit", function(event) {
-		event.preventDefault();
-
-		const operation = (this as HTMLFormElement).todo.value;
-
-		let count = 0;
-
-		const data: string[] = [];
-
-		$("#file_manager > li[id^=file_]").each((_k, v) => {
-			if(v.style.display == "none")
-				return;
-			data.push(getFileIDFromID(v.id));
-			count++;
-		});
-
-		if(!confirm("Are you sure you want to " + operation + " all selected(" + count + ") files?")) {
-			return;
-		}
-
-		$.ajax({
-			method: "POST",
-			url: "/api/deletemulti",
-			data: JSON.stringify(data),
-			success: function() {
-				alert('Done!');
-			}
-		});
-	});
-}
-
 interface FilePush {
 	id: string;
 }
@@ -489,8 +456,6 @@ $(() => {
 	setupPasting();
 
 	setupSearch();
-
-	setupMassOperations();
 
 	pushHandlers['file:create'] = function (data: FilePush) {
 		addFileLI(data.id, true);
