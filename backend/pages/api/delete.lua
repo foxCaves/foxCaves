@@ -4,10 +4,14 @@ if not ngx.ctx.user then return end
 
 dofile("scripts/fileapi.lua")
 
-local res, _ = file_delete(ngx.var.arg_id, ngx.ctx.user.id)
+local ok, _ = file_delete(ngx.var.arg_id, ngx.ctx.user.id)
 
-if not res then
-	ngx.status = 400
+if ngx.var.arg_redirect then
+	ngx.redirect(ngx.var.http_referer .. "?delete_ok=" .. tostring(ok))
+	ngx.eof()
+else
+	if not ok then
+		ngx.status = 400
+	end
+	ngx.eof()
 end
-
-ngx.eof()

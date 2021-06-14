@@ -3,18 +3,12 @@ if not ngx.ctx.user then return ngx.redirect("/login") end
 
 local database = ngx.ctx.database
 
-local args = ngx.req.get_uri_args()
-
 local message = ""
 
-if args.delete then
-	dofile("scripts/fileapi.lua")
-	local isok, name = file_delete(args.delete, ngx.ctx.user.id)
-	if isok then
-		message = '<div class="alert alert-success">Deleted ' .. name .. '<a href="/myfiles" class="close" data-dismiss="alert">x</a></div>'
-	else
-		message = '<div class="alert alert-error">Could not delete the file :(<a href="/myfiles" class="close" data-dismiss="alert">x</a></div>'
-	end
+if ngx.var.arg_delete_ok == "true" then
+	message = '<div class="alert alert-success">Deleted file <a href="/myfiles" class="close" data-dismiss="alert">x</a></div>'
+elseif ngx.var.arg_delete_ok == "false" then
+	message = '<div class="alert alert-error">Error deleting file <a href="/myfiles" class="close" data-dismiss="alert">x</a></div>'
 end
 
 local files = database:zrevrange(database.KEYS.USER_FILES .. ngx.ctx.user.id, 0, -1)
