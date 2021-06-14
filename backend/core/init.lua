@@ -5,7 +5,8 @@ function escape_html(str)
 	if (not str) or type(str) ~= "string" then
 		return str
 	end
-	str = str:gsub("[&<>]", {
+	str = str:gsub('["&<>]', {
+		['"'] = "&quot;",
 		["&"] = "&amp;",
 		["<"] = "&lt;",
 		[">"] = "&gt;",
