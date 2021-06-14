@@ -155,7 +155,7 @@ function fileUpload(name: string, fileData: ArrayBufferLike | string) {
 			}
 		}
 	};
-	xhr.open("PUT", "/api/create?name="+encodeURIComponent(name));
+	xhr.open("POST", "/api/create?name="+encodeURIComponent(name));
 	currentUpload = xhr;
 	xhr.send(fileData);
 }

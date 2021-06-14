@@ -603,7 +603,7 @@ const liveDrawInterface = {
 	save() {
 		const xhr = new XMLHttpRequest();
 		xhr.upload.addEventListener("load", () => { console.log("Upload complete"); }, false);
-		xhr.open("PUT", "/api/create?name=" + encodeURIComponent(LIVEDRAW_FILEID + "-edited.png"));//LIVEDRAW_FILEID defined in love.tpl
+		xhr.open("POST", "/api/create?name=" + encodeURIComponent(LIVEDRAW_FILEID + "-edited.png"));//LIVEDRAW_FILEID defined in love.tpl
 		xhr.setRequestHeader("x-is-base64","yes");
 		xhr.send(finalCanvas.toDataURL("image/png").replace(/^data:image\/png;base64,/, "").replace(/[\r\n]/g,""));
 	}
