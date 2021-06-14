@@ -1,6 +1,6 @@
 <%+ head %>
 <%+ account_type %>
-<h2>Manage links (<a onclick="newLink();">Create</a>)</h2>
+<h2>Manage links (<a class="pointer" onclick="newLink();">Create</a>)</h2>
 <table class="table">
 	<thead>
 		<tr>
