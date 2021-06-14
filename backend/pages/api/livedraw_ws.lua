@@ -15,6 +15,7 @@ local ngx = ngx
 local randstr = randstr
 local database = ngx.ctx.database
 local unpack = unpack
+local ngx_re = require("ngx.re")
 
 local server = require("resty.websocket.server")
 local ws, err = server:new({
@@ -27,17 +28,6 @@ if not ws then
 end
 
 module("liveedit_websocket")
-
-local function explode(div,str) -- credit: http://richard.warburton.it
-	local pos, arr = 0, {}
-	-- for each divider found
-	for st, sp in function() return str:find(div,pos,true) end do
-		table_insert(arr,str:sub(pos,st-1)) -- Attach chars left of current divider
-		pos = sp + 1 -- Jump past current divider
-	end
-	table_insert(arr, str:sub(pos)) -- Attach chars right of last divider
-	return arr
-end
 
 local EVENT_WIDTH = "w"
 local EVENT_COLOR = "c"
@@ -198,7 +188,7 @@ function USERMETA:event_received(rawdata)
 	local data = {}
 	if rawdata:len() > 1 then
 		rawdata = rawdata:sub(2)
-		data = explode("|", rawdata)
+		data = ngx_re.split(rawdata, "|")
 	else
 		rawdata = ""
 	end
