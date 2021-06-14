@@ -248,6 +248,11 @@ function dancerPlay() {
 	return false;
 }
 
+function dancerPause() {
+	dancerInstance.pause();
+	return false;
+}
+
 function makeSnake(bx?: number, by?: number): Snake {
 	const targetAngle = (Math.random() * MathPI2);
 	const positions: Position[] = [];

@@ -52,7 +52,10 @@
 			<source src="<%= SHORT_URL %>/f<%= RAWNAME %>" type="<%= MIMETYPES[FILE.extension] %>" />
 			Your browser is too old.
 		</audio>
-		<a onclick="return dancerPlay();">Play</a>
+		<p>
+			<button class="btn btn-large btn-success" onclick="return dancerPlay();" type="button"><i class="icon-play"></i></button>
+			<button class="btn btn-large btn-warning" onclick="return dancerPause();" type="button"><i class="icon-pause"></i></button>
+		</p>
 		<canvas style="position: fixed; z-index: 20000; top: 0; left: 0; pointer-events: none;" id="audiovis"></canvas>
 		<script type="text/javascript" src="/static/js/dancer.js"></script>
 		<script type="text/javascript" src="/static/js/audiovis.js"></script>
