@@ -12,6 +12,7 @@ if not id or not session then
     return
 end
 
+ngx.header["Content-Type"] = "application/json"
 ngx.print(cjson.encode({
     url = WS_URL .. "/api/livedraw_ws?id=" .. id .. "&session=" .. session
 }))

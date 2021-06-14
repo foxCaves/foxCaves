@@ -5,6 +5,7 @@ if not ngx.ctx.user then return end
 local database = ngx.ctx.database
 local files = database:zrevrange(database.KEYS.USER_FILES .. ngx.ctx.user.id, 0, -1)
 
+ngx.header["Content-Type"] = "application/json"
 if ngx.var.arg_type == "idonly" then
 	ngx.print(cjson.encode(files))
 else
