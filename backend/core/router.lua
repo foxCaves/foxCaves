@@ -1,5 +1,3 @@
-local ngx_re = require("ngx.re")
-
 local ROUTE_TREE = {
     children = {},
     methods = {},
@@ -7,11 +5,15 @@ local ROUTE_TREE = {
 
 local c_open, c_close = ('{}'):byte(1,2)
 
+local dofile = dofile
+local explode = explode
+local pairs = pairs
+
 local function add_route(url, method, file)
     file = "/pages/" .. file .. ".lua"
 
     method = method:upper()
-    local urlsplit = ngx_re.split(url:sub(2), "/")
+    local urlsplit = explode("/", url:sub(2))
 
     local mappings = {}
     local route = ROUTE_TREE
@@ -48,7 +50,7 @@ function execute_route()
 
     local url = ngx.var.uri
     local method = ngx.var.request_method:upper()
-    local urlsplit = ngx_re.split(url:sub(2), "/")
+    local urlsplit = explode("/", url:sub(2))
 
     local candidate = ROUTE_TREE
 

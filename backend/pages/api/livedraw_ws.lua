@@ -15,7 +15,7 @@ local ngx = ngx
 local randstr = randstr
 local database = ngx.ctx.database
 local unpack = unpack
-local ngx_re = require("ngx.re")
+local explode = explode
 
 local server = require("resty.websocket.server")
 local ws, err = server:new({
@@ -188,7 +188,7 @@ function USERMETA:event_received(rawdata)
 	local data = {}
 	if rawdata:len() > 1 then
 		rawdata = rawdata:sub(2)
-		data = ngx_re.split(rawdata, "|")
+		data = explode("|", rawdata)
 	else
 		rawdata = ""
 	end
