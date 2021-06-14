@@ -25,7 +25,6 @@ end
 
 dofile("scripts/captcha.lua")
 
-ngx.req.read_body()
 local args = ngx.ctx.get_post_args()
 if args and args.send then
 	username = args.username or ""

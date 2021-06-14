@@ -43,13 +43,14 @@ end
 
 ngx.req.read_body()
 local file = ngx.req.get_body_file()
-if not file then
+local filedata = ngx.req.get_body_data()
+if (not file) and (not filedata) then
 	ngx.status = 400
 	ngx.print("No request body")
 	return ngx.eof()
 end
 
-local filesize = lfs.attributes(file, "size")
+local filesize = file and lfs.attributes(file, "size") or filedata:len()
 if (not filesize) or filesize <= 0 then
 	ngx.status = 400
 	ngx.print("File empty")
@@ -73,18 +74,23 @@ dofile("scripts/fileapi.lua")
 
 local headers = ngx.req.get_headers()
 if headers.x_is_base64 == "yes" then
-	local f = io.open(file, "rb")
-	local content = f:read("*all")
-	f:close()
-	os.remove(file)
-	content = ngx.decode_base64(content)
-	f = io.open("/var/www/foxcaves/tmp/files/" .. fileid .. extension, "wb")
-	f:write(content)
-	f:close()
-	content = nil
-	f = nil
-else
+	if file then
+		local f = io.open(file, "rb")
+		filedata = f:read("*all")
+		f:close()
+		os.remove(file)
+		file = nil
+	end
+	filedata = ngx.decode_base64(filedata)
+end
+
+if file then
 	os.rename(file, "/var/www/foxcaves/tmp/files/" .. fileid .. extension)
+else
+	f = io.open("/var/www/foxcaves/tmp/files/" .. fileid .. extension, "wb")
+	f:write(filedata)
+	f:close()
+	filedata = nil
 end
 
 dofile("scripts/mimetypes.lua")

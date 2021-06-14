@@ -131,9 +131,9 @@ function ngx.ctx.escape_html(str)
 	return str
 end
 
-function ngx.ctx.get_post_args(...)
-	if not ngx.req.get_body_data() then return nil end
-	return ngx.req.get_post_args(...)
+function ngx.ctx.get_post_args()
+	ngx.req.read_body()
+	return ngx.req.get_post_args()
 end
 
 function ngx.ctx.get_version()

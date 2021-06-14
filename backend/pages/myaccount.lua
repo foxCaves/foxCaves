@@ -29,7 +29,6 @@ local function delete_user()
 	--database:del(database.KEYS.USERS .. ngx.ctx.user.id)--is this even correct?
 end
 
-ngx.req.read_body()
 args = ngx.ctx.get_post_args()
 if args and args.old_password then
 	if ngx.hmac_sha1(ngx.ctx.user.username, args.old_password) ~= ngx.ctx.user.password then

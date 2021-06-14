@@ -14,7 +14,6 @@ else
 		return ngx.redirect("/myaccount")
 	end
 
-	ngx.req.read_body()
 	args = ngx.ctx.get_post_args()
 	if args and args.login then
 		if (not args.username) or args.username == "" then

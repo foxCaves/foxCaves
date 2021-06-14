@@ -23,7 +23,6 @@ if not userid then
 	return ngx.eof()
 end
 
-ngx.req.read_body()
 args = ngx.ctx.get_post_args()
 
 if not args then
