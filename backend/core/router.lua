@@ -8,7 +8,7 @@ local ROUTE_TREE = {
 local c_open, c_close = ('{}'):byte(1,2)
 
 local function add_route(url, method, file)
-    file = "pages/" .. file .. ".lua"
+    file = "/pages/" .. file .. ".lua"
 
     method = method:upper()
     local urlsplit = ngx_re.split(url:sub(2), "/")
@@ -70,7 +70,7 @@ function execute_route()
     for i, mapping in pairs(handler.mappings) do
         ngx.ctx.route_vars[mapping] = urlsplit[i]
     end
-    dofile(handler.file)
+    dofile(ngx.var.main_root .. handler.file)
 end
 
 add_route("/", "GET", "index")
