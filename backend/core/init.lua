@@ -1,6 +1,8 @@
 lfs = require("lfs")
 cjson = require("cjson")
 
+local table_insert = table.insert
+
 function escape_html(str)
 	if (not str) or type(str) ~= "string" then
 		return str
