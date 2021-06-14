@@ -9,7 +9,7 @@ local file = file_get(fileid)
 
 if not file then
 	ngx.status = 404
-	ngx.print("file not found")
+	ngx.print("File not found")
 	return ngx.eof()
 end
 
