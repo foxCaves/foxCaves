@@ -43,3 +43,6 @@ end
 loadfile("/var/www/foxcaves/lua/core/mail.lua")()
 loadfile("/var/www/foxcaves/lua/core/random.lua")()
 loadfile("/var/www/foxcaves/lua/core/template.lua")()
+loadfile("/var/www/foxcaves/lua/core/router.lua")()
+
+collectgarbage("collect")

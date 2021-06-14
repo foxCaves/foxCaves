@@ -190,7 +190,7 @@ if IS_DEVELOPMENT then
 		return table.concat(out, "")
 	end
 
-	local isok, err = xpcall(dofile, debug_trace, ngx.var.run_lua_file)
+	local isok, err = xpcall(execute_route, debug_trace)
 	ngx.req.discard_body()
 	if not isok then
 		ngx.log(ngx.ERR, "Lua error: " .. err)
@@ -204,13 +204,12 @@ else
 		}),
 		tags = {
 			environment = IS_DEVELOPMENT and "staging" or "production",
-			file = ngx.var.run_lua_file,
 			userid = ngx.ctx.user and ngx.ctx.user.id or "N/A",
 			ip = ngx.var.remote_addr,
 			url = ngx.var.request_uri,
 		},
 	})
-	local isok, err = rvn:call(dofile, ngx.var.run_lua_file)
+	local isok, err = rvn:call(execute_route, ngx.var.run_lua_file)
 	ngx.req.discard_body()
 	if not isok then
 		ngx.log(ngx.ERR, "Lua error: " .. err)
