@@ -6,7 +6,7 @@
 		local link = link_get(linkid) %>
 		<tr>
 			<td><%= SHORT_URL %>/g<%= linkid %></td><td><%= G.escape_html(link) %></td>
-			<td><a href="?delete=<%= linkid %>">Delete</a></td>
+			<td><a href="/api/deletelink?id=<%= linkid %>&redirect=1">Delete</a></td>
 		</tr>
 <% end %>
 </table>

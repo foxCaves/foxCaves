@@ -5,7 +5,7 @@ local database = ngx.ctx.database
 
 local args = ngx.req.get_uri_args()
 
-if(args and args.setstyle) then
+if args and args.setstyle then
 	local style = args.setstyle
 	if(style == "purple_fox" or style == "red_fox" or style == "arctic_fox") then
 		database:hset(database.KEYS.USERS .. ngx.ctx.user.id, "style", style)

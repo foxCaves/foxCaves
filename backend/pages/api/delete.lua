@@ -9,9 +9,10 @@ local ok, _ = file_delete(ngx.var.arg_id, ngx.ctx.user.id)
 if ngx.var.arg_redirect then
 	ngx.redirect("/myfiles?delete_ok=" .. tostring(ok))
 	ngx.eof()
-else
-	if not ok then
-		ngx.status = 400
-	end
-	ngx.eof()
+	return
 end
+
+if not ok then
+	ngx.status = 400
+end
+ngx.eof()

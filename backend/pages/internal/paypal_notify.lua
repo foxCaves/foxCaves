@@ -2,7 +2,7 @@ dofile(ngx.var.main_root .. "/scripts/global.lua")
 local database = ngx.ctx.database
 
 --[[
-local userid = ngx.req.get_uri_args().userid
+local userid = ngx.var.arg_userid
 local args
 
 local function paypal_result(str, noemail)
