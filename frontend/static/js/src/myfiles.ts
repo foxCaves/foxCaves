@@ -238,7 +238,7 @@ function setupDropZone() {
 
 function refreshFiles() {
 	$.get(`/api/list?type=idonly&t=${Date.now()}`, function(data) {
-		const files = JSON.parse(data) as string[];
+		const files = data as string[];
 		const files_rev: { [key: string]: boolean } = {};
 		for(let i = 0;i < files.length;i++) {
 			const fileid = files[i];
