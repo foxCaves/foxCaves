@@ -13,5 +13,4 @@ elseif ngx.var.arg_delete_ok == "false" then
 end
 
 local links = database:zrevrange(database.KEYS.USER_LINKS .. ngx.ctx.user.id, 0, -1)
-dofile("scripts/fileapi.lua")
 printTemplateAndClose("mylinks", {MAINTITLE = "My links", MESSAGE = message, LINKS = links, link_get = link_get})

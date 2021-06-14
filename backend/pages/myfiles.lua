@@ -1,5 +1,6 @@
 dofile(ngx.var.main_root .. "/scripts/global.lua")
 if not ngx.ctx.user then return ngx.redirect("/login") end
+dofile("scripts/fileapi.lua")
 
 local database = ngx.ctx.database
 
@@ -12,5 +13,4 @@ elseif ngx.var.arg_delete_ok == "false" then
 end
 
 local files = database:zrevrange(database.KEYS.USER_FILES .. ngx.ctx.user.id, 0, -1)
-dofile("scripts/fileapi.lua")
 printTemplateAndClose("myfiles", {MAINTITLE = "My files", MESSAGE = message, FILES = files, file_get = file_get})
