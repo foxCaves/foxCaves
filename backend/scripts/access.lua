@@ -63,9 +63,9 @@ function ngx.ctx.login(username_or_id, password, nosession, login_with_id)
 			result.bonusbytes = tonumber(result.bonusbytes or 0)
 			result.is_pro = (result.pro_expiry > ngx.time())
 			if result.is_pro then
-				result.totalbytes = 1073741824
+				result.totalbytes = 10737418240
 			else
-				result.totalbytes = 268435456
+				result.totalbytes = 1073741824
 			end
 			result.totalbytes = result.totalbytes + result.bonusbytes
 			ngx.ctx.user = result
