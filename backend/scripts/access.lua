@@ -57,7 +57,7 @@ function ngx.ctx.login(username_or_id, password, nosession, login_with_id)
 				database:expire(sessionid, SESSION_EXPIRE_DELAY)
 			end
 
-			result.id = username_or_id
+			result.id = tonumber(username_or_id)
 			result.pro_expiry = tonumber(result.pro_expiry or 0)
 			result.usedbytes = tonumber(result.usedbytes or 0)
 			result.bonusbytes = tonumber(result.bonusbytes or 0)
