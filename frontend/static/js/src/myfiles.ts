@@ -354,7 +354,7 @@ function deleteFile(fileid: string, doConfirm?: boolean) {
 
 	$("#file_"+fileid).css("border", "1px solid red");//Highlight file deletion
 
-	$.ajax({url: `/api/v1/${fileid}`, method: 'DELETE' })
+	$.ajax({url: `/api/v1/files/${fileid}`, method: 'DELETE' })
 	.done(function() { })
 	.fail(function() {
 		refreshFileLI(fileid);
