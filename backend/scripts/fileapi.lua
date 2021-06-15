@@ -21,6 +21,15 @@ function file_get(fileid, user)
 	file.time = tonumber(file.time)
 	file.size = tonumber(file.size)
 	file.id = fileid
+	if file.thumbnail then
+		file.thumbnail_url = SHORT_URL .. "/thumbs/" .. file.id .. file.thumbnail
+	end
+	if file.type == 1 and file.thumbnail_url then
+		file.thumbnail_image = file.thumbnail_url
+	else
+		file.thumbnail_image = MAIN_URL .. "/static/img/thumbs/ext_" .. file.extension .. ".png"
+	end
+	file.thumbnail = nil
 	file.view_url = SHORT_URL .. "/v" .. file.id
 	file.direct_url = SHORT_URL .. "/f" .. file.id .. file.extension
 	file.download_url = SHORT_URL .. "/d" .. file.id .. file.extension

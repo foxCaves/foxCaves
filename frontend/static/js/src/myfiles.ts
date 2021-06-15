@@ -444,8 +444,23 @@ function setupSearch() {
 	});
 }
 
-interface FilePush {
+interface FileInfo {
+	extension: string;
+	download_url: string;
+	name: string;
+	time: number;
 	id: string;
+	thumbnail_url?: string;
+	thumbnail_image: string;
+	user: number;
+	type: number;
+	size: number;
+	view_url: string;
+	direct_url: string;
+}
+
+interface FilePush {
+	file: FileInfo;
 }
 
 $(() => {
@@ -459,13 +474,13 @@ $(() => {
 	setupSearch();
 
 	pushHandlers['file:create'] = function (data: FilePush) {
-		addFileLI(data.id, true);
+		addFileLI(data.file.id, true);
 	};
 	pushHandlers['file:delete'] = function (data: FilePush) {
-		removeFileLI(data.id);
+		removeFileLI(data.file.id);
 	};
 	pushHandlers['file:refresh'] = function (data: FilePush) {
-		refreshFileLI(data.id);
+		refreshFileLI(data.file.id);
 	};
 
 	refreshFiles();
