@@ -19,6 +19,7 @@ function file_get(fileid, user)
 	file.type = tonumber(file.type)
 	file.user = tonumber(file.user)
 	file.time = tonumber(file.time)
+	file.size = tonumber(file.size)
 	file.id = fileid
 	return file
 end
