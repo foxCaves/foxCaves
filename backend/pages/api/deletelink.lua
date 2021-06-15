@@ -1,11 +1,12 @@
 -- ROUTE:GET:/api/deletelink
+-- ROUTE:DELETE:/api/links/{id}
 dofile(ngx.var.main_root .. "/scripts/global.lua")
 dofile("scripts/api_login.lua")
 if not ngx.ctx.user then return end
 
 local database = ngx.ctx.database
 
-local id = ngx.var.arg_id
+local id = ngx.ctx.route_vars.id or ngx.var.arg_id
 local res = database:zrem(database.KEYS.USER_LINKS .. ngx.ctx.user.id, id)
 
 local ok = res and res ~= ngx.null and res ~= 0

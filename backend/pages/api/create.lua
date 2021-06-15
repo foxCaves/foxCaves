@@ -1,4 +1,5 @@
 -- ROUTE:POST:/api/create
+-- ROUTE:POST:/api/v1/files
 dofile(ngx.var.main_root .. "/scripts/global.lua")
 dofile("scripts/api_login.lua")
 if not ngx.ctx.user then return end

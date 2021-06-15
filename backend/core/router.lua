@@ -96,6 +96,7 @@ function execute_route()
         return
     end
 
+    ngx.ctx.route_id = handler.id
     ngx.ctx.route_vars = {}
     for i, mapping in pairs(handler.mappings) do
         ngx.ctx.route_vars[mapping] = urlsplit[i]
