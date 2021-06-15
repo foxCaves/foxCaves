@@ -21,6 +21,9 @@ function file_get(fileid, user)
 	file.time = tonumber(file.time)
 	file.size = tonumber(file.size)
 	file.id = fileid
+	file.view_url = SHORT_URL .. "/v" .. file.id
+	file.direct_url = SHORT_URL .. "/f" .. file.id .. file.extension
+	file.download_url = SHORT_URL .. "/d" .. file.id .. file.extension
 	return file
 end
 
@@ -49,7 +52,7 @@ function file_delete(fileid, user)
 		database:hincrby(database.KEYS.USERS .. file.user, "usedbytes", -file.size)
 		if file.user == ngx.ctx.user.id then
 			ngx.ctx.user.usedbytes = ngx.ctx.user.usedbytes - file.size
-			file_push_action(fileid, 'delete')
+			file_push_action('delete', file)
 		end
 	end
 
@@ -89,10 +92,11 @@ function file_upload(fileid, filename, extension, thumbnail, filetype, thumbtype
 	end
 end
 
-function file_push_action(fileid, action)
+function file_push_action(action, file)
 	raw_push_action({
 		action = "file:" .. action,
-		id = fileid,
+		id = file.id,
+		file = file,
 	})
 	raw_push_action({
 		type = "usedbytes",

@@ -56,6 +56,11 @@ database:hincrby(database.KEYS.USERS .. ngx.ctx.user.id, newsize)
 file_upload(fileid, newfilename, newextension, "", mimetypes[newextension], nil)
 file_manualdelete(fileid .. "/file" .. dbdata.extension)
 
-file_push_action(fileid, 'refresh')
+file_push_action('refresh', {
+	id = fileid,
+	extension = newextension,
+	name = newfilename,
+	size = newsize,
+})
 
 ngx.eof()

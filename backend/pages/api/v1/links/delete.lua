@@ -27,5 +27,8 @@ end
 raw_push_action({
     type = "link:delete",
     id = id,
+    link = {
+        id = id,
+    },
 })
 ngx.eof()

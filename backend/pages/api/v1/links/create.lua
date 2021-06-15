@@ -27,17 +27,17 @@ local short_url = link_shorturl(linkid)
 database:hmset(database.KEYS.LINKS .. linkid, "user", ngx.ctx.user.id, "url", url, "time", ngx.time())
 database:zadd(database.KEYS.USER_LINKS .. ngx.ctx.user.id, ngx.time(), linkid)
 
+local linkinfo = {
+	id = linkid,
+	url = url,
+	short_url = short_url,
+}
+
 raw_push_action({
 	type = "link:create",
 	id = linkid,
-	url = url,
-	short_url = short_url,
+	link = linkinfo,
 })
-
 ngx.header["Content-Type"] = "application/json"
-ngx.print(cjson.encode({
-	id = linkid,
-	url = url,
-	short_url = short_url,
-}))
+ngx.print(cjson.encode(linkinfo))
 ngx.eof()
