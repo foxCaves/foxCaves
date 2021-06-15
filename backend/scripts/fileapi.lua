@@ -15,9 +15,9 @@ function file_get(fileid, user)
 	if not fileid then return nil end
 	local file = database:hgetall(database.KEYS.FILES .. fileid)
 	if (not file) or (file == ngx.null) or (not file.name) then return nil end
+	file.user = tonumber(file.user)
 	if user and file.user ~= user then return nil end
 	file.type = tonumber(file.type)
-	file.user = tonumber(file.user)
 	file.time = tonumber(file.time)
 	file.size = tonumber(file.size)
 	file.id = fileid
