@@ -1,3 +1,4 @@
+-- ROUTE:POST:/internal/paypal_notify
 dofile(ngx.var.main_root .. "/scripts/global.lua")
 local database = ngx.ctx.database
 

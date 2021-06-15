@@ -1,5 +1,5 @@
+-- ROUTE:GET:/live/{id}
 dofile(ngx.var.main_root .. "/scripts/global.lua")
---if not ngx.ctx.user then return ngx.redirect("/login") end
 
 local fileid = ngx.ctx.route_vars.id
 local sid = ngx.var.arg_sid

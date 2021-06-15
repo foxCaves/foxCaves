@@ -1,3 +1,4 @@
+-- ROUTE:GET:/error/{code}
 dofile(ngx.var.main_root .. "/scripts/global.lua")
 
 local error_num = tonumber(ngx.ctx.route_vars.code or "400")

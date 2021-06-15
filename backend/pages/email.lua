@@ -1,3 +1,4 @@
+-- ROUTE:GET,POST:/email
 dofile(ngx.var.main_root .. "/scripts/global.lua")
 if ngx.ctx.user then return ngx.redirect("/myaccount") end
 

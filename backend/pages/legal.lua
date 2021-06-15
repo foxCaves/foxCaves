@@ -1,3 +1,4 @@
+-- ROUTE:GET:/legal/{path}
 dofile(ngx.var.main_root .. "/scripts/global.lua")
 
 local site = ngx.ctx.route_vars.path
