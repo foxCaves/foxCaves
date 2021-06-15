@@ -13,7 +13,7 @@ else
 	dofile("scripts/fileapi.lua")
 	local results = {}
 	for _,fileid in next, files do
-		results[fileid] = file_get(fileid)
+		table.insert(results, file_get(fileid))
 	end
 	ngx.print(cjson.encode(results))
 end

@@ -13,7 +13,7 @@ else
 	dofile("scripts/linkapi.lua")
 	local results = {}
 	for _,linkid in next, links do
-		results[linkid] = link_get(linkid)
+		table.insert(results, link_get(linkid))
 	end
 	ngx.print(cjson.encode(results))
 end
