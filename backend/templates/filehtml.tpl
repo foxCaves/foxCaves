@@ -2,7 +2,7 @@
 	local escaped_name = file.name
 	local escaped_name_js = escaped_name:gsub("'", "\\'")
 %>
-<li draggable="true" id="file_<%= file.id %>" class="image_manage_main" style="background-image:url('<%= file.thumbnail_url %>')">
+<li draggable="true" id="file_<%= file.id %>" class="image_manage_main" style="background-image:url('<%= file.thumbnail_image %>')">
 	<div class="image_manage_top" title="<%= G.os.date("%d.%m.%Y %H:%M", file.time) %> [<%= escaped_name %>]"><%= escaped_name %></div>
 	<a href="/view/<%= file.id %>"></a>
 	<div class="image_manage_bottom">
