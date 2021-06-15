@@ -4,6 +4,11 @@ dofile("scripts/api_login.lua")
 if not ngx.ctx.user then return end
 
 dofile("scripts/fileapi.lua")
+local file = file_get(ngx.ctx.route_vars.id)
+if not file then
+    ngx.exit(404)
+    return
+end
 ngx.header["Content-Type"] = "application/json"
-ngx.print(cjson.encode(file_get(ngx.ctx.route_vars.id)))
+ngx.print(cjson.encode(file))
 ngx.eof()

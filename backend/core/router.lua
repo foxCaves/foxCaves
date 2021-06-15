@@ -10,10 +10,10 @@ local explode = explode
 local pairs = pairs
 
 local function add_route(url, method, file)
-    ngx.log(ngx.INFO, "Route: " .. method .. " " .. url .. " => " .. file)
-
     method = method:upper()
     local urlsplit = explode("/", url:sub(2))
+    
+    local route_id = method .. " " .. url
 
     local mappings = {}
     local route = ROUTE_TREE
@@ -35,10 +35,14 @@ local function add_route(url, method, file)
         route = newroute
     end
 
+    if route.methods[method] then
+        ngx.log(ngx.ERR, "Double registration for route handler for " .. route_id)
+    end
+
     route.methods[method] = {
         file = file,
         mappings = mappings,
-        id = method .. " " .. url,
+        id = route_id,
     }
 end
 
