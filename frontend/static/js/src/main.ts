@@ -76,7 +76,7 @@ $(() => {
 		}
 
 		const useSSL = (window.location.protocol == "https:");
-		const socket = new WebSocket((useSSL ? "wss:" : "ws:") + window.location.hostname + "/api/events?channel=" + PUSH_CHANNEL);
+		const socket = new WebSocket((useSSL ? "wss:" : "ws:") + window.location.hostname + "/api/v1/ws/events?channel=" + PUSH_CHANNEL);
 		currentSocket = socket;
 
 		function reconnectInner() {

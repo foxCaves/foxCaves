@@ -155,7 +155,7 @@ function fileUpload(name: string, fileData: ArrayBufferLike | string) {
 			}
 		}
 	};
-	xhr.open("POST", "/api/create?name="+encodeURIComponent(name));
+	xhr.open("POST", "/api/v1/files?name="+encodeURIComponent(name));
 	currentUpload = xhr;
 	xhr.send(fileData);
 }
@@ -237,7 +237,7 @@ function setupDropZone() {
 }
 
 function refreshFiles() {
-	$.get(`/api/list?type=idonly&t=${Date.now()}`, function(data) {
+	$.get(`/api/v1/files?type=idonly&t=${Date.now()}`, function(data) {
 		const files = data as string[];
 		const files_rev: { [key: string]: boolean } = {};
 		for(let i = 0;i < files.length;i++) {
@@ -262,7 +262,7 @@ function refreshFiles() {
 }
 
 function getFileLI(fileid: string, func: (newFile: HTMLElement | null) => void) {
-	$.get("/api/filehtml?id=" + fileid, function(data) {
+	$.get(`/api/v1/files/${fileid}/html`, function(data) {
 		data = data.trim();
 
 		if(data[0] == '-') {
@@ -354,8 +354,9 @@ function deleteFile(fileid: string, doConfirm?: boolean) {
 
 	$("#file_"+fileid).css("border", "1px solid red");//Highlight file deletion
 
-	$.get('/api/delete?id='+fileid, function() {
-	}).fail(function() {
+	$.ajax({url: `/api/v1/${fileid}`, method: 'DELETE' })
+	.done(function() { })
+	.fail(function() {
 		refreshFileLI(fileid);
 		alert("Error deleting file :(");
 	});

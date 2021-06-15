@@ -6,7 +6,7 @@ function newLink() {
 }
 
 function createLink(linkurl: string) {
-	$.get("/api/shorten?url="+encodeURIComponent(linkurl), (data) => {
+	$.post("/api/v1/links?url="+encodeURIComponent(linkurl), '', (data) => {
 		prompt("Here is your shortened link", data.short_url);
 		document.location.reload();
 	});

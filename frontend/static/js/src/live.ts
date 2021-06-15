@@ -603,7 +603,7 @@ const liveDrawInterface = {
 	save() {
 		const xhr = new XMLHttpRequest();
 		xhr.upload.addEventListener("load", () => { console.log("Upload complete"); }, false);
-		xhr.open("POST", "/api/create?name=" + encodeURIComponent(LIVEDRAW_FILEID + "-edited.png"));//LIVEDRAW_FILEID defined in love.tpl
+		xhr.open("POST", "/api/v1/files?name=" + encodeURIComponent(LIVEDRAW_FILEID + "-edited.png"));//LIVEDRAW_FILEID defined in love.tpl
 		xhr.setRequestHeader("x-is-base64","yes");
 		xhr.send(finalCanvas.toDataURL("image/png").replace(/^data:image\/png;base64,/, "").replace(/[\r\n]/g,""));
 	}
@@ -752,7 +752,7 @@ const networking = {
 	},
 	connect() {
 		this.shouldConnect = true;
-		fetch('/api/livedraw?id=' + encodeURIComponent(LIVEDRAW_FILEID) + "&session=" + encodeURIComponent(LIVEDRAW_SID))
+		fetch(`/api/v1/files/${encodeURIComponent(LIVEDRAW_FILEID)}/livedraw?session=${encodeURIComponent(LIVEDRAW_SID)}`)
 		.then(async (res) => {
 			const data = await res.json();
 			const webSocket = new WebSocket(data.url);
