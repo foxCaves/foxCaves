@@ -11,3 +11,33 @@ function createLink(linkurl: string) {
 		document.location.reload();
 	});
 }
+
+function refreshLinks() {
+
+}
+
+interface LinkInfo {
+	short_url: string;
+	user: number;
+	url: string;
+	time: number;
+	id: string;
+}
+
+interface LinkPush {
+	link: LinkInfo;
+}
+
+$(() => {
+	pushHandlers['link:create'] = function (data: LinkPush) {
+		console.log(data);
+	};
+	pushHandlers['link:delete'] = function (data: LinkPush) {
+		console.log(data);
+	};
+	pushHandlers['link:refresh'] = function (data: LinkPush) {
+		console.log(data);
+	};
+
+	refreshLinks();
+});
