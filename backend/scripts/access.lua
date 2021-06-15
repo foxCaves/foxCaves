@@ -13,6 +13,13 @@ ngx.ctx.LOGIN_USER_INACTIVE = 0
 ngx.ctx.LOGIN_USER_BANNED = -1
 ngx.ctx.LOGIN_BAD_PASSWORD = -10
 
+local KILOBYTE = 1024
+local MEGABYTE = KILOBYTE * 1024
+local GIGABYTE = MEGABYTE * 1024
+
+local STORAGE_BASIC = 1 * GIGABYTE
+local STORAGE_PRO = 10 * GIGABYTE
+
 function ngx.ctx.login(username_or_id, password, nosession, login_with_id)
 	if ngx.ctx.user then return ngx.ctx.LOGIN_SUCCESS end
 
@@ -63,9 +70,9 @@ function ngx.ctx.login(username_or_id, password, nosession, login_with_id)
 			result.bonusbytes = tonumber(result.bonusbytes or 0)
 			result.is_pro = (result.pro_expiry > ngx.time())
 			if result.is_pro then
-				result.totalbytes = 10737418240
+				result.totalbytes = STORAGE_PRO
 			else
-				result.totalbytes = 1073741824
+				result.totalbytes = STORAGE_BASIC
 			end
 			result.totalbytes = result.totalbytes + result.bonusbytes
 			ngx.ctx.user = result
