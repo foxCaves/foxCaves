@@ -1,4 +1,3 @@
--- ROUTE:GET:/api/events
 -- ROUTE:GET:/api/v1/ws/events
 dofile(ngx.var.main_root .. "/scripts/global.lua")
 dofile("scripts/api_login.lua")

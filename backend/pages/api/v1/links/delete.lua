@@ -1,4 +1,3 @@
--- ROUTE:GET:/api/deletelink
 -- ROUTE:DELETE:/api/links/{id}
 -- ROUTE:GET:/api/v1/links/{id}/delete
 dofile(ngx.var.main_root .. "/scripts/global.lua")

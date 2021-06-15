@@ -1,4 +1,3 @@
--- ROUTE:GET:/api/livedraw
 -- ROUTE:GET:/api/v1/files/{id}/livedraw
 ALLOW_GUEST = true
 dofile(ngx.var.main_root .. "/scripts/global.lua")

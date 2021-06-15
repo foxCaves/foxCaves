@@ -1,4 +1,3 @@
--- ROUTE:GET:/api/linkhtml
 -- ROUTE:GET:/api/v1/links/{id}/html
 dofile(ngx.var.main_root .. "/scripts/global.lua")
 dofile("scripts/api_login.lua")
