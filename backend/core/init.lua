@@ -27,12 +27,14 @@ function explode(div,str) -- credit: http://richard.warburton.it
 	return arr
 end
 
+local c_slash = ("/"):byte(1)
+
 local setfenv = setfenv
 local getfenv = getfenv
 local filecache = {}
 function dofile(file)
 	local cache_key
-	if file:sub(1) == "/" then
+	if file:byte(1) == c_slash then
 		cache_key = file
 	else
 		cache_key = lfs.currentdir().."/"..file

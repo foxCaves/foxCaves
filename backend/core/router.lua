@@ -38,7 +38,15 @@ local function add_route(url, method, file)
     route.methods[method] = {
         file = file,
         mappings = mappings,
+        id = method .. " " .. url,
     }
+end
+
+local function add_route_simple(file, methods)
+    local url = "/" .. file:sub(1, file:find(".", 1, true) - 1)
+    for method in pairs(methods) do
+        add_route(url, method, file)
+    end
 end
 
 function execute_route()
@@ -77,36 +85,32 @@ end
 
 add_route("/", "GET", "index")
 
-add_route("/cam", "GET", "cam")
-add_route("/email", "GET", "email")
-add_route("/email", "POST", "email")
-add_route("/emailcode", "GET", "emailcode")
+add_route_simple("cam", {"GET"})
+add_route_simple("email", {"GET", "POST"})
+add_route_simple("emailcode", {"GET"})
+add_route_simple("cam", {"GET"})
+add_route_simple("gopro", {"GET"})
+add_route_simple("login", {"GET", "POST"})
+add_route_simple("myaccount", {"GET", "POST"})
+add_route_simple("myfiles", {"GET"})
+add_route_simple("mylinks", {"GET"})
+add_route_simple("register", {"GET", "POST"})
+add_route_simple("register", {"GET"})
 add_route("/error/{code}", "GET", "error")
-add_route("/gopro", "GET", "gopro")
 add_route("/legal/{page}", "GET", "legal")
 add_route("/live/{id}", "GET", "live")
-add_route("/login", "GET", "login")
-add_route("/login", "POST", "login")
-add_route("/myaccount", "GET", "myaccount")
-add_route("/myaccount", "POST", "myaccount")
-add_route("/myfiles", "GET", "myfiles")
-add_route("/mylinks", "GET", "mylinks")
-add_route("/register", "GET", "register")
-add_route("/register", "POST", "register")
 add_route("/view/{id}", "GET", "view")
 
-add_route("/api/base64", "GET", "api/base64")
-add_route("/api/convert", "GET", "api/convert")
-add_route("/api/create", "POST", "api/create")
-add_route("/api/delete", "GET", "api/delete")
-add_route("/api/deletelink", "GET", "api/deletelink")
-add_route("/api/events", "GET", "api/events")
-add_route("/api/filehtml", "GET", "api/filehtml")
-add_route("/api/linkhtml", "GET", "api/linkhtml")
-add_route("/api/links", "GET", "api/links")
-add_route("/api/list", "GET", "api/list")
-add_route("/api/livedraw", "GET", "api/livedraw")
-add_route("/api/livedraw_ws", "GET", "api/livedraw_ws")
-add_route("/api/shorten", "GET", "api/shorten")
-add_route("/api/shorten", "POST", "api/shorten")
-
+add_route_simple("api/base64", {"GET"})
+add_route_simple("api/convert", {"GET"})
+add_route_simple("api/create", {"POST"})
+add_route_simple("api/delete", {"GET"})
+add_route_simple("api/deletelink", {"GET"})
+add_route_simple("api/events", {"GET"})
+add_route_simple("api/filehtml", {"GET"})
+add_route_simple("api/linkhtml", {"GET"})
+add_route_simple("api/links", {"GET"})
+add_route_simple("api/list", {"GET"})
+add_route_simple("api/livedraw", {"GET"})
+add_route_simple("api/livedraw_ws", {"GET"})
+add_route_simple("api/shorten", {"GET", "POST"})
