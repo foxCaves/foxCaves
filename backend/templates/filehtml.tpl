@@ -27,7 +27,7 @@
 					<% end %>
 				</ul>
 			</div>
-			<a title="Delete" href="/api/delete?id=<%= fileid %>&redirect=1"><i class="icon-remove icon-white"></i> </a>
+			<a title="Delete" href="/api/v1/files/<%= fileid %>/delete?redirect=1"><i class="icon-remove icon-white"></i> </a>
 		</span>
 <%= G.ngx.ctx.format_size(file.size) %>
 	</div>
