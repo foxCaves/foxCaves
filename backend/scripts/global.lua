@@ -147,7 +147,7 @@ function ngx.ctx.get_version()
 end
 
 function raw_push_action(data)
-	database:publish(database.KEYS.PUSH .. ngx.ctx.user.id .. "_" .. ngx.ctx.user.pushchan, data)
+	database:publish(database.KEYS.PUSH .. ngx.ctx.user.id .. "_" .. ngx.ctx.user.pushchan, cjson.encode(data))
 end
 
 function printTemplateAndClose(name, params)
