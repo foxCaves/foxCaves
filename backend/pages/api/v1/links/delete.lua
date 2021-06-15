@@ -8,7 +8,7 @@ local database = ngx.ctx.database
 local id = ngx.ctx.route_vars.id
 
 dofile("scripts/linkapi.lua")
-local linkinfo = link_get(id, ngx.ctx.user)
+local linkinfo = link_get(id, ngx.ctx.user.id)
 local ok = linkinfo ~= nil
 if ok then
     database:zrem(database.KEYS.USER_LINKS .. ngx.ctx.user.id, id)
