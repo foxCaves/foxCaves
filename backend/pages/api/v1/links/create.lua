@@ -24,7 +24,7 @@ end
 local url = ngx.unescape_uri(ngx.var.arg_url)
 local short_url = link_shorturl(linkid)
 
-database:set(database.KEYS.LINKS .. linkid, url)
+database:hmset(database.KEYS.LINKS .. linkid, "user", ngx.ctx.user.id, "url", url, "time", ngx.time())
 database:zadd(database.KEYS.USER_LINKS .. ngx.ctx.user.id, ngx.time(), linkid)
 
 raw_push_action({
