@@ -10,7 +10,7 @@ local explode = explode
 local pairs = pairs
 
 local function add_route(url, method, file)
-    file = "/pages/" .. file .. ".lua"
+    file = "/pages/" .. file
 
     method = method:upper()
     local urlsplit = explode("/", url:sub(2))
@@ -44,7 +44,7 @@ end
 
 local function add_route_simple(file, methods)
     local url = "/" .. file:sub(1, file:find(".", 1, true) - 1)
-    for method in pairs(methods) do
+    for _, method in pairs(methods) do
         add_route(url, method, file)
     end
 end
@@ -83,34 +83,34 @@ function execute_route()
     dofile(ngx.var.main_root .. handler.file)
 end
 
-add_route("/", "GET", "index")
+add_route("/", "GET", "index.lua")
 
-add_route_simple("cam", {"GET"})
-add_route_simple("email", {"GET", "POST"})
-add_route_simple("emailcode", {"GET"})
-add_route_simple("cam", {"GET"})
-add_route_simple("gopro", {"GET"})
-add_route_simple("login", {"GET", "POST"})
-add_route_simple("myaccount", {"GET", "POST"})
-add_route_simple("myfiles", {"GET"})
-add_route_simple("mylinks", {"GET"})
-add_route_simple("register", {"GET", "POST"})
-add_route_simple("register", {"GET"})
-add_route("/error/{code}", "GET", "error")
-add_route("/legal/{page}", "GET", "legal")
-add_route("/live/{id}", "GET", "live")
-add_route("/view/{id}", "GET", "view")
+add_route_simple("cam.lua", {"GET"})
+add_route_simple("email.lua", {"GET", "POST"})
+add_route_simple("emailcode.lua", {"GET"})
+add_route_simple("cam.lua", {"GET"})
+add_route_simple("gopro.lua", {"GET"})
+add_route_simple("login.lua", {"GET", "POST"})
+add_route_simple("myaccount.lua", {"GET", "POST"})
+add_route_simple("myfiles.lua", {"GET"})
+add_route_simple("mylinks.lua", {"GET"})
+add_route_simple("register.lua", {"GET", "POST"})
+add_route_simple("register.lua", {"GET"})
+add_route("/error/{code}", "GET", "error.lua")
+add_route("/legal/{page}", "GET", "legal.lua")
+add_route("/live/{id}", "GET", "live.lua")
+add_route("/view/{id}", "GET", "view.lua")
 
-add_route_simple("api/base64", {"GET"})
-add_route_simple("api/convert", {"GET"})
-add_route_simple("api/create", {"POST"})
-add_route_simple("api/delete", {"GET"})
-add_route_simple("api/deletelink", {"GET"})
-add_route_simple("api/events", {"GET"})
-add_route_simple("api/filehtml", {"GET"})
-add_route_simple("api/linkhtml", {"GET"})
-add_route_simple("api/links", {"GET"})
-add_route_simple("api/list", {"GET"})
-add_route_simple("api/livedraw", {"GET"})
-add_route_simple("api/livedraw_ws", {"GET"})
-add_route_simple("api/shorten", {"GET", "POST"})
+add_route_simple("api/base64.lua", {"GET"})
+add_route_simple("api/convert.lua", {"GET"})
+add_route_simple("api/create.lua", {"POST"})
+add_route_simple("api/delete.lua", {"GET"})
+add_route_simple("api/deletelink.lua", {"GET"})
+add_route_simple("api/events.lua", {"GET"})
+add_route_simple("api/filehtml.lua", {"GET"})
+add_route_simple("api/linkhtml.lua", {"GET"})
+add_route_simple("api/links.lua", {"GET"})
+add_route_simple("api/list.lua", {"GET"})
+add_route_simple("api/livedraw.lua", {"GET"})
+add_route_simple("api/livedraw_ws.lua", {"GET"})
+add_route_simple("api/shorten.lua", {"GET", "POST"})
