@@ -5,13 +5,19 @@ dofile("scripts/api_login.lua")
 if not ngx.ctx.user then return end
 
 local database = ngx.ctx.database
-
 local id = ngx.ctx.route_vars.id
-local res = database:zrem(database.KEYS.USER_LINKS .. ngx.ctx.user.id, id)
 
-local ok = res and res ~= ngx.null and res ~= 0
+dofile("scripts/linkapi.lua")
+local linkinfo = link_get(id, ngx.ctx.user)
+local ok = linkinfo ~= nil
 if ok then
+    database:zrem(database.KEYS.USER_LINKS .. ngx.ctx.user.id, id)
     database:del(database.KEYS.LINKS .. id)
+    raw_push_action({
+        type = "link:delete",
+        id = id,
+        link = linkinfo,
+    })
 end
 
 if ngx.var.arg_redirect then
@@ -24,11 +30,4 @@ if not ok then
     ngx.status = 400
 end
 
-raw_push_action({
-    type = "link:delete",
-    id = id,
-    link = {
-        id = id,
-    },
-})
 ngx.eof()
