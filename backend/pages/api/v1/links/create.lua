@@ -22,7 +22,7 @@ if not linkid then
 end
 
 local url = ngx.unescape_uri(ngx.var.arg_url)
-local short_url = SHORT_URL .. "/g" .. linkid
+local short_url = link_shorturl(linkid)
 
 database:set(database.KEYS.LINKS .. linkid, url)
 database:zadd(database.KEYS.USER_LINKS .. ngx.ctx.user.id, ngx.time(), linkid)

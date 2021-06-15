@@ -1,5 +1,5 @@
 <tr>
-    <td><a target="_blank" href="<%= SHORT_URL %>/g<%= linkid %>"><%= SHORT_URL %>/g<%= linkid %></a></td>
-    <td><a target="_blank" href="<%= G.escape_html(link) %>"><%= G.escape_html(link) %></a></td>
-    <td><a href="/api/v1/links/<%= linkid %>/delete?redirect=1">Delete</a></td>
+    <td><a target="_blank" href="<%= link.short_url %>"><%= link.short_url %>></a></td>
+    <td><a target="_blank" href="<%= G.escape_html(link.url) %>"><%= G.escape_html(link.url) %></a></td>
+    <td><a href="/api/v1/links/<%= link.id %>/delete?redirect=1">Delete</a></td>
 </tr>

@@ -9,7 +9,7 @@ if not ngx.ctx.user.is_pro then
 	return ngx.eof()
 end
 
-local fileid = ngx.ctx.route_vars.id or ngx.var.arg_fileid
+local fileid = ngx.ctx.route_vars.id
 
 local newextension = ngx.var.arg_newtype:lower()
 if newextension ~= "jpg" and newextension ~= "png" and newextension ~= "gif" and newextension ~= "bmp" then

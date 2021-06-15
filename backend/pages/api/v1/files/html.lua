@@ -5,7 +5,7 @@ if not ngx.ctx.user then return end
 
 dofile("scripts/fileapi.lua")
 
-local fileid = ngx.ctx.route_vars.id or ngx.var.arg_id
+local fileid = ngx.ctx.route_vars.id
 local file = file_get(fileid)
 
 if not file then
@@ -14,4 +14,4 @@ if not file then
 	return ngx.eof()
 end
 
-printTemplateAndClose("filehtml", {fileid = fileid, file = file})
+printTemplateAndClose("filehtml", {file = file})

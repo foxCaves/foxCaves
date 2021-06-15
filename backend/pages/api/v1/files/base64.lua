@@ -11,7 +11,7 @@ end
 
 dofile("scripts/fileapi.lua")
 
-local succ, data = file_download(ngx.ctx.route_vars.id or ngx.var.arg_id, ngx.ctx.user.id)
+local succ, data = file_download(ngx.ctx.route_vars.id, ngx.ctx.user.id)
 if(not succ) then
 	ngx.status = 403
 	ngx.print("failed")

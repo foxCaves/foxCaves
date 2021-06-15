@@ -6,7 +6,7 @@ if not ngx.ctx.user then return end
 
 local database = ngx.ctx.database
 
-local id = ngx.ctx.route_vars.id or ngx.var.arg_id
+local id = ngx.ctx.route_vars.id
 local res = database:zrem(database.KEYS.USER_LINKS .. ngx.ctx.user.id, id)
 
 local ok = res and res ~= ngx.null and res ~= 0
