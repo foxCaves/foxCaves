@@ -10,7 +10,7 @@ local explode = explode
 local pairs = pairs
 
 local function add_route(url, method, file)
-    file = "/pages/" .. file
+    ngx.log(ngx.INFO, "Route: " .. method .. " " .. url .. " => " .. file)
 
     method = method:upper()
     local urlsplit = explode("/", url:sub(2))
@@ -42,10 +42,30 @@ local function add_route(url, method, file)
     }
 end
 
-local function add_route_simple(file, methods)
-    local url = "/" .. file:sub(1, file:find(".", 1, true) - 1)
-    for _, method in pairs(methods) do
-        add_route(url, method, file)
+local function scan_route_file(file)
+    local fh = io.open(file)
+    local data = fh:read("*all")
+    fh:close()
+    local matches = ngx.re.gmatch(data, "^-- ROUTE:([A-Za-z,]+):([^\\s]+)\\s*$", "m")
+    for m in matches do
+        local methods = explode(",", m[1])
+        for _, method in pairs(methods) do
+            add_route(m[2], method, file)
+        end
+    end
+end
+
+local function scan_route_dir(dir)
+    for file in lfs.dir(dir) do
+        if file:sub(1, 1) ~= "." then
+            local absfile = dir .. "/" .. file
+            local attributes = lfs.attributes(absfile)
+            if attributes.mode == "file" then
+                scan_route_file(absfile)
+            elseif attributes.mode == "directory" then
+                scan_route_dir(absfile)
+            end
+        end
     end
 end
 
@@ -80,37 +100,7 @@ function execute_route()
     for i, mapping in pairs(handler.mappings) do
         ngx.ctx.route_vars[mapping] = urlsplit[i]
     end
-    dofile(ngx.var.main_root .. handler.file)
+    dofile(handler.file)
 end
 
-add_route("/", "GET", "index.lua")
-
-add_route_simple("cam.lua", {"GET"})
-add_route_simple("email.lua", {"GET", "POST"})
-add_route_simple("emailcode.lua", {"GET"})
-add_route_simple("cam.lua", {"GET"})
-add_route_simple("gopro.lua", {"GET"})
-add_route_simple("login.lua", {"GET", "POST"})
-add_route_simple("myaccount.lua", {"GET", "POST"})
-add_route_simple("myfiles.lua", {"GET"})
-add_route_simple("mylinks.lua", {"GET"})
-add_route_simple("register.lua", {"GET", "POST"})
-add_route_simple("register.lua", {"GET"})
-add_route("/error/{code}", "GET", "error.lua")
-add_route("/legal/{page}", "GET", "legal.lua")
-add_route("/live/{id}", "GET", "live.lua")
-add_route("/view/{id}", "GET", "view.lua")
-
-add_route_simple("api/base64.lua", {"GET"})
-add_route_simple("api/convert.lua", {"GET"})
-add_route_simple("api/create.lua", {"POST"})
-add_route_simple("api/delete.lua", {"GET"})
-add_route_simple("api/deletelink.lua", {"GET"})
-add_route_simple("api/events.lua", {"GET"})
-add_route_simple("api/filehtml.lua", {"GET"})
-add_route_simple("api/linkhtml.lua", {"GET"})
-add_route_simple("api/links.lua", {"GET"})
-add_route_simple("api/list.lua", {"GET"})
-add_route_simple("api/livedraw.lua", {"GET"})
-add_route_simple("api/livedraw_ws.lua", {"GET"})
-add_route_simple("api/shorten.lua", {"GET", "POST"})
+scan_route_dir(MAIN_DIR .. "pages")

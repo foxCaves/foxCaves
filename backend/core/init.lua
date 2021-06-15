@@ -1,6 +1,8 @@
 lfs = require("lfs")
 cjson = require("cjson")
 
+MAIN_DIR = "/var/www/foxcaves/lua/"
+
 local table_insert = table.insert
 
 function escape_html(str)
@@ -55,9 +57,9 @@ function dofile(file)
 	return setfenv(code(), getfenv())()
 end
 
-loadfile("/var/www/foxcaves/lua/core/mail.lua")()
-loadfile("/var/www/foxcaves/lua/core/random.lua")()
-loadfile("/var/www/foxcaves/lua/core/template.lua")()
-loadfile("/var/www/foxcaves/lua/core/router.lua")()
+loadfile(MAIN_DIR .. "core/mail.lua")()
+loadfile(MAIN_DIR .. "core/random.lua")()
+loadfile(MAIN_DIR .. "core/template.lua")()
+loadfile(MAIN_DIR .. "core/router.lua")()
 
 collectgarbage("collect")
