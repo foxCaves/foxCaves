@@ -5,7 +5,7 @@
 	<div class="control-group">
 		<label class="control-label">Current password</label>
 		<div class="controls">
-			<input type="password" name="old_password" placeholder="Current password" value="" /> (Required to change your E-Mail or password)
+			<input type="password" name="old_password" placeholder="Current password" value="" /> (Required for all actions)
 		</div>
 	</div>
 	<legend>Change password</legend>
