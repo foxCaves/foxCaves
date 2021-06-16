@@ -23,7 +23,7 @@ function deleteLink(id: string, doConfirm?: boolean) {
 	.done(function() { })
 	.fail(function() {
 		refreshLinkRow(id);
-		alert("Error deleting file :(");
+		alert("Error deleting link :(");
 	});
 
 	return false;
@@ -74,7 +74,7 @@ function addLinkRow(id: string, no_refresh_if_exist?: boolean) {
 		}
 		return;
 	}
-	const ele = document.getElementById("file_manager")!;
+	const ele = document.getElementById("link_table")!;
 	getLinkRow(id, function(newLink) {
 		if(!newLink) {
 			return;
