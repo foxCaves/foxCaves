@@ -38,7 +38,7 @@
 	<a href="<%= SHORT_URL %>/d<%= RAWNAME %>" class="btn btn-large btn-block btn-primary">Download file</a>
 	<div id="preview-wrapper">
 	<% if FILE.type == FILE_TYPE_IMAGE then %>
-		<a href="<%= file.direct_url %>"><img src="<%= file.direct_url %"></a>
+		<a href="<%= file.direct_url %>"><img src="<%= file.direct_url %>"></a>
 	<% elseif FILE.type == FILE_TYPE_TEXT then %>
 		<noscript>JavaScript required to preview code/text</noscript>
 		<pre class="prettyprint linenums" style="display: none;" data-thumbnail-source="<%= FILEID %><%= FILE.thumbnail %>"></pre>
