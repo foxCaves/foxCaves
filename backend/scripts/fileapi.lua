@@ -104,7 +104,6 @@ end
 function file_push_action(action, file)
 	raw_push_action({
 		action = "file:" .. action,
-		id = file.id,
 		file = file,
 	})
 	raw_push_action({

@@ -15,7 +15,6 @@ if ok then
     database:del(database.KEYS.LINKS .. id)
     raw_push_action({
         type = "link:delete",
-        id = id,
         link = linkinfo,
     })
 end
