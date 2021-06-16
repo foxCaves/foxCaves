@@ -26,7 +26,7 @@ file.name = newname
 database:hset(database.KEYS.FILES .. file.id, "name", newname)
 
 file_push_action('refresh', {
-	id = fileid,
+	id = file.id,
 	name = newname,
 })
 
