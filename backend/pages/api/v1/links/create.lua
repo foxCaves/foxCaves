@@ -6,6 +6,8 @@ if not ngx.ctx.user then return end
 
 local database = ngx.ctx.database
 
+dofile("scripts/linkapi.lua")
+
 local linkid
 for i=1, 10 do
 	linkid = randstr(10)
