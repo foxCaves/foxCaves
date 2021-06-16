@@ -17,7 +17,7 @@ end
 
 id = tonumber(id)
 local user = database:hmget(database.KEYS.USERS .. id, "username")
-if (not user) or (user == ngx.null) then
+if (not user) or (user == ngx.null) or (not user.username) or (user.username == ngx.null) then
     ngx.exit(404)
     return
 end
