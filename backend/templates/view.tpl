@@ -1,19 +1,18 @@
 <%+ head %>
-<% local RAWNAME = FILEID .. FILE.extension %>
-	<h3>Viewing file: <%= FILE.name %></h3>
+	<h3>Viewing file: <%= file.name %></h3>
 	<div class="well well-small" style="text-align: left;">
 		<form class="form-horizontal">
 			<div class="control-group">
 				<label class="control-label">Uploaded by</label>
-				<div class="controls" style="padding-top: 5px;"><%= FILEOWNER %></div>
+				<div class="controls" style="padding-top: 5px;"><%= owner %></div>
 			</div>
 			<div class="control-group">
 				<label class="control-label">Uploaded on</label>
-				<div class="controls" style="padding-top: 5px;"><%= G.os.date("%d.%m.%Y %H:%M", FILE.time) %></div>
+				<div class="controls" style="padding-top: 5px;"><%= G.os.date("%d.%m.%Y %H:%M", file.time) %></div>
 			</div>
 			<div class="control-group">
 				<label class="control-label">Size</label>
-				<div class="controls" style="padding-top: 5px;"><%= G.ngx.ctx.format_size(FILE.size) %></div>
+				<div class="controls" style="padding-top: 5px;"><%= G.ngx.ctx.format_size(file.size) %></div>
 			</div>
 			<div class="control-group">
 				<label class="control-label" for="view-link">View link</label>
@@ -35,21 +34,21 @@
 			</div>
 		</form>
 	</div>
-	<a href="<%= SHORT_URL %>/d<%= RAWNAME %>" class="btn btn-large btn-block btn-primary">Download file</a>
+	<a href="<%= file.download_url %>" class="btn btn-large btn-block btn-primary">Download file</a>
 	<div id="preview-wrapper">
-	<% if FILE.type == FILE_TYPE_IMAGE then %>
+	<% if file.type == FILE_TYPE_IMAGE then %>
 		<a href="<%= file.direct_url %>"><img src="<%= file.direct_url %>"></a>
-	<% elseif FILE.type == FILE_TYPE_TEXT then %>
+	<% elseif file.type == FILE_TYPE_TEXT then %>
 		<noscript>JavaScript required to preview code/text</noscript>
-		<pre class="prettyprint linenums" style="display: none;" data-thumbnail-source="<%= FILEID %><%= FILE.thumbnail %>"></pre>
-	<% elseif FILE.type == FILE_TYPE_VIDEO then %>
+		<pre class="prettyprint linenums" style="display: none;" data-thumbnail-source="<%= file.id %><%= file.thumbnail %>"></pre>
+	<% elseif file.type == FILE_TYPE_VIDEO then %>
 		<video controls="controls" crossOrigin="anonymous">
-			<source src="<%= file.direct_url %>" type="<%= MIMETYPES[FILE.extension] %>" />
+			<source src="<%= file.direct_url %>" type="<%= MIMETYPES[file.extension] %>" />
 			Your browser is too old.
 		</video>
-	<% elseif FILE.type == FILE_TYPE_AUDIO then %>
+	<% elseif file.type == FILE_TYPE_AUDIO then %>
 		<audio id="audioplayer" crossOrigin="anonymous">
-			<source src="<%= file.direct_url %>" type="<%= MIMETYPES[FILE.extension] %>" />
+			<source src="<%= file.direct_url %>" type="<%= MIMETYPES[file.extension] %>" />
 			Your browser is too old.
 		</audio>
 		<p>
@@ -59,8 +58,8 @@
 		<canvas style="position: fixed; z-index: 20000; top: 0; left: 0; pointer-events: none;" id="audiovis"></canvas>
 		<script type="text/javascript" src="/static/js/dancer.js"></script>
 		<script type="text/javascript" src="/static/js/audiovis.js"></script>
-	<% elseif FILE.type == FILE_TYPE_IFRAME then %>
-		<iframe id="pdf-view" src="<%= file.direct_url %>" type="<%= MIMETYPES[FILE.extension] %>"></iframe>
+	<% elseif file.type == FILE_TYPE_IFRAME then %>
+		<iframe id="pdf-view" src="<%= file.direct_url %>" type="<%= MIMETYPES[file.extension] %>"></iframe>
 	<% else %>
 		<h5>File cannot be viewed. Download it.</h5>
 	<% end %>

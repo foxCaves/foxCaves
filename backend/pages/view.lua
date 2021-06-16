@@ -19,9 +19,8 @@ local fileowner = database:hget(database.KEYS.USERS .. file.user, "username")
 dofile("scripts/mimetypes.lua")
 printTemplateAndClose("view", {
 	MAINTITLE = "View file - " .. file.name,
-	FILE = file,
-	FILEID = fileid,
-	FILEOWNER = fileowner,
+	file = file,
+	owner = fileowner,
 	MIMETYPES = mimetypes,
 	FILE_TYPE_OTHER = 0,
 	FILE_TYPE_IMAGE = 1,
