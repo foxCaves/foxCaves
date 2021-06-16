@@ -12,6 +12,7 @@ if id == "@me" then
     user.password = nil
     user.loginkey = nil
     user.sessionid = nil
+    user.pushchan = user.id .. ":" .. user.pushchan
     ngx.print(cjson.encode(user))
     ngx.eof()
     return
