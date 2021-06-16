@@ -177,17 +177,7 @@ database:zadd(database.KEYS.USER_FILES .. ngx.ctx.user.id, ngx.time(), fileid)
 database:hincrby(database.KEYS.USERS .. ngx.ctx.user.id, "usedbytes", filesize)
 ngx.ctx.user.usedbytes = ngx.ctx.user.usedbytes + filesize
 
-local filedata = {
-	id = fileid,
-	name = name,
-	extension = extension,
-	size = filesize,
-	thumbnail = thumbnail or "",
-	type = fileType,
-	view_url = SHORT_URL .. "/v" .. fileid,
-	direct_url = SHORT_URL .. "/f" .. fileid .. extension,
-	download_url = SHORT_URL .. "/d" .. fileid .. extension,
-}
+local filedata = file_get(fileid)
 file_push_action('create', filedata)
 ngx.header["Content-Type"] = "application/json"
 ngx.print(cjson.encode(filedata))
