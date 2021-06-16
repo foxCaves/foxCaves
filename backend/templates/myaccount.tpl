@@ -42,6 +42,10 @@
 	<div class="control-group">
 		<div class="controls">
 			<input type="text" name="apikey" readonly id="apikey" value="<%= G.ngx.ctx.escape_html(G.ngx.ctx.user.apikey) %>" />
+		</div>
+	</div>
+	<div class="control-group">
+		<div class="controls">
 			<input type="submit" name="regenerate_api_key" class="btn" value="Regenerate API key" />
 		</div>
 	</div>
