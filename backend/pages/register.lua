@@ -78,6 +78,7 @@ if args and args.register then
 						template_name = "message"
 
 						ngx.ctx.make_new_login_key({id = userid})
+						ngx.ctx.make_new_api_key({id = userid})
 					end
 				end
 			end

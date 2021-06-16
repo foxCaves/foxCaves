@@ -34,6 +34,8 @@ args = ngx.ctx.get_post_args()
 if args and args.old_password then
 	if ngx.hmac_sha1(ngx.ctx.user.username, args.old_password) ~= ngx.ctx.user.password then
 		message = "<div class='alert alert-error'>Current password is wrong</div>"
+	elseif args.regenerate_api_key then
+		ngx.ctx.make_new_api_key()
 	elseif args.delete_account then
 		delete_user()
 	elseif args.kill_sessions then

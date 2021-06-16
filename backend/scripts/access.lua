@@ -144,6 +144,18 @@ function ngx.ctx.make_new_login_key(userdata)
 	end
 end
 
+function ngx.ctx.make_new_api_key(userdata)
+	if not userdata then
+		userdata = ngx.ctx.user
+		if not userdata then
+			return
+		end
+	end
+	local str = randstr(64)
+	ngx.ctx.user.apikey = str
+	database:hset(database.KEYS.USERS .. userdata.id, "apikey", str)
+end
+
 local cookies = ngx.var.http_Cookie
 if cookies then
 	auth = ngx.re.match(cookies, "^(.*; *)?sessionid=([a-zA-Z0-9]+)( *;.*)?$", "o")
