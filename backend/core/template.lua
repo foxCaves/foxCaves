@@ -111,6 +111,7 @@ function load_template(name, params)
 	params.tconcat = table.concat
 	params.SHORT_URL = SHORT_URL
 	params.MAIN_URL = MAIN_URL
+	params.HIDE_GOPRO_LINKS = params.HIDE_GOPRO_LINKS or DISABLE_PAYMENTS
 	params.G = _G
 
 	return setfenv(tpl, params)()

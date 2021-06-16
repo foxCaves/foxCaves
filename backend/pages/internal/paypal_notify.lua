@@ -2,7 +2,8 @@
 dofile(ngx.var.main_root .. "/scripts/global.lua")
 local database = ngx.ctx.database
 
---[[
+if DISABLE_PAYMENTS then return ngx.eof() end
+
 local userid = ngx.var.arg_userid
 local args
 
@@ -70,4 +71,3 @@ database:sadd(database.KEYS.USEDINVOICES, args.invoice)
 
 paypal_result("Code: #SUCCESS")
 ngx.eof()
-]]

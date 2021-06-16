@@ -2,9 +2,8 @@
 dofile(ngx.var.main_root .. "/scripts/global.lua")
 if not ngx.ctx.user then return ngx.redirect("/login") end
 
-ngx.redirect("/")
+if DISABLE_PAYMENTS then return ngx.redirect("/") end
 
---[[
 local database = ngx.ctx.database
 
 local invoiceid
@@ -23,4 +22,3 @@ end
 
 dofile("scripts/items.lua")
 printTemplateAndClose("gopro", {MAINTITLE = "Go pro", ITEMS = ITEMS, INVOICEID = invoiceid, HIDE_GOPRO_LINKS = true})
-]]
