@@ -34,7 +34,7 @@ local linkinfo = {
 }
 
 raw_push_action({
-	type = "link:create",
+	action = "link:create",
 	link = linkinfo,
 })
 ngx.header["Content-Type"] = "application/json"

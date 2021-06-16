@@ -14,7 +14,7 @@ if ok then
     database:zrem(database.KEYS.USER_LINKS .. ngx.ctx.user.id, id)
     database:del(database.KEYS.LINKS .. id)
     raw_push_action({
-        type = "link:delete",
+        action = "link:delete",
         link = linkinfo,
     })
 end

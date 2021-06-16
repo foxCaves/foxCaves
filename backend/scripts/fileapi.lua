@@ -107,7 +107,7 @@ function file_push_action(action, file)
 		file = file,
 	})
 	raw_push_action({
-		type = "usedbytes",
+		action = "usedbytes",
 		usedbytes = ngx.ctx.user.usedbytes,
 	})
 end

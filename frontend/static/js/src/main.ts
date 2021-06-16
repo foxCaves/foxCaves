@@ -50,8 +50,9 @@ function docReady() {
 $(() => {
 	docReady();
 
-	if(PUSH_CHANNEL == "")
+	if(PUSH_CHANNEL == "") {
 		return;
+	}
 
 	pushHandlers.usedbytes = function(data) {
 		$('#used_bytes_text').text(formatSize(data.usedbytes));
