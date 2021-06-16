@@ -10,6 +10,9 @@ local id = ngx.ctx.route_vars.id
 if id == "@me" then
     local user = ngx.ctx.user
     user.password = nil
+    user.loginkey = nil
+    user.sessionid = nil
+    user.pushchan = nil
     ngx.print(cjson.encode(user))
     ngx.eof()
     return
