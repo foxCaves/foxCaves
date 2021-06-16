@@ -25,7 +25,7 @@ local function check_auth(userdata, password, options)
 	if login_with_apikey then
 		return userdata.apikey == password
 	end
-	return userdata.password == ngx.hmac_sha1(result.username, password)
+	return userdata.password == ngx.hmac_sha1(userdata.username, password)
 end
 
 function ngx.ctx.login(username_or_id, password, options)
