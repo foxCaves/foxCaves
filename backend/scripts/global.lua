@@ -69,6 +69,20 @@ function make_database()
 		return ret
 	end
 
+	database.hmget_real = database.hmget
+	function database:hmget(key, ...)
+		local res = self:hmget_real(key, ...)
+		if (not res) or (res == ngx.null) then
+			return res
+		end
+		local ret = {}
+		local tbl = {...}
+		for i,v in next, tbl do
+			ret[v] = res[i]
+		end
+		return ret
+	end
+
 	return database
 end
 
