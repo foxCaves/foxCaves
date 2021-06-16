@@ -74,7 +74,7 @@ function addLinkRow(id: string, no_refresh_if_exist?: boolean) {
 		}
 		return;
 	}
-	const ele = document.getElementById("link_table")!;
+	const ele = document.getElementById("links_table")!;
 	getLinkRow(id, function(newLink) {
 		if(!newLink) {
 			return;
@@ -127,7 +127,7 @@ interface LinkPush {
 }
 
 $(() => {
-	setupLinkJS($('#link_table'));
+	setupLinkJS($('#links_table'));
 
 	pushHandlers['link:create'] = function (data: LinkPush) {
 		addLinkRow(data.link.id);
