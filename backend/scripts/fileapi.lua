@@ -24,7 +24,7 @@ function file_get(fileid, user)
 	if file.thumbnail then
 		file.thumbnail_url = SHORT_URL .. "/thumbs/" .. file.id .. file.thumbnail
 	end
-	if file.type == 1 and file.thumbnail_url then
+	if file.type == FILE_TYPE_IMAGE and file.thumbnail_url then
 		file.thumbnail_image = file.thumbnail_url
 	else
 		file.thumbnail_image = MAIN_URL .. "/static/img/thumbs/ext_" .. file.extension .. ".png"

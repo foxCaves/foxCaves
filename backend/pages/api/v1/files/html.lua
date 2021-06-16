@@ -14,4 +14,12 @@ if not file then
 	return ngx.eof()
 end
 
-printTemplateAndClose("filehtml", {file = file})
+printTemplateAndClose("filehtml", {
+	file = file,
+	FILE_TYPE_OTHER = FILE_TYPE_OTHER,
+	FILE_TYPE_IMAGE = FILE_TYPE_IMAGE,
+	FILE_TYPE_TEXT = FILE_TYPE_TEXT,
+	FILE_TYPE_VIDEO = FILE_TYPE_VIDEO,
+	FILE_TYPE_AUDIO = FILE_TYPE_AUDIO,
+	FILE_TYPE_IFRAME = FILE_TYPE_IFRAME,
+})

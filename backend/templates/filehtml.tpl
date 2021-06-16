@@ -14,7 +14,7 @@
 				<ul class="dropdown-menu">
 					<li><a class="rename">Rename</a></li>
 					<li><a href="/live/<%= file.id %>">Edit</a></li>
-<% if file.type == 1 and G.ngx.ctx.user.is_pro then %>
+<% if file.type == FILE_TYPE_IMAGE and G.ngx.ctx.user.is_pro then %>
 					<li class="dropdown-submenu">
 						<a>Convert to</a>
 						<ul class="dropdown-menu">

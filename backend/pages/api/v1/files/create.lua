@@ -97,13 +97,6 @@ end
 dofile("scripts/mimetypes.lua")
 local mtype = mimetypes[extension] or "application/octet-stream"
 
-local FILE_TYPE_OTHER = 0
-local FILE_TYPE_IMAGE = 1
-local FILE_TYPE_TEXT = 2
-local FILE_TYPE_VIDEO = 3
-local FILE_TYPE_AUDIO = 4
-local FILE_TYPE_IFRAME = 5
-
 local mimeHandlers = {
 	image = function()
 		local thumbext = ".png"
