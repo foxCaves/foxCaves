@@ -35,7 +35,7 @@ function docReady() {
 		ele.style.display = "";
 		ele.innerHTML = "[Loading preview...]";
 		loadingEles++;
-		$.get(SHORT_URL+'/thumbs/'+src, function(data) {
+		$.get(src, function(data) {
 			ele.innerHTML = data;
 			loadDone();
 		});

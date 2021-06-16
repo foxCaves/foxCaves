@@ -40,7 +40,7 @@
 		<a href="<%= file.direct_url %>"><img src="<%= file.direct_url %>"></a>
 	<% elseif file.type == FILE_TYPE_TEXT then %>
 		<noscript>JavaScript required to preview code/text</noscript>
-		<pre class="prettyprint linenums" style="display: none;" data-thumbnail-source="<%= file.id %><%= file.thumbnail %>"></pre>
+		<pre class="prettyprint linenums" style="display: none;" data-thumbnail-source="<%= file.thumbnail_url %>"></pre>
 	<% elseif file.type == FILE_TYPE_VIDEO then %>
 		<video controls="controls" crossOrigin="anonymous">
 			<source src="<%= file.direct_url %>" type="<%= MIMETYPES[file.extension] %>" />
