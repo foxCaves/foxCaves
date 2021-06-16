@@ -29,7 +29,7 @@
 				</div>
 			</div>
 		</div>
-		<script type="text/javascript">const PUSH_CHANNEL="<% if G.ngx.ctx.user then %><%= G.ngx.ctx.user.id %>_<%= G.ngx.ctx.user.pushchan %><% end %>";</script>
+		<script type="text/javascript">const PUSH_CHANNEL="<% if G.ngx.ctx.user then %><%= G.ngx.ctx.user.id %>:<%= G.ngx.ctx.user.pushchan %><% end %>";</script>
 		<script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/2.3.2/js/bootstrap.min.js" type="text/javascript"></script>
 		<script src="//cdnjs.cloudflare.com/ajax/libs/prettify/r298/prettify.min.js" type="text/javascript"></script>
 		<script src="//cdnjs.cloudflare.com/ajax/libs/prettify/r298/lang-lua.min.js" type="text/javascript"></script>
