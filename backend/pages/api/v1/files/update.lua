@@ -25,6 +25,11 @@ file.name = newname
 
 database:hset(database.KEYS.FILES .. file.id, "name", newname)
 
+file_push_action('refresh', {
+	id = fileid,
+	name = newname,
+})
+
 ngx.header["Content-Type"] = "application/json"
 ngx.print(cjson.encode(file))
 ngx.eof()
