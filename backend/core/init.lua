@@ -57,6 +57,24 @@ function dofile(file)
 	return setfenv(code(), getfenv())()
 end
 
+function parse_authorization_header(auth)
+	if not auth then
+		return
+	end
+	if auth:sub(1, 6):lower() ~= "basic " then
+		return
+	end
+	auth = ngx.decode_base64(auth:sub(7))
+	if not auth or auth == "" then
+		return
+	end
+	local colonPos = auth:find(":", 1, true)
+	if not colonPos then
+		return
+	end
+	return auth:sub(1, colonPos - 1), auth:sub(colonPos + 1)
+end
+
 loadfile(MAIN_DIR .. "core/mail.lua")()
 loadfile(MAIN_DIR .. "core/random.lua")()
 loadfile(MAIN_DIR .. "core/template.lua")()

@@ -63,7 +63,7 @@ if not res:find("VERIFIED", 1, true) then
 	return ngx.eof()
 end
 
-ngx.ctx.login(userid, "", true, true)
+ngx.ctx.login(userid, "", { nosession = true, login_with_id = true })
 item.action()
 
 database:sadd(database.KEYS.USEDINVOICES, args.invoice)

@@ -20,8 +20,20 @@ local GIGABYTE = MEGABYTE * 1024
 local STORAGE_BASIC = 1 * GIGABYTE
 local STORAGE_PRO = 10 * GIGABYTE
 
-function ngx.ctx.login(username_or_id, password, nosession, login_with_id)
+local function check_auth(userdata, password, options)
+	local login_with_apikey = options.login_with_apikey
+	if login_with_apikey then
+		return userdata.apikey == password
+	end
+	return userdata.password == ngx.hmac_sha1(result.username, password)
+end
+
+function ngx.ctx.login(username_or_id, password, options)
 	if ngx.ctx.user then return ngx.ctx.LOGIN_SUCCESS end
+
+	options = options or {}
+	local nosession = options.nosession
+	local login_with_id = options.login_with_id
 
 	if not username_or_id then
 		return ngx.ctx.LOGIN_BAD_PASSWORD
@@ -46,10 +58,10 @@ function ngx.ctx.login(username_or_id, password, nosession, login_with_id)
 		elseif result.active == -1 then
 			return ngx.ctx.LOGIN_USER_BANNED
 		end
-		if login_with_id or result.password == ngx.hmac_sha1(result.username, password) then
+		if login_with_id or check_auth(result, password, options) then
 			if not nosession then
 				local sessionid
-				for i=1, 999 do
+				for i=1,999 do
 					sessionid = randstr(32)
 					local res = database:exists(database.KEYS.SESSIONS .. sessionid)
 					if (not res) or (res == ngx.null) or (res == 0) then
@@ -165,7 +177,7 @@ if cookies then
 			local sessID = database.KEYS.SESSIONS .. auth
 			local result = database:get(sessID)
 			if result and result ~= ngx.null then
-				ngx.ctx.login(result, nil, true, true)
+				ngx.ctx.login(result, nil, { nosession = true, login_with_id = true })
 				ngx.ctx.user.sessionid = auth
 				ngx.header['Set-Cookie'] = {"sessionid=" .. auth .. "; HttpOnly"}
 				database:expire(sessID, SESSION_EXPIRE_DELAY)
@@ -185,7 +197,7 @@ if cookies then
 				local result = database:hget(database.KEYS.USERS .. uid, "loginkey")
 				if result and result ~= ngx.null then
 					if hash_login_key(result) == ngx.decode_base64(auth) then
-						ngx.ctx.login(uid, nil, false, true)
+						ngx.ctx.login(uid, nil, { login_with_id = true })
 						ngx.ctx.user.remember_me = true
 						ngx.ctx.send_login_key()
 					end

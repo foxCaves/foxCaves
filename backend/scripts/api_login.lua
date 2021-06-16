@@ -1,9 +1,8 @@
 if not ngx.ctx.user then
-	local user = ngx.var.http_X_Foxcaves_User
-	local pw = ngx.var.http_X_Foxcaves_Password
+	local user, pw = parse_authorization_header(ngx.var.http_authorization)
 	local success = false
 	if user and pw then
-		success = (ngx.ctx.login(user,pw,true) == ngx.ctx.LOGIN_SUCCESS)
+		success = (ngx.ctx.login(user, pw, { nosession = true, login_with_apikey = true }) == ngx.ctx.LOGIN_SUCCESS)
 	end
 	if not ALLOW_GUEST and ((not success) or (not ngx.ctx.user)) then
 		ngx.status = 401
