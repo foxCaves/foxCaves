@@ -7,8 +7,8 @@
 	<a href="/view/<%= file.id %>"></a>
 	<div class="image_manage_bottom">
 		<span>
-			<a title="View" href="/view/<%= file.id %>"><i class="icon-picture icon-white"></i> </a>
-			<a title="Download" href="<%= SHORT_URL %>/d<%= file.id %><%= file.extension %>"><i class="icon-download icon-white"></i> </a>
+			<a title="View" href="<%= file.view_url %>""><i class="icon-picture icon-white"></i> </a>
+			<a title="Download" href="<%= file.download_url %>"><i class="icon-download icon-white"></i> </a>
 			<div class="dropdown">
 				<a title="Options" class="dropdown-toggle" data-toggle="dropdown" href=""><i class="icon-wrench icon-white"></i> </a>
 				<ul class="dropdown-menu">
