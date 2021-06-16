@@ -12,7 +12,7 @@ if not file then
     return
 end
 
-local newname = ngx.ctx.var.arg_name
+local newname = ngx.var.arg_name
 
 if newname:sub(newname:len() - file.extension:len()) ~= file.extension then
     ngx.status = 400
