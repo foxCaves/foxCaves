@@ -1,9 +1,9 @@
 lfs = require("lfs")
 cjson = require("cjson")
 
-loadfile(MAIN_DIR .. "core/constants.lua")()
-
 MAIN_DIR = "/var/www/foxcaves/lua/"
+
+loadfile(MAIN_DIR .. "core/constants.lua")()
 
 local table_insert = table.insert
 
