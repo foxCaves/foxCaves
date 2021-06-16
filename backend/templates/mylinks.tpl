@@ -9,7 +9,7 @@
 			<th>Actions</th>
 		</tr>
 	</thread>
-	<tbody>
+	<tbody id="links_table">
 		<% for _, linkid in next, LINKS do
 			local link = link_get(linkid) %>
 			<%+ linkhtml %>

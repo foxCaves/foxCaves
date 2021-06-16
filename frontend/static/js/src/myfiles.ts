@@ -252,7 +252,7 @@ function refreshFiles() {
 		}
 
 		$('#file_manager > li').each(function(_, ele) {
-			const fileid = $(ele).attr('id')!.substr(5);
+			const fileid = getFileIDFromID($(ele).attr('id')!);
 			if(!files_rev[fileid])
 				removeFileLI(fileid);
 		});
@@ -265,11 +265,6 @@ function getFileLI(fileid: string, func: (newFile: HTMLElement | null) => void) 
 	$.get(`/api/v1/files/${fileid}/html`, function(data) {
 		data = data.trim();
 
-		if(data[0] == '-') {
-			func(null);
-			return;
-		}
-
 		const newFileTmp = document.createElement("ul");//Fake
 		newFileTmp.innerHTML = data;
 		const newFile = newFileTmp.firstChild!;
@@ -279,7 +274,7 @@ function getFileLI(fileid: string, func: (newFile: HTMLElement | null) => void) 
 		});
 
 		func(newFile as HTMLElement);
-	})
+	});
 }
 
 function startFileDrag(this: HTMLElement, event: DragEvent) {
@@ -405,7 +400,7 @@ function setupFileDragging() {
 			return;
 		}	
 
-		deleteFile(currFileDrag.id.substr(5));
+		deleteFile(getFileIDFromID(currFileDrag.id));
 		trashBin.style.opacity = "";
 	}, false);
 }
