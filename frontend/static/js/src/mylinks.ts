@@ -106,23 +106,21 @@ function removeLinkRow(id: string) {
 }
 
 function refreshLinks() {
-	$.get(`/api/v1/links?type=idonly&t=${Date.now()}`, function(data) {
-		const links = data as string[];
+	$.get(`/api/v1/links?t=${Date.now()}`, function(data) {
+		const links = data as LinkInfo[];
 		const links_rev: { [key: string]: boolean } = {};
-		for(let i = 0;i < links.length;i++) {
-			const linkid = links[i];
-			if(!linkid) {
-				continue;
-			}
-			links_rev[linkid] = true;
-			if(!document.getElementById("link_"+linkid)) {
-				addLinkRow(linkid);
+		for (const link of links) {
+			LINKS[link.id] = link;
+			links_rev[link.id] = true;
+			if(!document.getElementById("link_"+link.id)) {
+				addLinkRow(link.id);
 			}
 		}
 
 		$('#links_table > tr').each(function(_, ele) {
 			const linkid = getLinkIDFromID($(ele).attr('id')!);
 			if(!links_rev[linkid]) {
+				delete LINKS[linkid];
 				removeLinkRow(linkid);
 			}
 		});
