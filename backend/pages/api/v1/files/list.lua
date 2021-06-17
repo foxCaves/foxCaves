@@ -7,14 +7,10 @@ local database = ngx.ctx.database
 local files = database:zrevrange(database.KEYS.USER_FILES .. ngx.ctx.user.id, 0, -1)
 
 ngx.header["Content-Type"] = "application/json"
-if ngx.var.arg_type == "idonly" then
-	ngx.print(cjson.encode(files))
-else
-	dofile("scripts/fileapi.lua")
-	local results = {}
-	for _,fileid in next, files do
-		table.insert(results, file_get(fileid))
-	end
-	ngx.print(cjson.encode(results))
+dofile("scripts/fileapi.lua")
+local results = {}
+for _,fileid in next, files do
+	table.insert(results, file_get(fileid))
 end
+ngx.print(cjson.encode(results))
 ngx.eof()
