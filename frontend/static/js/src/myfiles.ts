@@ -265,24 +265,23 @@ function setupDropZone() {
 }
 
 function refreshFiles() {
-	$.get(`/api/v1/files?type=idonly&t=${Date.now()}`, function(data) {
-		const files = data as string[];
+	$.get(`/api/v1/files?t=${Date.now()}`, function(data) {
+		const files = data as { [key: string]: FileInfo };
 		const files_rev: { [key: string]: boolean } = {};
-		for(let i = 0;i < files.length;i++) {
-			const fileid = files[i];
-			if(!fileid) {
-				continue;
-			}
-			files_rev[fileid] = true;
-			if(!document.getElementById("file_"+fileid)) {
-				addFileLI(fileid);
+		for (const id of Object.keys(files)) {
+			FILES[id] = files[id]!;
+			files_rev[id] = true;
+			if(!document.getElementById("file_"+id)) {
+				addFileLI(id);
 			}
 		}
 
 		$('#file_manager > li').each(function(_, ele) {
 			const fileid = getFileIDFromID($(ele).attr('id')!);
-			if(!files_rev[fileid])
+			if(!files_rev[fileid]) {
+				delete FILES[fileid];
 				removeFileLI(fileid);
+			}
 		});
 	});
 
