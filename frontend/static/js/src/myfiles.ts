@@ -266,13 +266,13 @@ function setupDropZone() {
 
 function refreshFiles() {
 	$.get(`/api/v1/files?t=${Date.now()}`, function(data) {
-		const files = data as { [key: string]: FileInfo };
+		const files = data as FileInfo[];
 		const files_rev: { [key: string]: boolean } = {};
-		for (const id of Object.keys(files)) {
-			FILES[id] = files[id]!;
-			files_rev[id] = true;
-			if(!document.getElementById("file_"+id)) {
-				addFileLI(id);
+		for (const file of files) {
+			FILES[file.id] = file;
+			files_rev[file.id] = true;
+			if(!document.getElementById("file_"+file.id)) {
+				addFileLI(file.id);
 			}
 		}
 
