@@ -1,3 +1,31 @@
+interface FileInfo {
+	extension: string;
+	download_url: string;
+	name: string;
+	time: number;
+	id: string;
+	thumbnail_url?: string;
+	thumbnail_image: string;
+	user: number;
+	type: number;
+	size: number;
+	view_url: string;
+	direct_url: string;
+}
+
+interface FilePush {
+	file: FileInfo;
+}
+
+const FILE_TYPE_OTHER = 0;
+const FILE_TYPE_IMAGE = 1;
+const FILE_TYPE_TEXT = 2;
+const FILE_TYPE_VIDEO = 3;
+const FILE_TYPE_AUDIO = 4;
+const FILE_TYPE_IFRAME = 5;
+
+const FILES: { [key: string]: FileInfo } = {};
+
 let dropZoneDefaultInnerHTML = "";
 let dropZoneTransferInProgress = false;
 
@@ -261,20 +289,46 @@ function refreshFiles() {
 	return false;
 }
 
-function getFileLI(fileid: string, func: (newFile: HTMLElement | null) => void) {
-	$.get(`/api/v1/files/${fileid}/html`, function(data) {
-		data = data.trim();
+function getFileLI(id: string) {
+	const file = FILES[id];
+	if (!file) {
+		return;
+	}
+	const escapedName = htmlEscape(file.name);
+	const addDropdown = (file.type == FILE_TYPE_IMAGE) ? `<li class="dropdown-submenu">
+		<a>Convert to</a>
+		<ul class="dropdown-menu">
+			<li><a>jpeg</a></li>
+			<li><a>png</a></li>
+			<li><a>gif</a></li>
+			<li><a>bmp</a></li>
+		</ul>
+	</li>` : '';
+	const fileLI = `<li draggable="true" id="file_${file.id}" class="image_manage_main" style="background-image:url('${file.thumbnail_image}')">
+		<div class="image_manage_top" title="${formatDate(file.time)} [${escapedName}]">${escapedName}</div>
+		<a href="/view/${file.id}"></a>
+		<div class="image_manage_bottom">
+			<span>
+				<a title="View" href="${file.view_url}"><i class="icon-picture icon-white"></i> </a>
+				<a title="Download" href="${file.download_url}"><i class="icon-download icon-white"></i> </a>
+				<div class="dropdown">
+					<a title="Options" class="dropdown-toggle" data-toggle="dropdown" href=""><i class="icon-wrench icon-white"></i> </a>
+					<ul class="dropdown-menu">
+						<li><a class="rename">Rename</a></li>
+						<li><a href="/live/${file.id}">Edit</a></li>
+						${addDropdown}
+					</ul>
+				</div>
+				<a title="Delete" href="/api/v1/files/${file.id}/delete?redirect=1"><i class="icon-remove icon-white"></i> </a>
+			</span>
+			${formatSize(file.size)}
+		</div>
+	</li>`;
 
-		const newFileTmp = document.createElement("ul");//Fake
-		newFileTmp.innerHTML = data;
-		const newFile = newFileTmp.firstChild!;
-
-		$(newFile).find(".image_manage_top, .image_manage_bottom").each(function(_, elem) {
-			elem.style.cursor="move";
-		});
-
-		func(newFile as HTMLElement);
-	});
+	const newFileTmp = document.createElement("ul");//Fake
+	newFileTmp.innerHTML = fileLI;
+	const newFile = newFileTmp.firstChild! as HTMLElement;
+	return newFile;
 }
 
 function startFileDrag(this: HTMLElement, event: DragEvent) {
@@ -318,13 +372,13 @@ function addFileLI(fileid: string, no_refresh_if_exist?: boolean) {
 		return;
 	}
 	const ele = document.getElementById("file_manager")!;
-	getFileLI(fileid, function(newFile) {
-		if(!newFile) {
-			return;
-		}
-		ele.insertBefore(newFile, ele.firstChild);
-		setupFileJS(newFile);
-	});
+	const newFile = getFileLI(fileid);
+	if (!newFile) {
+		removeFileLI(fileid);
+		return;
+	}
+	ele.insertBefore(newFile, ele.firstChild);
+	setupFileJS(newFile);
 }
 
 function removeFileLI(fileid: string) {
@@ -332,14 +386,13 @@ function removeFileLI(fileid: string) {
 }
 
 function refreshFileLI(fileid: string) {
-	getFileLI(fileid, function(newFile) {
-		if(!newFile) {
-			removeFileLI(fileid);
-			return;
-		}
-		$('#file_'+fileid).replaceWith(newFile);
-		setupFileJS(newFile);
-	});
+	const newFile = getFileLI(fileid);
+	if (!newFile) {
+		removeFileLI(fileid);
+		return;
+	}
+	$('#file_'+fileid).replaceWith(newFile);
+	setupFileJS(newFile);
 }
 
 function deleteFile(fileid: string, doConfirm?: boolean) {
@@ -439,25 +492,6 @@ function setupSearch() {
 	});
 }
 
-interface FileInfo {
-	extension: string;
-	download_url: string;
-	name: string;
-	time: number;
-	id: string;
-	thumbnail_url?: string;
-	thumbnail_image: string;
-	user: number;
-	type: number;
-	size: number;
-	view_url: string;
-	direct_url: string;
-}
-
-interface FilePush {
-	file: FileInfo;
-}
-
 $(() => {
 	//setupOptionMenu();
 
@@ -469,12 +503,17 @@ $(() => {
 	setupSearch();
 
 	pushHandlers['file:create'] = function (data: FilePush) {
+		FILES[data.file.id] = data.file;
 		addFileLI(data.file.id, true);
 	};
 	pushHandlers['file:delete'] = function (data: FilePush) {
+		delete FILES[data.file.id];
 		removeFileLI(data.file.id);
 	};
 	pushHandlers['file:refresh'] = function (data: FilePush) {
+		for (const key of Object.keys(data.file)) {
+			(FILES[data.file.id] as any)[key] = (data.file as any)[key];
+		}
 		refreshFileLI(data.file.id);
 	};
 

@@ -1,3 +1,17 @@
+interface LinkInfo {
+	short_url: string;
+	user: number;
+	url: string;
+	time: number;
+	id: string;
+}
+
+interface LinkPush {
+	link: LinkInfo;
+}
+
+const LINKS: { [key: string]: LinkInfo } = {};
+
 function newLink() {
 	const res = prompt("Please enter the link to shorten:", "https://");
 	if(!res) {
@@ -34,14 +48,13 @@ function getLinkIDFromID(id: string) {
 }
 
 function refreshLinkRow(id: string) {
-	getLinkRow(id, function(newLink) {
-		if(!newLink) {
-			removeLinkRow(id);
-			return;
-		}
-		$('#link_'+id).replaceWith(newLink);
-		setupLinkJS(newLink);
-	});
+	const newLink = getLinkRow(id);
+	if (!newLink) {
+		removeLinkRow(id);
+		return;
+	}
+	$('#link_'+id).replaceWith(newLink);
+	setupLinkJS(newLink);
 }
 
 function setupLinkJS(parent: JQuery | HTMLElement) {
@@ -55,16 +68,20 @@ function setupLinkJS(parent: JQuery | HTMLElement) {
 	});
 }
 
-function getLinkRow(id: string, func: (newLink: HTMLElement | null) => void) {
-	$.get(`/api/v1/links/${id}/html`, function(data) {
-		data = data.trim();
-
-		const newFileTmp = document.createElement("tbody");//Fake
-		newFileTmp.innerHTML = data;
-		const newFile = newFileTmp.firstChild!;
-
-		func(newFile as HTMLElement);
-	});
+function getLinkRow(id: string) {
+	const link = LINKS[id]!;
+	if (!link) {
+		return;
+	}
+	const escpaedURL = htmlEscape(link.url);
+	const row = `<tr id="link_${link.id}">
+		<td><a target="_blank" href="${link.short_url}">${link.short_url}</a></td>
+		<td><a target="_blank" href="${escpaedURL}">${escpaedURL}</a></td>
+		<td><a title="Delete" href="/api/v1/links/${link.id}/delete?redirect=1">Delete</a></td>
+	</tr>`;
+	const rowTmp = document.createElement("tbody");//Fake
+	rowTmp.innerHTML = row;
+	return rowTmp.firstChild! as HTMLElement;
 }
 
 function addLinkRow(id: string, no_refresh_if_exist?: boolean) {
@@ -75,13 +92,13 @@ function addLinkRow(id: string, no_refresh_if_exist?: boolean) {
 		return;
 	}
 	const ele = document.getElementById("links_table")!;
-	getLinkRow(id, function(newLink) {
-		if(!newLink) {
-			return;
-		}
-		ele.insertBefore(newLink, ele.firstChild);
-		setupLinkJS(newLink);
-	});
+	const newLink = getLinkRow(id);
+	if (!newLink) {
+		removeLinkRow(id);
+		return;
+	}
+	ele.insertBefore(newLink, ele.firstChild);
+	setupLinkJS(newLink);
 }
 
 function removeLinkRow(id: string) {
@@ -114,28 +131,21 @@ function refreshLinks() {
 	return false;
 }
 
-interface LinkInfo {
-	short_url: string;
-	user: number;
-	url: string;
-	time: number;
-	id: string;
-}
-
-interface LinkPush {
-	link: LinkInfo;
-}
-
 $(() => {
 	setupLinkJS($('#links_table'));
 
 	pushHandlers['link:create'] = function (data: LinkPush) {
+		LINKS[data.link.id] = data.link;
 		addLinkRow(data.link.id);
 	};
 	pushHandlers['link:delete'] = function (data: LinkPush) {
+		delete LINKS[data.link.id];
 		removeLinkRow(data.link.id);
 	};
 	pushHandlers['link:refresh'] = function (data: LinkPush) {
+		for (const key of Object.keys(data.link)) {
+			(LINKS[data.link.id] as any)[key] = (data.link as any)[key];
+		}
 		refreshLinkRow(data.link.id);
 	};
 

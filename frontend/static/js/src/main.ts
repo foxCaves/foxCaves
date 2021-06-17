@@ -11,6 +11,11 @@ function loadDone() {
 
 const sizePostFixes = [" B", " kB", " MB", " GB", " TB", " PB", " EB", " ZB", " YB"];
 
+function formatDate(time: number) {
+	const d = new Date(time * 1000);
+	return d.toISOString();
+}
+
 function formatSize(size: number) {
 	let sinc = 0;
 
@@ -24,6 +29,10 @@ function formatSize(size: number) {
 	size = Math.ceil(size * 100.0) / 100.0;
 
 	return size + sizePostFixes[sinc]!;
+}
+
+function htmlEscape(str: string) {
+	return str;
 }
 
 function docReady() {

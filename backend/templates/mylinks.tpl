@@ -9,12 +9,7 @@
 			<th>Actions</th>
 		</tr>
 	</thread>
-	<tbody id="links_table">
-		<% for _, linkid in next, LINKS do
-			local link = link_get(linkid) %>
-			<%+ linkhtml %>
-		<% end %>
-	</tbody>
+	<tbody id="links_table"></tbody>
 </table>
 <script type="text/javascript" src="/static/js/mylinks.js"></script>
 <%+ foot %>

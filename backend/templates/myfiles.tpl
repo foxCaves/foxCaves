@@ -7,12 +7,7 @@
 	<input id="name-filter" type="text" placeholder="filter" class="input-medium search-query">
 </form>
 <br />
-<ul id="file_manager">
-	<% for _, fileid in next, FILES do
-		local file = file_get(fileid) %>
-		<%+ filehtml %>
-	<% end %>
-</ul>
+<ul id="file_manager"></ul>
 <div style="display: none;" id="recycle_bin"></div>
 <script type="text/javascript" src="/static/js/myfiles.js"></script>
 <%+ foot %>
