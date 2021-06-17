@@ -128,8 +128,7 @@ function ngx.ctx.make_new_login_key(userdata)
 	end
 
 	local str = randstr(64)
-	local str_pchan = randstr(32)
-	database:hmset(database.KEYS.USERS .. userdata.id, "loginkey", str, "pushchan", str_pchan)
+	database:hmset(database.KEYS.USERS .. userdata.id, "loginkey", str)
 
 	local allsessions = database:keys(database.KEYS.SESSIONS .. "*")
 	if type(allsessions) ~= "table" then allsessions = {} end
@@ -143,7 +142,6 @@ function ngx.ctx.make_new_login_key(userdata)
 		end
 		database:exec()
 		ngx.ctx.user.loginkey = str
-		ngx.ctx.user.pushchan = str_pchan
 		ngx.ctx.send_login_key()
 	else
 		database:multi()

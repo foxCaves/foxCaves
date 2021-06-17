@@ -50,7 +50,7 @@ function docReady() {
 $(() => {
 	docReady();
 
-	if(PUSH_CHANNEL == "") {
+	if (USER_ID < 0) {
 		return;
 	}
 
@@ -77,7 +77,7 @@ $(() => {
 		}
 
 		const useSSL = (window.location.protocol == "https:");
-		const socket = new WebSocket((useSSL ? "wss:" : "ws:") + window.location.hostname + "/api/v1/ws/events?channel=" + PUSH_CHANNEL);
+		const socket = new WebSocket((useSSL ? "wss:" : "ws:") + window.location.hostname + "/api/v1/ws/events");
 		currentSocket = socket;
 
 		function reconnectInner() {

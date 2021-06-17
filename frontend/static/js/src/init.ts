@@ -7,6 +7,6 @@ function preventDefault(evt: Event | JQuery.Event) {
 	evt.preventDefault();
 }
 
-declare const PUSH_CHANNEL: string;
+declare const USER_ID: number;
 declare const SHORT_URL: string;
 declare const TOTALBYTES: number;
