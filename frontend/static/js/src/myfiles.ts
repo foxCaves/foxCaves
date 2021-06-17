@@ -266,7 +266,7 @@ function setupDropZone() {
 
 function refreshFiles() {
 	$.get(`/api/v1/files?t=${Date.now()}`, function(data) {
-		const files = data as FileInfo[];
+		const files = sortByTime(data as FileInfo[]);
 		const files_rev: { [key: string]: boolean } = {};
 		for (const file of files) {
 			FILES[file.id] = file;

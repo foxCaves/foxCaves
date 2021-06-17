@@ -107,7 +107,7 @@ function removeLinkRow(id: string) {
 
 function refreshLinks() {
 	$.get(`/api/v1/links?t=${Date.now()}`, function(data) {
-		const links = data as LinkInfo[];
+		const links = sortByTime(data as LinkInfo[]);
 		const links_rev: { [key: string]: boolean } = {};
 		for (const link of links) {
 			LINKS[link.id] = link;

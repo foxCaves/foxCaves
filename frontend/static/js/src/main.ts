@@ -9,6 +9,15 @@ function loadDone() {
 	}
 }
 
+interface TimedElement {
+	time: number;
+}
+function sortByTime<T extends TimedElement>(arr: Array<T>) {
+	return arr.sort((a, b) => {
+		return a.time - b.time;
+	});
+}
+
 const sizePostFixes = [" B", " kB", " MB", " GB", " TB", " PB", " EB", " ZB", " YB"];
 
 function formatDate(time: number) {
