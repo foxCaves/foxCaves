@@ -15,11 +15,15 @@ if not ws then
     return
 end
 
-local res, err = database:subscribe(database.KEYS.PUSH ..  ngx.ctx.user.id)
-if err then
+local function kick()
     ws:send_close()
     ngx.eof()
-    return
+    should_run = false
+end
+
+local res, err = database:subscribe(database.KEYS.PUSH ..  ngx.ctx.user.id)
+if err then
+    return kick()
 end
 
 local should_run = true
@@ -28,9 +32,7 @@ local function websocket_read()
     while should_run do
         local data, typ, err = ws:recv_frame()
         if ws.fatal or typ == "close" or typ == "error" then
-            ws:send_close()
-            ngx.eof()
-            break
+            return kick()
         end
 		if err then
 			ws:send_ping()
@@ -45,16 +47,14 @@ local function redis_read()
     while should_run do
         local res, err = database:read_reply()
         if err and err ~= "timeout" then
-            ws:send_close()
-            ngx.eof()
-            break
+            return kick()
         end
         if res then
             res = res[3]
             ws:send_text(res)
             local decode = cjson.decode(res)
             if decode and decode.action == "kick" then
-                break
+                return kick()
             end
         end
     end
