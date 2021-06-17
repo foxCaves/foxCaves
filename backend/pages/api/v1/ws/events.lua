@@ -15,7 +15,7 @@ if not ws then
     return
 end
 
-local res, err = database:subscribe(database.KEYS.PUSH .. ngx.unescape_uri(ngx.var.arg_channel))
+local res, err = database:subscribe(database.KEYS.PUSH ..  ngx.ctx.user.id .. ":" .. ngx.unescape_uri(ngx.var.arg_channel))
 if err then
     ws:send_close()
     ngx.eof()
