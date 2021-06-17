@@ -50,7 +50,12 @@ local function redis_read()
             break
         end
         if res then
-            ws:send_text(res[3])
+            res = res[3]
+            ws:send_text(res)
+            local decode = cjson.decode(res)
+            if decode and decode.action == "kick" then
+                break
+            end
         end
     end
     should_run = false

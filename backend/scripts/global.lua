@@ -160,8 +160,11 @@ function ngx.ctx.get_version()
 	return ret:gsub("%s+", "")
 end
 
-function raw_push_action(data)
-	database:publish(database.KEYS.PUSH .. ngx.ctx.user.id, cjson.encode(data))
+function raw_push_action(data, user)
+	if not user then
+		user = ngx.ctx.user
+	end
+	database:publish(database.KEYS.PUSH .. user.id, cjson.encode(data))
 end
 
 function printTemplateAndClose(name, params)

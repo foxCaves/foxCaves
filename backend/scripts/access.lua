@@ -130,6 +130,10 @@ function ngx.ctx.make_new_login_key(userdata)
 	local str = randstr(64)
 	database:hmset(database.KEYS.USERS .. userdata.id, "loginkey", str)
 
+	raw_push_action({
+		action = "kick",
+	}, userdata)
+
 	local allsessions = database:keys(database.KEYS.SESSIONS .. "*")
 	if type(allsessions) ~= "table" then allsessions = {} end
 
