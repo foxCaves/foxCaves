@@ -47,7 +47,6 @@
 								<ul class="dropdown-menu">
 <% if G.ngx.ctx.user then %>
 									<li><a href="/myaccount">My account</a></li>
-									<!--<li><a href="/gopro">Go pro</a></li>-->
 									<!--<li class="divider"></li>
 									<li><a href="/cam">Camera Snapshot</a></li>-->
 									<li class="divider"></li>

@@ -12,7 +12,6 @@ interface UserInfo {
 	username: string;
 	usedbytes: number;
 	totalbytes: number;
-	is_pro: boolean;
 	pro_expiry: number;
 }
 let currentUser: UserInfo | undefined = undefined;

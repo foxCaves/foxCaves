@@ -17,8 +17,7 @@ local KILOBYTE = 1024
 local MEGABYTE = KILOBYTE * 1024
 local GIGABYTE = MEGABYTE * 1024
 
-local STORAGE_BASIC = 1 * GIGABYTE
-local STORAGE_PRO = 10 * GIGABYTE
+local STORAGE_BASE = 1 * GIGABYTE
 
 local function check_auth(userdata, password, options)
 	local login_with_apikey = options.login_with_apikey
@@ -77,16 +76,9 @@ function ngx.ctx.login(username_or_id, password, options)
 			end
 
 			result.id = tonumber(username_or_id)
-			result.pro_expiry = tonumber(result.pro_expiry or 0)
 			result.usedbytes = tonumber(result.usedbytes or 0)
 			result.bonusbytes = tonumber(result.bonusbytes or 0)
-			result.is_pro = (result.pro_expiry > ngx.time())
-			if result.is_pro then
-				result.totalbytes = STORAGE_PRO
-			else
-				result.totalbytes = STORAGE_BASIC
-			end
-			result.totalbytes = result.totalbytes + result.bonusbytes
+			result.totalbytes = STORAGE_BASE + result.bonusbytes
 			ngx.ctx.user = result
 
 			return ngx.ctx.LOGIN_SUCCESS
