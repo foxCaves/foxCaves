@@ -31,24 +31,19 @@
 							<%= ADDLINKS %>
 						</ul>
 						<ul class="nav pull-right">
-<% if G.ngx.ctx.user then
-local usedbytes = G.ngx.ctx.user.usedbytes
-local totalbytes = G.ngx.ctx.user.totalbytes
-local format_size = G.ngx.ctx.format_size
-local usedperc = G.math.ceil((usedbytes / totalbytes) * 100) %>
+<% if G.ngx.ctx.user then %>
 							<li>
 								<div class="progress" style="width: 200px; top: 10px; margin-right: 10px;">
-									<script type="text/javascript">const TOTALBYTES = <%= G.tostring(totalbytes) %>;</script>
 									<div class="bar bar-success" style="width: 100%;"></div>
-									<div class="bar bar-danger" id="used_bytes_bar" style="width: <%= usedperc %>%;"></div>
+									<div class="bar bar-danger" id="used_bytes_bar" style="width: 0%;"></div>
 									<div style="float: left; position: relative; width: 100%; text-align: center; color: white;">
-										<span id="used_bytes_text"><%= format_size(usedbytes) %></span> / <%= format_size(totalbytes) %>
+										<span id="used_bytes_text">?</span> / <span id="total_bytes_text">?</span>
 									</div>
 								</div>
 							</li>
 <% end %>
 							<li class="dropdown">
-								<a class="dropdown-toggle" data-toggle="dropdown">Welcome, <% if G.ngx.ctx.user then %><%= G.ngx.ctx.escape_html(G.ngx.ctx.user.username) %><% if G.ngx.ctx.user.is_pro then %> <span class="badge badge-level badge-pro">Pro</span><% end %><% else %>Guest<% end %> <b class="caret"></b></a>
+								<a class="dropdown-toggle" data-toggle="dropdown">Welcome, <span id="username_text">User</span> <b class="caret"></b></a>
 								<ul class="dropdown-menu">
 <% if G.ngx.ctx.user then %>
 									<li><a href="/myaccount">My account</a></li>

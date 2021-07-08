@@ -1,5 +1,4 @@
 <%+ head %>
-<%+ account_type %>
 <div class="container well well-small">
 	<h4>Which benefits does a pro account have?</h4>
 	<ul>

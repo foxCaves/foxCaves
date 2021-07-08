@@ -65,16 +65,40 @@ function docReady() {
 	}
 }
 
-$(() => {
+async function fetchCurrentUser() {
+	const res = await fetch('/api/v1/users/@me');
+	if (res.status !== 200) {
+		currentUser = undefined;
+		return;
+	}
+	currentUser = await res.json();
+}
+
+function renderUsedSpace() {
+	if (!currentUser) {
+		return;
+	}
+	$('#used_bytes_text').text(formatSize(currentUser.usedbytes));
+	$('#total_bytes_text').text(formatSize(currentUser.totalbytes));
+	$('#used_bytes_bar').css('width', Math.ceil((currentUser.usedbytes / currentUser.totalbytes) * 100.0) + '%');
+}
+
+$(async () => {
 	docReady();
 
-	if (USER_ID < 0) {
+	await fetchCurrentUser();
+
+	if (!currentUser) {
 		return;
 	}
 
+	$('#username_text').text(currentUser.username);
+
+	renderUsedSpace();
+
 	pushHandlers.usedbytes = function(data) {
-		$('#used_bytes_text').text(formatSize(data.usedbytes));
-		$('#used_bytes_bar').css('width', Math.ceil((data.usedbytes / TOTALBYTES) * 100.0) + '%');
+		currentUser!.usedbytes = data.usedbytes;
+		renderUsedSpace();
 		return true;
 	};
 

@@ -1,5 +1,4 @@
 <%+ head %>
-<%+ account_type %>
 <div id="uploader"></div>
 <br />
 <h2 id="file-refresh">Manage files (<a class="pointer" onclick="return refreshFiles();">Refresh</a>)</h2>

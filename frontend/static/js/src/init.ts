@@ -7,6 +7,13 @@ function preventDefault(evt: Event | JQuery.Event) {
 	evt.preventDefault();
 }
 
-declare const USER_ID: number;
+interface UserInfo {
+	id: number;
+	username: string;
+	usedbytes: number;
+	totalbytes: number;
+	is_pro: boolean;
+	pro_expiry: number;
+}
+let currentUser: UserInfo | undefined = undefined;
 declare const SHORT_URL: string;
-declare const TOTALBYTES: number;
