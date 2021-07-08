@@ -164,6 +164,8 @@ end
 
 local cookies = ngx.var.http_Cookie
 if cookies then
+	local auth
+
 	auth = ngx.re.match(cookies, "^(.*; *)?sessionid=([a-zA-Z0-9]+)( *;.*)?$", "o")
 	if auth then
 		auth = auth[2]
