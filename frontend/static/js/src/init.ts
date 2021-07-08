@@ -12,7 +12,6 @@ interface UserInfo {
 	username: string;
 	usedbytes: number;
 	totalbytes: number;
-	pro_expiry: number;
 }
 let currentUser: UserInfo | undefined = undefined;
 declare const SHORT_URL: string;
