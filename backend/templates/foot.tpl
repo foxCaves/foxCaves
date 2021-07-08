@@ -16,14 +16,6 @@
 							<li>
 								<a>foxCaves &copy; 2021 (<%# ngx.ctx.get_version():sub(1,7) %>)</a>
 							</li>
-							<li class="dropdown">
-								<a class="dropdown-toggle" data-toggle="dropdown">Style</a>
-								<ul class="dropdown-menu">
-									<li><a href="/myaccount?setstyle=purple_fox">Purple Fox</a></li>
-									<li><a href="/myaccount?setstyle=red_fox">Red Fox</a></li>
-									<li><a href="/myaccount?setstyle=arctic_fox">Arctic Fox</a></li>
-								</ul>
-							</li>
 						</ul>
 					</div>
 				</div>

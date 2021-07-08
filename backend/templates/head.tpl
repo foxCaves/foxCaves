@@ -4,7 +4,7 @@
 		<link rel="stylesheet" type="text/css" href="/static/css/bootstrap.css" />
 		<link rel="stylesheet" type="text/css" href="/static/css/bootstrap-progressbar.css" />
 		<link rel="stylesheet" type="text/css" href="/static/css/main.css" />
-		<link rel="stylesheet" type="text/css" href="/static/css/<%= ((G.ngx.ctx.user and G.ngx.ctx.user.style) or "purple_fox") %>.css" />
+		<link rel="stylesheet" type="text/css" href="/static/css/purple_fox.css" />
 		<link rel="stylesheet" type="text/css" href="/static/css/prettify.css" />
 
 		<script type="text/javascript">window.SHORT_URL="<%= SHORT_URL %>";</script>
