@@ -1,9 +1,6 @@
 -- ROUTE:GET:/myfiles
 dofile(ngx.var.main_root .. "/scripts/global.lua")
 if not ngx.ctx.user then return ngx.redirect("/login") end
-dofile("scripts/fileapi.lua")
-
-local database = ngx.ctx.database
 
 local message = ""
 
