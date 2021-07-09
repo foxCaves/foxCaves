@@ -35,7 +35,7 @@ function file_get(fileid, user)
 	file.view_url = SHORT_URL .. "/v" .. file.id
 	file.direct_url = SHORT_URL .. "/f" .. file.id .. file.extension
 	file.download_url = SHORT_URL .. "/d" .. file.id .. file.extension
-	file.mimetype = MIMETYPES[file.extension] or "application/octet-stream"
+	file.mimetype = mimetypes[file.extension] or "application/octet-stream"
 	return file
 end
 
