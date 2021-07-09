@@ -116,21 +116,6 @@ function ngx.ctx.check_username(username)
 	return nil
 end
 
-local sizePostFixes = {" B", " kB", " MB", " GB", " TB", " PB", " EB", " ZB", " YB"}
-
-function ngx.ctx.format_size(size)
-	size = tonumber(size)
-	local sinc = 1
-	while size > 1024 do
-		sinc = sinc + 1
-		size = size / 1024
-		if sinc == 9 then
-			break
-		end
-	end
-	return (math.ceil(size * 100) / 100) .. assert(sizePostFixes[sinc], "No suitable postfix for file size")
-end
-
 local repTbl = {
 	["&"] = "&amp;",
 	["<"] = "&lt;",
