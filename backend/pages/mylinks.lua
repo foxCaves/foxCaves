@@ -13,5 +13,4 @@ elseif ngx.var.arg_delete_ok == "false" then
 	message = '<div class="alert alert-error">Could not delete the link <a href="/mylinks" class="close" data-dismiss="alert">x</a></div>'
 end
 
-local links = database:zrevrange(database.KEYS.USER_LINKS .. ngx.ctx.user.id, 0, -1)
-printTemplateAndClose("mylinks", {MAINTITLE = "My links", MESSAGE = message, LINKS = links, link_get = link_get})
+printTemplateAndClose("mylinks", {MAINTITLE = "My links", MESSAGE = message})

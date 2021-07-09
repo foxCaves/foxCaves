@@ -13,5 +13,4 @@ elseif ngx.var.arg_delete_ok == "false" then
 	message = '<div class="alert alert-error">Error deleting file <a href="/myfiles" class="close" data-dismiss="alert">x</a></div>'
 end
 
-local files = database:zrevrange(database.KEYS.USER_FILES .. ngx.ctx.user.id, 0, -1)
-printTemplateAndClose("myfiles", {MAINTITLE = "My files", MESSAGE = message, FILES = files, file_get = file_get})
+printTemplateAndClose("myfiles", {MAINTITLE = "My files", MESSAGE = message})
