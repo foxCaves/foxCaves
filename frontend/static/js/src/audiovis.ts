@@ -286,8 +286,11 @@ function makeSnake(bx?: number, by?: number): Snake {
 
 let currentlyOnKick = false;
 
-$(() => {
+function initAudiovis() {
 	canvasEle = document.getElementById("audiovis") as HTMLCanvasElement;
+	if (!canvasEle) {
+		return;
+	}
 
 	let winH: number;
 	let winW: number;
@@ -358,4 +361,4 @@ $(() => {
 
 	dancerInstance.bind("update", () => audiovisUpdate(dancerInstance));
 	dancerInstance.load(document.getElementById("audioplayer") as HTMLAudioElement);
-});
+}

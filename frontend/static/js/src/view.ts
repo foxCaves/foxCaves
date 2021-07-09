@@ -73,4 +73,6 @@ $(async () => {
 			}
 		});
 	}
+
+	initAudiovis();
 });
