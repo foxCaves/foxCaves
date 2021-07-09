@@ -18,6 +18,8 @@ async function loadFileInfo() {
 }
 
 $(async () => {
+	await loadFileInfo();
+
 	const previewWrapper = document.getElementById("preview-wrapper")!;
 
 	const preview = previewWrapper.childNodes[1]! as HTMLElement;
