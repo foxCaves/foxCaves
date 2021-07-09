@@ -1,6 +1,6 @@
 local lfs = require("lfs")
 
-dofile("mimetypes.lua")
+dofile(ngx.var.main_root .. "/scripts/mimetypes.lua")
 
 local FILE_STORAGE_PATH = "/var/www/foxcaves/storage/"
 local database = ngx.ctx.database
