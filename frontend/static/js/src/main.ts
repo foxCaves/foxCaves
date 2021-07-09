@@ -69,9 +69,13 @@ async function fetchCurrentUser() {
 	const res = await fetch('/api/v1/users/@me');
 	if (res.status !== 200) {
 		currentUser = undefined;
+		$('.show_loginonly').hide();
+		$('.show_guestonly').show();
 		return;
 	}
 	currentUser = await res.json();
+	$('.show_loginonly').show();
+	$('.show_guestonly').hide();
 }
 
 function renderUsedSpace() {

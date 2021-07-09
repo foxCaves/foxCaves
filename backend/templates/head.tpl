@@ -21,18 +21,13 @@
 					<a class="brand" href="/">foxCaves</a>
 					<div class="nav-collapse">
 						<ul class="nav" id="nav-main">
-							<% if G.ngx.ctx.user then %>
-								<li data-menu-id="2"><a href="/myfiles">My files</a></li>
-								<li data-menu-id="3"><a href="/mylinks">My links</a></li>
-							<% else %>
-								<li data-menu-id="2"><a href="/login">Login</a></li>
-								<li data-menu-id="3"><a href="/register">Register</a></li>
-							<% end %>
-							<%= ADDLINKS %>
+							<li data-menu-id="2" class="show_loginonly"><a href="/myfiles">My files</a></li>
+							<li data-menu-id="3" class="show_loginonly"><a href="/mylinks">My links</a></li>
+							<li data-menu-id="2" class="show_guestonly"><a href="/login">Login</a></li>
+							<li data-menu-id="3" class="show_guestonly"><a href="/register">Register</a></li>
 						</ul>
 						<ul class="nav pull-right">
-<% if G.ngx.ctx.user then %>
-							<li>
+							<li class="show_loginonly">
 								<div class="progress" style="width: 200px; top: 10px; margin-right: 10px;">
 									<div class="bar bar-success" style="width: 100%;"></div>
 									<div class="bar bar-danger" id="used_bytes_bar" style="width: 0%;"></div>
@@ -41,20 +36,16 @@
 									</div>
 								</div>
 							</li>
-<% end %>
 							<li class="dropdown">
 								<a class="dropdown-toggle" data-toggle="dropdown">Welcome, <span id="username_text">User</span> <b class="caret"></b></a>
 								<ul class="dropdown-menu">
-<% if G.ngx.ctx.user then %>
-									<li><a href="/myaccount">My account</a></li>
-									<!--<li class="divider"></li>
-									<li><a href="/cam">Camera Snapshot</a></li>-->
-									<li class="divider"></li>
-									<li><a href="/login?logout=1">Logout</a></li>
-<% else %>
-									<li><a href="/login">Login</a></li>
-									<li><a href="/register">Register</a></li>
-<% end %>
+									<li class="show_loginonly"><a href="/myaccount">My account</a></li>
+									<!--<li class="show_loginonly divider"></li>
+									<li class="show_loginonly"><a href="/cam">Camera Snapshot</a></li>-->
+									<li class="show_loginonly divider"></li>
+									<li class="show_loginonly"><a href="/login?logout=1">Logout</a></li>
+									<li class="show_guestonly"><a href="/login">Login</a></li>
+									<li class="show_guestonly"><a href="/register">Register</a></li>
 								</ul>
 							</li>
 						</ul>

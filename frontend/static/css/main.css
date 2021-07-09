@@ -27,6 +27,10 @@ html::-webkit-resizer {
 	display: none;
 }
 
+.show_loginonly {
+	display: none;
+}
+
 #file_manager {
 	margin: 10px 10px 10px 10px;
 }
