@@ -30,6 +30,10 @@ function preventDefault(evt: Event | JQuery.Event) {
 	evt.preventDefault();
 }
 
+function createMessage(message: string, type: string = 'success') {
+	return `<div class="alert alert-${type}">${message} <a class="pointer close" data-dismiss="alert">x</a></div>`;
+}
+
 interface UserInfo {
 	id: number;
 	username: string;
