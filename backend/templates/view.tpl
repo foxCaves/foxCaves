@@ -1,40 +1,40 @@
 <%+ head %>
-	<h3>Viewing file: <%= file.name %></h3>
+	<h3>Viewing file: <span id="view-name"></span></h3>
 	<div class="well well-small" style="text-align: left;">
 		<form class="form-horizontal">
 			<div class="control-group">
 				<label class="control-label">Uploaded by</label>
-				<div class="controls" style="padding-top: 5px;"><%= owner %></div>
+				<div class="controls" id="view-owner" style="padding-top: 5px;">Loading...</div>
 			</div>
 			<div class="control-group">
 				<label class="control-label">Uploaded on</label>
-				<div class="controls" style="padding-top: 5px;"><%= G.os.date("%d.%m.%Y %H:%M", file.time) %></div>
+				<div class="controls" id="view-time" style="padding-top: 5px;">Loading...</div>
 			</div>
 			<div class="control-group">
 				<label class="control-label">Size</label>
-				<div class="controls" style="padding-top: 5px;"><%= G.ngx.ctx.format_size(file.size) %></div>
+				<div class="controls" id="view-size" style="padding-top: 5px;">Loading...</div>
 			</div>
 			<div class="control-group">
 				<label class="control-label" for="view-link">View link</label>
 				<div class="controls">
-					<input readonly="readonly" id="view-link" type="text" value="<%= file.view_url %>" />
+					<input readonly="readonly" id="view-link" type="text" value="Loading..." />
 				</div>
 			</div>
 			<div class="control-group">
 				<label class="control-label" for="direct-link">Direct link</label>
 				<div class="controls">
-					<input readonly="readonly" id="direct-link" type="text" value="<%= file.direct_url %>" />
+					<input readonly="readonly" id="direct-link" type="text" value="Loading.." />
 				</div>
 			</div>
 			<div class="control-group">
 				<label class="control-label" for="download-link">Download link</label>
 				<div class="controls">
-					<input readonly="readonly" id="download-link" type="text" value="<%= file.download_url %>" />
+					<input readonly="readonly" id="download-link" type="text" value="Loading.." />
 				</div>
 			</div>
 		</form>
 	</div>
-	<a href="<%= file.download_url %>" class="btn btn-large btn-block btn-primary">Download file</a>
+	<a href="#" id="download-button" class="btn btn-large btn-block btn-primary">Download file</a>
 	<div id="preview-wrapper">
 	<% if file.type == FILE_TYPE_IMAGE then %>
 		<a href="<%= file.direct_url %>"><img src="<%= file.direct_url %>"></a>

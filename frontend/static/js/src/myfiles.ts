@@ -1,28 +1,6 @@
-interface FileInfo {
-	extension: string;
-	download_url: string;
-	name: string;
-	time: number;
-	id: string;
-	thumbnail_url?: string;
-	thumbnail_image: string;
-	user: number;
-	type: number;
-	size: number;
-	view_url: string;
-	direct_url: string;
-}
-
 interface FilePush {
 	file: FileInfo;
 }
-
-const FILE_TYPE_OTHER = 0;
-const FILE_TYPE_IMAGE = 1;
-const FILE_TYPE_TEXT = 2;
-const FILE_TYPE_VIDEO = 3;
-const FILE_TYPE_AUDIO = 4;
-const FILE_TYPE_IFRAME = 5;
 
 const FILES: { [key: string]: FileInfo } = {};
 
