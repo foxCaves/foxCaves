@@ -7,9 +7,9 @@ async function loadFileInfo() {
 	document.getElementById('view-name')!.innerText = file.name;
 	document.getElementById('view-time')!.innerText = formatDate(file.time);
 	document.getElementById('view-size')!.innerText = formatSize(file.size);
-	document.getElementById('view-link')!.innerText = file.view_url;
-	document.getElementById('direct-link')!.innerText = file.direct_url;
-	document.getElementById('download-link')!.innerText = file.download_url;
+	(document.getElementById('view-link')! as HTMLInputElement).value = file.view_url;
+	(document.getElementById('direct-link')! as HTMLInputElement).value = file.direct_url;
+	(document.getElementById('download-link')! as HTMLInputElement).value = file.download_url;
 	(document.getElementById('download-button')! as HTMLAnchorElement).href = file.download_url;
 
 	const resU = await fetch(`/api/v1/users/${file.user}`);
