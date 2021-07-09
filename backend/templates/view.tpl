@@ -35,7 +35,7 @@
 		</form>
 	</div>
 	<a href="#" id="download-button" class="btn btn-large btn-block btn-primary">Download file</a>
-	<div id="preview-wrapper">Loading...</div>
+	<div id="preview-wrapper"><h5>Loading...</h5></div>
 	<script type="text/javascript" src="/static/js/view.js"></script>
 	<script type="text/javascript" src="/static/js/dancer.js"></script>
 	<script type="text/javascript" src="/static/js/audiovis.js"></script>
