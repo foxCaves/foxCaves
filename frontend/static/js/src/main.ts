@@ -69,13 +69,23 @@ async function fetchCurrentUser() {
 	const res = await fetch('/api/v1/users/@me');
 	if (res.status !== 200) {
 		currentUser = undefined;
-		$('.show_loginonly').hide();
-		$('.show_guestonly').show();
+		fetchCurrentUserDone();
 		return;
 	}
 	currentUser = await res.json();
-	$('.show_loginonly').show();
-	$('.show_guestonly').hide();
+	fetchCurrentUserDone();
+}
+
+function fetchCurrentUserDone() {
+	if (currentUser) {
+		$('.show_loginonly').show();
+		$('.show_guestonly').hide();
+	} else {
+		$('.show_loginonly').hide();
+		$('.show_guestonly').show();
+	}
+	const evt = new Event('fetchCurrentUserDone');
+	document.dispatchEvent(evt);
 }
 
 function renderUsedSpace() {

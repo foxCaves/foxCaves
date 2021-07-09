@@ -10,6 +10,8 @@ function preventDefault(evt: Event | JQuery.Event) {
 interface UserInfo {
 	id: number;
 	username: string;
+	email: string;
+	apikey: string;
 	usedbytes: number;
 	totalbytes: number;
 }

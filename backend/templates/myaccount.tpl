@@ -1,6 +1,6 @@
 <%+ head %>
 <h2>Manage account</h2>
-<form action="" method="post" class="form-horizontal">
+<form id="account_form" action="" method="post" class="form-horizontal">
 	<div class="control-group">
 		<label class="control-label">Current password</label>
 		<div class="controls">
@@ -29,7 +29,7 @@
 	<div class="control-group">
 		<label class="control-label" for="newemail">New E-Mail</label>
 		<div class="controls">
-			<input type="email" name="email" id="newemail" placeholder="New email" value="<%= G.ngx.ctx.escape_html(G.ngx.ctx.user.email) %>" />
+			<input type="email" name="email" id="newemail" placeholder="New email" value="Loading..." />
 		</div>
 	</div>
 	<div class="control-group">
@@ -40,7 +40,7 @@
 	<legend>API key</legend>
 	<div class="control-group">
 		<div class="controls">
-			<input type="text" name="apikey" readonly id="apikey" value="<%= G.ngx.ctx.escape_html(G.ngx.ctx.user.apikey) %>" />
+			<input type="text" name="apikey" readonly id="apikey" value="Loading..." />
 		</div>
 	</div>
 	<div class="control-group">
@@ -61,4 +61,5 @@
 		</div>
 	</div>-->
 </form>
+<script type="text/javascript" src="/static/js/myaccount.js"></script>
 <%+ foot %>
