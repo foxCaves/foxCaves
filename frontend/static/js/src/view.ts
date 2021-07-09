@@ -45,19 +45,12 @@ async function loadFileInfo() {
 	(document.getElementById('download-button')! as HTMLAnchorElement).href = file.download_url;
 	loadOwnerInfo(file.user).catch((e) => console.error(e));
 
-	const preview = await makeFilePreview(file);
+	const previewHTML = await makeFilePreview(file);
 	const previewWrapper = document.getElementById("preview-wrapper")!;
-	previewWrapper.innerHTML = preview || '<h5>File cannot be viewed. Download it.</h5>';
-}
-
-$(async () => {
-	await loadFileInfo();
-
-	const previewWrapper = document.getElementById("preview-wrapper")!;
+	previewWrapper.innerHTML = previewHTML || '<h5>File cannot be viewed. Download it.</h5>';
 
 	const preview = previewWrapper.childNodes[1]! as HTMLElement;
-
-	if (preview.tagName.toLowerCase() === 'video') {
+	if (preview && preview.tagName && preview.tagName.toLowerCase() === 'video') {
 		preview.addEventListener("click", (ev) => {
 			const video = ev.target as HTMLVideoElement;
 			if(video.paused)
@@ -75,4 +68,8 @@ $(async () => {
 	}
 
 	initAudiovis();
+}
+
+$(() => {
+	loadFileInfo().catch((e) => console.error(e));
 });
