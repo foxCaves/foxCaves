@@ -6,6 +6,7 @@ interface FileInfo {
 	extension: string;
 	download_url: string;
 	name: string;
+	mimetype: string;
 	time: number;
 	id: string;
 	thumbnail_url?: string;

@@ -3,7 +3,6 @@ mimetypes = {
 	[".bmp"] = "image/bmp",
 	[".c"] = "text/plain",
 	[".cpp"] = "text/plain",
-	[".cpp"] = "text/plain",
 	[".cs"] = "text/plain",
 	[".css"] = "text/css",
 	[".flac"] = "audio/flac",

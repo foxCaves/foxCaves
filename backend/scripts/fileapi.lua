@@ -1,5 +1,7 @@
 local lfs = require("lfs")
 
+dofile("mimetypes.lua")
+
 local FILE_STORAGE_PATH = "/var/www/foxcaves/storage/"
 local database = ngx.ctx.database
 
@@ -33,6 +35,7 @@ function file_get(fileid, user)
 	file.view_url = SHORT_URL .. "/v" .. file.id
 	file.direct_url = SHORT_URL .. "/f" .. file.id .. file.extension
 	file.download_url = SHORT_URL .. "/d" .. file.id .. file.extension
+	file.mimetype = MIMETYPES[file.extension] or "application/octet-stream"
 	return file
 end
 
