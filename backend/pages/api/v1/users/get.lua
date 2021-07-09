@@ -13,5 +13,6 @@ if (not user) or (user == ngx.null) or (not user.username) or (user.username == 
     ngx.exit(404)
     return
 end
+user.id = id
 ngx.print(cjson.encode(user))
 ngx.eof()
