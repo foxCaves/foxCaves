@@ -1,5 +1,5 @@
 <%+ head %>
-	<h3>Viewing file: <span id="view-name"></span></h3>
+	<h3>Viewing file: <span id="view-name">Loading...</span></h3>
 	<div class="well well-small" style="text-align: left;">
 		<form class="form-horizontal">
 			<div class="control-group">
