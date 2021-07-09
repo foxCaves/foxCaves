@@ -158,7 +158,7 @@ function ngx.ctx.make_new_api_key(userdata)
 		end
 	end
 	local str = randstr(64)
-	ngx.ctx.user.apikey = str
+	userdata.apikey = str
 	database:hset(database.KEYS.USERS .. userdata.id, "apikey", str)
 end
 
