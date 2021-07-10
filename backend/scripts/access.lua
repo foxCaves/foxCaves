@@ -67,7 +67,7 @@ function ngx.ctx.login(username_or_id, password, options)
 						break
 					end
 				end
-				ngx.header['Set-Cookie'] = {"sessionid=" .. sessionid .. "; HttpOnly"}
+				ngx.header['Set-Cookie'] = {"sessionid=" .. sessionid .. "; HttpOnly; Path=/; Secure;"}
 				result.sessionid = sessionid
 
 				sessionid = database.KEYS.SESSIONS .. sessionid
@@ -89,7 +89,7 @@ function ngx.ctx.login(username_or_id, password, options)
 end
 
 function ngx.ctx.logout()
-	ngx.header['Set-Cookie'] = {"sessionid=NULL", "loginkey=NULL"}
+	ngx.header['Set-Cookie'] = {"sessionid=NULL; HttpOnly; Path=/; Secure;", "loginkey=NULL; HttpOnly; Path=/; Secure;"}
 	if (not ngx.ctx.user) or (not ngx.ctx.user.sessionid) then return end
 	database:del(database.KEYS.SESSIONS .. ngx.ctx.user.sessionid)
 	ngx.ctx.user = nil
@@ -99,7 +99,7 @@ function ngx.ctx.send_login_key()
 	if not ngx.ctx.user.remember_me then return end
 	local expires = "; Expires=" .. ngx.cookie_time(ngx.time() + (30 * 24 * 60 * 60))
 	local hdr = ngx.header['Set-Cookie']
-	expires = "loginkey=" .. ngx.ctx.user.id .. "." .. ngx.encode_base64(hash_login_key()) .. expires .. "; HttpOnly"
+	expires = "loginkey=" .. ngx.ctx.user.id .. "." .. ngx.encode_base64(hash_login_key()) .. expires .. "; HttpOnly; Path=/; Secure;"
 	if type(hdr) == "table" then
 		table.insert(hdr, expires)
 	elseif hdr then
