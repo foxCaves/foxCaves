@@ -43,7 +43,7 @@
 									<!--<li class="show_loginonly divider"></li>
 									<li class="show_loginonly"><a href="/cam">Camera Snapshot</a></li>-->
 									<li class="show_loginonly divider"></li>
-									<li class="show_loginonly"><a href="/login?logout=1">Logout</a></li>
+									<li class="show_loginonly"><a class="pointer" onclick="doLogout();">Logout</a></li>
 									<li class="show_guestonly"><a href="/login">Login</a></li>
 									<li class="show_guestonly"><a href="/register">Register</a></li>
 								</ul>

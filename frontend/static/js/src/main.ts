@@ -88,6 +88,11 @@ function fetchCurrentUserDone() {
 	document.dispatchEvent(evt);
 }
 
+async function doLogout() {
+	await fetch('/api/v1/users/@me/logout', { method: 'POST' });
+	document.location.href = '/';
+}
+
 function renderUsedSpace() {
 	if (!currentUser) {
 		return;
@@ -96,6 +101,28 @@ function renderUsedSpace() {
 	$('#total_bytes_text').text(formatSize(currentUser.totalbytes));
 	$('#used_bytes_bar').css('width', Math.ceil((currentUser.usedbytes / currentUser.totalbytes) * 100.0) + '%');
 }
+
+async function submitForm(url: string, method: string, data: { [key: string]: string }) {
+    const res = await fetch(url, {
+        method,
+        body: new URLSearchParams(data),
+    });
+    if (res.status === 200) {
+        return { ok: true };
+    }
+    const resp = await res.json();
+    return { ok: false, error: resp.error };
+}
+
+async function submitFormSimple(url: string, method: string, data: { [key: string]: string }) {
+    const res = await submitForm(url, method, data);
+    if (res.ok) {
+        window.location.reload();
+        return;
+    }
+    alert(`Error: ${res.error}`);
+}
+
 
 $(async () => {
 	docReady();
