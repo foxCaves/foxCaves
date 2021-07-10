@@ -17,7 +17,7 @@
 	<div class="control-group">
 		<div class="controls">
 			<label class="checkbox" for="id">
-				<input type="checkbox" name="remember" id="remember" value="yes" /><label for="remember"> Remember me</label>
+				<input type="checkbox" name="remember" id="remember" value="true" /><label for="remember"> Remember me</label>
 			</label>
 			<a href="/email/forgotpwd">Forgot your password?</a><br /><br />
 			<input type="button" onclick="submitLoginFormSimple();" class="btn" name="login" value="Login" />

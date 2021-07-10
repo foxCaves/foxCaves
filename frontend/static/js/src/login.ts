@@ -7,6 +7,7 @@ async function submitLoginFormSimple() {
     if (await submitFormSimple('/api/v1/users/@me/login', 'POST', {
         username: form.username.value,
         password: form.password.value,
+        remember: form.remember.checked ? 'true' : 'false',
     })) {
         document.location.href = "/myfiles";
     }

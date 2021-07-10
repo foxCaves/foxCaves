@@ -24,7 +24,7 @@ elseif result == ngx.ctx.LOGIN_BAD_PASSWORD then
 elseif result ~= ngx.ctx.LOGIN_SUCCESS then
     api_error("Unknown login error")
 else
-    if args.remember == "yes" then
+    if args.remember == "true" then
         ngx.ctx.user.remember_me = true
         ngx.ctx.send_login_key()
     end
