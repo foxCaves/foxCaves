@@ -1,4 +1,4 @@
--- ROUTE:PUT:/api/v1/users/@me
+-- ROUTE:PATCH:/api/v1/users/@me
 dofile(ngx.var.main_root .. "/scripts/global.lua")
 dofile("scripts/api_login.lua")
 if not ngx.ctx.user then return end
@@ -12,9 +12,9 @@ local args = ngx.ctx.get_post_args()
 local user = ngx.ctx.user
 local rediskey = database.KEYS.USERS .. user.id
 
-if ngx.hmac_sha1(user.username, args.old_password or "") ~= user.password then
+if ngx.hmac_sha1(user.username, args.current_password or "") ~= user.password then
     ngx.status = 403
-    ngx.print(cjson.encode({ error = "old_password invalid" }))
+    ngx.print(cjson.encode({ error = "current_password invalid" }))
     return
 end
 

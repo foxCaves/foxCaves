@@ -4,7 +4,7 @@
 	<div class="control-group">
 		<label class="control-label">Current password</label>
 		<div class="controls">
-			<input type="password" name="old_password" placeholder="Current password" value="" /> (Required for all actions)
+			<input type="password" name="current_password" placeholder="Current password" value="" /> (Required for all actions)
 		</div>
 	</div>
 	<legend>Change password</legend>
@@ -22,7 +22,7 @@
 	</div>
 	<div class="control-group">
 		<div class="controls">
-			<input type="submit" name="change_password" class="btn" value="Change password" />
+			<input type="button" onclick="submitChangePassword();" name="change_password" class="btn" value="Change password" />
 		</div>
 	</div>
 	<legend>Change E-Mail</legend>
@@ -34,7 +34,7 @@
 	</div>
 	<div class="control-group">
 		<div class="controls">
-			<input type="submit" name="change_email" class="btn" value="Change E-Mail" />
+			<input type="button" onclick="submitChangeEmail();" name="change_email" class="btn" value="Change E-Mail" />
 		</div>
 	</div>
 	<legend>API key</legend>
@@ -45,21 +45,21 @@
 	</div>
 	<div class="control-group">
 		<div class="controls">
-			<input type="submit" name="regenerate_api_key" class="btn" value="Regenerate API key" />
+			<input type="button" onclick="submitChangeAPIKey();" name="regenerate_api_key" class="btn" value="Regenerate API key" />
 		</div>
 	</div>
 	<legend>Kill all other sessions</legend>
 	<div class="control-group">
 		<div class="controls">
-			<input type="submit" name="kill_sessions" class="btn" value="Kill all other sessions" />
+			<input type="button" onclick="submitKillSessions();" name="kill_sessions" class="btn" value="Kill all other sessions" />
 		</div>
 	</div>
-	<!--<legend>Delete Account</legend>
+	<legend>Delete Account</legend>
 	<div class="control-group">
 		<div class="controls">
-			<input type="submit" name="delete_account" class="btn" value="Delete Account">
+			<input type="button" onclick="submitDeleteAccount();" name="delete_account" class="btn" value="Delete Account">
 		</div>
-	</div>-->
+	</div>
 </form>
 <script type="text/javascript" src="/static/js/myaccount.js"></script>
 <%+ foot %>
