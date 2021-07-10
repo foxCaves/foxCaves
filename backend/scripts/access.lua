@@ -109,59 +109,6 @@ function ngx.ctx.send_login_key()
 	end
 end
 
-function ngx.ctx.make_new_login_key(userdata)
-	local send_userdata = false
-	if not userdata then
-		userdata = ngx.ctx.user
-		if not userdata then
-			return
-		end
-		send_userdata = true
-	end
-
-	local str = randstr(64)
-	database:hmset(database.KEYS.USERS .. userdata.id, "loginkey", str)
-
-	raw_push_action({
-		action = "kick",
-	}, userdata)
-
-	local allsessions = database:keys(database.KEYS.SESSIONS .. "*")
-	if type(allsessions) ~= "table" then allsessions = {} end
-
-	if send_userdata then
-		database:multi()
-		for _,v in next, allsessions do
-			if v ~= userdata.sessionid and database:get(v) == userdata.id then
-				database:del(v)
-			end
-		end
-		database:exec()
-		ngx.ctx.user.loginkey = str
-		ngx.ctx.send_login_key()
-	else
-		database:multi()
-		for _,v in next, allsessions do
-			if database:get(v) == userdata.id then
-				database:del(v)
-			end
-		end
-		database:exec()
-	end
-end
-
-function ngx.ctx.make_new_api_key(userdata)
-	if not userdata then
-		userdata = ngx.ctx.user
-		if not userdata then
-			return
-		end
-	end
-	local str = randstr(64)
-	userdata.apikey = str
-	database:hset(database.KEYS.USERS .. userdata.id, "apikey", str)
-end
-
 local cookies = ngx.var.http_Cookie
 if cookies then
 	local auth

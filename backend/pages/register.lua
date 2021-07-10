@@ -1,7 +1,6 @@
 -- ROUTE:GET,POST:/register
 dofile(ngx.var.main_root .. "/scripts/global.lua")
 if ngx.ctx.user then return ngx.redirect("/myaccount") end
---do ngx.print("Disabled") return ngx.eof() end
 
 local database = ngx.ctx.database
 
@@ -13,6 +12,7 @@ local email = ""
 local captcha_error = ""
 
 dofile("scripts/captcha.lua")
+dofile("scripts/userapi.lua")
 
 local args = ngx.ctx.get_post_args()
 if args and args.register then
@@ -44,41 +44,24 @@ if args and args.register then
 				if not valid then
 					message = "<div class='alert alert-error'>Error validating your CAPTCHA</div>"
 				else
-
-					local emailid
-					for i=1, 10 do
-						emailid = randstr(32)
-						local res = database:exists(database.KEYS.EMAILKEYS .. emailid)
-						if (not res) or (res == ngx.null) or (res == 0) then
-							break
-						else
-							emailid = nil
-						end
-					end
+					local userid = database:incr(database.KEYS.NEXTUSERID)
+					database:hmset(database.KEYS.USERS .. userid, "username", args.username, "email", email, "password", ngx.hmac_sha1(args.username, args.password))
+					database:sadd(database.KEYS.EMAILS, email:lower())
+					database:set(database.KEYS.USERNAME_TO_ID .. args.username:lower(), userid)
+					user_require_email_confirmation({
+						id = userid,
+						username = args.username,
+						email = email,
+					})
 
 					if not emailid then
 						message = "<div class='alert alert-error'>Internal error. Please try again</div>"
 					else
-						local userid = database:incr(database.KEYS.NEXTUSERID)
-
-						database:hmset(database.KEYS.USERS .. userid, "username", args.username, "email", email, "password", ngx.hmac_sha1(args.username, args.password))
-						database:sadd(database.KEYS.EMAILS, email:lower())
-						database:set(database.KEYS.USERNAME_TO_ID .. args.username:lower(), userid)
-
-						local email_text = "Hello, " .. args.username .. "!\n\nYou have recently registered on foxCaves.\nPlease click the following link to activate your account:\n"
-						email_text = email_text .. MAIN_URL .. "/emailcode?code=" .. emailid .. "\n\n"
-						email_text = email_text .. "Kind regards,\nfoxCaves Support"
-
-						database:hmset(database.KEYS.EMAILKEYS .. emailid, "user", userid, "action", "activation")
-						database:expire(172800) --48 hours
-
-						mail(email, "foxCaves - Welcome!", email_text, "noreply@foxcav.es", "foxCaves")
-
 						message = "<div class='alert alert-warning'>You are now registered. Please click the link in the activation E-Mail to log in.</div>"
 						template_name = "message"
 
-						ngx.ctx.make_new_login_key({id = userid})
-						ngx.ctx.make_new_api_key({id = userid})
+						make_new_login_key({id = userid})
+						make_new_api_key({id = userid})
 					end
 				end
 			end

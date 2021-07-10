@@ -3,6 +3,8 @@ dofile(ngx.var.main_root .. "/scripts/global.lua")
 dofile("scripts/api_login.lua")
 if not ngx.ctx.user then return end
 
+dofile("scripts/userapi.lua")
+
 local database = ngx.ctx.database
 ngx.header["Content-Type"] = "application/json"
 
@@ -51,11 +53,11 @@ if args.password then
 end
 
 if args.apikey then
-    ngx.ctx.make_new_api_key()
+    make_new_api_key()
 end
 
 if args.loginkey then
-	ngx.ctx.make_new_login_key()
+	make_new_login_key()
     user.loginkey = "CHANGED"
 end
 
