@@ -6,6 +6,8 @@ function user_require_email_confirmation(user)
 		end
 	end
 
+    local database = ngx.ctx.database
+
     local emailid
     for i=1, 10 do
         emailid = randstr(32)
@@ -43,6 +45,8 @@ function make_new_login_key(userdata)
 		end
 		send_userdata = true
 	end
+
+    local database = ngx.ctx.database
 
 	local str = randstr(64)
 	database:hmset(database.KEYS.USERS .. userdata.id, "loginkey", str)
@@ -84,5 +88,6 @@ function make_new_api_key(userdata)
 	end
 	local str = randstr(64)
 	userdata.apikey = str
+    local database = ngx.ctx.database
 	database:hset(database.KEYS.USERS .. userdata.id, "apikey", str)
 end
