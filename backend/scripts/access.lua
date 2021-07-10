@@ -122,7 +122,7 @@ if cookies then
 			if result and result ~= ngx.null then
 				ngx.ctx.login(result, nil, { nosession = true, login_with_id = true })
 				ngx.ctx.user.sessionid = auth
-				ngx.header['Set-Cookie'] = {"sessionid=" .. auth .. "; HttpOnly"}
+				ngx.header['Set-Cookie'] = {"sessionid=" .. auth .. "; HttpOnly; Path=/; Secure;"}
 				database:expire(sessID, SESSION_EXPIRE_DELAY)
 			end
 		end
