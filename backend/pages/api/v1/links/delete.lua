@@ -1,5 +1,4 @@
 -- ROUTE:DELETE:/api/v1/links/{id}
--- ROUTE:GET:/api/v1/links/{id}/delete
 dofile(ngx.var.main_root .. "/scripts/global.lua")
 dofile("scripts/api_login.lua")
 if not ngx.ctx.user then return end
@@ -19,14 +18,7 @@ if ok then
     })
 end
 
-if ngx.var.arg_redirect then
-    ngx.redirect("/mylinks?delete_ok=" .. tostring(ok))
-    ngx.eof()
-    return
-end
-
 if not ok then
     ngx.status = 400
 end
-
 ngx.eof()

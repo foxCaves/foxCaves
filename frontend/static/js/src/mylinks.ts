@@ -77,7 +77,7 @@ function getLinkRow(id: string) {
 	const row = `<tr id="link_${link.id}">
 		<td><a target="_blank" href="${link.short_url}">${link.short_url}</a></td>
 		<td><a target="_blank" href="${escpaedURL}">${escpaedURL}</a></td>
-		<td><a title="Delete" href="/api/v1/links/${link.id}/delete?redirect=1">Delete</a></td>
+		<td><a title="Delete" class="pointer">Delete</a></td>
 	</tr>`;
 	const rowTmp = document.createElement("tbody");//Fake
 	rowTmp.innerHTML = row;

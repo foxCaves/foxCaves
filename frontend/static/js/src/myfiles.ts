@@ -296,7 +296,7 @@ function getFileLI(id: string) {
 						${addDropdown}
 					</ul>
 				</div>
-				<a title="Delete" href="/api/v1/files/${file.id}/delete?redirect=1"><i class="icon-remove icon-white"></i> </a>
+				<a title="Delete" class="pointer"><i class="icon-remove icon-white"></i> </a>
 			</span>
 			${formatSize(file.size)}
 		</div>
