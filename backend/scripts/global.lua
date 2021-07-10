@@ -152,6 +152,12 @@ function raw_push_action(data, user)
 	database:publish(database.KEYS.PUSH .. user.id, cjson.encode(data))
 end
 
+function api_error(error, code)
+	ngx.status = code or 400
+	ngx.print(cjson.encode({ error = error }))
+	return ngx.eof()
+end
+
 function printTemplateAndClose(name, params)
 	ngx.print(load_template(name, params))
 	ngx.eof()

@@ -13,9 +13,7 @@ local user = ngx.ctx.user
 local rediskey = database.KEYS.USERS .. user.id
 
 if ngx.hmac_sha1(user.username, args.current_password or "") ~= user.password then
-    ngx.status = 403
-    ngx.print(cjson.encode({ error = "current_password invalid" }))
-    return
+    return api_error("current_password invalid", 403)
 end
 
 user.password = nil
