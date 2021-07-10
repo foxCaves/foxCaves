@@ -4,8 +4,10 @@ function getLoginForm() {
 
 async function submitLoginFormSimple() {
     const form = getLoginForm();
-    await submitFormSimple('/api/v1/users/@me/login', 'POST', {
+    if (await submitFormSimple('/api/v1/users/@me/login', 'POST', {
         username: form.username.value,
         password: form.password.value,
-    });
+    })) {
+        document.location.href = "/myfiles";
+    }
 }

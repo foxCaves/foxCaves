@@ -117,10 +117,10 @@ async function submitForm(url: string, method: string, data: { [key: string]: st
 async function submitFormSimple(url: string, method: string, data: { [key: string]: string }) {
     const res = await submitForm(url, method, data);
     if (res.ok) {
-        window.location.reload();
-        return;
+        return true;
     }
     alert(`Error: ${res.error}`);
+	return false;
 }
 
 

@@ -5,7 +5,9 @@ function getAccountForm() {
 async function submitAccountFormSimple(data: { [key: string]: string }) {
     const form = getAccountForm();
     data.current_password = form.current_password.value;
-    await submitFormSimple('/api/v1/users/@me', 'PATCH', data);
+    if (await submitFormSimple('/api/v1/users/@me', 'PATCH', data)) {
+        document.location.reload();
+    }
 }
 
 document.addEventListener('fetchCurrentUserDone', () => {
