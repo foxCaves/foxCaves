@@ -11,7 +11,7 @@ const liveUrlSplit = document.location.pathname.split('/');
 const LIVEDRAW_FILEID = liveUrlSplit[liveUrlSplit.length - 1]!;
 const LIVEDRAW_SID = liveUrlParams.get("sid");
 if (!LIVEDRAW_SID) {
-	document.location.href += '?sid=' + 'TODOGENERATE';
+	document.location.href += '?sid=' + randomString(12);
 }
 
 const MAX_BRUSH_WIDTH = 200;
