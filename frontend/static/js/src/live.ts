@@ -6,9 +6,16 @@ let brushSizeSlider: HTMLInputElement;
 let backgroundCanvasCTX: CanvasRenderingContext2D, foregroundCanvasCTX: CanvasRenderingContext2D, finalCanvasCTX: CanvasRenderingContext2D;
 let backgroundCanvas: HTMLCanvasElement, foregroundCanvas: HTMLCanvasElement, finalCanvas: HTMLCanvasElement;
 
-declare const LIVEDRAW_FILEID: string;
-declare const LIVEDRAW_SID: string;
-declare const MAX_BRUSH_WIDTH: number;
+const liveUrlParams = new URLSearchParams(document.location.search);
+const liveUrlSplit = document.location.pathname.split('/');
+const LIVEDRAW_FILEID = liveUrlSplit[liveUrlSplit.length - 1]!;
+const LIVEDRAW_SID = liveUrlParams.get("sid");
+if (!LIVEDRAW_SID) {
+	document.location.href += '?sid=' + 'TODOGENERATE';
+}
+
+const MAX_BRUSH_WIDTH = 200;
+let LIVEDRAW_FILE: FileInfo | undefined = undefined;
 
 enum PaintEvent {
 	WIDTH = "w",
@@ -603,7 +610,7 @@ const liveDrawInterface = {
 	save() {
 		const xhr = new XMLHttpRequest();
 		xhr.upload.addEventListener("load", () => { console.log("Upload complete"); }, false);
-		xhr.open("POST", "/api/v1/files?name=" + encodeURIComponent(LIVEDRAW_FILEID + "-edited.png"));//LIVEDRAW_FILEID defined in love.tpl
+		xhr.open("POST", "/api/v1/files?name=" + encodeURIComponent(LIVEDRAW_FILE!.name + "-edited.png"));
 		xhr.setRequestHeader("x-is-base64","yes");
 		xhr.send(finalCanvas.toDataURL("image/png").replace(/^data:image\/png;base64,/, "").replace(/[\r\n]/g,""));
 	}
@@ -752,7 +759,7 @@ const networking = {
 	},
 	connect() {
 		this.shouldConnect = true;
-		fetch(`/api/v1/files/${encodeURIComponent(LIVEDRAW_FILEID)}/livedraw?session=${encodeURIComponent(LIVEDRAW_SID)}`)
+		fetch(`/api/v1/files/${encodeURIComponent(LIVEDRAW_FILEID)}/livedraw?session=${encodeURIComponent(LIVEDRAW_SID!)}`)
 		.then(async (res) => {
 			const data = await res.json();
 			const webSocket = new WebSocket(data.url);
@@ -867,7 +874,7 @@ function loadImage() {
 
 		//window.setInterval(, 1/40);
 	};
-	baseImage.src = finalCanvas.getAttribute("data-file-url")!;
+	baseImage.src = LIVEDRAW_FILE!.direct_url;
 }
 
 function setupCanvas() {
@@ -980,8 +987,14 @@ function setupBrushes() {
 	}
 }
 
-$(() => {
+$(async () => {
+	(document.getElementById('inviteid') as HTMLInputElement).value = document.location.href;
 	brushSizeSlider = document.getElementById("brush-width-slider") as HTMLInputElement;
+	brushSizeSlider.max = MAX_BRUSH_WIDTH.toString();
+	document.getElementById('brush-width-slider-max')!.innerText = MAX_BRUSH_WIDTH.toString();
+
+	const res = await fetch(`/api/v1/files/${LIVEDRAW_FILEID}`);
+	LIVEDRAW_FILE = (await res.json()) as FileInfo;
 
 	setupCanvas();
 	setupColorSelector();

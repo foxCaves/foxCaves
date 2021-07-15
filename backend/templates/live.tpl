@@ -1,6 +1,5 @@
 <%+ head %>
-<% local RAWNAME = FILEID .. FILE.extension %>
-	<h3>Live drawing file: <%= FILE.name %></h3>
+	<h3>Live drawing file</h3>
 	<div class="well well-small" style="text-align: left;">
 		<form class="form-horizontal">
 			<div class="control-group" for="inviteid">
@@ -8,13 +7,13 @@
 					Invite others to this livedraw:
 				</label>
 				<div class="controls">
-					<input type="text" readonly="readonly" id="inviteid" value="<%= SHORT_URL %>/l<%= FILEID %>?<%= LDSID %>" />
+					<input type="text" readonly="readonly" id="inviteid" value="" />
 				</div>
 			</div>
 		</form>
 	</div>
 	<div style="text-align:center;" id="livedraw-wrapper">
-		<canvas id="livedraw" style="margin:auto" data-file-url="<%= SHORT_URL %>/f<%= RAWNAME %>"></canvas>
+		<canvas id="livedraw" style="margin:auto"></canvas>
 	</div>
 	<div id="live-draw-options">
 		<fieldset>
@@ -33,8 +32,8 @@
 			<input id="live-draw-font-input" type="text" style="display:none" value="Verdana" placeholder="font" />
 			<br />
 			<span style="color:white;">0</span>
-			<input id="brush-width-slider" type="range" value="10" min="1" max="<%= MAX_BRUSH_WIDTH %>" step="0.1" onchange="localUser.brushData.setWidth(this.value);" />
-			<span style="color:white;"><%= MAX_BRUSH_WIDTH %></span><br />
+			<input id="brush-width-slider" type="range" value="10" min="1" max="9999" step="0.1" onchange="localUser.brushData.setWidth(this.value);" />
+			<span id="brush-width-slider-max" style="color:white;">9999</span><br />
 			<div id="color-selector">
 				<svg id="color-selector-inner" xmlns="http://www.w3.org/2000/svg" version="1.1" >
 				  <line x1="0" y1="5" x2="10" y2="5" style="stroke:black;stroke-width:1px" />
@@ -47,10 +46,8 @@
 		<fieldset>
 			<legend>Utils</legend>
 			<% if G.ngx.ctx.user then %><input type="button" value="Save Image" class="btn" onclick="liveDrawInterface.save();" /><% end %>
-			<a href="/d/<%= RAWNAME %>" class="btn">Download original file</a>
 			<a class="btn" download="<%= LDSID %>-edited.png" onclick="this.href=finalCanvas.toDataURL('image/png')">Download</a>
 		</fieldset>
 	</div>
-	<script type="text/javascript">const LIVEDRAW_FILEID = "<%= FILEID %>"; const LIVEDRAW_SID = "<%= LDSID %>"; const MAX_BRUSH_WIDTH = <%= MAX_BRUSH_WIDTH %>;</script>
 	<script type="text/javascript" src="/static/js/live.js"></script>
 <%+ foot %>
