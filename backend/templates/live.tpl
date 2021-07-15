@@ -45,7 +45,7 @@
 		</fieldset>
 		<fieldset>
 			<legend>Utils</legend>
-			<% if G.ngx.ctx.user then %><input type="button" value="Save Image" class="btn" onclick="liveDrawInterface.save();" /><% end %>
+			<input type="button" value="Save Image" class="btn" onclick="liveDrawInterface.save();" />
 			<a class="btn" download="livedraw-edited.png" onclick="this.href=finalCanvas.toDataURL('image/png')">Download</a>
 		</fieldset>
 	</div>
