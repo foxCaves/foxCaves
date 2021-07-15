@@ -611,8 +611,7 @@ const liveDrawInterface = {
 		const xhr = new XMLHttpRequest();
 		xhr.upload.addEventListener("load", () => { console.log("Upload complete"); }, false);
 		xhr.open("POST", "/api/v1/files?name=" + encodeURIComponent(LIVEDRAW_FILE!.name + "-edited.png"));
-		xhr.setRequestHeader("x-is-base64","yes");
-		xhr.send(finalCanvas.toDataURL("image/png").replace(/^data:image\/png;base64,/, "").replace(/[\r\n]/g,""));
+		finalCanvas.toBlob((blob) => { xhr.send(blob); });
 	}
 };
 
