@@ -609,7 +609,7 @@ const liveDrawInput = {
 const liveDrawInterface = {
 	save() {
 		const xhr = new XMLHttpRequest();
-		xhr.upload.addEventListener("load", () => { console.log("Upload complete"); }, false);
+		xhr.upload.addEventListener("load", () => { alert("File saved to your account!"); }, false);
 		xhr.open("POST", "/api/v1/files?name=" + encodeURIComponent(LIVEDRAW_FILE!.name + "-edited.png"));
 		finalCanvas.toBlob((blob) => { xhr.send(blob); }, "image/png");
 	}
