@@ -45,7 +45,8 @@ if args and args.register then
 					message = "<div class='alert alert-error'>Error validating your CAPTCHA</div>"
 				else
 					local userid = database:incr(database.KEYS.NEXTUSERID)
-					database:hmset(database.KEYS.USERS .. userid, "username", args.username, "email", email, "password", ngx.hmac_sha1(args.username, args.password))
+					local salt = randstr(32)
+					database:hmset(database.KEYS.USERS .. userid, "username", args.username, "email", email, "salt", salt, "password", ngx.hmac_sha1(salt, args.password))
 					database:sadd(database.KEYS.EMAILS, email:lower())
 					database:set(database.KEYS.USERNAME_TO_ID .. args.username:lower(), userid)
 					user_require_email_confirmation({

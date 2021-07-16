@@ -12,7 +12,7 @@ local args = ngx.ctx.get_post_args()
 local user = ngx.ctx.user
 local rediskey = database.KEYS.USERS .. user.id
 
-if ngx.hmac_sha1(user.username, args.current_password or "") ~= user.password then
+if ngx.hmac_sha1(user.salt, args.current_password or "") ~= user.password then
     return api_error("current_password invalid", 403)
 end
 
@@ -45,7 +45,9 @@ if args.email then
 end
 
 if args.password then
-    database:hset(rediskey, "password", ngx.hmac_sha1(user.username, args.password))
+    local salt = randstr(32)
+    database:hset(rediskey, "salt", salt, "password", ngx.hmac_sha1(salt, args.password))
+    user.salt = "CHANGED"
     user.password = "CHANGED"
     args.loginkey = "CHANGE"
 end
