@@ -9,4 +9,4 @@ end
 
 ngx.status = error_num
 
-printTemplateAndClose("error", {MAINTITLE = "Error " .. error_num, ERROR_NUM = error_num})
+printStaticTemplateAndClose("error", {MAINTITLE = "Error " .. error_num, ERROR_NUM = error_num}, "error_" .. error_num)

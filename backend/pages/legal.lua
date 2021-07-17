@@ -6,4 +6,4 @@ if site ~= "terms_of_service" and site ~= "privacy_policy" then
 	return ngx.exec("/error/404")
 end
 
-printTemplateAndClose(site, {})
+printStaticTemplateAndClose(site, {})

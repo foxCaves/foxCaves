@@ -95,7 +95,7 @@ local function loadTemplate(name)
 	return func
 end
 
-function load_template(name, params)
+function evalTemplate(name, params)
 	local tpl = loadTemplate(name)()
 	if type(tpl) == "string" then
 		return tpl
@@ -114,4 +114,17 @@ function load_template(name, params)
 	params.G = _G
 
 	return setfenv(tpl, params)()
+end
+
+local evalTemplateCache = {}
+function evalTemplateAndCache(name, params, cachekey)
+	if not cachekey then
+		cachekey = name
+	end
+	if evalTemplateCache[cachekey] then
+		return evalTemplateCache[cachekey]
+	end
+	local tpl = evalTemplate(name, params)
+	evalTemplateCache[cachekey] = tpl
+	return tpl
 end

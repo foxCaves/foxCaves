@@ -20,8 +20,8 @@ elseif action == "forgotpwd" then
 	actiontitle = "Forgot password"
 else
 	ngx.req.discard_body()
-	ngx.print(load_template("message", {MAINTITLE = "Error", MESSAGE = "Invalid action"}))
-	return ngx.eof()
+	printTemplateAndClose("message", {MAINTITLE = "Error", MESSAGE = "Invalid action"})
+	return
 end
 
 dofile("scripts/captcha.lua")

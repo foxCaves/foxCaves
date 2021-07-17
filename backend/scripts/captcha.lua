@@ -80,5 +80,5 @@ local questions_len = #questions
 function generate_captcha()
 	local question, result, answers = questions[math.random(questions_len)]()
 	answers = answers or nil
-	return load_template("doricaptcha", {QUESTION = question, ANSWERS = answers, CHALLENGE = ngx.encode_base64(mkhash(mktimecode(), result))})
+	return evalTemplate("doricaptcha", {QUESTION = question, ANSWERS = answers, CHALLENGE = ngx.encode_base64(mkhash(mktimecode(), result))})
 end

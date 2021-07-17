@@ -159,7 +159,11 @@ function api_error(error, code)
 end
 
 function printTemplateAndClose(name, params)
-	ngx.print(load_template(name, params))
+	ngx.print(evalTemplate(name, params))
+	ngx.eof()
+endPos
+function printStaticTemplateAndClose(name, params, cachekey)
+	ngx.print(evalTemplateAndCache(name, params, cachekey))
 	ngx.eof()
 end
 dofile("scripts/access.lua")
