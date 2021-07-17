@@ -10,7 +10,7 @@ RUN npm run build
 
 FROM openresty/openresty:alpine-fat
 
-RUN apk update && apk add redis s6 imagemagick git argon2-libs
+RUN apk update && apk add redis s6 imagemagick git argon2-libs argon2-dev argon2
 RUN /usr/local/openresty/bin/opm get openresty/lua-resty-redis openresty/lua-resty-websocket thibaultcha/lua-argon2-ffi
 RUN /usr/local/openresty/luajit/bin/luarocks install luafilesystem
 RUN mkdir -p /usr/local/share/lua/5.1
