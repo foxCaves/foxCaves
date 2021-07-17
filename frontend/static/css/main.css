@@ -27,7 +27,8 @@ html::-webkit-resizer {
 	display: none;
 }
 
-.show_loginonly {
+.show_loginonly,
+.show_guestonly {
 	display: none;
 }
 
