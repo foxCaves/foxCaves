@@ -161,7 +161,7 @@ end
 function printTemplateAndClose(name, params)
 	ngx.print(evalTemplate(name, params))
 	ngx.eof()
-endPos
+end
 function printStaticTemplateAndClose(name, params, cachekey)
 	ngx.print(evalTemplateAndCache(name, params, cachekey))
 	ngx.eof()
