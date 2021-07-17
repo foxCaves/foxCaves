@@ -73,6 +73,7 @@ function ngx.ctx.login(username_or_id, password, options)
 		elseif result.active == -1 then
 			return ngx.ctx.LOGIN_USER_BANNED
 		end
+		result.id = tonumber(username_or_id)
 		if login_with_id or check_auth(result, password, options) then
 			if not nosession then
 				local sessionid
@@ -91,7 +92,6 @@ function ngx.ctx.login(username_or_id, password, options)
 				database:expire(sessionid, SESSION_EXPIRE_DELAY)
 			end
 
-			result.id = tonumber(username_or_id)
 			result.usedbytes = tonumber(result.usedbytes or 0)
 			result.bonusbytes = tonumber(result.bonusbytes or 0)
 			result.totalbytes = STORAGE_BASE + result.bonusbytes
