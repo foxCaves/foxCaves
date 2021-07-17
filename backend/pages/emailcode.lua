@@ -28,8 +28,7 @@ if res and res.user and res ~= ngx.null then
 		message = "<div class='alert alert-success'>A new password has been sent to you. Once you received it, please <a href='/login'>login</a>.</div>"
 
 		local newPassword = randstr(16)
-		local newSalt = randstr(32)
-		database:hmset(userID, "salt", newSalt, "password", ngx.hmac_sha1(newSalt, newPassword))
+		database:hmset(userID, "password", argon2.hash_encoded(newPassword, randstr(32)))
 
 		local email = "Hello, " .. userdata.username .. "!\n\nHere is your new password:\n" .. newPassword .. "\nPlease log in at " .. MAIN_URL .. "/login and change it as soon as possible.\n\nKind regards,\nfoxCaves Support"
 		mail(userdata.email, "foxCaves - New password", email, "noreply@foxcav.es", "foxCaves")

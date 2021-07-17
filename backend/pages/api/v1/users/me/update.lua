@@ -45,9 +45,7 @@ if args.email then
 end
 
 if args.password then
-    local salt = randstr(32)
-    database:hset(rediskey, "salt", salt, "password", ngx.hmac_sha1(salt, args.password))
-    user.salt = "CHANGED"
+    database:hset(rediskey, "password", argon2.hash_encoded(args.password, randstr(32)))
     user.password = "CHANGED"
     args.loginkey = "CHANGE"
 end

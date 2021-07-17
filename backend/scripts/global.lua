@@ -4,6 +4,7 @@ dofile("/var/www/foxcaves/config/main.lua")
 ngx.ctx.user = nil
 
 local redis = require("resty.redis")
+local argon2 = require("argon2")
 
 function make_database()
 	local database, err = redis:new()
@@ -175,3 +176,4 @@ _G.tostring = tostring
 _G.os = os
 _G.lfs = lfs
 _G.cjson = cjson
+_G.argon2 = argon2

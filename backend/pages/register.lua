@@ -46,7 +46,7 @@ if args and args.register then
 				else
 					local userid = database:incr(database.KEYS.NEXTUSERID)
 					local salt = randstr(32)
-					database:hmset(database.KEYS.USERS .. userid, "username", args.username, "email", email, "salt", salt, "password", ngx.hmac_sha1(salt, args.password))
+					database:hmset(database.KEYS.USERS .. userid, "username", args.username, "email", email, "password", argon2.hash_encoded(args.password, randstr(32)))
 					database:sadd(database.KEYS.EMAILS, email:lower())
 					database:set(database.KEYS.USERNAME_TO_ID .. args.username:lower(), userid)
 					user_require_email_confirmation({

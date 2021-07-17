@@ -24,7 +24,23 @@ local function check_auth(userdata, password, options)
 	if login_with_apikey then
 		return userdata.apikey == password
 	end
-	return userdata.password == ngx.hmac_sha1(userdata.salt, password)
+
+	local authOk = false
+	local authNeedsUpdate = false
+	if userdata.password:sub(1, 13) == "$fcvhmacsha1$" then
+		local pw = userdata.password:sub(14)
+		local saltIdx = pw:find("$", 1, true)
+		local salt = pw:sub(1, saltIdx - 1)
+		pw = pw:sub(saltIdx + 1)
+		authOk = ngx.hmac_sha1(salt, password) == pw
+		authNeedsUpdate = true
+	else
+		authOk = argon2.verify(userdata.password, password)
+	end
+	if authOk and authNeedsUpdate then
+		database:hset(database.KEYS.USERS .. userdata.id, "password", argon2.hash_encoded(password, randstr(32)))
+	end
+	return authOk
 end
 
 function ngx.ctx.login(username_or_id, password, options)
