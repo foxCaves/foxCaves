@@ -24,7 +24,7 @@ function user_require_email_confirmation(user)
     end
 
     local email_text = "Hello, " .. user.username .. "!\n\nYou have recently registered or changed your E-Mail on foxCaves.\nPlease click the following link to activate your E-Mail:\n"
-    email_text = email_text .. MAIN_URL .. "/emailcode?code=" .. emailid .. "\n\n"
+    email_text = email_text .. MAIN_URL .. "/email/code?code=" .. emailid .. "\n\n"
     email_text = email_text .. "Kind regards,\nfoxCaves Support"
 
     database:hmset(database.KEYS.USERS .. user.id, "active", 0)

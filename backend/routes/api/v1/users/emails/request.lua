@@ -57,7 +57,7 @@ elseif action == "forgotpwd" then
 else
     return api_error("action invalid")
 end
-email = email .. " just click on the following link:\n" .. MAIN_URL .."/emailcode?code=" .. emailid .. "\n\nKind regards,\nfoxCaves Support"
+email = email .. " just click on the following link:\n" .. MAIN_URL .."/email/code?code=" .. emailid .. "\n\nKind regards,\nfoxCaves Support"
 
 database:hmset(database.KEYS.EMAILKEYS .. emailid, "user", userid, "action", action)
 database:expire(172800) --48 hours
