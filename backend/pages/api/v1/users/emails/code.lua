@@ -37,7 +37,5 @@ elseif res.action == "forgotpwd" then
     mail(userdata.email, "foxCaves - New password", email, "noreply@foxcav.es", "foxCaves")
 end
 
-ngx.say(cjson.encode({
-    ok = true,
-    action = res.action,
-})
+ngx.print(cjson.encode({ action = res.action }))
+ngx.eof()
