@@ -27,9 +27,6 @@
 		</div>
 	</div>
 	<div class="control-group">
-		<%= CAPTCHA %>
-	</div>
-	<div class="control-group">
 		<div class="controls">
 			<input type="submit" class="btn" name="register" value="Register" id="postbut" />
 		</div>

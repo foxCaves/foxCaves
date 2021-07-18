@@ -16,10 +16,6 @@
 	</div>
 
 	<div class="control-group">
-<%= CAPTCHA %>
-	</div>
-
-	<div class="control-group">
 		<div class="controls">
 			<input type="submit" class="btn" name="send" value="Send E-Mail" id="postbut" />
 		</div>
