@@ -15,9 +15,7 @@ end
 local newname = ngx.unescape_uri(ngx.var.arg_name)
 
 if newname:sub((newname:len() + 1) - file.extension:len()) ~= file.extension then
-    ngx.status = 400
-    ngx.print("Extension mismatch. Cannot change extension in rename")
-    ngx.eof()
+    api_error("Extension mismatch")
     return
 end
 

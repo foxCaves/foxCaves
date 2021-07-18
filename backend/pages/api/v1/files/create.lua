@@ -8,20 +8,16 @@ local database = ngx.ctx.database
 local name = ngx.var.arg_name
 
 if not name then
-	ngx.status = 403
-	ngx.print("No filename")
 	ngx.req.discard_body()
-	return ngx.eof()
+	return api_error("No name")
 end
 
 name = ngx.unescape_uri(name)
 
 local nameregex = ngx.re.match(name, "^([^<>\r\n\t]*?)(\\.[a-zA-Z0-9]+)?$", "o")
 if (not nameregex) or (not nameregex[1]) then
-	ngx.status = 403
-	ngx.print("Invalid filename")
 	ngx.req.discard_body()
-	return ngx.eof()
+	return api_error("Invalid name")
 end
 
 local fileid
@@ -36,9 +32,9 @@ for i=1, 10 do
 end
 
 if not fileid then
+	ngx.req.discard_body()
 	ngx.status = 500
 	ngx.print("Internal error")
-	ngx.req.discard_body()
 	return ngx.eof()
 end
 
@@ -46,22 +42,16 @@ ngx.req.read_body()
 local file = ngx.req.get_body_file()
 local filedata = ngx.req.get_body_data()
 if (not file) and (not filedata) then
-	ngx.status = 400
-	ngx.print("No request body")
-	return ngx.eof()
+	return api_error("No body")
 end
 
 local filesize = file and lfs.attributes(file, "size") or filedata:len()
 if (not filesize) or filesize <= 0 then
-	ngx.status = 400
-	ngx.print("File empty")
-	return ngx.eof()
+	return api_error("Empty body")
 end
 
 if ngx.ctx.user.usedbytes + filesize > ngx.ctx.user.totalbytes then
-	ngx.status = 402
-	ngx.print("Overquota")
-	return ngx.eof()
+	return api_error("Over quota", 402)
 end
 
 local extension = nameregex[2]
