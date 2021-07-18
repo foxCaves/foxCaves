@@ -102,10 +102,10 @@ function renderUsedSpace() {
 	$('#used_bytes_bar').css('width', Math.ceil((currentUser.usedbytes / currentUser.totalbytes) * 100.0) + '%');
 }
 
-async function submitForm(url: string, method: string, data: { [key: string]: string }) {
+async function submitForm(url: string, method: string, data: BodyInit) {
     const res = await fetch(url, {
         method,
-        body: new URLSearchParams(data),
+        body: data,
     });
     if (res.status === 200) {
         return { ok: true };
@@ -115,7 +115,7 @@ async function submitForm(url: string, method: string, data: { [key: string]: st
 }
 
 async function submitFormSimple(url: string, method: string, data: { [key: string]: string }) {
-    const res = await submitForm(url, method, data);
+    const res = await submitForm(url, method, new URLSearchParams(data));
     if (res.ok) {
         return true;
     }
