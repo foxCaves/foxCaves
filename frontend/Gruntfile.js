@@ -20,7 +20,12 @@ module.exports = function(grunt) {
 				compress: true,
 				warnings: true,
 				mangle: true,
-				sourceMap: true,
+				sourceMap: {
+					includeSources: true,
+				},
+				sourceMapIn(file) {
+					return `${file}.map`;
+				},
 			},
 			dist: {
 				files: [{
