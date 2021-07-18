@@ -108,4 +108,4 @@ function execute_route()
     dofile(handler.file)
 end
 
-scan_route_dir(MAIN_DIR .. "pages")
+scan_route_dir(MAIN_DIR .. "routes")
