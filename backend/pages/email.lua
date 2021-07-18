@@ -1,7 +1,7 @@
 -- ROUTE:GET:/email/{action}
 dofile(ngx.var.main_root .. "/scripts/global.lua")
 
-local action = ngx.var.email_action
+local action = ngx.var.action
 local actiontitle
 if action == "activation" then
 	actiontitle = "Activation E-Mail"
