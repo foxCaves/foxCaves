@@ -154,6 +154,7 @@ function raw_push_action(data, user)
 end
 
 function api_error(error, code)
+	ngx.req.discard_body()
 	ngx.status = code or 400
 	ngx.print(cjson.encode({ error = error }))
 	return ngx.eof()

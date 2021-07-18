@@ -8,7 +8,6 @@ local database = ngx.ctx.database
 local name = ngx.var.arg_name
 
 if not name then
-	ngx.req.discard_body()
 	return api_error("No name")
 end
 
@@ -16,7 +15,6 @@ name = ngx.unescape_uri(name)
 
 local nameregex = ngx.re.match(name, "^([^<>\r\n\t]*?)(\\.[a-zA-Z0-9]+)?$", "o")
 if (not nameregex) or (not nameregex[1]) then
-	ngx.req.discard_body()
 	return api_error("Invalid name")
 end
 
