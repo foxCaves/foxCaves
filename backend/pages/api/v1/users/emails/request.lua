@@ -1,6 +1,5 @@
 -- ROUTE:POST:/api/v1/users/emails/request
 dofile(ngx.var.main_root .. "/scripts/global.lua")
-dofile("scripts/api_login.lua")
 
 local database = ngx.ctx.database
 local args = ngx.ctx.get_post_args()
