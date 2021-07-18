@@ -1,7 +1,7 @@
 print("Building...")
 dofile("template.lua")
 
-local DISTDIR = "../dist/html"
+local DISTDIR = "../dist"
 
 local function storeTemplate(name, maintitle, file, params)
     file = file or name
