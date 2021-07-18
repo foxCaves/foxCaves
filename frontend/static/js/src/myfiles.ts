@@ -471,13 +471,6 @@ function setupSearch() {
 	});
 }
 
-document.addEventListener('fetchCurrentUserDone', () => {
-    if (!currentUser) {
-        document.location.href = '/login';
-        return;
-    }
-});
-
 $(() => {
 	//setupOptionMenu();
 
