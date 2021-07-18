@@ -110,7 +110,7 @@ function ngx.ctx.check_username(username)
 		return ngx.ctx.EMAIL_INVALID
 	end
 
-	local res = database:exists(database.KEYS.USERS .. username:lower())
+	local res = database:exists(database.KEYS.USERNAME_TO_ID .. username:lower())
 	if res and res ~= 0 and res ~= ngx.null then
 		return ngx.ctx.EMAIL_TAKEN
 	end
