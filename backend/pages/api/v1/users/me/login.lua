@@ -1,4 +1,4 @@
--- ROUTE:POST:/api/v1/users/@me/login
+-- ROUTE:POST:/api/v1/users/self/login
 dofile(ngx.var.main_root .. "/scripts/global.lua")
 
 local args = ngx.ctx.get_post_args()

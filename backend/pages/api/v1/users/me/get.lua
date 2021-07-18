@@ -1,4 +1,4 @@
--- ROUTE:GET:/api/v1/users/@me
+-- ROUTE:GET:/api/v1/users/self
 dofile(ngx.var.main_root .. "/scripts/global.lua")
 dofile("scripts/api_login.lua")
 if not ngx.ctx.user then return end

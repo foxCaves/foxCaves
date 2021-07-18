@@ -66,7 +66,7 @@ function docReady() {
 }
 
 async function fetchCurrentUser() {
-	const res = await fetch('/api/v1/users/@me');
+	const res = await fetch('/api/v1/users/self');
 	if (res.status !== 200) {
 		currentUser = undefined;
 		fetchCurrentUserDone();
@@ -89,7 +89,7 @@ function fetchCurrentUserDone() {
 }
 
 async function doLogout() {
-	await fetch('/api/v1/users/@me/logout', { method: 'POST' });
+	await fetch('/api/v1/users/self/logout', { method: 'POST' });
 	document.location.href = '/';
 }
 
