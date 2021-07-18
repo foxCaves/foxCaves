@@ -1,3 +1,5 @@
+REQUIRE_GUEST = true;
+
 function getLoginForm() {
     return document.getElementById('login_form') as HTMLFormElement;
 }

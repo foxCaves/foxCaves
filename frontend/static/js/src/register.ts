@@ -1,3 +1,5 @@
+REQUIRE_GUEST = true;
+
 function getRegisterForm() {
     return document.getElementById('register_form') as HTMLFormElement;
 }
