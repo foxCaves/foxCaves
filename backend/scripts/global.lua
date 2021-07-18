@@ -136,16 +136,6 @@ function ngx.ctx.get_post_args()
 	return ngx.req.get_post_args()
 end
 
-function ngx.ctx.get_version()
-	local fh = io.open(".revision", "r")
-	if not fh then
-		return "UNKNOWN"
-	end
-	local ret = fh:read("*all")
-	fh:close()
-	return ret:gsub("%s+", "")
-end
-
 function raw_push_action(data, user)
 	if not user then
 		user = ngx.ctx.user

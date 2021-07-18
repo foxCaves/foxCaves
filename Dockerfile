@@ -1,11 +1,15 @@
 FROM node:current AS builder
 
+ARG GIT_REVISION=UNKNOWN
+
+RUN apt update && apt -y install luajit
 RUN mkdir /opt/stage
 WORKDIR /opt/stage
 COPY frontend/package.json /opt/stage/
 COPY frontend/package-lock.json /opt/stage/
 RUN npm ci
 COPY frontend/ /opt/stage/
+RUN echo $GIT_REVISION > /opt/stage/.revision
 RUN npm run build
 
 FROM openresty/openresty:alpine-fat
@@ -28,8 +32,6 @@ COPY backend /var/www/foxcaves/lua
 
 COPY --from=builder /opt/stage/dist /var/www/foxcaves/html
 
-ARG GIT_REVISION=UNKNOWN
-RUN echo $GIT_REVISION > /var/www/foxcaves/lua/.revision
 RUN /etc/nginx/cfips.sh
 
 EXPOSE 80 443

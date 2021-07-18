@@ -14,7 +14,7 @@
 						</ul>
 						<ul class="nav pull-right">
 							<li>
-								<a>foxCaves &copy; 2021 (<%# ngx.ctx.get_version():sub(1,7) %>)</a>
+								<a>foxCaves &copy; 2021 (<%= VERSION:sub(1,7) %>)</a>
 							</li>
 						</ul>
 					</div>

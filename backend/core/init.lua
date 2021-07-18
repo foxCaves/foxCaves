@@ -79,7 +79,6 @@ end
 
 loadfile(MAIN_DIR .. "core/mail.lua")()
 loadfile(MAIN_DIR .. "core/random.lua")()
-loadfile(MAIN_DIR .. "core/template.lua")()
 loadfile(MAIN_DIR .. "core/router.lua")()
 
 collectgarbage("collect")

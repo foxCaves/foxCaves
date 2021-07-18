@@ -1,5 +1,3 @@
-const path = require('path');
-
 module.exports = function(grunt) {
 	const source_directory = 'static',
 		  target_directory = 'dist/static';
@@ -53,8 +51,14 @@ module.exports = function(grunt) {
 				}]
 			}
 		},
+		exec: {
+			luahtml_dist: {
+				cwd: 'luahtml/',
+				cmd: 'luajit build.lua'
+			}
+		},
 		concurrent: {
-			dist: ['imagemin:dist', 'cssmin:dist', 'uglify:dist', 'copy:dist']
+			dist: ['imagemin:dist', 'cssmin:dist', 'uglify:dist', 'copy:dist', 'exec:luahtml_dist']
 		},
 		clean: {
 			statics: ['dist'],
@@ -63,6 +67,7 @@ module.exports = function(grunt) {
 	});
 
 	grunt.loadNpmTasks('grunt-concurrent');
+	grunt.loadNpmTasks('grunt-exec');
 	grunt.loadNpmTasks('grunt-contrib-clean');
 	grunt.loadNpmTasks('grunt-contrib-imagemin');
 	grunt.loadNpmTasks('grunt-contrib-uglify');
