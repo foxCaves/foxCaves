@@ -1,3 +1,5 @@
+REQUIRE_LOGGED_IN = true;
+
 interface FilePush {
 	file: FileInfo;
 }

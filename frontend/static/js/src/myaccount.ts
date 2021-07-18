@@ -1,3 +1,5 @@
+REQUIRE_LOGGED_IN = true;
+
 function getAccountForm() {
     return document.getElementById('account_form') as HTMLFormElement;
 }
@@ -11,13 +13,9 @@ async function submitAccountFormSimple(data: { [key: string]: string }) {
 }
 
 document.addEventListener('fetchCurrentUserDone', () => {
-    if (!currentUser) {
-        document.location.href = '/login';
-        return;
-    }
     const form = getAccountForm();
-    form.newemail.value = currentUser.email;
-    form.apikey.value = currentUser.apikey;
+    form.newemail.value = currentUser!.email;
+    form.apikey.value = currentUser!.apikey;
 }, false);
 
 async function submitChangePassword() {

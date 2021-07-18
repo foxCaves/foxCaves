@@ -1,3 +1,5 @@
+REQUIRE_LOGGED_IN = true;
+
 interface LinkInfo {
 	short_url: string;
 	user: number;
@@ -128,13 +130,6 @@ function refreshLinks() {
 
 	return false;
 }
-
-document.addEventListener('fetchCurrentUserDone', () => {
-    if (!currentUser) {
-        document.location.href = '/login';
-        return;
-    }
-});
 
 $(() => {
 	setupLinkJS($('#links_table'));
