@@ -21,6 +21,10 @@ document.addEventListener('fetchCurrentUserDone', () => {
 
 async function submitChangePassword() {
     const form = getAccountForm();
+    if (form.password_confirm.value !== form.password.value) {
+        alert('Passwords do not match');
+        return;
+    }
     await submitAccountFormSimple({ password: form.password.value });
 }
 
