@@ -123,7 +123,6 @@ async function submitFormSimple(url: string, method: string, data: { [key: strin
 	return false;
 }
 
-
 $(async () => {
 	docReady();
 

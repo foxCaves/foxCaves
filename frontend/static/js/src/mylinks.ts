@@ -129,6 +129,13 @@ function refreshLinks() {
 	return false;
 }
 
+document.addEventListener('fetchCurrentUserDone', () => {
+    if (!currentUser) {
+        document.location.href = '/login';
+        return;
+    }
+});
+
 $(() => {
 	setupLinkJS($('#links_table'));
 

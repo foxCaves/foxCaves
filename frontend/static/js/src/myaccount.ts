@@ -12,6 +12,7 @@ async function submitAccountFormSimple(data: { [key: string]: string }) {
 
 document.addEventListener('fetchCurrentUserDone', () => {
     if (!currentUser) {
+        document.location.href = '/login';
         return;
     }
     const form = getAccountForm();
