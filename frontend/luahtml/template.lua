@@ -1,3 +1,5 @@
+local rex = require("rex_pcre")
+
 local preprocessTemplate
 
 local function getVersion()
@@ -21,10 +23,10 @@ local function loadTemplateFile(name, insideother)
 	code = preprocessTemplate(code, insideother)
 
 	if not IS_DEVELOPMENT then
-		--code = ngx.re.gsub(code, "<!--(.*?)-->", "", "o")
-		--code = ngx.re.gsub(code, "(?>[^\\S ]\\s*| \\s{2,})(?=[^<]*+(?:<(?!/?(?:textarea|script|pre)\\b)[^<]*+)*+(?:<(?>textarea|script|pre)\\b| \\z))", " ", "oix")
-		--code = ngx.re.gsub(code, "^[\r\n\t ]+", "", "o")
-		--code = ngx.re.gsub(code, "[\r\n\t ]+$", "", "o")
+		code = rex.gsub(code, "<!--(.*?)-->", "", nil)
+		code = rex.gsub(code, "(?>[^\\S ]\\s*| \\s{2,})(?=[^<]*+(?:<(?!/?(?:textarea|script|pre)\\b)[^<]*+)*+(?:<(?>textarea|script|pre)\\b| \\z))", " ", nil, "ix")
+		--code = rex.gsub(code, "^[\r\n\t ]+", "")
+		--code = rex.gsub(code, "[\r\n\t ]+$", "")
 	end
 
 	return code
