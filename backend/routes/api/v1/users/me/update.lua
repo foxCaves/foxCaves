@@ -1,6 +1,5 @@
 -- ROUTE:PATCH:/api/v1/users/self
 dofile(ngx.var.main_root .. "/scripts/global.lua")
-dofile("scripts/api_login.lua")
 if not ngx.ctx.user then return end
 
 dofile("scripts/userapi.lua")
