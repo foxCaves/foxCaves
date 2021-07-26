@@ -1,12 +1,12 @@
 if not ngx.ctx.user then
 	local user, pw = parse_authorization_header(ngx.var.http_authorization)
-	local success = false
 	if user and pw then
-		success = (ngx.ctx.login(user, pw, { nosession = true, login_with_apikey = true }) == ngx.ctx.LOGIN_SUCCESS)
+		local success = (ngx.ctx.login(user, pw, { nosession = true, login_with_apikey = true }) == ngx.ctx.LOGIN_SUCCESS)
+		if not success then
+			api_error("Invalid username or password", 401)
+		end
 	end
-	if not ALLOW_GUEST and ((not success) or (not ngx.ctx.user)) then
-		ngx.status = 401
-		ngx.print("Wrong username/password")
-		return ngx.eof()
+	if not ngx.ctx.user then
+		api_not_logged_in_error()
 	end
 end

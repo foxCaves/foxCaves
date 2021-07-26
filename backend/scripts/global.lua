@@ -143,6 +143,10 @@ function raw_push_action(data, user)
 	database:publish(database.KEYS.PUSH .. user.id, cjson.encode(data))
 end
 
+function api_not_logged_in_error()
+	api_error("Not logged in", 403)
+end
+
 function api_error(error, code)
 	ngx.req.discard_body()
 	ngx.status = code or 400
