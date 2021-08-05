@@ -96,9 +96,9 @@ function make_database()
 	return database
 end
 
-ngx.ctx.redis = make_redis()
 ngx.ctx.make_redis = make_redis
-local redis = ngx.ctx.make_redis
+ngx.ctx.redis = make_redis()
+local redis = ngx.ctx.redis
 ngx.ctx.make_database = make_database
 ngx.ctx.database = make_database()
 local database = ngx.ctx.database
