@@ -127,6 +127,10 @@ if cookies then
 			local result = redis:get(sessID)
 			if result and result ~= ngx.null then
 				ngx.ctx.login(result, nil, { nosession = true, login_with_id = true })
+				if not ngx.ctx.user then
+					ngx.ctx.logout()
+					return
+				end
 				ngx.ctx.user.sessionid = auth
 				ngx.header['Set-Cookie'] = {"sessionid=" .. auth .. "; HttpOnly; Path=/; Secure;"}
 				redis:expire(sessID, SESSION_EXPIRE_DELAY)
