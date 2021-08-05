@@ -30,7 +30,7 @@ function dofile_cached(file)
 		cache_key = lfs.currentdir().."/"..file
 	end
 	local code = filecache[cache_key]
-	if not code then
+	if IS_DEVELOPMENT or not code then
 		local fh = io.open(file, "r")
 		if not fh then
 			error("Could not open file: " .. file)
