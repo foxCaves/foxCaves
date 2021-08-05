@@ -55,9 +55,9 @@ function ngx.ctx.login(username_or_id, password, options)
 		return ngx.ctx.LOGIN_BAD_PASSWORD
 	end
 
-	local id_field = login_with_id and "id" or "username"
+	local id_field = login_with_id and "id" or "lower(username)"
 
-	local resultarr = database:query_safe('SELECT * FROM users WHERE ' .. id_field .. ' = "%s"', username_or_id)
+	local resultarr = database:query_safe('SELECT * FROM users WHERE ' .. id_field .. ' = "%s"', tostring(username_or_id):lower())
 	if result then
 		if result.active then
 			result.active = tonumber(result.active)

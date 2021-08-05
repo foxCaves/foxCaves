@@ -110,7 +110,7 @@ function ngx.ctx.check_email(email)
 		return ngx.ctx.EMAIL_INVALID
 	end
 
-	local res = database:query_safe('SELECT id FROM users WHERE email = "%s"', email)
+	local res = database:query_safe('SELECT id FROM users WHERE lower(email) = "%s"', email:lower())
 	if res[1] then
 		return ngx.ctx.EMAIL_TAKEN
 	end
@@ -122,7 +122,7 @@ function ngx.ctx.check_username(username)
 		return ngx.ctx.EMAIL_INVALID
 	end
 
-	local res = database:query_safe('SELECT id FROM users WHERE username = "%s"', username)
+	local res = database:query_safe('SELECT id FROM users WHERE lower(username) = "%s"', username:lower())
 	if res[1] then
 		return ngx.ctx.EMAIL_TAKEN
 	end
