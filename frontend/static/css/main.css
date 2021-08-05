@@ -212,7 +212,7 @@ input[type="submit"] {
 	height: 256px;
 	position: fixed;
 	right: 10px;
-	bottom: 50px;
+	bottom: 10px;
 	transition: opacity .5s ease;
 	-webkit-transition: opacity .5s ease;
 	-moz-transition: opacity .5s ease;
