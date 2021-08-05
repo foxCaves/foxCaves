@@ -7,9 +7,11 @@ local database = ngx.ctx.database
 local args = get_post_args()
 local user = ngx.ctx.user
 
-if ngx.hmac_sha1(user.salt, args.current_password or "") ~= user.password then
+--[[
+if not check_user_password(user, args.current_password or "") then
     return api_error("current_password invalid", 403)
 end
+]]
 
 user.password = nil
 user.loginkey = nil

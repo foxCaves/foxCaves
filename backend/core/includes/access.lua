@@ -15,12 +15,7 @@ local GIGABYTE = MEGABYTE * 1024
 
 local STORAGE_BASE = 1 * GIGABYTE
 
-local function check_auth(userdata, password, options)
-	local login_with_apikey = options.login_with_apikey
-	if login_with_apikey then
-		return userdata.apikey == password
-	end
-
+function check_user_password(userdata, password)
 	local authOk = false
 	local authNeedsUpdate = false
 	if userdata.password:sub(1, 13) == "$fcvhmacsha1$" then
@@ -40,7 +35,16 @@ local function check_auth(userdata, password, options)
 	if authOk and authNeedsUpdate then
 		ngx.ctx.database:query_safe('UPDATE users SET password = %s WHERE id = %s', argon2.hash_encoded(password, randstr(32)), userdata.id)
 	end
-	return authOk
+	return authOk	
+end
+
+local function check_auth(userdata, password, options)
+	local login_with_apikey = options.login_with_apikey
+	if login_with_apikey then
+		return userdata.apikey == password
+	end
+
+	return check_user_password(userdata, password)
 end
 
 function do_login(username_or_id, password, options)
