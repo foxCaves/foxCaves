@@ -4,7 +4,12 @@ dofile("/var/www/foxcaves/config/main.lua")
 dofile("/var/www/foxcaves/config/database.lua")
 local dbconfig = _config
 _config = nil
+dbconfig.postgres.socket_type = "nginx"
 
+if ngx.ctx.in_use then
+	error("WTF")
+end
+ngx.ctx.in_use = true
 ngx.ctx.user = nil
 
 local resty_redis = require("resty.redis")
@@ -85,7 +90,6 @@ function make_redis(no_auto_shutdown)
 end
 
 function make_database()
-	dbconfig.postgres.socket_type = "nginx"
 	local database = pgmoon.new(dbconfig.postgres)
 	local isok, err = database:connect()
 	if not isok then
