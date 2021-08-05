@@ -1,3 +1,6 @@
+ENVIRONMENT = os.getenv("ENVIRONMENT") or "development"
+IS_PRODUCTION = (ENVIRONMENT == "production")
+
 lfs = require("lfs")
 cjson = require("cjson")
 argon2 = require("argon2")
@@ -30,7 +33,7 @@ function dofile_cached(file)
 		cache_key = lfs.currentdir().."/"..file
 	end
 	local code = filecache[cache_key]
-	if IS_DEVELOPMENT or not code then
+	if (not IS_PRODUCTION) or (not code) then
 		local fh = io.open(file, "r")
 		if not fh then
 			error("Could not open file: " .. file)

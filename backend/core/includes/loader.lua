@@ -1,6 +1,6 @@
 local run_request
 
-if IS_DEVELOPMENT then
+if not IS_PRODUCTION then
 	local function makeTableRecurse(var, done)
 		local t = type(var)
 		if t == "table" then
@@ -207,7 +207,7 @@ else
 			dsn = "https://5f77aea36e6c4aa2882adc43f9718c44@o804863.ingest.sentry.io/5803114",
 		}),
 		tags = {
-			environment = IS_DEVELOPMENT and "development" or "production",
+			environment = ENVIRONMENT,
 		},
 	})
 

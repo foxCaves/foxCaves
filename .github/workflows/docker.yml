@@ -25,6 +25,6 @@ jobs:
           push: true
           build-args: |
             GIT_REVISION=${{ github.sha }}
-            BUILD_ENV=prod
+            ENVIRONMENT=production
           tags: |
             docker.pkg.github.com/foxcaves/site/foxcaves-site:latest

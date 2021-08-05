@@ -24,12 +24,12 @@ RUN mkdir -p /usr/local/share/lua/5.1
 RUN git clone https://github.com/cloudflare/raven-lua.git /tmp/raven-lua && mv /tmp/raven-lua/raven /usr/local/share/lua/5.1/ && rm -rf /tmp/raven-lua
 RUN adduser --disabled-password www-data
 
-ARG BUILD_ENV=dev
+ARG ENVIRONMENT=development
 
 COPY etc/cfips.sh /etc/nginx/cfips.sh
 COPY etc/nginx.conf /etc/nginx/conf.d/foxcaves.conf
 COPY etc/nginx.main.conf /usr/local/openresty/nginx/conf/custom.conf
-COPY etc/nginx.listener.$BUILD_ENV.conf /etc/nginx/listener.conf
+COPY etc/nginx.listener.$ENVIRONMENT.conf /etc/nginx/listener.conf
 COPY etc/s6 /etc/s6
 
 COPY backend /var/www/foxcaves/lua

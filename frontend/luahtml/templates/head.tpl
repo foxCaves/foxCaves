@@ -7,10 +7,9 @@
 		<link rel="stylesheet" type="text/css" href="/static/css/purple_fox.css" />
 		<link rel="stylesheet" type="text/css" href="/static/css/prettify.css" />
 
-		<script type="text/javascript">window.SHORT_URL="<%= SHORT_URL %>";</script>
+		<script type="text/javascript">window.SHORT_URL="<%= SHORT_URL %>";Sentry.init({dsn:'https://5d99e8f38f4c48e8b9f2803cba13caad@o804863.ingest.sentry.io/5803116',release:'<%= VERSION %>'});</script>
 		<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" type="text/javascript"></script>
 		<script src="https://browser.sentry-cdn.com/6.6.0/bundle.min.js" integrity="sha384-vPBC54nCGwq3pbZ+Pz+wRJ/AakVC5QupQkiRoGc7OuSGE9NDfsvOKeHVvx0GUSYp" crossorigin="anonymous"></script>
-		<script type="text/javascript">Sentry.init({ dsn: 'https://5d99e8f38f4c48e8b9f2803cba13caad@o804863.ingest.sentry.io/5803116', release: '<%= VERSION %>' });</script>
 		<script src="/static/js/init.js" type="text/javascript"></script>
 		<title><%= MAINTITLE %> - foxCaves</title>
 	</head>
@@ -21,10 +20,10 @@
 					<a class="brand" href="/">foxCaves</a>
 					<div class="nav-collapse">
 						<ul class="nav" id="nav-main">
-							<li data-menu-id="2" class="show_loginonly"><a href="/myfiles">My files</a></li>
-							<li data-menu-id="3" class="show_loginonly"><a href="/mylinks">My links</a></li>
-							<li data-menu-id="2" class="show_guestonly"><a href="/login">Login</a></li>
-							<li data-menu-id="3" class="show_guestonly"><a href="/register">Register</a></li>
+							<li data-menu-id="1" class="show_loginonly"><a href="/myfiles">My files</a></li>
+							<li data-menu-id="2" class="show_loginonly"><a href="/mylinks">My links</a></li>
+							<li data-menu-id="3" class="show_guestonly"><a href="/login">Login</a></li>
+							<li data-menu-id="4" class="show_guestonly"><a href="/register">Register</a></li>
 						</ul>
 						<ul class="nav pull-right">
 							<li class="show_loginonly">
@@ -46,8 +45,6 @@
 									<li class="show_loginonly"><a class="pointer" onclick="doLogout();">Logout</a></li>
 									<li class="show_guestonly"><a href="/login">Login</a></li>
 									<li class="show_guestonly"><a href="/register">Register</a></li>
-									<li class="show_loginonly divider"></li>
-									<li><a>foxCaves &copy; 2021 (<%= VERSION:sub(1,7) %>)</a></li>
 								</ul>
 							</li>
 						</ul>
@@ -57,4 +54,3 @@
 		</div>
 		<div class="container" id="main-container">
 			<br />
-			<%= MESSAGE %>
