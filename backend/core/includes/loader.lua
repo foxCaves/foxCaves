@@ -1,6 +1,6 @@
 local run_request
 
-if not IS_PRODUCTION then
+if ENVIRONMENT == "development" then
 	local function makeTableRecurse(var, done)
 		local t = type(var)
 		if t == "table" then

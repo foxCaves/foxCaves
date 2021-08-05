@@ -1,6 +1,3 @@
-ENVIRONMENT = os.getenv("ENVIRONMENT") or "development"
-IS_PRODUCTION = (ENVIRONMENT == "production")
-
 local rex = require("rex_pcre")
 
 local preprocessTemplate
@@ -25,12 +22,10 @@ local function loadTemplateFile(name, insideother)
 
 	code = preprocessTemplate(code, insideother)
 
-	if IS_PRODUCTION then
-		code = rex.gsub(code, "<!--(.*?)-->", "", nil)
-		code = rex.gsub(code, "(?>[^\\S ]\\s*| \\s{2,})(?=[^<]*+(?:<(?!/?(?:textarea|script|pre)\\b)[^<]*+)*+(?:<(?>textarea|script|pre)\\b| \\z))", " ", nil, "ix")
-		--code = rex.gsub(code, "^[\r\n\t ]+", "")
-		--code = rex.gsub(code, "[\r\n\t ]+$", "")
-	end
+	code = rex.gsub(code, "<!--(.*?)-->", "", nil)
+	code = rex.gsub(code, "(?>[^\\S ]\\s*| \\s{2,})(?=[^<]*+(?:<(?!/?(?:textarea|script|pre)\\b)[^<]*+)*+(?:<(?>textarea|script|pre)\\b| \\z))", " ", nil, "ix")
+	--code = rex.gsub(code, "^[\r\n\t ]+", "")
+	--code = rex.gsub(code, "[\r\n\t ]+$", "")
 
 	return code
 end

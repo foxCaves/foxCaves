@@ -24,7 +24,7 @@ RUN mkdir -p /usr/local/share/lua/5.1
 RUN git clone https://github.com/cloudflare/raven-lua.git /tmp/raven-lua && mv /tmp/raven-lua/raven /usr/local/share/lua/5.1/ && rm -rf /tmp/raven-lua
 RUN adduser --disabled-password www-data
 
-ARG ENVIRONMENT=development
+ENV ENVIRONMENT=development
 
 COPY etc/cfips.sh /etc/nginx/cfips.sh
 COPY etc/nginx.conf /etc/nginx/conf.d/foxcaves.conf
