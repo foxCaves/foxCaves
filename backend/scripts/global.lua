@@ -26,21 +26,18 @@ function make_redis()
 	local database, err = resty_redis:new()
 	if not database then
 		error("Error initializing DB: " .. err)
-		return
 	end
 	database:set_timeout(60000)
 
 	local ok, err = database:connect(dbconfig.redis.ip, dbconfig.redis.port)
 	if not ok then
 		error("Error connecting to DB: " .. err)
-		return
 	end
 
 	if database:get_reused_times() == 0 and dbconfig.redis.password then
 		local ok, err = database:auth(dbconfig.redis.password)
 		if not ok then
 			error("Error connecting to DB: " .. err)
-			return
 		end
 	end
 
@@ -83,8 +80,12 @@ function make_redis()
 end
 
 function make_database()
+	dbconfig.postgres.socket_type = "nginx"
 	local database = pgmoon.new(dbconfig.postgres)
-	assert(database:connect())
+	local isok, err = database:connect()
+	if not isok then
+		error(err)
+	end
 
 	function database:query_safe(query, ...)
 		local args = {...}
