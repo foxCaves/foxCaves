@@ -27,12 +27,14 @@ end
 
 function make_new_login_key(userdata)
 	local send_userdata = false
+	local sessionid_skip = nil
 	if not userdata then
 		userdata = ngx.ctx.user
 		if not userdata then
 			return
 		end
 		send_userdata = true
+		sessionid_skip = userdata.sessionid
 	end
 
 	local str = randstr(64)
@@ -42,27 +44,20 @@ function make_new_login_key(userdata)
 		action = "kick",
 	}, userdata)
 
-	local allsessions = database:keys("sessions:*")
+	local allsessions = redis:keys("sessions:*")
 	if type(allsessions) ~= "table" then allsessions = {} end
 
-	if send_userdata then
-		database:multi()
-		for _,v in next, allsessions do
-			if v ~= userdata.sessionid and database:get(v) == userdata.id then
-				database:del(v)
-			end
+	redis:multi()
+	for _,v in next, allsessions do
+		if v ~= sessionid_skip and redis:get(v) == userdata.id then
+			redis:del(v)
 		end
-		database:exec()
+	end
+	redis:exec()
+
+	if send_userdata then
 		ngx.ctx.user.loginkey = str
 		ngx.ctx.send_login_key()
-	else
-		database:multi()
-		for _,v in next, allsessions do
-			if database:get(v) == userdata.id then
-				database:del(v)
-			end
-		end
-		database:exec()
 	end
 end
 
