@@ -25,7 +25,7 @@ function __on_shutdown()
 	shutdown_funcs = {}
 end
 
-function make_redis()
+function make_redis(no_auto_shutdown)
 	local database, err = resty_redis:new()
 	if not database then
 		error("Error initializing DB: " .. err)
@@ -77,7 +77,9 @@ function make_redis()
 		return ret
 	end
 
-	register_shutdown(function() database:set_keepalive(dbconfig.redis.keepalive_timeout or 10000, dbconfig.redis.keepalive_count or 100) end)
+	if not no_auto_shutdown then
+		register_shutdown(function() database:set_keepalive(dbconfig.redis.keepalive_timeout or 10000, dbconfig.redis.keepalive_count or 100) end)
+	end
 
 	return database
 end

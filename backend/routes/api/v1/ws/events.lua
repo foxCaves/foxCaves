@@ -3,7 +3,7 @@ dofile(ngx.var.main_root .. "/scripts/global.lua")
 dofile("scripts/api_login.lua")
 if not ngx.ctx.user then return end
 
-local redis = ngx.ctx.redis
+local redis = ngx.ctx.make_redis(true)
 
 local server = require("resty.websocket.server")
 local ws, err = server:new({
@@ -63,3 +63,4 @@ end
 local redis_thread = ngx.thread.spawn(redis_read)
 websocket_read()
 ngx.thread.wait(redis_thread)
+redis:close()
