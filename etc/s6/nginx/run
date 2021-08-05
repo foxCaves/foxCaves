@@ -3,4 +3,7 @@
 mkdir -p /var/www/foxcaves/tmp/thumbs /var/www/foxcaves/tmp/files
 chown www-data:www-data /var/www/foxcaves/tmp/thumbs /var/www/foxcaves/tmp/files /var/www/foxcaves/storage
 
+rm -f /etc/nginx/listener.conf
+ln -sf "/etc/nginx/listener.$ENVIRONMENT.conf" /etc/nginx/listener.conf
+
 exec /usr/local/openresty/nginx/sbin/nginx -c /usr/local/openresty/nginx/conf/custom.conf

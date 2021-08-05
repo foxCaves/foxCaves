@@ -27,9 +27,8 @@ RUN adduser --disabled-password www-data
 ENV ENVIRONMENT=development
 
 COPY etc/cfips.sh /etc/nginx/cfips.sh
-COPY etc/nginx.conf /etc/nginx/conf.d/foxcaves.conf
-COPY etc/nginx.main.conf /usr/local/openresty/nginx/conf/custom.conf
-COPY etc/nginx.listener.$ENVIRONMENT.conf /etc/nginx/listener.conf
+COPY etc/nginx /etc/nginx/
+COPY etc/nginx/main.conf /usr/local/openresty/nginx/conf/custom.conf
 COPY etc/s6 /etc/s6
 
 COPY backend /var/www/foxcaves/lua
