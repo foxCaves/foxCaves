@@ -1,6 +1,17 @@
 ENVIRONMENT = os.getenv("ENVIRONMENT") or "development"
 IS_PRODUCTION = (ENVIRONMENT == "production")
 
+local function load_revision()
+	local fh = io.open("/var/www/foxcaves/.revision", "r")
+	if not fh then
+		REVISION = "unknown"
+		return
+	end
+	REVISION = fh:read("*all")
+	fh:close()
+end
+load_revision()
+
 lfs = require("lfs")
 cjson = require("cjson")
 argon2 = require("argon2")

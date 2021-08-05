@@ -208,6 +208,7 @@ else
 		}),
 		tags = {
 			environment = ENVIRONMENT,
+			release = REVISION,
 		},
 	})
 

@@ -34,6 +34,7 @@ COPY etc/s6 /etc/s6
 COPY backend /var/www/foxcaves/lua
 
 COPY --from=builder /opt/stage/dist /var/www/foxcaves/html
+COPY --from=builder /opt/stage/.revision /var/www/foxcaves/.revision
 
 RUN /etc/nginx/cfips.sh
 
