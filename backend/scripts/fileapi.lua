@@ -31,12 +31,8 @@ function file_get(fileid, user)
 		return nil
 	end
 
-	file.user = tonumber(file.user)
 	if user and file.user ~= user then return nil end
-	file.type = tonumber(file.type)
-	file.time = tonumber(file.time)
-	file.size = tonumber(file.size)
-	file.id = fileid
+
 	if file.thumbnail then
 		file.thumbnail_url = SHORT_URL .. "/thumbs/" .. file.id .. file.thumbnail
 	end

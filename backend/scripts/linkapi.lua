@@ -20,10 +20,8 @@ function link_get(linkid, user)
 	if not link then
 		return nil
 	end
-	link.user = tonumber(link.user)
 	if user and link.user ~= user then return nil end
 	link.id = linkid
 	link.short_url = link_shorturl(linkid)
-	link.time = tonumber(link.time)
 	return link
 end

@@ -60,17 +60,11 @@ function ngx.ctx.login(username_or_id, password, options)
 	local resultarr = database:query_safe('SELECT * FROM users WHERE ' .. id_field .. ' = %s', tostring(username_or_id):lower())
 	local result = resultarr[1]
 	if result then
-		if result.active then
-			result.active = tonumber(result.active)
-		else
-			result.active = 0
-		end
 		if result.active == 0 then
 			return ngx.ctx.LOGIN_USER_INACTIVE
 		elseif result.active == -1 then
 			return ngx.ctx.LOGIN_USER_BANNED
 		end
-		result.id = tonumber(result.id)
 		if login_with_id or check_auth(result, password, options) then
 			if not nosession then
 				local sessionid = randstr(32)
@@ -82,8 +76,7 @@ function ngx.ctx.login(username_or_id, password, options)
 				redis:expire(sessionid, SESSION_EXPIRE_DELAY)
 			end
 
-			result.usedbytes = tonumber(result.usedbytes or 0)
-			result.bonusbytes = tonumber(result.bonusbytes or 0)
+			result.usedbytes = 0 -- CALCULATE THIS
 			result.totalbytes = STORAGE_BASE + result.bonusbytes
 			ngx.ctx.user = result
 
