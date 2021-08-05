@@ -75,5 +75,5 @@ function make_new_api_key(userdata)
 	end
 	local str = randstr(64)
 	userdata.apikey = str
-	database:hset(database.KEYS.USERS .. userdata.id, "apikey", str)
+    database:query_safe('UPDATE users SET apikey = %s WHERE id = %s', str, userdata.id)
 end

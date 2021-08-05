@@ -3,7 +3,7 @@ dofile(ngx.var.main_root .. "/scripts/global.lua")
 dofile("scripts/api_login.lua")
 if not ngx.ctx.user then return end
 
-local database = ngx.ctx.database
+local redis = ngx.ctx.redis
 
 local server = require("resty.websocket.server")
 local ws, err = server:new({
@@ -21,7 +21,7 @@ local function kick()
     should_run = false
 end
 
-local res, err = database:subscribe(database.KEYS.PUSH ..  ngx.ctx.user.id)
+local res, err = redis:subscribe("push:" ..  ngx.ctx.user.id)
 if err then
     return kick()
 end
@@ -45,7 +45,7 @@ end
 
 local function redis_read()
     while should_run do
-        local res, err = database:read_reply()
+        local res, err = redis:read_reply()
         if err and err ~= "timeout" then
             return kick()
         end
@@ -65,4 +65,4 @@ local redis_thread = ngx.thread.spawn(redis_read)
 websocket_read()
 ngx.eof()
 ngx.thread.wait(redis_thread)
-database:close()
+redis:close()
