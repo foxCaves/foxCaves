@@ -31,8 +31,8 @@ function explode(div,str) -- credit: http://richard.warburton.it
 	return arr
 end
 
+--[[
 local c_slash = ("/"):byte(1)
-
 local setfenv = setfenv
 local getfenv = getfenv
 local filecache = {}
@@ -58,6 +58,7 @@ function dofile(file)
 	end
 	return setfenv(code(), getfenv())()
 end
+]]
 
 function parse_authorization_header(auth)
 	if not auth then

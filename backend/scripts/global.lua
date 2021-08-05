@@ -9,7 +9,7 @@ ngx.ctx.user = nil
 
 local resty_redis = require("resty.redis")
 local pgmoon = require("pgmoon")
-local argon2 = require("argon2")
+argon2 = require("argon2")
 
 local shutdown_funcs = {}
 function register_shutdown(func)
@@ -187,12 +187,3 @@ function printStaticTemplateAndClose(name, params, cachekey)
 	ngx.print(evalTemplateAndCache(name, params, cachekey))
 end
 dofile("scripts/access.lua")
-
-_G.ngx = ngx
-_G.math = math
-_G.tonumber = tonumber
-_G.tostring = tostring
-_G.os = os
-_G.lfs = lfs
-_G.cjson = cjson
-_G.argon2 = argon2
