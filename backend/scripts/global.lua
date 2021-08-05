@@ -112,10 +112,8 @@ end
 
 ngx.ctx.make_redis = make_redis
 ngx.ctx.redis = make_redis()
-local redis = ngx.ctx.redis
 ngx.ctx.make_database = make_database
 ngx.ctx.database = make_database()
-local database = ngx.ctx.database
 
 ngx.ctx.EMAIL_INVALID = -1
 ngx.ctx.EMAIL_TAKEN = -2
@@ -124,7 +122,7 @@ function ngx.ctx.check_email(email)
 		return ngx.ctx.EMAIL_INVALID
 	end
 
-	local res = database:query_safe('SELECT id FROM users WHERE lower(email) = %s', email:lower())
+	local res = ngx.ctx.database:query_safe('SELECT id FROM users WHERE lower(email) = %s', email:lower())
 	if res[1] then
 		return ngx.ctx.EMAIL_TAKEN
 	end
@@ -136,7 +134,7 @@ function ngx.ctx.check_username(username)
 		return ngx.ctx.EMAIL_INVALID
 	end
 
-	local res = database:query_safe('SELECT id FROM users WHERE lower(username) = %s', username:lower())
+	local res = ngx.ctx.database:query_safe('SELECT id FROM users WHERE lower(username) = %s', username:lower())
 	if res[1] then
 		return ngx.ctx.EMAIL_TAKEN
 	end
@@ -166,7 +164,7 @@ function raw_push_action(data, user)
 	if not user then
 		user = ngx.ctx.user
 	end
-	redis:publish("push:" .. user.id, cjson.encode(data))
+	ngx.ctx.redis:publish("push:" .. user.id, cjson.encode(data))
 end
 
 function api_not_logged_in_error()
