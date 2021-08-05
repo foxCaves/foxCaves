@@ -73,10 +73,6 @@ local function scan_route_dir(dir)
     end
 end
 
-function dofile(file)
-	loadfile(file)()
-end
-
 function execute_route()
     local override = ngx.var.run_lua_file
     if override and override:len() > 0 then

@@ -6,35 +6,24 @@ local dbconfig = _config
 _config = nil
 dbconfig.postgres.socket_type = "nginx"
 
-if ngx.ctx.in_use then
-	error("WTF")
-end
-ngx.ctx.in_use = true
 ngx.ctx.user = nil
 
 local resty_redis = require("resty.redis")
 local pgmoon = require("pgmoon")
 argon2 = require("argon2")
 
-local shutdown_funcs = {}
-local c = ngx.ctx
+ngx.ctx.shutdown_funcs = {}
 function register_shutdown(func)
-	if c ~= ngx.ctx then
-		error("MM1")
-	end
-	table.insert(shutdown_funcs, func)
+	table.insert(ngx.ctx.shutdown_funcs, func)
 end
 function __on_shutdown()
-	if c ~= ngx.ctx then
-		error("MM2")
-	end
-	for _, v in next, shutdown_funcs do
+	for _, v in next, ngx.ctx.shutdown_funcs do
 		local isok, err = pcall(v)
 		if not isok then
 			ngx.log(ngx.ERR, "Shutdown function failed: " .. err)
 		end
 	end
-	shutdown_funcs = {}
+	ngx.ctx.shutdown_funcs = {}
 end
 
 function make_redis(no_auto_shutdown)

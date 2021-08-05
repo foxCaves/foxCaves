@@ -31,7 +31,6 @@ function explode(div,str) -- credit: http://richard.warburton.it
 	return arr
 end
 
---[[
 local c_slash = ("/"):byte(1)
 local setfenv = setfenv
 local getfenv = getfenv
@@ -58,7 +57,10 @@ function dofile(file)
 	end
 	return setfenv(code(), getfenv())()
 end
-]]
+
+function dofile_global()
+	dofile(ngx.var.main_root .. "/scripts/global.lua")
+end
 
 function parse_authorization_header(auth)
 	if not auth then
