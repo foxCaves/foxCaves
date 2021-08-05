@@ -7,7 +7,7 @@ local function load_revision()
 		REVISION = "unknown"
 		return
 	end
-	REVISION = fh:read("*all")
+	REVISION = fh:read("*all"):gsub("%s+", "")
 	fh:close()
 end
 load_revision()
