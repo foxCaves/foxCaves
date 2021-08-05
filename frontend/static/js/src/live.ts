@@ -7,11 +7,10 @@ let backgroundCanvasCTX: CanvasRenderingContext2D, foregroundCanvasCTX: CanvasRe
 let backgroundCanvas: HTMLCanvasElement, foregroundCanvas: HTMLCanvasElement, finalCanvas: HTMLCanvasElement;
 
 const liveUrlParams = new URLSearchParams(document.location.search);
-const liveUrlSplit = document.location.pathname.split('/');
-const LIVEDRAW_FILEID = liveUrlSplit[liveUrlSplit.length - 1]!;
-const LIVEDRAW_SID = liveUrlParams.get("sid");
+const LIVEDRAW_FILEID = liveUrlParams.get('id')!;
+const LIVEDRAW_SID = liveUrlParams.get('sid');
 if (!LIVEDRAW_SID) {
-	document.location.href += '?sid=' + randomString(12);
+	document.location.href += '&sid=' + randomString(12);
 }
 
 const MAX_BRUSH_WIDTH = 200;

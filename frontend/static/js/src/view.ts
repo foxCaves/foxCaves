@@ -31,8 +31,8 @@ async function makeFilePreview(file: FileInfo) {
 }
 
 async function loadFileInfo() {
-	const split = document.location.pathname.split('/');
-	const id = split[split.length - 1];
+	const urlParams = new URLSearchParams(document.location.search);
+	const id = urlParams.get('id');
 	const res = await fetch(`/api/v1/files/${id}`);
 	const file = (await res.json()) as FileInfo;
 

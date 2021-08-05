@@ -14,51 +14,6 @@ const dropZoneUploads: (File | string)[] = [];
 let dropZoneFileNumber = 0;
 let dropZoneFileCount = 0;
 
-const mimetypes: {
-	[key: string]: string;
-} = {
-	"bmp" : "image/bmp",
-	"c" : "text/plain",
-	"cpp" : "text/plain",
-	"cs" : "text/plain",
-	"css" : "text/css",
-	"flac" : "audio/flac",
-	"gif" : "image/gif",
-	"h" : "text/plain",
-	"htaccess" : "text/plain",
-	"htm" : "text/html",
-	"html" : "text/html",
-	"java" : "text/plain",
-	"jpeg" : "image/jpeg",
-	"jpg" : "image/jpeg",
-	"js" : "text/javascript",
-	"lua" : "text/plain",
-	"mp3" : "audio/mpeg",
-	"mp4" : "video/mp4",
-	"ogg" : "audio/ogg",
-	"pdf" : "application/pdf",
-	"php" : "text/plain",
-	"php3" : "text/plain",
-	"php4" : "text/plain",
-	"php5" : "text/plain",
-	"php6" : "text/plain",
-	"phtm" : "text/plain",
-	"phtml" : "text/plain",
-	"pl" : "text/plain",
-	"png" : "image/png",
-	"py" : "text/plain",
-	"shtm" : "text/html",
-	"shtml" : "text/html",
-	"txt" : "text/plain",
-	"vb" : "text/plain",
-	"wav" : "audio/wav",
-	"webm" : "video/webm"
-}
-
-function getMimeTypeFromFile(file: string) {
-	return mimetypes[/([\d\w]+)$/.exec(file)![0]!] || "application/octet-stream";
-}
-
 function handleDropFileSelect(event: JQuery.Event) {
 	handleDragOverJQ(event);
 
@@ -285,7 +240,7 @@ function getFileLI(id: string) {
 	</li>` : '';
 	const fileLI = `<li draggable="true" id="file_${file.id}" class="image_manage_main" style="background-image:url('${file.thumbnail_image}')">
 		<div class="image_manage_top" title="${formatDate(file.time)} [${escapedName}]">${escapedName}</div>
-		<a href="/view/${file.id}"></a>
+		<a href="/view?id=${file.id}"></a>
 		<div class="image_manage_bottom">
 			<span>
 				<a title="View" href="${file.view_url}"><i class="icon-picture icon-white"></i> </a>
@@ -294,7 +249,7 @@ function getFileLI(id: string) {
 					<a title="Options" class="dropdown-toggle" data-toggle="dropdown" href=""><i class="icon-wrench icon-white"></i> </a>
 					<ul class="dropdown-menu">
 						<li><a class="rename">Rename</a></li>
-						<li><a href="/live/${file.id}">Edit</a></li>
+						<li><a href="/live?id=${file.id}">Edit</a></li>
 						${addDropdown}
 					</ul>
 				</div>
@@ -315,7 +270,7 @@ function startFileDrag(this: HTMLElement, event: DragEvent) {
 	const fileName = (this.children[0]! as HTMLElement).innerText;
 	event.dataTransfer!.setData(
 		"DownloadURL",
-		getMimeTypeFromFile(fileName) + fileName + ":" + getDownloadURLFromImageManager(this)
+		fileName + ":" + getDownloadURLFromImageManager(this)
 	);
 	window.setTimeout("currFileDrag.style.opacity = '0.2';", 1);
 	trashBin.style.opacity = "0.7";
