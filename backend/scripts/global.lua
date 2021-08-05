@@ -77,7 +77,7 @@ function make_redis()
 		return ret
 	end
 
-	register_shutdown(function() database:close() end)
+	register_shutdown(function() database:set_keepalive(dbconfig.redis.keepalive_timeout or 10000, dbconfig.redis.keepalive_count or 100) end)
 
 	return database
 end
@@ -99,7 +99,8 @@ function make_database()
 		return res
 	end
 
-	register_shutdown(function() database:keepalive() end)
+	register_shutdown(function() database:keepalive(dbconfig.redis.keepalive_timeout or 10000, dbconfig.redis.keepalive_count or 100) end)
+
 	return database
 end
 
