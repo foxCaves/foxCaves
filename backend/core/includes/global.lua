@@ -10,16 +10,23 @@ VALIDATION_STATE_INVALID = -1
 VALIDATION_STATE_TAKEN = -2
 
 function register_shutdown(func)
+	if not ngx.ctx.shutdown_funcs then
+		ngx.ctx.shutdown_funcs = {}
+	end
 	table.insert(ngx.ctx.shutdown_funcs, func)
 end
 function __on_shutdown()
+	if not ngx.ctx.shutdown_funcs then
+		return
+	end
+
 	for _, v in next, ngx.ctx.shutdown_funcs do
 		local isok, err = pcall(v)
 		if not isok then
 			ngx.log(ngx.ERR, "Shutdown function failed: " .. err)
 		end
 	end
-	ngx.ctx.shutdown_funcs = {}
+	ngx.ctx.shutdown_funcs = nil
 end
 
 function make_redis(no_auto_shutdown)
@@ -108,7 +115,6 @@ end
 
 function ctx_init()
 	ngx.ctx.user = nil
-	ngx.ctx.shutdown_funcs = {}
 
 	ngx.ctx.redis = make_redis()
 	ngx.ctx.database = make_database()
