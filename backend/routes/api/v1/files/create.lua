@@ -31,7 +31,7 @@ if (not filesize) or filesize <= 0 then
 	return api_error("Empty body")
 end
 
-if ngx.ctx.user.usedbytes + filesize > ngx.ctx.user.totalbytes then
+if user_calculate_usedbytes(ngx.ctx.user) + filesize > ngx.ctx.user.totalbytes then
 	return api_error("Over quota", 402)
 end
 
@@ -127,7 +127,6 @@ local fileType, thumbnailType, thumbnail = mimeHandlers[prefix](suffix)
 file_upload(fileid, name, extension, thumbnail, mtype, thumbnailType)
 
 database:query_safe('INSERT INTO files (id, name, "user", extension, type, size, time, thumbnail) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)', fileid, name, ngx.ctx.user.id, extension, fileType, filesize, ngx.time(), thumbnail or "")
-ngx.ctx.user.usedbytes = ngx.ctx.user.usedbytes + filesize
 
 local filedata = file_get_public(fileid)
 file_push_action('create', filedata)

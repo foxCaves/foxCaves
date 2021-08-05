@@ -85,9 +85,6 @@ function file_delete(fileid, user)
 
 	ngx.ctx.database:query_safe('DELETE FROM files WHERE id = %s', fileid)
 
-	if file.user and file.user == ngx.ctx.user.id then
-		ngx.ctx.user.usedbytes = ngx.ctx.user.usedbytes - file.size
-	end
 	file_push_action('delete', file, { id = file.user })
 
 	return true, file.name
@@ -127,14 +124,15 @@ function file_upload(fileid, filename, extension, thumbnail, filetype, thumbtype
 end
 
 function file_push_action(action, file, userdata)
+	if not userdata then
+		userdata = ngx.ctx.user
+	end
 	raw_push_action({
 		action = "file:" .. action,
 		file = file,
 	}, userdata)
-	if (not userdata) or userdata == ngx.ctx.user then
-		raw_push_action({
-			action = "usedbytes",
-			usedbytes = ngx.ctx.user.usedbytes,
-		}, userdata)
-	end
+	raw_push_action({
+		action = "usedbytes",
+		usedbytes = user_calculate_usedbytes(userdata),
+	}, userdata)
 end

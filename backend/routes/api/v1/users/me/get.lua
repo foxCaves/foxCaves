@@ -7,4 +7,5 @@ user.password = nil
 user.loginkey = nil
 user.sessionid = nil
 user.salt = nil
+user.usedbytes = user_calculate_usedbytes(user)
 ngx.print(cjson.encode(user))

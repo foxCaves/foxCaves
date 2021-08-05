@@ -39,7 +39,6 @@ end
 
 database:query_safe('UPDATE files SET extension = %s, name = %s, size = %s WHERE id = %s', newextension, newfilename, newsize, fileid)
 newsize = newsize - dbdata.size
-ngx.ctx.user.usedbytes = ngx.ctx.user.usedbytes + newsize
 
 file_upload(fileid, newfilename, newextension, "", mimetypes[newextension], nil)
 file_manualdelete(fileid .. "/file" .. dbdata.extension)

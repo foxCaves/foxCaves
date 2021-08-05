@@ -24,6 +24,11 @@ function user_require_email_confirmation(user)
     return true
 end
 
+function user_calculate_usedbytes(user)
+	local res = ngx.ctx.database:query_safe('SELECT SUM(size) AS usedbytes FROM files WHERE "user" = %s', user.id)
+	return res[1].usedbytes or 0
+end
+
 function make_new_login_key(userdata)
 	local redis = ngx.ctx.redis
 

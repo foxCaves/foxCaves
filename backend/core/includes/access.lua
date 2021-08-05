@@ -73,7 +73,6 @@ function do_login(username_or_id, password, options)
 				redis:expire(sessionid, SESSION_EXPIRE_DELAY)
 			end
 
-			result.usedbytes = 0 -- CALCULATE THIS
 			result.totalbytes = STORAGE_BASE + result.bonusbytes
 			ngx.ctx.user = result
 
