@@ -17,7 +17,6 @@ end
 
 local function kick()
     ws:send_close()
-    ngx.eof()
     should_run = false
 end
 
@@ -63,5 +62,4 @@ end
 
 local redis_thread = ngx.thread.spawn(redis_read)
 websocket_read()
-ngx.eof()
 ngx.thread.wait(redis_thread)

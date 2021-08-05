@@ -10,4 +10,3 @@ if not link then
     return
 end
 ngx.print(cjson.encode(link))
-ngx.eof()

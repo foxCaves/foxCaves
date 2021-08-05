@@ -11,4 +11,3 @@ if not file then
 end
 
 ngx.print(cjson.encode(file))
-ngx.eof()

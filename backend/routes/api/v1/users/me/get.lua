@@ -9,4 +9,3 @@ user.loginkey = nil
 user.sessionid = nil
 user.salt = nil
 ngx.print(cjson.encode(user))
-ngx.eof()

@@ -196,7 +196,6 @@ if IS_DEVELOPMENT then
 		ngx.status = 500
 		ngx.log(ngx.ERR, "Lua error: " .. err)
 		ngx.print(err)
-		return ngx.eof()
 	end
 else
 	local rvn = require("raven").new({
@@ -216,8 +215,9 @@ else
 		ngx.status = 500
 		ngx.log(ngx.ERR, "Lua error: " .. err)
 	end
-	if __on_shutdown then
-		__on_shutdown()
-	end
-	return ngx.eof()
 end
+
+if __on_shutdown then
+	__on_shutdown()
+end
+ngx.eof()

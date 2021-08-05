@@ -29,4 +29,3 @@ file_push_action('refresh', {
 })
 
 ngx.print(cjson.encode(file))
-ngx.eof()

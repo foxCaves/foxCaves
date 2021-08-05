@@ -20,7 +20,6 @@ end
 local userres = database:query_safe('SELECT * FROM users WHERE id = %s', res.user)
 local userdata = userres[1]
 if not userdata then
-    ngx.eof()
     return
 end
 
@@ -38,4 +37,3 @@ elseif res.action == "forgotpwd" then
 end
 
 ngx.print(cjson.encode({ action = res.action }))
-ngx.eof()

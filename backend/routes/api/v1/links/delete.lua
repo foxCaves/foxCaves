@@ -16,4 +16,3 @@ if res.affected_rows > 0 then
 else
     ngx.status = 400
 end
-ngx.eof()

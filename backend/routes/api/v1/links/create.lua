@@ -25,4 +25,3 @@ raw_push_action({
 	link = linkinfo,
 })
 ngx.print(cjson.encode(linkinfo))
-ngx.eof()

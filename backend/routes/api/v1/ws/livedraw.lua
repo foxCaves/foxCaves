@@ -59,7 +59,6 @@ local should_run = true
 
 local function close()
 	ws:send_close()
-	ngx.eof()
 end
 
 local function error(str)
@@ -220,7 +219,6 @@ local function websocket_read()
 		local data, typ, err = ws:recv_frame()
 		if ws.fatal or typ == "close" or typ == "error" then
 			ws:send_close()
-			ngx.eof()
 			break
 		end
 		if err then
@@ -245,7 +243,6 @@ local function redis_read()
 		local res, err = sub_database:read_reply()
 		if err and err ~= "timeout" then
 			ws:send_close()
-			ngx.eof()
 			break
 		end
 		if res then
@@ -285,6 +282,5 @@ user:publish(cEVENT_JOINDIRECT)
 
 local sub_database_thread = ngx.thread.spawn(redis_read)
 websocket_read()
-ngx.eof()
 user:publish(cEVENT_LEAVE)
 ngx.thread.wait(sub_database_thread)

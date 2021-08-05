@@ -9,7 +9,7 @@ local newextension = ngx.var.arg_newtype:lower()
 if newextension ~= "jpg" and newextension ~= "png" and newextension ~= "gif" and newextension ~= "bmp" then
 	ngx.status = 400
 	ngx.print("badreq")
-	return ngx.eof()
+	return
 end
 newextension = "." .. newextension
 
@@ -19,7 +19,7 @@ local succ, data, dbdata = file_download(fileid, ngx.ctx.user.id)
 if(not succ) or dbdata.extension == newextension or dbdata.type ~= 1 then
 	ngx.status = 403
 	ngx.print("failed")
-	return ngx.eof()
+	return
 end
 
 local newfilename = dbdata.name
@@ -39,7 +39,7 @@ local newsize = lfs.attributes("/var/www/foxcaves/tmp/files/" .. fileid .. newex
 if not newsize then
 	ngx.status = 500
 	ngx.print("failed")
-	return ngx.eof()
+	return
 end
 
 database:query_safe('UPDATE files SET extension = %s, name = %s, size = %s WHERE id = %s', newextension, newfilename, newsize, fileid)
@@ -55,5 +55,3 @@ file_push_action('refresh', {
 	name = newfilename,
 	size = newsize,
 })
-
-ngx.eof()

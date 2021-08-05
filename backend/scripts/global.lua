@@ -25,22 +25,22 @@ end
 function make_redis()
 	local database, err = resty_redis:new()
 	if not database then
-		ngx.print("Error initializing DB: ", err)
-		return ngx.eof()
+		error("Error initializing DB: " .. err)
+		return
 	end
 	database:set_timeout(60000)
 
 	local ok, err = database:connect(dbconfig.redis.ip, dbconfig.redis.port)
 	if not ok then
-		ngx.print("Error connecting to DB: ", err)
-		return ngx.eof()
+		error("Error connecting to DB: " .. err)
+		return
 	end
 
 	if database:get_reused_times() == 0 and dbconfig.redis.password then
 		local ok, err = database:auth(dbconfig.redis.password)
 		if not ok then
-			ngx.print("Error connecting to DB: ", err)
-			return ngx.eof()
+			error("Error connecting to DB: " .. err)
+			return
 		end
 	end
 
@@ -171,16 +171,14 @@ function api_error(error, code)
 	ngx.req.discard_body()
 	ngx.status = code or 400
 	ngx.print(cjson.encode({ error = error }))
-	return ngx.eof()
+	return
 end
 
 function printTemplateAndClose(name, params)
 	ngx.print(evalTemplate(name, params))
-	ngx.eof()
 end
 function printStaticTemplateAndClose(name, params, cachekey)
 	ngx.print(evalTemplateAndCache(name, params, cachekey))
-	ngx.eof()
 end
 dofile("scripts/access.lua")
 

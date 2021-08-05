@@ -12,4 +12,3 @@ for _, file in next, files do
 	table.insert(results, file_get(file))
 end
 ngx.print(cjson.encode(results))
-ngx.eof()

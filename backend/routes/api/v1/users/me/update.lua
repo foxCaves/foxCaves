@@ -25,11 +25,11 @@ if args.email then
         if emailcheck == ngx.ctx.EMAIL_INVALID then
             ngx.status = 400
             ngx.print(cjson.encode({ error = "email invalid" }))
-            return ngx.eof()
+            return
         elseif emailcheck == ngx.ctx.EMAIL_TAKEN then
             ngx.status = 400
             ngx.print(cjson.encode({ error = "email already taken" }))
-            return ngx.eof()
+            return
         else
             -- TODO: re-ask for verification here
             user.email = args.email
@@ -54,4 +54,3 @@ if args.loginkey then
 end
 
 ngx.print(cjson.encode(user))
-ngx.eof()

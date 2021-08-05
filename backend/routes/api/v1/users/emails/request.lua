@@ -24,7 +24,6 @@ local userres = database:query_safe('SELECT * FROM users WHERE lower(username) =
 local userdata = userres[1]
 if not userdata then
     ngx.status = 404
-    ngx.eof()
     return
 end
 

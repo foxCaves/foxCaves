@@ -28,5 +28,4 @@ else
         ngx.ctx.user.remember_me = true
         ngx.ctx.send_login_key()
     end
-    ngx.eof()
 end

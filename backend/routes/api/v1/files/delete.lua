@@ -9,4 +9,3 @@ local ok, _ = file_delete(ngx.ctx.route_vars.id, ngx.ctx.user.id)
 if not ok then
 	ngx.status = 400
 end
-ngx.eof()

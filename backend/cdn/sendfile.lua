@@ -8,7 +8,7 @@ local function send_file(disposition_type)
 	if (not file) or file.extension:sub(2):lower() ~= ngx.var.extension:lower() then
 		ngx.status = 404
 		ngx.print("File not found")
-		return ngx.eof()
+		return
 	end
 
 	ngx.header["Content-Dispotition"] = disposition_type .. "; filename=" .. file.name

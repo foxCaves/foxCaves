@@ -136,4 +136,3 @@ ngx.ctx.user.usedbytes = ngx.ctx.user.usedbytes + filesize
 local filedata = file_get(fileid)
 file_push_action('create', filedata)
 ngx.print(cjson.encode(filedata))
-ngx.eof()
