@@ -2,6 +2,8 @@
 api_ctx_init()
 if not ngx.ctx.user then return end
 
+__on_shutdown()
+
 local redis = make_redis(true)
 
 local server = require("resty.websocket.server")

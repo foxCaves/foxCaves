@@ -15,7 +15,9 @@ local randstr = randstr
 local unpack = unpack
 local explode = explode
 
-local redis = ngx.ctx.redis
+__on_shutdown()
+
+local redis = make_redis(true)
 local make_redis = make_redis
 
 local server = require("resty.websocket.server")
@@ -285,3 +287,4 @@ websocket_read()
 user:publish(cEVENT_LEAVE)
 ngx.thread.wait(sub_redis_thread)
 sub_redis:close()
+redis:close()
