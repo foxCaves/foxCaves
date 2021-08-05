@@ -234,7 +234,7 @@ else
 				ip = ngx.var.remote_addr,
 				url = ngx.var.request_uri,
 			},
-		}, execute_route)
+		}, func)
 		ngx.req.discard_body()
 		if not isok then
 			ngx.status = 500
@@ -250,7 +250,6 @@ function run_request_route()
 end
 
 local function execute_run_lua_file()
-	ngx.log(ngx.ERR, "XXX: " .. ngx.var.run_lua_file)
 	dofile_cached(ngx.var.run_lua_file)
 end
 function run_request_direct()
