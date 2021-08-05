@@ -2,6 +2,8 @@ lfs = require("lfs")
 cjson = require("cjson")
 argon2 = require("argon2")
 
+dofile("/var/www/foxcaves/config/main.lua")
+
 MAIN_DIR = "/var/www/foxcaves/lua/"
 lfs.chdir(MAIN_DIR)
 

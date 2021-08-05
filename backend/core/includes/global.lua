@@ -1,5 +1,3 @@
-dofile("/var/www/foxcaves/config/main.lua")
-
 dofile("/var/www/foxcaves/config/database.lua")
 local dbconfig = _config
 _config = nil
