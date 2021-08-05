@@ -1,6 +1,10 @@
 lfs.chdir(ngx.var.main_root)
 dofile("/var/www/foxcaves/config/main.lua")
 
+dofile("/var/www/foxcaves/config/database.lua")
+local dbconfig = _config
+_config = nil
+
 ngx.ctx.user = nil
 
 local resty_redis = require("resty.redis")
@@ -19,22 +23,19 @@ function make_redis()
 	end
 	database:set_timeout(60000)
 
-	dofile("/var/www/foxcaves/config/database.lua")
-	local ok, err = database:connect(_config.redis.ip, _config.redis.port)
+	local ok, err = database:connect(dbconfig.redis.ip, dbconfig.redis.port)
 	if not ok then
 		ngx.print("Error connecting to DB: ", err)
 		return ngx.eof()
 	end
 
-	if database:get_reused_times() == 0 and _config.redis.password then
-		local ok, err = database:auth(_config.redis.password)
+	if database:get_reused_times() == 0 and dbconfig.redis.password then
+		local ok, err = database:auth(dbconfig.redis.password)
 		if not ok then
 			ngx.print("Error connecting to DB: ", err)
 			return ngx.eof()
 		end
 	end
-
-	_config = nil
 
 	database.hgetall_real = database.hgetall
 	function database:hgetall(key)
@@ -75,9 +76,7 @@ function make_redis()
 end
 
 function make_database()
-	dofile("/var/www/foxcaves/config/database.lua")
-	local database = pgmoon.new(_config.postgres)
-	_config = nil
+	local database = pgmoon.new(dbconfig.postgres)
 	assert(database:connect())
 
 	function database:query_safe(query, ...)
