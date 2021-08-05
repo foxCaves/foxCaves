@@ -37,7 +37,7 @@ function file_get(fileid, user)
 		return nil
 	end
 
-	if file.thumbnail then
+	if file.thumbnail and file.thumbnail ~= "" then
 		file.thumbnail_url = SHORT_URL .. "/thumbs/" .. file.id .. file.thumbnail
 	end
 	if file.type == FILE_TYPE_IMAGE and file.thumbnail_url then
@@ -69,7 +69,7 @@ function file_delete(fileid, user)
 	end
 
 	file_manualdelete(fileid .. "/file" .. file.extension)
-	if file.thumbnail and file.thumbnail ~= "" then
+	if file.thumbnail_url then
 		file_manualdelete(fileid .. "/thumb" .. file.thumbnail)
 	end
 	file_manualdelete(fileid, true)
