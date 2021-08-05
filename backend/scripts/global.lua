@@ -17,10 +17,17 @@ local pgmoon = require("pgmoon")
 argon2 = require("argon2")
 
 local shutdown_funcs = {}
+local c = ngx.ctx
 function register_shutdown(func)
+	if c ~= ngx.ctx then
+		error("MM1")
+	end
 	table.insert(shutdown_funcs, func)
 end
 function __on_shutdown()
+	if c ~= ngx.ctx then
+		error("MM2")
+	end
 	for _, v in next, shutdown_funcs do
 		local isok, err = pcall(v)
 		if not isok then
