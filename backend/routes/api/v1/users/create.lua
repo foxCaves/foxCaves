@@ -1,14 +1,12 @@
 -- ROUTE:POST:/api/v1/users
-dofile_global()
+cookies_ctx_init()
 
 local database = ngx.ctx.database
-local args = ngx.ctx.get_post_args()
+local args = get_post_args()
 
 local username = args.username or ""
 local email = args.email or ""
 local password = args.password or ""
-
-dofile("scripts/userapi.lua")
 
 if username == "" then
     return api_error("username required")
@@ -20,17 +18,17 @@ if password == "" then
     return api_error("password required")
 end
 
-local usernamecheck = ngx.ctx.check_username(args.username)
-if usernamecheck == ngx.ctx.EMAIL_INVALID then
+local usernamecheck = check_username(args.username)
+if usernamecheck == EMAIL_INVALID then
     return api_error("username invalid")
-elseif usernamecheck == ngx.ctx.EMAIL_TAKEN then
+elseif usernamecheck == EMAIL_TAKEN then
     return api_error("username taken")
 end
 
-local emailcheck = ngx.ctx.check_email(email)
-if emailcheck == ngx.ctx.EMAIL_INVALID then
+local emailcheck = check_email(email)
+if emailcheck == EMAIL_INVALID then
     return api_error("email invalid")
-elseif emailcheck == ngx.ctx.EMAIL_TAKEN then
+elseif emailcheck == EMAIL_TAKEN then
     return api_error("email taken")
 end
 

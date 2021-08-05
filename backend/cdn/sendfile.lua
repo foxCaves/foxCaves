@@ -1,5 +1,4 @@
-dofile_global()
-dofile("scripts/fileapi.lua")
+ctx_init()
 
 local function send_file(disposition_type)
 	local fileid = ngx.var.fileid

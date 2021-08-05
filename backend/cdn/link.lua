@@ -1,4 +1,4 @@
-dofile_global()
+ctx_init()
 
 local linkid = ngx.var.linkid
 local database = ngx.ctx.database

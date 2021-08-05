@@ -1,7 +1,5 @@
 -- ROUTE:GET:/api/v1/users/{id}
-dofile_global()
-dofile("scripts/api_login.lua")
-if not ngx.ctx.user then return end
+ctx_init()
 
 local database = ngx.ctx.database
 

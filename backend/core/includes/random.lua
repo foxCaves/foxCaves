@@ -1,6 +1,6 @@
-local randomstream = io.open("/dev/urandom", "r")
-function random(min, max)
+local function random(min, max, randomstream)
 	local a,b,c,d = randomstream:read(4):byte(1,4)
+
 	a = bit.lshift(a, 24) + bit.lshift(b, 16) + bit.lshift(c, 8) + d
 	if not max and not min then
 		return (a / 4294967296.0) + 0.5
@@ -21,9 +21,11 @@ local chars = {
 }
 local charcount = #chars
 function randstr(len)
+	local randomstream = io.open("/dev/urandom", "r")
 	local ret = {}
 	for i=1,len do
-		table.insert(ret, chars[random(charcount)])
+		table.insert(ret, chars[random(1, charcount, randomstream)])
 	end
+	randomstream:close()
 	return table.concat(ret)
 end

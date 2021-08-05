@@ -1,6 +1,5 @@
 -- ROUTE:GET:/api/v1/users/self
-dofile_global()
-dofile("scripts/api_login.lua")
+api_ctx_init()
 if not ngx.ctx.user then return end
 
 local user = ngx.ctx.user

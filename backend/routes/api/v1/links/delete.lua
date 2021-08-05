@@ -1,12 +1,8 @@
 -- ROUTE:DELETE:/api/v1/links/{id}
-dofile_global()
-dofile("scripts/api_login.lua")
+api_ctx_init()
 if not ngx.ctx.user then return end
 
-local database = ngx.ctx.database
-local id = ngx.ctx.route_vars.id
-
-local res = database:query_safe('DELETE FROM links WHERE id = %s AND "user" = %s', id, ngx.ctx.user.id)
+local res = ngx.ctx.database:query_safe('DELETE FROM links WHERE id = %s AND "user" = %s', ngx.ctx.route_vars.id, ngx.ctx.user.id)
 
 if res.affected_rows > 0 then
     raw_push_action({

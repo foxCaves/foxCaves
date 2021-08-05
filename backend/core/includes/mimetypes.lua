@@ -1,4 +1,3 @@
-if mimetypes then return end
 mimetypes = {
 	[".bmp"] = "image/bmp",
 	[".c"] = "text/plain",

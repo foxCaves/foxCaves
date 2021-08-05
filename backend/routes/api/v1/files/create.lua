@@ -1,6 +1,5 @@
 -- ROUTE:POST:/api/v1/files
-dofile_global()
-dofile("scripts/api_login.lua")
+api_ctx_init()
 if not ngx.ctx.user then return end
 
 local database = ngx.ctx.database
@@ -43,8 +42,6 @@ else
 	extension = extension:lower()
 end
 
-dofile("scripts/fileapi.lua")
-
 local headers = ngx.req.get_headers()
 if headers.x_is_base64 == "yes" then
 	if file then
@@ -66,7 +63,6 @@ else
 	filedata = nil
 end
 
-dofile("scripts/mimetypes.lua")
 local mtype = mimetypes[extension] or "application/octet-stream"
 
 local mimeHandlers = {
@@ -90,7 +86,7 @@ local mimeHandlers = {
 
 	text = function()
 		local fh = io.open("/var/www/foxcaves/tmp/files/" .. fileid .. extension, "r")
-		local content = ngx.ctx.escape_html(fh:read(4096))
+		local content = escape_html(fh:read(4096))
 
 		if fh:read(1) then
 			content = content .. "\n<i>[...]</i>"

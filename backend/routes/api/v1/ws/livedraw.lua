@@ -1,7 +1,5 @@
 -- ROUTE:GET:/api/v1/ws/livedraw
-ALLOW_GUEST = true
-dofile_global()
-dofile("scripts/api_login.lua")
+api_ctx_init(true)
 
 local next = next
 local tonumber = tonumber
@@ -233,7 +231,7 @@ local function websocket_read()
 	should_run = false
 end
 
-local sub_database = ngx.ctx.make_database()
+local sub_database = make_database()
 function get_id_from_packet(str)
     str = str:sub(2, str:find("|") - 1)
     return str

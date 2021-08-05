@@ -1,18 +1,13 @@
 -- ROUTE:POST:/api/v1/links
-dofile_global()
-dofile("scripts/api_login.lua")
+api_ctx_init()
 if not ngx.ctx.user then return end
-
-local database = ngx.ctx.database
-
-dofile("scripts/linkapi.lua")
 
 local linkid = randstr(10)
 
 local url = ngx.unescape_uri(ngx.var.arg_url)
 local short_url = link_shorturl(linkid)
 
-database:query_safe('INSERT INTO links (id, "user", url, time) VALUES (%s, %s, %s, %s)', linkid, ngx.ctx.user.id, url, ngx.time())
+ngx.ctx.database:query_safe('INSERT INTO links (id, "user", url, time) VALUES (%s, %s, %s, %s)', linkid, ngx.ctx.user.id, url, ngx.time())
 
 local linkinfo = {
 	id = linkid,

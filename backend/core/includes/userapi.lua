@@ -1,7 +1,6 @@
-local database = ngx.ctx.database
-local redis = ngx.ctx.redis
-
 function user_require_email_confirmation(user)
+	local redis = ngx.ctx.redis
+
 	if not user then
 		user = ngx.ctx.user
 		if not user then
@@ -14,7 +13,7 @@ function user_require_email_confirmation(user)
     local email_text = "Hello, " .. user.username .. "!\n\nYou have recently registered or changed your E-Mail on foxCaves.\nPlease click the following link to activate your E-Mail:\n"
     email_text = email_text .. MAIN_URL .. "/email/code?code=" .. emailid .. "\n\n"
     email_text = email_text .. "Kind regards,\nfoxCaves Support"
-    database:query_safe('UPDATE users SET active = 0 WHERE active = 1 AND id = %s', user.id)
+    ngx.ctx.database:query_safe('UPDATE users SET active = 0 WHERE active = 1 AND id = %s', user.id)
 
 	local emailkey = "emailkeys:" .. emailid
     redis:hmset(emailkey, "user", user.id, "action", "activation")
@@ -26,6 +25,8 @@ function user_require_email_confirmation(user)
 end
 
 function make_new_login_key(userdata)
+	local redis = ngx.ctx.redis
+
 	local send_userdata = false
 	local sessionid_skip = nil
 	if not userdata then
@@ -38,7 +39,7 @@ function make_new_login_key(userdata)
 	end
 
 	local str = randstr(64)
-    database:query_safe('UPDATE users SET loginkey = %s WHERE id = %s', str, userdata.id)
+    ngx.ctx.database:query_safe('UPDATE users SET loginkey = %s WHERE id = %s', str, userdata.id)
 
 	raw_push_action({
 		action = "kick",
@@ -57,7 +58,7 @@ function make_new_login_key(userdata)
 
 	if send_userdata then
 		ngx.ctx.user.loginkey = str
-		ngx.ctx.send_login_key()
+		send_login_key()
 	end
 end
 
@@ -70,5 +71,5 @@ function make_new_api_key(userdata)
 	end
 	local str = randstr(64)
 	userdata.apikey = str
-    database:query_safe('UPDATE users SET apikey = %s WHERE id = %s', str, userdata.id)
+    ngx.ctx.database:query_safe('UPDATE users SET apikey = %s WHERE id = %s', str, userdata.id)
 end

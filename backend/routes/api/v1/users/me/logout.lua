@@ -1,4 +1,4 @@
 -- ROUTE:POST:/api/v1/users/self/logout
-dofile_global()
+cookies_ctx_init()
 
-ngx.ctx.logout()
+do_logout()

@@ -1,4 +1,3 @@
-lfs.chdir(ngx.var.main_root)
 dofile("/var/www/foxcaves/config/main.lua")
 
 dofile("/var/www/foxcaves/config/database.lua")
@@ -6,13 +5,12 @@ local dbconfig = _config
 _config = nil
 dbconfig.postgres.socket_type = "nginx"
 
-ngx.ctx.user = nil
-
 local resty_redis = require("resty.redis")
 local pgmoon = require("pgmoon")
-argon2 = require("argon2")
 
-ngx.ctx.shutdown_funcs = {}
+EMAIL_INVALID = -1
+EMAIL_TAKEN = -2
+
 function register_shutdown(func)
 	table.insert(ngx.ctx.shutdown_funcs, func)
 end
@@ -110,33 +108,44 @@ function make_database()
 	return database
 end
 
-ngx.ctx.make_redis = make_redis
-ngx.ctx.redis = make_redis()
-ngx.ctx.make_database = make_database
-ngx.ctx.database = make_database()
+function ctx_init()
+	ngx.ctx.user = nil
+	ngx.ctx.shutdown_funcs = {}
 
-ngx.ctx.EMAIL_INVALID = -1
-ngx.ctx.EMAIL_TAKEN = -2
-function ngx.ctx.check_email(email)
+	ngx.ctx.redis = make_redis()
+	ngx.ctx.database = make_database()
+end
+
+function cookies_ctx_init()
+	ctx_init()
+	check_cookies()
+end
+
+function api_ctx_init(allow_guest)
+	cookies_ctx_init()
+	check_api_login(allow_guest)
+end
+
+function check_email(email)
 	if not ngx.re.match(email, "^[a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\\.[a-zA-Z]{2,}$", "o") then
-		return ngx.ctx.EMAIL_INVALID
+		return EMAIL_INVALID
 	end
 
 	local res = ngx.ctx.database:query_safe('SELECT id FROM users WHERE lower(email) = %s', email:lower())
 	if res[1] then
-		return ngx.ctx.EMAIL_TAKEN
+		return EMAIL_TAKEN
 	end
 	return nil
 end
 
-function ngx.ctx.check_username(username)
+function check_username(username)
 	if not ngx.re.match(username, "^[a-zA-Z0-9 .,;_-]+$", "o") then
-		return ngx.ctx.EMAIL_INVALID
+		return EMAIL_INVALID
 	end
 
 	local res = ngx.ctx.database:query_safe('SELECT id FROM users WHERE lower(username) = %s', username:lower())
 	if res[1] then
-		return ngx.ctx.EMAIL_TAKEN
+		return EMAIL_TAKEN
 	end
 	return nil
 end
@@ -147,7 +156,7 @@ local repTbl = {
 	[">"] = "&gt;",
 }
 
-function ngx.ctx.escape_html(str)
+function escape_html(str)
 	if (not str) or type(str) ~= "string" then
 		return str
 	end
@@ -155,7 +164,7 @@ function ngx.ctx.escape_html(str)
 	return str
 end
 
-function ngx.ctx.get_post_args()
+function get_post_args()
 	ngx.req.read_body()
 	return ngx.req.get_post_args()
 end
@@ -175,7 +184,6 @@ function api_error(error, code)
 	ngx.req.discard_body()
 	ngx.status = code or 400
 	ngx.print(cjson.encode({ error = error }))
-	return
 end
 
 function printTemplateAndClose(name, params)
@@ -184,4 +192,3 @@ end
 function printStaticTemplateAndClose(name, params, cachekey)
 	ngx.print(evalTemplateAndCache(name, params, cachekey))
 end
-dofile("scripts/access.lua")

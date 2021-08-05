@@ -1,6 +1,5 @@
 -- ROUTE:POST:/api/v1/files/{id}/convert
-dofile_global()
-dofile("scripts/api_login.lua")
+api_ctx_init()
 if not ngx.ctx.user then return end
 
 local fileid = ngx.ctx.route_vars.id
@@ -12,8 +11,6 @@ if newextension ~= "jpg" and newextension ~= "png" and newextension ~= "gif" and
 	return
 end
 newextension = "." .. newextension
-
-dofile("scripts/fileapi.lua")
 
 local succ, data, dbdata = file_download(fileid, ngx.ctx.user.id)
 if(not succ) or dbdata.extension == newextension or dbdata.type ~= 1 then
@@ -32,8 +29,6 @@ fh:write(data)
 fh:close()
 os.execute('/usr/bin/convert "/var/www/foxcaves/tmp/files/' .. fileid .. dbdata.extension .. '" -format ' .. newextension:sub(2) .. ' "/var/www/foxcaves/tmp/files/' .. fileid .. newextension .. '"')
 os.remove("/var/www/foxcaves/tmp/files/" .. fileid .. dbdata.extension)
-
-dofile("scripts/mimetypes.lua")
 
 local newsize = lfs.attributes("/var/www/foxcaves/tmp/files/" .. fileid .. newextension, "size")
 if not newsize then

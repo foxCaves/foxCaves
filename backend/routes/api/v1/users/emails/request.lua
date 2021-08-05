@@ -1,9 +1,9 @@
 -- ROUTE:POST:/api/v1/users/emails/request
-dofile_global()
+ctx_init()
 
 local database = ngx.ctx.database
 local redis = ngx.ctx.redis
-local args = ngx.ctx.get_post_args()
+local args = get_post_args()
 
 local action = args.action or ""
 if action == "" then

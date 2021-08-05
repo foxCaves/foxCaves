@@ -1,9 +1,9 @@
 -- ROUTE:POST:/api/v1/users/emails/code
-dofile_global()
+ctx_init()
 
 local database = ngx.ctx.database
 local redis = ngx.ctx.redis
-local args = ngx.ctx.get_post_args()
+local args = get_post_args()
 
 local code = args.code or ""
 if code == "" then
@@ -26,8 +26,6 @@ end
 if res.action == "activation" then
     database:query_safe('UPDATE users SET active = 1 WHERE active = 0 AND id = %s', res.user)
 elseif res.action == "forgotpwd" then
-    dofile("scripts/userapi.lua")
-
     local newPassword = randstr(16)
     database:query_safe('UPDATE users SET password = %s WHERE id = %s', argon2.hash_encoded(newPassword, randstr(32)), res.user)
     make_new_login_key(userdata)

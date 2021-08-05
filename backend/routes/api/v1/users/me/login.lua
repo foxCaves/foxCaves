@@ -1,7 +1,7 @@
 -- ROUTE:POST:/api/v1/users/self/login
-dofile_global()
+cookies_ctx_init()
 
-local args = ngx.ctx.get_post_args()
+local args = get_post_args()
 if not args then
     return api_error("No args")
 end
@@ -14,18 +14,18 @@ if not args.password or args.password == "" then
     return api_error("No password")
 end
 
-local result = ngx.ctx.login(args.username, args.password)
-if result == ngx.ctx.LOGIN_USER_INACTIVE then
+local result = do_login(args.username, args.password)
+if result == LOGIN_USER_INACTIVE then
     api_error("Account inactive")
-elseif result == ngx.ctx.LOGIN_USER_BANNED then
+elseif result == LOGIN_USER_BANNED then
     api_error("Account banned")
-elseif result == ngx.ctx.LOGIN_BAD_PASSWORD then
+elseif result == LOGIN_BAD_PASSWORD then
     api_error("Invalid username/password")
-elseif result ~= ngx.ctx.LOGIN_SUCCESS then
+elseif result ~= LOGIN_SUCCESS then
     api_error("Unknown login error")
 else
     if args.remember == "true" then
         ngx.ctx.user.remember_me = true
-        ngx.ctx.send_login_key()
+        send_login_key()
     end
 end

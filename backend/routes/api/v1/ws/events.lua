@@ -1,9 +1,8 @@
 -- ROUTE:GET:/api/v1/ws/events
-dofile_global()
-dofile("scripts/api_login.lua")
+api_ctx_init()
 if not ngx.ctx.user then return end
 
-local redis = ngx.ctx.make_redis(true)
+local redis = make_redis(true)
 
 local server = require("resty.websocket.server")
 local ws, err = server:new({

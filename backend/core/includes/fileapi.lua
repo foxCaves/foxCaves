@@ -1,9 +1,11 @@
-local lfs = require("lfs")
-
-dofile(ngx.var.main_root .. "/scripts/mimetypes.lua")
-
 local FILE_STORAGE_PATH = "/var/www/foxcaves/storage/"
-local database = ngx.ctx.database
+
+FILE_TYPE_OTHER = 0
+FILE_TYPE_IMAGE = 1
+FILE_TYPE_TEXT = 2
+FILE_TYPE_VIDEO = 3
+FILE_TYPE_AUDIO = 4
+FILE_TYPE_IFRAME = 5
 
 local function file_fullread(filename)
 	local fh = io.open(filename, "r")
@@ -23,7 +25,7 @@ function file_get(fileid, user)
 		file = fileid
 		fileid = file.id
 	else
-		file = database:query_safe('SELECT * FROM files WHERE id = %s', fileid)
+		file = ngx.ctx.database:query_safe('SELECT * FROM files WHERE id = %s', fileid)
 		file = file[1]
 	end
 	
@@ -72,7 +74,7 @@ function file_delete(fileid, user)
 	end
 	file_manualdelete(fileid, true)
 
-	database:query_safe('DELETE FROM files WHERE id = %s', fileid)
+	ngx.ctx.database:query_safe('DELETE FROM files WHERE id = %s', fileid)
 
 	if file.user and file.user == ngx.ctx.user.id then
 		ngx.ctx.user.usedbytes = ngx.ctx.user.usedbytes - file.size

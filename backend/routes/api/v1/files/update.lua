@@ -1,11 +1,9 @@
 -- ROUTE:PATCH:/api/v1/files/{id}
-dofile_global()
-dofile("scripts/api_login.lua")
+api_ctx_init()
 if not ngx.ctx.user then return end
 
 local database = ngx.ctx.database
 
-dofile("scripts/fileapi.lua")
 local file = file_get(ngx.ctx.route_vars.id, ngx.ctx.user.id)
 if not file then
     ngx.status = 404

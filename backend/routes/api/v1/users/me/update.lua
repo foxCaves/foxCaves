@@ -1,12 +1,10 @@
 -- ROUTE:PATCH:/api/v1/users/self
-dofile_global()
+cookies_ctx_init()
 if not ngx.ctx.user then return api_not_logged_in_error() end
-
-dofile("scripts/userapi.lua")
 
 local database = ngx.ctx.database
 
-local args = ngx.ctx.get_post_args()
+local args = get_post_args()
 local user = ngx.ctx.user
 
 if ngx.hmac_sha1(user.salt, args.current_password or "") ~= user.password then
@@ -21,12 +19,12 @@ if args.email then
     if args.email:lower() == ngx.ctx.user.email:lower() then
         user.email = args.email
     else
-        local emailcheck = ngx.ctx.check_email(args.email)
-        if emailcheck == ngx.ctx.EMAIL_INVALID then
+        local emailcheck = check_email(args.email)
+        if emailcheck == EMAIL_INVALID then
             ngx.status = 400
             ngx.print(cjson.encode({ error = "email invalid" }))
             return
-        elseif emailcheck == ngx.ctx.EMAIL_TAKEN then
+        elseif emailcheck == EMAIL_TAKEN then
             ngx.status = 400
             ngx.print(cjson.encode({ error = "email already taken" }))
             return

@@ -1,33 +1,18 @@
 lfs = require("lfs")
 cjson = require("cjson")
+argon2 = require("argon2")
 
 MAIN_DIR = "/var/www/foxcaves/lua/"
-
-loadfile(MAIN_DIR .. "core/constants.lua")()
-
-local table_insert = table.insert
-
-function escape_html(str)
-	if (not str) or type(str) ~= "string" then
-		return str
-	end
-	str = str:gsub('["&<>]', {
-		['"'] = "&quot;",
-		["&"] = "&amp;",
-		["<"] = "&lt;",
-		[">"] = "&gt;",
-	})
-	return str
-end
+lfs.chdir(MAIN_DIR)
 
 function explode(div,str) -- credit: http://richard.warburton.it
 	local pos, arr = 0, {}
 	-- for each divider found
 	for st, sp in function() return str:find(div,pos,true) end do
-		table_insert(arr,str:sub(pos,st-1)) -- Attach chars left of current divider
+		table.insert(arr,str:sub(pos,st-1)) -- Attach chars left of current divider
 		pos = sp + 1 -- Jump past current divider
 	end
-	table_insert(arr, str:sub(pos)) -- Attach chars right of last divider
+	table.insert(arr, str:sub(pos)) -- Attach chars right of last divider
 	return arr
 end
 
@@ -58,10 +43,6 @@ function dofile(file)
 	return setfenv(code(), getfenv())()
 end
 
-function dofile_global()
-	dofile(ngx.var.main_root .. "/scripts/global.lua")
-end
-
 function parse_authorization_header(auth)
 	if not auth then
 		return
@@ -80,8 +61,19 @@ function parse_authorization_header(auth)
 	return auth:sub(1, colonPos - 1), auth:sub(colonPos + 1)
 end
 
-loadfile(MAIN_DIR .. "core/mail.lua")()
-loadfile(MAIN_DIR .. "core/random.lua")()
-loadfile(MAIN_DIR .. "core/router.lua")()
+local function scan_include_dir(dir)
+    for file in lfs.dir(dir) do
+        if file:sub(1, 1) ~= "." then
+            local absfile = dir .. "/" .. file
+            local attributes = lfs.attributes(absfile)
+            if attributes.mode == "file" then
+                loadfile(absfile)()
+            elseif attributes.mode == "directory" then
+                scan_include_dir(absfile)
+            end
+        end
+    end
+end
+scan_include_dir("core/includes")
 
 collectgarbage("collect")
