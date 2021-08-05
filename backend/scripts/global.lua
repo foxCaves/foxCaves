@@ -84,7 +84,9 @@ function make_database()
 		for i,v in next, args do
 			args[i] = database:escape_literal(tostring(v))
 		end
-		local res, err = self:query(query:format(unpack(args)))
+		query = query:format(unpack(args))
+		ngx.log(ngx.ERR, query)
+		local res, err = self:query(query)
 		if not res then
 			error(err)
 		end

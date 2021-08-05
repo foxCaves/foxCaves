@@ -31,7 +31,9 @@ function file_get(fileid, user)
 		return nil
 	end
 
-	if user and file.user ~= user then return nil end
+	if user and file.user ~= user then
+		return nil
+	end
 
 	if file.thumbnail then
 		file.thumbnail_url = SHORT_URL .. "/thumbs/" .. file.id .. file.thumbnail
