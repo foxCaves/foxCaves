@@ -218,6 +218,9 @@ else
 end
 
 if __on_shutdown then
-	__on_shutdown()
+	local isok, err = pcall(__on_shutdown)
+	if not isok then
+		ngx.log(ngx.ERR, "Lua error on_shutdown: " .. err)
+	end
 end
 ngx.eof()
