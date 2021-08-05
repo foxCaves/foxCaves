@@ -9,6 +9,5 @@ if not link then
     ngx.exit(404)
     return
 end
-ngx.header["Content-Type"] = "application/json"
 ngx.print(cjson.encode(link))
 ngx.eof()

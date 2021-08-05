@@ -28,6 +28,5 @@ file_push_action('refresh', {
 	name = newname,
 })
 
-ngx.header["Content-Type"] = "application/json"
 ngx.print(cjson.encode(file))
 ngx.eof()

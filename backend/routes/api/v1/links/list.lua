@@ -6,7 +6,6 @@ if not ngx.ctx.user then return end
 local database = ngx.ctx.database
 local links = database:zrevrange(database.KEYS.USER_LINKS .. ngx.ctx.user.id, 0, -1)
 
-ngx.header["Content-Type"] = "application/json"
 dofile("scripts/linkapi.lua")
 local results = {}
 for _,linkid in next, links do

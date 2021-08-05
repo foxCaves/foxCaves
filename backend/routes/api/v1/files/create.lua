@@ -159,6 +159,5 @@ ngx.ctx.user.usedbytes = ngx.ctx.user.usedbytes + filesize
 
 local filedata = file_get(fileid)
 file_push_action('create', filedata)
-ngx.header["Content-Type"] = "application/json"
 ngx.print(cjson.encode(filedata))
 ngx.eof()

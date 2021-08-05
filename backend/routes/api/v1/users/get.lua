@@ -5,7 +5,6 @@ if not ngx.ctx.user then return end
 
 local database = ngx.ctx.database
 
-ngx.header["Content-Type"] = "application/json"
 local id = tonumber(ngx.ctx.route_vars.id)
 
 local user = database:hmget(database.KEYS.USERS .. id, "username")

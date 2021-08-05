@@ -5,7 +5,6 @@ if not ngx.ctx.user then return api_not_logged_in_error() end
 dofile("scripts/userapi.lua")
 
 local database = ngx.ctx.database
-ngx.header["Content-Type"] = "application/json"
 
 local args = ngx.ctx.get_post_args()
 local user = ngx.ctx.user

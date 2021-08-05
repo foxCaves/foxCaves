@@ -38,6 +38,5 @@ raw_push_action({
 	action = "link:create",
 	link = linkinfo,
 })
-ngx.header["Content-Type"] = "application/json"
 ngx.print(cjson.encode(linkinfo))
 ngx.eof()

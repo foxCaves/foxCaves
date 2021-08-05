@@ -10,6 +10,5 @@ if not file then
     return
 end
 
-ngx.header["Content-Type"] = "application/json"
 ngx.print(cjson.encode(file))
 ngx.eof()
