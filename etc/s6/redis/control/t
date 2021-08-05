@@ -1,2 +1,2 @@
 #!/bin/sh
-redis-cli SHUTDOWN SAVE
+exec redis-cli SHUTDOWN SAVE

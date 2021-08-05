@@ -1,4 +1,5 @@
 #!/bin/sh
+set -e
 
 # Initialize DDNS cron if needed
 echo '#!/bin/sh' > /etc/periodic/15min/dyndns
