@@ -8,6 +8,7 @@ function check_api_login(allow_guest)
 		local success = (do_login(user, apikey, { nosession = true, login_with_apikey = true }) == LOGIN_SUCCESS)
 		if not success then
 			api_error("Invalid username or API key", 401)
+			return
 		end
 	end
 	
