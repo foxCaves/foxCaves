@@ -58,6 +58,7 @@ function ngx.ctx.login(username_or_id, password, options)
 	local id_field = login_with_id and "id" or "lower(username)"
 
 	local resultarr = database:query_safe('SELECT * FROM users WHERE ' .. id_field .. ' = %s', tostring(username_or_id):lower())
+	local result = resultarr[1]
 	if result then
 		if result.active then
 			result.active = tonumber(result.active)
@@ -142,9 +143,10 @@ if cookies then
 			local uid = auth[2]
 			auth = auth[3]
 			if uid and auth then
-				local result = database:query_safe('SELECT loginkey FROM users WHERE id = %s', uid)
-				if result and result ~= ngx.null then
-					if hash_login_key(result) == ngx.decode_base64(auth) then
+				local resultarr = database:query_safe('SELECT loginkey FROM users WHERE id = %s', uid)
+				local result = resultarr[1]
+				if result then
+					if hash_login_key(result.loginkey) == ngx.decode_base64(auth) then
 						ngx.ctx.login(uid, nil, { login_with_id = true })
 						ngx.ctx.user.remember_me = true
 						ngx.ctx.send_login_key()
