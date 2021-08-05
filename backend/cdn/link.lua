@@ -1,9 +1,9 @@
 ctx_init()
 
-local linkid = ngx.var.linkid
-local database = ngx.ctx.database
-local dest = database:query_safe('SELECT url FROM links WHERE id = %s', linkid)
+local dest = ngx.ctx.database:query_safe('SELECT url FROM links WHERE id = %s', ngx.var.linkid)
 dest = dest[1]
+
+ngx.log(ngx.ERR, ngx.var.linkid .. "|" .. cjson.encode(dest))
 
 ngx.header["Content-Type"] = "text/plain"
 
