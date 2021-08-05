@@ -28,6 +28,10 @@ local function check_auth(userdata, password, options)
 		local saltIdx = pw:find("$", 1, true)
 		local salt = pw:sub(1, saltIdx - 1)
 		pw = pw:sub(saltIdx + 1)
+
+		pw = ngx.decode_base64(pw)
+		salt = ngx.decode_base64(salt)
+
 		authOk = ngx.hmac_sha1(salt, password) == pw
 		authNeedsUpdate = true
 	else
