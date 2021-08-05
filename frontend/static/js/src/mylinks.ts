@@ -23,7 +23,9 @@ function newLink() {
 }
 
 function createLink(linkurl: string) {
-	$.post("/api/v1/links?url="+encodeURIComponent(linkurl), '', (data) => {
+	fetch("/api/v1/links?url="+encodeURIComponent(linkurl), { method: 'POST' })
+	.then(res => res.json())
+	.then(data => {
 		prompt("Here is your shortened link", data.short_url);
 	});
 }
@@ -33,13 +35,14 @@ function deleteLink(id: string, doConfirm?: boolean) {
 		return;
 	}
 
-	$("#link_"+id).css("border", "1px solid red");//Highlight deletion
+	$("#link_"+id).css("border", "1px solid red"); //Highlight deletion
 
-	$.ajax({url: `/api/v1/links/${id}`, method: 'DELETE' })
-	.done(function() { })
-	.fail(function() {
-		refreshLinkRow(id);
-		alert("Error deleting link :(");
+	fetch(`/api/v1/links/${id}`, { method: 'DELETE' })
+	.then(response => {
+		if(response.status < 200 || response.status > 299) {
+			refreshLinkRow(id);
+			alert("Error deleting link :(");
+		}
 	});
 
 	return false;
@@ -108,7 +111,9 @@ function removeLinkRow(id: string) {
 }
 
 function refreshLinks() {
-	$.get(`/api/v1/links?t=${Date.now()}`, function(data) {
+	fetch(`/api/v1/links?t=${Date.now()}`)
+	.then(response => response.json())
+	.then(data => {
 		const links = sortByTime(data as LinkInfo[]);
 		const links_rev: { [key: string]: boolean } = {};
 		for (const link of links) {

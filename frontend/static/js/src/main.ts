@@ -53,8 +53,10 @@ function docReady() {
 		ele.style.display = "";
 		ele.innerHTML = "[Loading preview...]";
 		loadingEles++;
-		$.get(src, function(data) {
-			ele.innerHTML = data;
+		fetch(src)
+		.then(res => res.text())
+		.then(text => {
+			ele.innerHTML = text;
 			loadDone();
 		});
 	}

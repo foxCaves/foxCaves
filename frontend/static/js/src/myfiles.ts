@@ -200,7 +200,9 @@ function setupDropZone() {
 }
 
 function refreshFiles() {
-	$.get(`/api/v1/files?t=${Date.now()}`, function(data) {
+	fetch(`/api/v1/files?t=${Date.now()}`)
+	.then(response => response.json())
+	.then(data => {
 		const files = sortByTime(data as FileInfo[]);
 		const files_rev: { [key: string]: boolean } = {};
 		for (const file of files) {
@@ -334,13 +336,14 @@ function deleteFile(fileid: string, doConfirm?: boolean) {
 		return;
 	}
 
-	$("#file_"+fileid).css("border", "1px solid red");//Highlight file deletion
+	$("#file_"+fileid).css("border", "1px solid red"); //Highlight file deletion
 
-	$.ajax({url: `/api/v1/files/${fileid}`, method: 'DELETE' })
-	.done(function() { })
-	.fail(function() {
-		refreshFileLI(fileid);
-		alert("Error deleting file :(");
+	fetch(`/api/v1/files/${fileid}`, { method: 'DELETE' })
+	.then(response => {
+		if(response.status < 200 || response.status > 299) {
+			refreshFileLI(fileid);
+			alert("Error deleting file :(");
+		}
 	});
 
 	return false;
