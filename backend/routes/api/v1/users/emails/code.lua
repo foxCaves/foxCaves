@@ -11,8 +11,8 @@ if code == "" then
 end
 
 local codekey = "emailkeys:" .. ngx.unescape_uri(args.code)
-local res = database:hgetall(codekey)
-database:del(codekey)
+local res = redis:hgetall(codekey)
+redis:del(codekey)
 if not (res and res.user and res ~= ngx.null) then
     return api_error("code invalid")
 end

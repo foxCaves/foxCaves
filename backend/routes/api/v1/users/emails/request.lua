@@ -2,6 +2,7 @@
 dofile(ngx.var.main_root .. "/scripts/global.lua")
 
 local database = ngx.ctx.database
+local redis = ngx.ctx.redis
 local args = ngx.ctx.get_post_args()
 
 local action = args.action or ""
@@ -43,7 +44,7 @@ end
 email = email .. " just click on the following link:\n" .. MAIN_URL .."/email/code?code=" .. emailid .. "\n\nKind regards,\nfoxCaves Support"
 
 local emailkey = "emailkeys:" .. emailid
-database:hmset(emailkey, "user", userid, "action", action)
-database:expire(emailkey, 172800) --48 hours
+redis:hmset(emailkey, "user", userid, "action", action)
+redis:expire(emailkey, 172800) --48 hours
 
 mail(userdata.email, subject, email, "noreply@foxcav.es", "foxCaves")
