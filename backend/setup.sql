@@ -10,8 +10,8 @@ CREATE TABLE users (
     username VARCHAR(255),
     email VARCHAR(255),
     password VARCHAR(255),
-    active INT,
-    bonusbytes INT,
+    active INT NOT NULL DEFAULT 0,
+    bonusbytes INT NOT NULL DEFAULT 0,
     loginkey VARCHAR(255),
     apikey VARCHAR(255)
 );
