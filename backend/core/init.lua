@@ -60,9 +60,12 @@ function dofile(file)
 end
 ]]
 
+function dofile(file)
+	loadfile(file)()
+end
+
 function dofile_global()
-	local code = loadfile(ngx.var.main_root .. "/scripts/global.lua")
-	code()
+	dofile(ngx.var.main_root .. "/scripts/global.lua")
 end
 
 function parse_authorization_header(auth)
