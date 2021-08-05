@@ -8,6 +8,9 @@ local username = args.username or ""
 local email = args.email or ""
 local password = args.password or ""
 
+if args.agreetos ~= "yes" then
+    return api_error("agreetos required")
+end
 if username == "" then
     return api_error("username required")
 end

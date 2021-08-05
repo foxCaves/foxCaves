@@ -47,9 +47,6 @@
 									<li class="show_guestonly"><a href="/login">Login</a></li>
 									<li class="show_guestonly"><a href="/register">Register</a></li>
 									<li class="show_loginonly divider"></li>
-									<li><a href="/legal/terms_of_service">Terms of Service</a></li>
-									<li><a href="/legal/privacy_policy">Privacy Policy</a></li>
-									<li class="show_loginonly divider"></li>
 									<li><a>foxCaves &copy; 2021 (<%= VERSION:sub(1,7) %>)</a></li>
 								</ul>
 							</li>

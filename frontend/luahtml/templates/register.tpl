@@ -27,6 +27,12 @@
 		</div>
 	</div>
 	<div class="control-group">
+		<label class="control-label" for="agreetos">I have read and agree to the <a href="/legal/terms_of_service">Terms of Service</a> and <a href="/legal/privacy_policy">Privacy Policy</a></label>
+		<div class="controls">
+			<input type="checkbox" name="agreetos" id="agreetos" value="yes" />
+		</div>
+	</div>
+	<div class="control-group">
 		<div class="controls">
 			<input type="button" onclick="submitRegisterFormSimple();" class="btn" name="register" value="Register" id="postbut" />
 		</div>
