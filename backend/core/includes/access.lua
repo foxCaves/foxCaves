@@ -1,5 +1,3 @@
-if ngx.ctx.login then return end
-
 local SESSION_EXPIRE_DELAY = 7200
 
 local function hash_login_key(loginkey)
