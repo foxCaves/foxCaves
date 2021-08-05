@@ -8,7 +8,7 @@ local database = ngx.ctx.database
 dofile("scripts/fileapi.lua")
 local file = file_get(ngx.ctx.route_vars.id, ngx.ctx.user.id)
 if not file then
-    ngx.exit(404)
+    ngx.status = 404
     return
 end
 

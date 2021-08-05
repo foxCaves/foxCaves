@@ -9,7 +9,7 @@ local id = ngx.ctx.route_vars.id
 local session = ngx.var.arg_session
 
 if not id or not session then
-    ngx.exit(400)
+    ngx.status = 400
     return
 end
 

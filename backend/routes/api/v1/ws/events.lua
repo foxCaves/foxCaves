@@ -11,7 +11,7 @@ local ws, err = server:new({
     max_payload_len = 65535,
 })
 if not ws then
-    ngx.exit(400)
+    ngx.status = 400
     return
 end
 

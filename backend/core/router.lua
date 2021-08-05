@@ -89,14 +89,14 @@ function execute_route()
     for i, seg in pairs(urlsplit) do
         candidate = candidate.children[seg] or candidate.children['*']
         if not candidate then
-            ngx.exit(404)
+            ngx.status = 404
             return
         end
     end
 
     local handler = candidate.methods[method]
     if not handler then
-        ngx.exit(405)
+        ngx.status = 405
         return
     end
 

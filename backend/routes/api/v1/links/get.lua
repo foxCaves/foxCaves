@@ -6,7 +6,7 @@ if not ngx.ctx.user then return end
 dofile("scripts/linkapi.lua")
 local link = link_get(ngx.ctx.route_vars.id)
 if not link then
-    ngx.exit(404)
+    ngx.status = 404
     return
 end
 ngx.print(cjson.encode(link))
