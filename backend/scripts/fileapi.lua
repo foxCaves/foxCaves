@@ -72,7 +72,7 @@ function file_delete(fileid, user)
 	end
 	file_manualdelete(fileid, true)
 
-	database:query('DELETE FROM files WHERE id = %s', fileid)
+	database:query_safe('DELETE FROM files WHERE id = %s', fileid)
 
 	if file.user and file.user == ngx.ctx.user.id then
 		ngx.ctx.user.usedbytes = ngx.ctx.user.usedbytes - file.size
