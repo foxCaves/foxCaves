@@ -1,6 +1,7 @@
 if ngx.ctx.login then return end
 
 local database = ngx.ctx.database
+local redis = ngx.ctx.redis
 
 local SESSION_EXPIRE_DELAY = 7200
 
@@ -38,7 +39,7 @@ local function check_auth(userdata, password, options)
 		authOk = argon2.verify(userdata.password, password)
 	end
 	if authOk and authNeedsUpdate then
-		database:hset(database.KEYS.USERS .. userdata.id, "password", argon2.hash_encoded(password, randstr(32)))
+		database:query_safe('UPDATE users SET password = "%s" WHERE id = "%s"', argon2.hash_encoded(password, randstr(32)), userdata.id)
 	end
 	return authOk
 end
@@ -54,14 +55,9 @@ function ngx.ctx.login(username_or_id, password, options)
 		return ngx.ctx.LOGIN_BAD_PASSWORD
 	end
 
-	if not login_with_id then
-		username_or_id = database:get(database.KEYS.USERNAME_TO_ID .. username_or_id:lower())
-		if (not username_or_id) or (username_or_id == ngx.null) then
-			return ngx.ctx.LOGIN_BAD_PASSWORD
-		end
-	end
+	local id_field = login_with_id and "id" or "username"
 
-	local result = database:hgetall(database.KEYS.USERS .. username_or_id)
+	local resultarr = database:query_safe('SELECT * FROM users WHERE ' .. id_field .. ' = "%s"', username_or_id)
 	if result then
 		if result.active then
 			result.active = tonumber(result.active)
@@ -73,23 +69,16 @@ function ngx.ctx.login(username_or_id, password, options)
 		elseif result.active == -1 then
 			return ngx.ctx.LOGIN_USER_BANNED
 		end
-		result.id = tonumber(username_or_id)
+		result.id = tonumber(result.id)
 		if login_with_id or check_auth(result, password, options) then
 			if not nosession then
-				local sessionid
-				for i=1,999 do
-					sessionid = randstr(32)
-					local res = database:exists(database.KEYS.SESSIONS .. sessionid)
-					if (not res) or (res == ngx.null) or (res == 0) then
-						break
-					end
-				end
+				local sessionid = randstr(32)
 				ngx.header['Set-Cookie'] = {"sessionid=" .. sessionid .. "; HttpOnly; Path=/; Secure;"}
 				result.sessionid = sessionid
 
-				sessionid = database.KEYS.SESSIONS .. sessionid
-				database:set(sessionid, username_or_id)
-				database:expire(sessionid, SESSION_EXPIRE_DELAY)
+				sessionid = "sessions:" .. sessionid
+				redis:set(sessionid, username_or_id)
+				redis:expire(sessionid, SESSION_EXPIRE_DELAY)
 			end
 
 			result.usedbytes = tonumber(result.usedbytes or 0)
@@ -107,7 +96,7 @@ end
 function ngx.ctx.logout()
 	ngx.header['Set-Cookie'] = {"sessionid=NULL; HttpOnly; Path=/; Secure;", "loginkey=NULL; HttpOnly; Path=/; Secure;"}
 	if (not ngx.ctx.user) or (not ngx.ctx.user.sessionid) then return end
-	database:del(database.KEYS.SESSIONS .. ngx.ctx.user.sessionid)
+	redis:del("sessions:" .. ngx.ctx.user.sessionid)
 	ngx.ctx.user = nil
 end
 
@@ -133,13 +122,13 @@ if cookies then
 	if auth then
 		auth = auth[2]
 		if auth then
-			local sessID = database.KEYS.SESSIONS .. auth
-			local result = database:get(sessID)
+			local sessID = "sessions:" .. auth
+			local result = redis:get(sessID)
 			if result and result ~= ngx.null then
 				ngx.ctx.login(result, nil, { nosession = true, login_with_id = true })
 				ngx.ctx.user.sessionid = auth
 				ngx.header['Set-Cookie'] = {"sessionid=" .. auth .. "; HttpOnly; Path=/; Secure;"}
-				database:expire(sessID, SESSION_EXPIRE_DELAY)
+				redis:expire(sessID, SESSION_EXPIRE_DELAY)
 			end
 		end
 	end
@@ -153,7 +142,7 @@ if cookies then
 			local uid = auth[2]
 			auth = auth[3]
 			if uid and auth then
-				local result = database:hget(database.KEYS.USERS .. uid, "loginkey")
+				local result = database:query_safe('SELECT loginkey FROM users WHERE id = "%s"', uid)
 				if result and result ~= ngx.null then
 					if hash_login_key(result) == ngx.decode_base64(auth) then
 						ngx.ctx.login(uid, nil, { login_with_id = true })

@@ -42,10 +42,9 @@ if not newsize then
 	return ngx.eof()
 end
 
-database:hmset(database.KEYS.FILES .. fileid, "extension", newextension, "name", newfilename, "size", newsize)
+database:query_safe'UPDATE files SET extension = "%s", name = "%s", size = "%s" WHERE id = "%s"', newextension, newfilename, newsize, fileid)
 newsize = newsize - dbdata.size
 ngx.ctx.user.usedbytes = ngx.ctx.user.usedbytes + newsize
-database:hincrby(database.KEYS.USERS .. ngx.ctx.user.id, newsize)
 
 file_upload(fileid, newfilename, newextension, "", mimetypes[newextension], nil)
 file_manualdelete(fileid .. "/file" .. dbdata.extension)

@@ -16,6 +16,9 @@ end
 if email == "" then
     return api_error("email required")
 end
+if password == "" then
+    return api_error("password required")
+end
 
 local usernamecheck = ngx.ctx.check_username(args.username)
 if usernamecheck == ngx.ctx.EMAIL_INVALID then
@@ -31,20 +34,13 @@ elseif emailcheck == ngx.ctx.EMAIL_TAKEN then
     return api_error("email taken")
 end
 
-if password == "" then
-    return api_error("password required")
-end
-
-local userid = database:incr(database.KEYS.NEXTUSERID)
-local salt = randstr(32)
-database:hmset(database.KEYS.USERS .. userid, "username", args.username, "email", email, "password", argon2.hash_encoded(args.password, randstr(32)))
-database:sadd(database.KEYS.EMAILS, email:lower())
-database:set(database.KEYS.USERNAME_TO_ID .. args.username:lower(), userid)
+local res = database:query_safe('INSERT INTO users (username, email, password) VALUES ("%s", "%s", "%s") RETURNING id', username, email, argon2.hash_encoded(password, randstr(32)))
+local userid = res[1].id
 make_new_login_key({id = userid})
 make_new_api_key({id = userid})
 
 user_require_email_confirmation({
     id = userid,
-    username = args.username,
+    username = username,
     email = email,
 })

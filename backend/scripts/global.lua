@@ -3,11 +3,16 @@ dofile("/var/www/foxcaves/config/main.lua")
 
 ngx.ctx.user = nil
 
-local redis = require("resty.redis")
+local resty_redis = require("resty.redis")
+local pgmoon = require("pgmoon")
 local argon2 = require("argon2")
 
-function make_database()
-	local database, err = redis:new()
+function register_shutdown(func)
+
+end
+
+function make_redis()
+	local database, err = resty_redis:new()
 	if not database then
 		ngx.print("Error initializing DB: ", err)
 		return ngx.eof()
@@ -15,41 +20,21 @@ function make_database()
 	database:set_timeout(60000)
 
 	dofile("/var/www/foxcaves/config/database.lua")
-	local ok, err = database:connect(dbip, dbport)
+	local ok, err = database:connect(_config.redis.ip, _config.redis.port)
 	if not ok then
 		ngx.print("Error connecting to DB: ", err)
 		return ngx.eof()
 	end
 
-	if database:get_reused_times() == 0 and dbpass then
-		local ok, err = database:auth(dbpass)
+	if database:get_reused_times() == 0 and _config.redis.password then
+		local ok, err = database:auth(_config.redis.password)
 		if not ok then
 			ngx.print("Error connecting to DB: ", err)
 			return ngx.eof()
 		end
 	end
 
-	database.KEYS =  {
-		USERS = "users:",
-		USERNAME_TO_ID = "username_to_id:",
-		USEDINVOICES = "used_invoices:",
-		SESSIONS = "sessions:",
-		NEXTUSERID = "next_user_id:",
-		PUSH = "push:",
-		LIVEDRAW = "livedraw:",
-
-		FILES = "files:",
-		USER_FILES = "user_files:",
-
-		EMAILS = "emails:",
-		EMAILKEYS = "email_keys:",
-
-		LINKS = "links:",
-		USER_LINKS = "user_links:",
-	}
-	dbip = nil
-	dbport = nil
-	dbpass = nil
+	_config = nil
 
 	database.hgetall_real = database.hgetall
 	function database:hgetall(key)
@@ -84,11 +69,38 @@ function make_database()
 		return ret
 	end
 
+	register_shutdown(function() database:close() end)
+
 	return database
 end
 
-ngx.ctx.database = make_database()
+function make_database()
+	dofile("/var/www/foxcaves/config/database.lua")
+	local database = pgmoon.new(_config.postgres)
+	_config = nil
+	assert(database:connect())
+
+	function database:query_safe(query, ...)
+		local args = {...}
+		for i,v in next, args do
+			args[i] = database:escape_literal(tostring(v))
+		end
+		local res, err = self:query(query:format(unpack(args)))
+		if not res then
+			error(err)
+		end
+		return res
+	end
+
+	register_shutdown(function() database:keepalive() end)
+	return database
+end
+
+ngx.ctx.redis = make_redis()
+ngx.ctx.make_redis = make_redis
+local redis = ngx.ctx.make_redis
 ngx.ctx.make_database = make_database
+ngx.ctx.database = make_database()
 local database = ngx.ctx.database
 
 ngx.ctx.EMAIL_INVALID = -1
@@ -98,8 +110,8 @@ function ngx.ctx.check_email(email)
 		return ngx.ctx.EMAIL_INVALID
 	end
 
-	local res = database:sismember(database.KEYS.EMAILS, email:lower())
-	if res and res ~= 0 and res ~= ngx.null then
+	local res = database:query_safe('SELECT id FROM users WHERE email = "%s"', email)
+	if res[1] then
 		return ngx.ctx.EMAIL_TAKEN
 	end
 	return nil
@@ -110,8 +122,8 @@ function ngx.ctx.check_username(username)
 		return ngx.ctx.EMAIL_INVALID
 	end
 
-	local res = database:exists(database.KEYS.USERNAME_TO_ID .. username:lower())
-	if res and res ~= 0 and res ~= ngx.null then
+	local res = database:query_safe('SELECT id FROM users WHERE username = "%s"', username)
+	if res[1] then
 		return ngx.ctx.EMAIL_TAKEN
 	end
 	return nil
@@ -140,7 +152,7 @@ function raw_push_action(data, user)
 	if not user then
 		user = ngx.ctx.user
 	end
-	database:publish(database.KEYS.PUSH .. user.id, cjson.encode(data))
+	redis:publish("push:" .. user.id, cjson.encode(data))
 end
 
 function api_not_logged_in_error()

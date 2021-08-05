@@ -18,23 +18,7 @@ if (not nameregex) or (not nameregex[1]) then
 	return api_error("Invalid name")
 end
 
-local fileid
-for i=1, 10 do
-	fileid = randstr(10)
-	local res = database:exists(database.KEYS.FILES .. fileid)
-	if (not res) or (res == ngx.null) or (res == 0) then
-		break
-	else
-		fileid = nil
-	end
-end
-
-if not fileid then
-	ngx.req.discard_body()
-	ngx.status = 500
-	ngx.print("Internal error")
-	return ngx.eof()
-end
+local fileid = randstr(10)
 
 ngx.req.read_body()
 local file = ngx.req.get_body_file()
@@ -148,13 +132,7 @@ file_upload(fileid, name, extension, thumbnail, mtype, thumbnailType)
 
 local fileKeyID = database.KEYS.FILES .. fileid
 
-database:hmset(fileKeyID, "name", name, "user", ngx.ctx.user.id, "extension", extension, "type", fileType, "size", filesize, "time", ngx.time())
-if thumbnail and thumbnailType then
-	database:hset(fileKeyID, "thumbnail", thumbnail)
-end
-database:zadd(database.KEYS.USER_FILES .. ngx.ctx.user.id, ngx.time(), fileid)
-
-database:hincrby(database.KEYS.USERS .. ngx.ctx.user.id, "usedbytes", filesize)
+database:query_safe('INSERT INTO files (id, name, user, extension, type, size, time, thumbnail) VALUES ("%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s")', fileid, name, ngx.ctx.user.id, extension, fileType, filesize, ngx.time(), thumbnail)
 ngx.ctx.user.usedbytes = ngx.ctx.user.usedbytes + filesize
 
 local filedata = file_get(fileid)

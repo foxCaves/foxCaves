@@ -5,9 +5,21 @@ function link_shorturl(linkid)
 end
 
 function link_get(linkid, user)
-	if not linkid then return nil end
-	local link = database:hgetall(database.KEYS.LINKS .. linkid)
-	if (not link) or (link == ngx.null) or (not link.url) then return nil end
+	if not linkid then
+		return nil
+	end
+	local link
+	if linkid.id then
+		link = linkid
+		linkid = link.id
+	else
+		link = database:query_safe('SELECT * FROM links WHERE id = "%s"', linkid)
+		link = link[1]
+	end
+
+	if not link then
+		return nil
+	end
 	link.user = tonumber(link.user)
 	if user and link.user ~= user then return nil end
 	link.id = linkid

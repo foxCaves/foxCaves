@@ -7,26 +7,12 @@ local database = ngx.ctx.database
 
 dofile("scripts/linkapi.lua")
 
-local linkid
-for i=1, 10 do
-	linkid = randstr(10)
-	local res = database:exists(database.KEYS.LINKS .. linkid)
-	if (not res) or (res == ngx.null) or (res == 0) then
-		break
-	end
-end
-
-if not linkid then
-	ngx.status = 500
-	ngx.print("Internal error")
-	return ngx.eof()
-end
+local linkid = randstr(10)
 
 local url = ngx.unescape_uri(ngx.var.arg_url)
 local short_url = link_shorturl(linkid)
 
-database:hmset(database.KEYS.LINKS .. linkid, "user", ngx.ctx.user.id, "url", url, "time", ngx.time())
-database:zadd(database.KEYS.USER_LINKS .. ngx.ctx.user.id, ngx.time(), linkid)
+database:query_safe('INSERT INTO links (id, user, url, time) VALUES ("%s", "%s", "%s", "%s")', linkid, ngx.ctx.user.id, url, ngx.time())
 
 local linkinfo = {
 	id = linkid,

@@ -1,3 +1,6 @@
+local database = ngx.ctx.database
+local redis = ngx.ctx.redis
+
 function user_require_email_confirmation(user)
 	if not user then
 		user = ngx.ctx.user
@@ -6,30 +9,16 @@ function user_require_email_confirmation(user)
 		end
 	end
 
-    local database = ngx.ctx.database
-
-    local emailid
-    for i=1, 10 do
-        emailid = randstr(32)
-        local res = database:exists(database.KEYS.EMAILKEYS .. emailid)
-        if (not res) or (res == ngx.null) or (res == 0) then
-            break
-        else
-            emailid = nil
-        end
-    end
-
-    if not emailid then
-        return false
-    end
+    local emailid = randstr(32)
 
     local email_text = "Hello, " .. user.username .. "!\n\nYou have recently registered or changed your E-Mail on foxCaves.\nPlease click the following link to activate your E-Mail:\n"
     email_text = email_text .. MAIN_URL .. "/email/code?code=" .. emailid .. "\n\n"
     email_text = email_text .. "Kind regards,\nfoxCaves Support"
+    database:query_safe('UPDATE users SET active = 0 WHERE active = 1 AND id = "%s"', user.id)
 
-    database:hmset(database.KEYS.USERS .. user.id, "active", 0)
-    database:hmset(database.KEYS.EMAILKEYS .. emailid, "user", user.id, "action", "activation")
-    database:expire(172800) --48 hours
+	local emailkey = "emailkeys:" .. emailid
+    redis:hmset(emailkey, "user", user.id, "action", "activation")
+    redis:expire(emailkey, 172800) --48 hours
 
     mail(user.email, "foxCaves - Activation E-Mail", email_text, "noreply@foxcav.es", "foxCaves")
 
@@ -46,16 +35,14 @@ function make_new_login_key(userdata)
 		send_userdata = true
 	end
 
-    local database = ngx.ctx.database
-
 	local str = randstr(64)
-	database:hmset(database.KEYS.USERS .. userdata.id, "loginkey", str)
+    database:query_safe('UPDATE users SET loginkey = "%s" WHERE id = "%s"', str, userdata.id)
 
 	raw_push_action({
 		action = "kick",
 	}, userdata)
 
-	local allsessions = database:keys(database.KEYS.SESSIONS .. "*")
+	local allsessions = database:keys("sessions:*")
 	if type(allsessions) ~= "table" then allsessions = {} end
 
 	if send_userdata then
@@ -88,6 +75,5 @@ function make_new_api_key(userdata)
 	end
 	local str = randstr(64)
 	userdata.apikey = str
-    local database = ngx.ctx.database
 	database:hset(database.KEYS.USERS .. userdata.id, "apikey", str)
 end

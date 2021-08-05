@@ -5,13 +5,11 @@ if not ngx.ctx.user then return end
 
 local database = ngx.ctx.database
 
-local id = tonumber(ngx.ctx.route_vars.id)
-
-local user = database:hmget(database.KEYS.USERS .. id, "username")
-if (not user) or (user == ngx.null) or (not user.username) or (user.username == ngx.null) then
+local userres = database:query_safe('SELECT id, username FROM users WHERE id = "%s"', ngx.ctx.route_vars.id)
+local user = userres[1]
+if not user then
     ngx.exit(404)
     return
 end
-user.id = id
 ngx.print(cjson.encode(user))
 ngx.eof()

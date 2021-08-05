@@ -14,9 +14,23 @@ local function file_fullread(filename)
 end
 
 function file_get(fileid, user)
-	if not fileid then return nil end
-	local file = database:hgetall(database.KEYS.FILES .. fileid)
-	if (not file) or (file == ngx.null) or (not file.name) then return nil end
+	if not fileid then 
+		return nil
+	end
+	
+	local file
+	if fileid.id then
+		file = fileid
+		fileid = file.id
+	else
+		file = database:query_safe('SELECT * FROM files WHERE id = "%s"', fileid)
+		file = file[1]
+	end
+	
+	if not file then
+		return nil
+	end
+
 	file.user = tonumber(file.user)
 	if user and file.user ~= user then return nil end
 	file.type = tonumber(file.type)
@@ -36,6 +50,7 @@ function file_get(fileid, user)
 	file.direct_url = SHORT_URL .. "/f" .. file.id .. file.extension
 	file.download_url = SHORT_URL .. "/d" .. file.id .. file.extension
 	file.mimetype = mimetypes[file.extension] or "application/octet-stream"
+
 	return file
 end
 
@@ -49,7 +64,9 @@ end
 
 function file_delete(fileid, user)
 	local file = file_get(fileid, user)
-	if not file then return false end
+	if not file then
+		return false
+	end
 
 	file_manualdelete(fileid .. "/file" .. file.extension)
 	if file.thumbnail and file.thumbnail ~= "" then
@@ -57,16 +74,12 @@ function file_delete(fileid, user)
 	end
 	file_manualdelete(fileid, true)
 
-	database:zrem(database.KEYS.USER_FILES .. file.user, fileid)
-	database:del(database.KEYS.FILES .. fileid)
+	database:query('DELETE FROM files WHERE id = "%s"', fileid)
 
-	if file.user then
-		database:hincrby(database.KEYS.USERS .. file.user, "usedbytes", -file.size)
-		if file.user == ngx.ctx.user.id then
-			ngx.ctx.user.usedbytes = ngx.ctx.user.usedbytes - file.size
-			file_push_action('delete', file)
-		end
+	if file.user and file.user == ngx.ctx.user.id then
+		ngx.ctx.user.usedbytes = ngx.ctx.user.usedbytes - file.size
 	end
+	file_push_action('delete', file, { id = file.user })
 
 	return true, file.name
 end
@@ -104,13 +117,15 @@ function file_upload(fileid, filename, extension, thumbnail, filetype, thumbtype
 	end
 end
 
-function file_push_action(action, file)
+function file_push_action(action, file, userdata)
 	raw_push_action({
 		action = "file:" .. action,
 		file = file,
-	})
-	raw_push_action({
-		action = "usedbytes",
-		usedbytes = ngx.ctx.user.usedbytes,
-	})
+	}, userdata)
+	if (not userdata) or userdata == ngx.ctx.user then
+		raw_push_action({
+			action = "usedbytes",
+			usedbytes = ngx.ctx.user.usedbytes,
+		}, userdata)
+	end
 end

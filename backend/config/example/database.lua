@@ -1,3 +1,10 @@
-dbip = "127.0.0.1"
-dbport = 6379
-dbpass = nil
+_config = {
+    redis = {
+        ip = "127.0.0.1",
+        port = 6379,
+        password = nil,
+    },
+    postgres = {
+        -- pgmoon options
+    },
+}

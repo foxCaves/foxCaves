@@ -4,12 +4,12 @@ dofile("scripts/api_login.lua")
 if not ngx.ctx.user then return end
 
 local database = ngx.ctx.database
-local files = database:zrevrange(database.KEYS.USER_FILES .. ngx.ctx.user.id, 0, -1)
+local files = database:query_safe('SELECT * FROM files WHERE user = "%s"', ngx.ctx.user.id)
 
 dofile("scripts/fileapi.lua")
 local results = {}
-for _,fileid in next, files do
-	table.insert(results, file_get(fileid))
+for _, file in next, files do
+	table.insert(results, file_get(file))
 end
 ngx.print(cjson.encode(results))
 ngx.eof()

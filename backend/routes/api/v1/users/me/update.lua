@@ -8,7 +8,6 @@ local database = ngx.ctx.database
 
 local args = ngx.ctx.get_post_args()
 local user = ngx.ctx.user
-local rediskey = database.KEYS.USERS .. user.id
 
 if ngx.hmac_sha1(user.salt, args.current_password or "") ~= user.password then
     return api_error("current_password invalid", 403)
@@ -21,7 +20,6 @@ user.sessionid = nil
 if args.email then
     if args.email:lower() == ngx.ctx.user.email:lower() then
         user.email = args.email
-        database:hset(rediskey, "email", user.email)
     else
         local emailcheck = ngx.ctx.check_email(args.email)
         if emailcheck == ngx.ctx.EMAIL_INVALID then
@@ -33,17 +31,15 @@ if args.email then
             ngx.print(cjson.encode({ error = "email already taken" }))
             return ngx.eof()
         else
-            database:sadd(database.KEYS.EMAILS, args.email:lower())
-            database:srem(database.KEYS.EMAILS, user.email:lower())
-            database:hset(rediskey, "email", args.email)
             -- TODO: re-ask for verification here
             user.email = args.email
         end
     end
+    database:query_safe('UPDATE users SET email = "%s" WHERE id = "%s"', user.email, user.id)
 end
 
 if args.password then
-    database:hset(rediskey, "password", argon2.hash_encoded(args.password, randstr(32)))
+    database:query_safe('UPDATE users SET password = "%s" WHERE id = "%s"', argon2.hash_encoded((args.password, randstr(32)), user.id)
     user.password = "CHANGED"
     args.loginkey = "CHANGE"
 end

@@ -19,32 +19,15 @@ if email == "" then
     return api_error("email required")
 end
 
-local userid = database:get(database.KEYS.USERNAME_TO_ID .. username:lower())
-local userdata
-if userid and userid ~= ngx.null then
-    userdata = database:hgetall(database.KEYS.USERS .. userid)
-else
-    userid = nil
-end
-if (not userid) or (userdata.email:lower() ~= email:lower()) then
-    return api_error("user not found")
+local userres = database:query_safe('SELECT * FROM users WHERE username = "%s" AND email = "%s"', username, email)
+local userdata = userres[1]
+if not userdata then
+    ngx.status = 404
+    ngx.eof()
+    return
 end
 
-local emailid
-for i=1,10 do
-    emailid = randstr(32)
-    local res = database:exists(database.KEYS.EMAILKEYS .. emailid)
-    if (not res) or (res == ngx.null) or (res == 0) then
-        break
-    else
-        emailid = nil
-    end
-end
-
-if not emailid then
-    ngx.status = 500
-    return ngx.eof()
-end
+local emailid = randstr(32)
 
 local email = "Hello, " .. userdata.username .. "!\n\nYou have recently requested to "
 local subject
@@ -59,9 +42,8 @@ else
 end
 email = email .. " just click on the following link:\n" .. MAIN_URL .."/email/code?code=" .. emailid .. "\n\nKind regards,\nfoxCaves Support"
 
-database:hmset(database.KEYS.EMAILKEYS .. emailid, "user", userid, "action", action)
-database:expire(172800) --48 hours
+local emailkey = "emailkeys:" .. emailid
+database:hmset(emailkey, "user", userid, "action", action)
+database:expire(emailkey, 172800) --48 hours
 
-message = "<div class='alert alert-warning'>E-Mail sent.</div>"
-template_name = "message"
 mail(userdata.email, subject, email, "noreply@foxcav.es", "foxCaves")

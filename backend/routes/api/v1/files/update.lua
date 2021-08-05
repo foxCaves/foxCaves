@@ -21,7 +21,7 @@ end
 
 file.name = newname
 
-database:hset(database.KEYS.FILES .. file.id, "name", newname)
+database:query_safe('UPDATE files SET name = "%s" WHERE id = "%s"', newname, file.id)
 
 file_push_action('refresh', {
 	id = file.id,
