@@ -12,9 +12,11 @@ local string_format = string.format
 local time = os.time
 local ngx = ngx
 local randstr = randstr
-local database = ngx.ctx.database
 local unpack = unpack
 local explode = explode
+
+local redis = ngx.ctx.redis
+local make_redis = make_redis
 
 local server = require("resty.websocket.server")
 local ws, err = server:new({
@@ -179,7 +181,7 @@ function USERMETA:kick()
 	self.id = nil
 end
 function USERMETA:publish(evid, data)
-	database:publish(database.KEYS.LIVEDRAW .. self.channel, string_format("%c%s|%s", evid, self.id, data or ""))
+	redis:publish("livedraw:" .. self.channel, string_format("%c%s|%s", evid, self.id, data or ""))
 end
 function USERMETA:event_received(rawdata)
 	local evid = rawdata:byte(1)
@@ -231,14 +233,14 @@ local function websocket_read()
 	should_run = false
 end
 
-local sub_database = make_database()
+local sub_redis = make_redis()
 function get_id_from_packet(str)
     str = str:sub(2, str:find("|") - 1)
     return str
 end
 local function redis_read()
 	while should_run do
-		local res, err = sub_database:read_reply()
+		local res, err = sub_redis:read_reply()
 		if err and err ~= "timeout" then
 			ws:send_close()
 			break
@@ -273,12 +275,12 @@ if not user.name then
 end
 user.id = wsid
 
-sub_database:subscribe(database.KEYS.LIVEDRAW .. user.channel)
+sub_redis:subscribe("livedraw:" .. user.channel)
 
 user:send_data()
 user:publish(cEVENT_JOINDIRECT)
 
-local sub_database_thread = ngx.thread.spawn(redis_read)
+local sub_redis_thread = ngx.thread.spawn(redis_read)
 websocket_read()
 user:publish(cEVENT_LEAVE)
-ngx.thread.wait(sub_database_thread)
+ngx.thread.wait(sub_redis_thread)
