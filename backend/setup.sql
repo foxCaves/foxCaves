@@ -3,7 +3,7 @@ CREATE DATABASE foxcaves;
 
 GRANT ALL PRIVILEGES ON DATABASE foxcaves TO foxcaves;
 
-USE foxcaves;
+\c foxcaves;
 
 CREATE TABLE files (
     id VARCHAR(32) PRIMARY KEY,
