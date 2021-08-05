@@ -19,16 +19,16 @@ if password == "" then
 end
 
 local usernamecheck = check_username(args.username)
-if usernamecheck == EMAIL_INVALID then
+if usernamecheck == VALIDATION_STATE_INVALID then
     return api_error("username invalid")
-elseif usernamecheck == EMAIL_TAKEN then
+elseif usernamecheck == VALIDATION_STATE_TAKEN then
     return api_error("username taken")
 end
 
 local emailcheck = check_email(email)
-if emailcheck == EMAIL_INVALID then
+if emailcheck == VALIDATION_STATE_INVALID then
     return api_error("email invalid")
-elseif emailcheck == EMAIL_TAKEN then
+elseif emailcheck == VALIDATION_STATE_TAKEN then
     return api_error("email taken")
 end
 

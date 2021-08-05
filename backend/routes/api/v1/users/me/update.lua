@@ -20,11 +20,11 @@ if args.email then
         user.email = args.email
     else
         local emailcheck = check_email(args.email)
-        if emailcheck == EMAIL_INVALID then
+        if emailcheck == VALIDATION_STATE_INVALID then
             ngx.status = 400
             ngx.print(cjson.encode({ error = "email invalid" }))
             return
-        elseif emailcheck == EMAIL_TAKEN then
+        elseif emailcheck == VALIDATION_STATE_TAKEN then
             ngx.status = 400
             ngx.print(cjson.encode({ error = "email already taken" }))
             return

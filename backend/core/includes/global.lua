@@ -8,8 +8,8 @@ dbconfig.postgres.socket_type = "nginx"
 local resty_redis = require("resty.redis")
 local pgmoon = require("pgmoon")
 
-EMAIL_INVALID = -1
-EMAIL_TAKEN = -2
+VALIDATION_STATE_INVALID = -1
+VALIDATION_STATE_TAKEN = -2
 
 function register_shutdown(func)
 	table.insert(ngx.ctx.shutdown_funcs, func)
@@ -128,24 +128,24 @@ end
 
 function check_email(email)
 	if not ngx.re.match(email, "^[a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\\.[a-zA-Z]{2,}$", "o") then
-		return EMAIL_INVALID
+		return VALIDATION_STATE_INVALID
 	end
 
 	local res = ngx.ctx.database:query_safe('SELECT id FROM users WHERE lower(email) = %s', email:lower())
 	if res[1] then
-		return EMAIL_TAKEN
+		return VALIDATION_STATE_TAKEN
 	end
 	return nil
 end
 
 function check_username(username)
 	if not ngx.re.match(username, "^[a-zA-Z0-9 .,;_-]+$", "o") then
-		return EMAIL_INVALID
+		return VALIDATION_STATE_INVALID
 	end
 
 	local res = ngx.ctx.database:query_safe('SELECT id FROM users WHERE lower(username) = %s', username:lower())
 	if res[1] then
-		return EMAIL_TAKEN
+		return VALIDATION_STATE_TAKEN
 	end
 	return nil
 end
