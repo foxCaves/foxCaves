@@ -78,7 +78,7 @@ function ngx.ctx.login(username_or_id, password, options)
 				result.sessionid = sessionid
 
 				sessionid = "sessions:" .. sessionid
-				redis:set(sessionid, username_or_id)
+				redis:set(sessionid, result.id)
 				redis:expire(sessionid, SESSION_EXPIRE_DELAY)
 			end
 
