@@ -9,11 +9,11 @@ CREATE TABLE users (
     id SERIAL PRIMARY KEY,
     username VARCHAR(255),
     email VARCHAR(255),
-    password VARBINARY(255),
+    password VARCHAR(255),
     active INT,
     bonusbytes INT,
-    loginkey VARBINARY(255),
-    apikey VARBINARY(255)
+    loginkey VARCHAR(255),
+    apikey VARCHAR(255)
 );
 CREATE UNIQUE INDEX ON users (lower(username));
 CREATE UNIQUE INDEX ON users (lower(email));
