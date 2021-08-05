@@ -6,7 +6,7 @@ GRANT ALL PRIVILEGES ON DATABASE foxcaves TO foxcaves;
 \c foxcaves;
 
 CREATE TABLE users (
-    id INT PRIMARY KEY AUTO_INCREMENT,
+    id SERIAL PRIMARY KEY,
     username VARCHAR(255),
     email VARCHAR(255),
     password VARBINARY(255),
