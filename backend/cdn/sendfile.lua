@@ -1,4 +1,4 @@
-dofile(ngx.var.main_root .. "/scripts/global.lua")
+dofile_global()
 dofile("scripts/fileapi.lua")
 
 local function send_file(disposition_type)

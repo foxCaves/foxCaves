@@ -1,5 +1,5 @@
 -- ROUTE:POST:/api/v1/files/{id}/convert
-dofile(ngx.var.main_root .. "/scripts/global.lua")
+dofile_global()
 dofile("scripts/api_login.lua")
 if not ngx.ctx.user then return end
 

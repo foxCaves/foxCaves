@@ -1,5 +1,5 @@
 -- ROUTE:POST:/api/v1/users/emails/request
-dofile(ngx.var.main_root .. "/scripts/global.lua")
+dofile_global()
 
 local database = ngx.ctx.database
 local redis = ngx.ctx.redis

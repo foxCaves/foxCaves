@@ -1,4 +1,4 @@
 -- ROUTE:POST:/api/v1/users/self/logout
-dofile(ngx.var.main_root .. "/scripts/global.lua")
+dofile_global()
 
 ngx.ctx.logout()

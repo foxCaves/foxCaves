@@ -1,6 +1,6 @@
 -- ROUTE:GET:/api/v1/files/{id}/livedraw
 ALLOW_GUEST = true
-dofile(ngx.var.main_root .. "/scripts/global.lua")
+dofile_global()
 dofile("scripts/api_login.lua")
 
 local WS_URL = ngx.re.gsub(MAIN_URL, "^http", "ws", "o")

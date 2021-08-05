@@ -1,5 +1,5 @@
 -- ROUTE:GET:/api/v1/links/{id}
-dofile(ngx.var.main_root .. "/scripts/global.lua")
+dofile_global()
 dofile("scripts/api_login.lua")
 if not ngx.ctx.user then return end
 

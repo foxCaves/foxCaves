@@ -52,13 +52,18 @@ function dofile(file)
 		code = fh:read("*all")
 		fh:close()
 		local err
-		code, err = load("return function() "..code.."\nend", file)
+		code, err = load("return function()\n"..code.."\nend", file)
 		if err then error(err) end
 		filecache[cache_key] = code
 	end
 	return setfenv(code(), getfenv())()
 end
 ]]
+
+function dofile_global()
+	local code = loadfile(ngx.var.main_root .. "/scripts/global.lua")
+	code()
+end
 
 function parse_authorization_header(auth)
 	if not auth then

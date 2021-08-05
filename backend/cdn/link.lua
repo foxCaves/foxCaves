@@ -1,4 +1,4 @@
-dofile(ngx.var.main_root .. "/scripts/global.lua")
+dofile_global()
 
 local linkid = ngx.var.linkid
 local database = ngx.ctx.database
