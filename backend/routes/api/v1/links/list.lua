@@ -4,7 +4,7 @@ dofile("scripts/api_login.lua")
 if not ngx.ctx.user then return end
 
 local database = ngx.ctx.database
-local links = database:query_safe('SELECT * FROM links WHERE user = %s', ngx.ctx.user.id)
+local links = database:query_safe('SELECT * FROM links WHERE "user" = %s', ngx.ctx.user.id)
 
 dofile("scripts/linkapi.lua")
 local results = {}
