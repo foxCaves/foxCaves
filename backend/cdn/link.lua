@@ -9,6 +9,7 @@ ngx.header["Content-Type"] = "text/plain"
 
 if not dest then
     ngx.status = 404
+    ngx.print("Link not found")
     return
 end
 
