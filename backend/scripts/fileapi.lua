@@ -23,7 +23,7 @@ function file_get(fileid, user)
 		file = fileid
 		fileid = file.id
 	else
-		file = database:query_safe('SELECT * FROM files WHERE id = "%s"', fileid)
+		file = database:query_safe('SELECT * FROM files WHERE id = %s', fileid)
 		file = file[1]
 	end
 	
@@ -74,7 +74,7 @@ function file_delete(fileid, user)
 	end
 	file_manualdelete(fileid, true)
 
-	database:query('DELETE FROM files WHERE id = "%s"', fileid)
+	database:query('DELETE FROM files WHERE id = %s', fileid)
 
 	if file.user and file.user == ngx.ctx.user.id then
 		ngx.ctx.user.usedbytes = ngx.ctx.user.usedbytes - file.size

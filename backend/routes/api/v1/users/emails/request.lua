@@ -19,7 +19,7 @@ if email == "" then
     return api_error("email required")
 end
 
-local userres = database:query_safe('SELECT * FROM users WHERE lower(username) = "%s" AND lower(email) = "%s"', username:lower(), email:lower())
+local userres = database:query_safe('SELECT * FROM users WHERE lower(username) = %s AND lower(email) = %s', username:lower(), email:lower())
 local userdata = userres[1]
 if not userdata then
     ngx.status = 404

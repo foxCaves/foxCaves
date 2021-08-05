@@ -42,7 +42,7 @@ if not newsize then
 	return ngx.eof()
 end
 
-database:query_safe'UPDATE files SET extension = "%s", name = "%s", size = "%s" WHERE id = "%s"', newextension, newfilename, newsize, fileid)
+database:query_safe('UPDATE files SET extension = %s, name = %s, size = %s WHERE id = %s', newextension, newfilename, newsize, fileid)
 newsize = newsize - dbdata.size
 ngx.ctx.user.usedbytes = ngx.ctx.user.usedbytes + newsize
 

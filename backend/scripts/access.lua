@@ -39,7 +39,7 @@ local function check_auth(userdata, password, options)
 		authOk = argon2.verify(userdata.password, password)
 	end
 	if authOk and authNeedsUpdate then
-		database:query_safe('UPDATE users SET password = "%s" WHERE id = "%s"', argon2.hash_encoded(password, randstr(32)), userdata.id)
+		database:query_safe('UPDATE users SET password = %s WHERE id = %s', argon2.hash_encoded(password, randstr(32)), userdata.id)
 	end
 	return authOk
 end
@@ -57,7 +57,7 @@ function ngx.ctx.login(username_or_id, password, options)
 
 	local id_field = login_with_id and "id" or "lower(username)"
 
-	local resultarr = database:query_safe('SELECT * FROM users WHERE ' .. id_field .. ' = "%s"', tostring(username_or_id):lower())
+	local resultarr = database:query_safe('SELECT * FROM users WHERE ' .. id_field .. ' = %s', tostring(username_or_id):lower())
 	if result then
 		if result.active then
 			result.active = tonumber(result.active)
@@ -142,7 +142,7 @@ if cookies then
 			local uid = auth[2]
 			auth = auth[3]
 			if uid and auth then
-				local result = database:query_safe('SELECT loginkey FROM users WHERE id = "%s"', uid)
+				local result = database:query_safe('SELECT loginkey FROM users WHERE id = %s', uid)
 				if result and result ~= ngx.null then
 					if hash_login_key(result) == ngx.decode_base64(auth) then
 						ngx.ctx.login(uid, nil, { login_with_id = true })

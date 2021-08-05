@@ -35,11 +35,11 @@ if args.email then
             user.email = args.email
         end
     end
-    database:query_safe('UPDATE users SET email = "%s" WHERE id = "%s"', user.email, user.id)
+    database:query_safe('UPDATE users SET email = %s WHERE id = %s', user.email, user.id)
 end
 
 if args.password then
-    database:query_safe('UPDATE users SET password = "%s" WHERE id = "%s"', argon2.hash_encoded((args.password, randstr(32)), user.id)
+    database:query_safe('UPDATE users SET password = %s WHERE id = %s', argon2.hash_encoded((args.password, randstr(32)), user.id)
     user.password = "CHANGED"
     args.loginkey = "CHANGE"
 end

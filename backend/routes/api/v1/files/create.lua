@@ -132,7 +132,7 @@ file_upload(fileid, name, extension, thumbnail, mtype, thumbnailType)
 
 local fileKeyID = database.KEYS.FILES .. fileid
 
-database:query_safe('INSERT INTO files (id, name, user, extension, type, size, time, thumbnail) VALUES ("%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s")', fileid, name, ngx.ctx.user.id, extension, fileType, filesize, ngx.time(), thumbnail)
+database:query_safe('INSERT INTO files (id, name, user, extension, type, size, time, thumbnail) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)', fileid, name, ngx.ctx.user.id, extension, fileType, filesize, ngx.time(), thumbnail)
 ngx.ctx.user.usedbytes = ngx.ctx.user.usedbytes + filesize
 
 local filedata = file_get(fileid)

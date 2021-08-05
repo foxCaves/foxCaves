@@ -34,7 +34,7 @@ elseif emailcheck == ngx.ctx.EMAIL_TAKEN then
     return api_error("email taken")
 end
 
-local res = database:query_safe('INSERT INTO users (username, email, password) VALUES ("%s", "%s", "%s") RETURNING id', username, email, argon2.hash_encoded(password, randstr(32)))
+local res = database:query_safe('INSERT INTO users (username, email, password) VALUES (%s, %s, %s) RETURNING id', username, email, argon2.hash_encoded(password, randstr(32)))
 local userid = res[1].id
 make_new_login_key({id = userid})
 make_new_api_key({id = userid})

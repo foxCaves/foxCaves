@@ -4,7 +4,7 @@ dofile("scripts/api_login.lua")
 if not ngx.ctx.user then return end
 
 local database = ngx.ctx.database
-local files = database:query_safe('SELECT * FROM files WHERE user = "%s"', ngx.ctx.user.id)
+local files = database:query_safe('SELECT * FROM files WHERE user = %s', ngx.ctx.user.id)
 
 dofile("scripts/fileapi.lua")
 local results = {}

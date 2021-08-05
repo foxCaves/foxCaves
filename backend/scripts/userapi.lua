@@ -14,7 +14,7 @@ function user_require_email_confirmation(user)
     local email_text = "Hello, " .. user.username .. "!\n\nYou have recently registered or changed your E-Mail on foxCaves.\nPlease click the following link to activate your E-Mail:\n"
     email_text = email_text .. MAIN_URL .. "/email/code?code=" .. emailid .. "\n\n"
     email_text = email_text .. "Kind regards,\nfoxCaves Support"
-    database:query_safe('UPDATE users SET active = 0 WHERE active = 1 AND id = "%s"', user.id)
+    database:query_safe('UPDATE users SET active = 0 WHERE active = 1 AND id = %s', user.id)
 
 	local emailkey = "emailkeys:" .. emailid
     redis:hmset(emailkey, "user", user.id, "action", "activation")
@@ -36,7 +36,7 @@ function make_new_login_key(userdata)
 	end
 
 	local str = randstr(64)
-    database:query_safe('UPDATE users SET loginkey = "%s" WHERE id = "%s"', str, userdata.id)
+    database:query_safe('UPDATE users SET loginkey = %s WHERE id = %s', str, userdata.id)
 
 	raw_push_action({
 		action = "kick",

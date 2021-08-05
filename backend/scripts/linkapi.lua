@@ -13,7 +13,7 @@ function link_get(linkid, user)
 		link = linkid
 		linkid = link.id
 	else
-		link = database:query_safe('SELECT * FROM links WHERE id = "%s"', linkid)
+		link = database:query_safe('SELECT * FROM links WHERE id = %s', linkid)
 		link = link[1]
 	end
 
