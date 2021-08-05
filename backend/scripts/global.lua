@@ -11,8 +11,15 @@ local resty_redis = require("resty.redis")
 local pgmoon = require("pgmoon")
 local argon2 = require("argon2")
 
+local shutdown_funcs = {}
 function register_shutdown(func)
-
+	table.insert(shutdown_funcs, func)
+end
+function __on_shutdown()
+	for _, v in next, shutdown_funcs do
+		v()
+	end
+	shutdown_funcs = {}
 end
 
 function make_redis()

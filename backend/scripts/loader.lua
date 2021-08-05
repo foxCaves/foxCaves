@@ -215,6 +215,9 @@ else
 	if not isok then
 		ngx.status = 500
 		ngx.log(ngx.ERR, "Lua error: " .. err)
-		return ngx.eof()
 	end
+	if __on_shutdown then
+		__on_shutdown()
+	end
+	return ngx.eof()
 end
