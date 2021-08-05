@@ -233,7 +233,7 @@ local function websocket_read()
 	should_run = false
 end
 
-local sub_redis = make_redis()
+local sub_redis = make_redis(true)
 function get_id_from_packet(str)
     str = str:sub(2, str:find("|") - 1)
     return str
@@ -284,3 +284,4 @@ local sub_redis_thread = ngx.thread.spawn(redis_read)
 websocket_read()
 user:publish(cEVENT_LEAVE)
 ngx.thread.wait(sub_redis_thread)
+sub_redis:close()
