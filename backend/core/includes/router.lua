@@ -76,7 +76,7 @@ end
 function execute_route()
     local override = ngx.var.run_lua_file
     if override and override:len() > 0 then
-        dofile(override)
+        dofile_cached(override)
         return
     end
 
@@ -105,7 +105,7 @@ function execute_route()
     for i, mapping in pairs(handler.mappings) do
         ngx.ctx.route_vars[mapping] = urlsplit[i]
     end
-    dofile(handler.file)
+    dofile_cached(handler.file)
 end
 
 scan_route_dir(MAIN_DIR .. "routes")

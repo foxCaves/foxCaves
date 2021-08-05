@@ -20,7 +20,7 @@ local c_slash = ("/"):byte(1)
 local setfenv = setfenv
 local getfenv = getfenv
 local filecache = {}
-function dofile(file)
+function dofile_cached(file)
 	local cache_key
 	if file:byte(1) == c_slash then
 		cache_key = file
@@ -41,6 +41,10 @@ function dofile(file)
 		filecache[cache_key] = code
 	end
 	return setfenv(code(), getfenv())()
+end
+
+function dofile(file)
+	loadfile(file)()
 end
 
 function parse_authorization_header(auth)
