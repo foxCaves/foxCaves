@@ -17,7 +17,7 @@ local explode = explode
 
 __on_shutdown()
 
-local redis = make_redis(true)
+local redis = make_redis()
 local make_redis = make_redis
 
 local server = require("resty.websocket.server")
@@ -287,4 +287,3 @@ websocket_read()
 user:publish(cEVENT_LEAVE)
 ngx.thread.wait(sub_redis_thread)
 sub_redis:close()
-redis:close()
