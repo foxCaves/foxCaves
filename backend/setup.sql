@@ -9,11 +9,11 @@ CREATE TABLE users (
     id BIGSERIAL PRIMARY KEY,
     username VARCHAR(255),
     email VARCHAR(255),
-    password VARCHAR(255),
+    password BYTEA,
     active INT NOT NULL DEFAULT 0,
     bonusbytes BIGINT NOT NULL DEFAULT 0,
-    loginkey VARCHAR(255),
-    apikey VARCHAR(255)
+    loginkey BYTEA,
+    apikey BYTEA
 );
 CREATE UNIQUE INDEX ON users (lower(username));
 CREATE UNIQUE INDEX ON users (lower(email));
