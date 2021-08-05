@@ -17,7 +17,10 @@ function register_shutdown(func)
 end
 function __on_shutdown()
 	for _, v in next, shutdown_funcs do
-		v()
+		local isok, err = pcall(v)
+		if not isok then
+			ngx.log(ngx.ERR, "Shutdown function failed: " .. err)
+		end
 	end
 	shutdown_funcs = {}
 end
