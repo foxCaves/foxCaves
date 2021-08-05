@@ -2,7 +2,7 @@ ctx_init()
 
 local function send_file(disposition_type)
 	local fileid = ngx.var.fileid
-	local file = file_get(fileid)
+	local file = file_get_public(fileid)
 
 	if (not file) or file.extension:sub(2):lower() ~= ngx.var.extension:lower() then
 		ngx.status = 404

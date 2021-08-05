@@ -129,6 +129,6 @@ file_upload(fileid, name, extension, thumbnail, mtype, thumbnailType)
 database:query_safe('INSERT INTO files (id, name, "user", extension, type, size, time, thumbnail) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)', fileid, name, ngx.ctx.user.id, extension, fileType, filesize, ngx.time(), thumbnail or "")
 ngx.ctx.user.usedbytes = ngx.ctx.user.usedbytes + filesize
 
-local filedata = file_get(fileid)
+local filedata = file_get_public(fileid)
 file_push_action('create', filedata)
 ngx.print(cjson.encode(filedata))

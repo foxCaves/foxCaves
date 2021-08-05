@@ -15,7 +15,7 @@ local function file_fullread(filename)
 	return cont
 end
 
-function file_get(fileid, user)
+local function file_get(fileid, user)
 	if not fileid then 
 		return nil
 	end
@@ -45,12 +45,19 @@ function file_get(fileid, user)
 	else
 		file.thumbnail_image = MAIN_URL .. "/static/img/thumbs/ext_" .. file.extension .. ".png"
 	end
-	file.thumbnail = nil
 	file.view_url = SHORT_URL .. "/v" .. file.id
 	file.direct_url = SHORT_URL .. "/f" .. file.id .. file.extension
 	file.download_url = SHORT_URL .. "/d" .. file.id .. file.extension
 	file.mimetype = mimetypes[file.extension] or "application/octet-stream"
 
+	return file
+end
+
+function file_get_public(fileid, user)
+	local file = file_get(fileid, user)
+	if file then
+		file.thumbnail = nil
+	end
 	return file
 end
 
@@ -69,10 +76,12 @@ function file_delete(fileid, user)
 	end
 
 	file_manualdelete(fileid .. "/file" .. file.extension)
-	if file.thumbnail_url then
+	if file.thumbnail and file.thumbnail ~= "" then
 		file_manualdelete(fileid .. "/thumb" .. file.thumbnail)
 	end
 	file_manualdelete(fileid, true)
+
+	file.thumbnail = nil
 
 	ngx.ctx.database:query_safe('DELETE FROM files WHERE id = %s', fileid)
 
@@ -85,7 +94,7 @@ function file_delete(fileid, user)
 end
 
 function file_download(fileid, user)
-	local file = file_get(fileid, user)
+	local file = file_get_public(fileid, user)
 	if not file then return false end
 
 	return true, file_fullread(FILE_STORAGE_PATH .. fileid .. "/file" .. file.extension), file
