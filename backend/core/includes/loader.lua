@@ -1,3 +1,5 @@
+local run_request
+
 if IS_DEVELOPMENT then
 	local function makeTableRecurse(var, done)
 		local t = type(var)
@@ -188,8 +190,8 @@ if IS_DEVELOPMENT then
 		return table.concat(out, "")
 	end
 
-	function run_request()
-		local isok, err = xpcall(execute_route, debug_trace)
+	run_request = function(func)
+		local isok, err = xpcall(func, debug_trace)
 		ngx.req.discard_body()
 		if not isok then
 			ngx.status = 500
@@ -212,27 +214,27 @@ else
 	local capture_error_handler = rvn:gen_capture_err()
 
 	-- https://github.com/cloudflare/raven-lua/blob/master/raven/init.lua#L352
-	local function rvn_call_ext(conf, f, ...)
+	local function rvn_call_ext(conf, f)
 		-- When used with ngx_lua, connecting a tcp socket in xpcall error handler
 		-- will cause a "yield across C-call boundary" error. To avoid this, we
 		-- move all the network operations outside of the xpcall error handler.
-		local res = { xpcall(f, capture_error_handler, ...) }
+		local res = { xpcall(f, capture_error_handler) }
 		if not res[1] then
-			self:send_report(res[2], conf)
+			rvn:send_report(res[2], conf)
 			res[2] = res[2].message -- turn the error object back to its initial form
 		end
 
 		return unpack(res)
 	end
 
-	function run_request()
+	run_request = function(func)
 		local isok, err = rvn_call_ext({
 			tags = {
 				userid = ngx.ctx.user and ngx.ctx.user.id or "N/A",
 				ip = ngx.var.remote_addr,
 				url = ngx.var.request_uri,
 			},
-		}, execute_route, ngx.var.run_lua_file)
+		}, execute_route)
 		ngx.req.discard_body()
 		if not isok then
 			ngx.status = 500
@@ -243,3 +245,13 @@ else
 	end
 end
 
+function run_request_route()
+	run_request(execute_route)
+end
+
+local function execute_run_lua_file()
+	dofile_cached(ngx.var.run_lua_file)
+end
+function run_request_direct()
+	run_request(execute_run_lua_file)
+end

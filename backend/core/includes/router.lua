@@ -74,12 +74,6 @@ local function scan_route_dir(dir)
 end
 
 function execute_route()
-    local override = ngx.var.run_lua_file
-    if override and override:len() > 0 then
-        dofile_cached(override)
-        return
-    end
-
     local url = ngx.var.uri
     local method = ngx.var.request_method:upper()
     local urlsplit = explode("/", url:sub(2))
