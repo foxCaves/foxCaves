@@ -249,9 +249,8 @@ function run_request_route()
 	run_request(execute_route)
 end
 
-local function execute_run_lua_file()
-	dofile_cached(ngx.var.run_lua_file)
-end
 function run_request_direct()
-	run_request(execute_run_lua_file)
+	run_request(function()
+		dofile_cached(ngx.var.run_lua_file)
+	end)
 end
