@@ -1,5 +1,13 @@
 local IS_DEVELOPMENT = (ngx.var.IS_DEVELOPMENT == "true")
 
+function dofile(file)
+	loadfile(file)()
+end
+
+function dofile_global()
+	dofile(ngx.var.main_root .. "/scripts/global.lua")
+end
+
 if IS_DEVELOPMENT then
 	local function makeTableRecurse(var, done)
 		local t = type(var)

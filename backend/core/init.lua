@@ -60,14 +60,6 @@ function dofile(file)
 end
 ]]
 
-function dofile(file)
-	loadfile(file)()
-end
-
-function dofile_global()
-	dofile(ngx.var.main_root .. "/scripts/global.lua")
-end
-
 function parse_authorization_header(auth)
 	if not auth then
 		return
