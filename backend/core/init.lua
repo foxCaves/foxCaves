@@ -36,9 +36,9 @@ local setfenv = setfenv
 local getfenv = getfenv
 local filecache = {}
 function loadfile_cached(file)
-	local code = filecache[file]
-	if code then
-		return code
+	local cached = filecache[file]
+	if cached then
+		return cached
 	end
 
 	local fh = io.open(file, "r")
@@ -48,22 +48,21 @@ function loadfile_cached(file)
 	local data = fh:read("*all")
 	fh:close()
 
-	local err
-	code, err = load("return function()\n"..data.."\nend", file)
+	local func, err = load("return function()\n"..data.."\nend", file)
 	if err then
 		error(err)
 	end
 
 	if IS_PRODUCTION then
-		filecache[file] = code
+		filecache[file] = func
 	end
 
-	return code
+	return func
 end
 local loadfile_cached = loadfile_cached
 function dofile_cached(file)
-	local code = loadfile_cached(file)
-	return setfenv(code, getfenv())()
+	local func = loadfile_cached(file)
+	return setfenv(func, getfenv())()
 end
 
 local loadfile = loadfile
