@@ -191,7 +191,7 @@ if ENVIRONMENT == "development" then
 	end
 
 	run_request = function(func)
-		local isok, err = xpcall(func, debug_trace)
+		local isok, err = xpcall(execute_route, debug_trace)
 		ngx.req.discard_body()
 		if not isok then
 			ngx.status = 500
@@ -235,7 +235,7 @@ else
 				ip = ngx.var.remote_addr,
 				url = ngx.var.request_uri,
 			},
-		}, func)
+		}, execute_route)
 		ngx.req.discard_body()
 		if not isok then
 			ngx.status = 500
@@ -246,6 +246,4 @@ else
 	end
 end
 
-function run_request_route()
-	run_request(execute_route)
-end
+run_request_route = run_request
