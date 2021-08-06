@@ -24,40 +24,6 @@ function explode(div,str) -- credit: http://richard.warburton.it
 	return arr
 end
 
-local filecache = {}
-function loadfile_cached(file)
-	local cached = filecache[file]
-	if cached then
-		return cached
-	end
-
-	local fh = io.open(file, "r")
-	if not fh then
-		error("Could not open file: " .. file)
-	end
-	local data = fh:read("*all")
-	fh:close()
-
-	local func, err = load(data, file)
-	if err then
-		error(err)
-	end
-
-	if IS_PRODUCTION then
-		filecache[file] = func
-		if INIT_COMPLETE then
-			ngx.log(ngx.ERR, "Caching Lua file during runtime in production: " .. file)
-		end
-	end
-
-	return func
-end
-local loadfile_cached = loadfile_cached
-function dofile_cached(file)
-	local func = loadfile_cached(file)
-	return func()
-end
-
 local loadfile = loadfile
 function dofile(file)
 	loadfile(file)()

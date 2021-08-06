@@ -79,7 +79,10 @@ local function scan_route_dir(dir)
 end
 
 function execute_route()
-    local url = ngx.var.uri
+    local url = ngx.var.override_uri
+    if (not url) or (url == "") then
+        url = ngx.var.uri
+    end
     local method = ngx.var.request_method:upper()
     local urlsplit = explode("/", url:sub(2))
 
@@ -104,7 +107,7 @@ function execute_route()
     for i, mapping in pairs(handler.mappings) do
         ngx.ctx.route_vars[mapping] = urlsplit[i]
     end
-    dofile_cached(handler.file)
+    handler.func()
 end
 
 scan_route_dir(MAIN_DIR .. "routes")
