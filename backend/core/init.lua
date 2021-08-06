@@ -37,7 +37,7 @@ local getfenv = getfenv
 local filecache = {}
 function loadfile_cached(file)
 	local code = filecache[file]
-	if (not IS_PRODUCTION) or (not code) then
+	if not code then
 		local fh = io.open(file, "r")
 		if not fh then
 			error("Could not open file: " .. file)
@@ -50,7 +50,10 @@ function loadfile_cached(file)
 		if err then
 			error(err)
 		end
-		filecache[file] = code
+
+		if IS_PRODUCTION then
+			filecache[file] = code
+		end
 	end
 	return code
 end
