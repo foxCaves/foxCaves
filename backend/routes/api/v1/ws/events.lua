@@ -64,4 +64,3 @@ end
 local redis_thread = ngx.thread.spawn(redis_read)
 websocket_read()
 ngx.thread.wait(redis_thread)
-redis:close()

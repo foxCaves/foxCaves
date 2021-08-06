@@ -29,7 +29,7 @@ function __on_shutdown()
 	ngx.ctx.shutdown_funcs = nil
 end
 
-function make_redis(no_auto_shutdown)
+function make_redis(close_on_shutdown)
 	local database, err = resty_redis:new()
 	if not database then
 		error("Error initializing DB: " .. err)
@@ -81,7 +81,9 @@ function make_redis(no_auto_shutdown)
 		return ret
 	end
 
-	if not no_auto_shutdown then
+	if close_on_shutdown then
+		register_shutdown(function() database:close() end)
+	else
 		register_shutdown(function() database:set_keepalive(dbconfig.redis.keepalive_timeout or 10000, dbconfig.redis.keepalive_count or 100) end)
 	end
 

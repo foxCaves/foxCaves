@@ -11,6 +11,5 @@ if not dest then
     return
 end
 
-__on_shutdown()
 ngx.status = 302
 ngx.redirect(dest.url)
