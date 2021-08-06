@@ -33,8 +33,6 @@ function explode(div,str) -- credit: http://richard.warburton.it
 	return arr
 end
 
-local setfenv = setfenv
-local getfenv = getfenv
 local filecache = {}
 function loadfile_cached(file)
 	local cached = filecache[file]
