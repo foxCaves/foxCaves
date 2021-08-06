@@ -18,7 +18,7 @@ register_route("/api/v1/users/emails/code", "POST", make_route_opts_anon(), func
     local userres = database:query_safe('SELECT * FROM users WHERE id = %s', res.user)
     local userdata = userres[1]
     if not userdata then
-        return
+        return api_error("Bad user")
     end
 
     if res.action == "activation" then
@@ -32,5 +32,5 @@ register_route("/api/v1/users/emails/code", "POST", make_route_opts_anon(), func
         mail(userdata.email, "foxCaves - New password", email, "noreply@foxcav.es", "foxCaves")
     end
 
-    ngx.print(cjson.encode({ action = res.action }))
+    return { action = res.action }
 end)

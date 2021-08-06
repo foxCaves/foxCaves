@@ -21,8 +21,7 @@ register_route("/api/v1/users/emails/request", "POST", make_route_opts_anon(), f
     local userres = database:query_safe('SELECT * FROM users WHERE lower(username) = %s AND lower(email) = %s', username:lower(), email:lower())
     local userdata = userres[1]
     if not userdata then
-        ngx.status = 404
-        return
+        return api_error("User not found", 404)
     end
 
     local emailid = randstr(32)

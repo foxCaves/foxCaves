@@ -7,8 +7,7 @@ register_route("/api/v1/ws/events", "GET", make_route_opts(), function()
         max_payload_len = 65535,
     })
     if not ws then
-        ngx.status = 400
-        return
+        return api_error("WebSocket requests only")
     end
 
     local function kick()
@@ -18,7 +17,8 @@ register_route("/api/v1/ws/events", "GET", make_route_opts(), function()
 
     local res, err = redis:subscribe("push:" ..  ngx.ctx.user.id)
     if err then
-        return kick()
+        kick()
+        return
     end
 
     local should_run = true

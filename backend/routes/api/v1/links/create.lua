@@ -16,5 +16,5 @@ register_route("/api/v1/links", "POST", make_route_opts(), function()
 		action = "link:create",
 		link = linkinfo,
 	})
-	ngx.print(cjson.encode(linkinfo))
+	return linkinfo
 end)

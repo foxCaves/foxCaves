@@ -5,9 +5,7 @@ register_route("/cdn/link/{linkid}", "GET", make_route_opts_anon(), function()
     ngx.header["Content-Type"] = "text/plain"
 
     if not dest then
-        ngx.status = 404
-        ngx.print("Link not found")
-        return
+        return api_error("Link not found", 404)
     end
 
     ngx.status = 302

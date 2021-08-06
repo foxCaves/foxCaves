@@ -3,17 +3,13 @@ register_route("/api/v1/files/{id}/convert", "POST", make_route_opts(), function
 
 	local newextension = ngx.var.arg_newtype:lower()
 	if newextension ~= "jpg" and newextension ~= "png" and newextension ~= "gif" and newextension ~= "bmp" then
-		ngx.status = 400
-		ngx.print("badreq")
-		return
+		return api_error("Bad newtype for convert")
 	end
 	newextension = "." .. newextension
 
 	local succ, data, dbdata = file_download(fileid, ngx.ctx.user.id)
 	if(not succ) or dbdata.extension == newextension or dbdata.type ~= 1 then
-		ngx.status = 403
-		ngx.print("failed")
-		return
+		return api_error("File not found or not owned by you")
 	end
 
 	local newfilename = dbdata.name
@@ -29,9 +25,7 @@ register_route("/api/v1/files/{id}/convert", "POST", make_route_opts(), function
 
 	local newsize = lfs.attributes("/var/www/foxcaves/tmp/files/" .. fileid .. newextension, "size")
 	if not newsize then
-		ngx.status = 500
-		ngx.print("failed")
-		return
+		return api_error("Internal error", 500)
 	end
 
 	database:query_safe('UPDATE files SET extension = %s, name = %s, size = %s WHERE id = %s', newextension, newfilename, newsize, fileid)

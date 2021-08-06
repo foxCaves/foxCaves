@@ -186,13 +186,11 @@ function raw_push_action(data, user)
 end
 
 function api_not_logged_in_error()
-	api_error("Not logged in", 403)
+	return api_error("Not logged in", 403)
 end
 
 function api_error(error, code)
-	ngx.req.discard_body()
-	ngx.status = code or 400
-	ngx.print(cjson.encode({ error = error }))
+	return { error = error }, (code or 400)
 end
 
 function printTemplateAndClose(name, params)

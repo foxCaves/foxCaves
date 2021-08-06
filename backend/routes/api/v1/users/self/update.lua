@@ -18,13 +18,9 @@ register_route("/api/v1/users/self", "PATCH", make_route_opts({ api_login = fals
         else
             local emailcheck = check_email(args.email)
             if emailcheck == VALIDATION_STATE_INVALID then
-                ngx.status = 400
-                ngx.print(cjson.encode({ error = "email invalid" }))
-                return
+                return api_error("email invalid")
             elseif emailcheck == VALIDATION_STATE_TAKEN then
-                ngx.status = 400
-                ngx.print(cjson.encode({ error = "email already taken" }))
-                return
+                return api_error("email taken")
             else
                 -- TODO: re-ask for verification here
                 user.email = args.email
@@ -48,5 +44,5 @@ register_route("/api/v1/users/self", "PATCH", make_route_opts({ api_login = fals
         user.loginkey = "CHANGED"
     end
 
-    ngx.print(cjson.encode(user))
+    return user
 end)

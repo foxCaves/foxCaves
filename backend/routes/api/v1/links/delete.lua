@@ -7,6 +7,6 @@ register_route("/api/v1/links/{id}", "DELETE", make_route_opts(), function()
             link = linkinfo,
         })
     else
-        ngx.status = 400
+        return api_error("Could not delete link", 400)
     end
 end)

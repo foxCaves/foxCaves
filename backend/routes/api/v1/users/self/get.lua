@@ -5,5 +5,5 @@ register_route("/api/v1/users/self", "GET", make_route_opts(), function()
     user.sessionid = nil
     user.salt = nil
     user.usedbytes = user_calculate_usedbytes(user)
-    ngx.print(cjson.encode(user))
+    return user
 end)

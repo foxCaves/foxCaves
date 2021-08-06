@@ -1,3 +1,7 @@
+local explode = explode
+local pairs = pairs
+local type = type
+
 local ROUTE_TREE = {
     children = {},
     methods = {},
@@ -30,9 +34,6 @@ function make_route_opts_anon()
 end
 
 local c_open, c_close = ('{}'):byte(1,2)
-
-local explode = explode
-local pairs = pairs
 
 function register_route(url, method, options, func)
     method = method:upper()
@@ -126,6 +127,8 @@ function execute_route()
     ngx.header["FoxCaves-Route-Method"] = method
     ngx.header["FoxCaves-Route-ID"] = handler.id
 
+    local res, code
+
     local opts = handler.options
 
     if opts.cookie_login then
@@ -139,11 +142,27 @@ function execute_route()
     end
 
     if (not opts.allow_guest) and (not ngx.ctx.user) then
-        api_not_logged_in_error()
-        return
+        res, code = api_not_logged_in_error()
     end
 
-    handler.func()
+    if not res then
+        res, code = handler.func()
+        if not res then
+            return
+        end
+    end
+
+    if code then
+        ngx.status = code
+    end
+
+    if type(res) == "string" then
+        ngx.header["Content-Type"] = "text/plain"
+        ngx.print(res)
+    else
+	    ngx.header["Content-Type"] = "application/json"
+        ngx.print(cjson.encode(res))
+    end
 end
 
 scan_route_dir(MAIN_DIR .. "routes")

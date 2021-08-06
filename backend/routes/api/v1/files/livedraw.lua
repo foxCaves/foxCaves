@@ -5,11 +5,10 @@ register_route("/api/v1/files/{id}/livedraw", "GET", make_route_opts({ allow_gue
     local session = ngx.var.arg_session
 
     if not id or not session then
-        ngx.status = 400
-        return
+        return api_error("Missing id or session", 400)
     end
 
-    ngx.print(cjson.encode({
+    return {
         url = WS_URL .. "/api/v1/ws/livedraw?id=" .. id .. "&session=" .. session
-    }))
+    }
 end)

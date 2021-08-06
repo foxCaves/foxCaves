@@ -22,8 +22,7 @@ register_route("/api/v1/ws/livedraw", "GET", make_route_opts({ allow_guest = tru
 		max_payload_len = 65535,
 	})
 	if not ws then
-		ngx.status = 400
-		return
+		return api_error("WebSocket requests only")
 	end
 
 	module("liveedit_websocket")

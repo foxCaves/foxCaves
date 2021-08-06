@@ -127,5 +127,5 @@ register_route("/api/v1/files", "POST", make_route_opts(), function()
 
 	local filedata = file_get_public(fileid)
 	file_push_action('create', filedata)
-	ngx.print(cjson.encode(filedata))
+	return filedata
 end)

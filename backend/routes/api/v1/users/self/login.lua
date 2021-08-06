@@ -14,13 +14,13 @@ register_route("/api/v1/users/self/login", "POST", make_route_opts({ allow_guest
 
     local result = do_login(args.username, args.password)
     if result == LOGIN_USER_INACTIVE then
-        api_error("Account inactive")
+        return api_error("Account inactive")
     elseif result == LOGIN_USER_BANNED then
-        api_error("Account banned")
+        return api_error("Account banned")
     elseif result == LOGIN_BAD_PASSWORD then
-        api_error("Invalid username/password")
+        return api_error("Invalid username/password")
     elseif result ~= LOGIN_SUCCESS then
-        api_error("Unknown login error")
+        return api_error("Unknown login error")
     else
         if args.remember == "true" then
             ngx.ctx.user.remember_me = true

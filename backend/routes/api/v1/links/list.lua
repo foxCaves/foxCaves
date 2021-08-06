@@ -5,5 +5,5 @@ register_route("/api/v1/links", "GET", make_route_opts(), function()
 	for _, link in next, links do
 		table.insert(results, link_get(link))
 	end
-	ngx.print(cjson.encode(results))
+	return results
 end)
