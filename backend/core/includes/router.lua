@@ -103,6 +103,11 @@ function execute_route()
     for i, mapping in pairs(handler.mappings) do
         ngx.ctx.route_vars[mapping] = urlsplit[i]
     end
+
+    ngx.header["FoxCaves-Route-URL"] = url
+    ngx.header["FoxCaves-Route-Method"] = method
+    ngx.header["FoxCaves-Route-ID"] = handler.id
+
     handler.func()
 end
 
