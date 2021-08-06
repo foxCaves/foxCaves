@@ -20,12 +20,13 @@ function make_route_opts(opts)
     end
     return opts
 end
+local BASE_OPTS_ANON = make_route_opts({
+    cookie_login = false,
+    api_login = false,
+    allow_guest = true,
+})
 function make_route_opts_anon()
-    return make_route_opts({
-        cookie_login = false,
-        api_login = false,
-        allow_guest = true,
-    })
+    return BASE_OPTS_ANON
 end
 
 local c_open, c_close = ('{}'):byte(1,2)
@@ -148,4 +149,4 @@ end
 scan_route_dir(MAIN_DIR .. "routes")
 register_route = nil
 make_route_opts = nil
-BASE_OPTS = nil
+make_route_opts_anon = nil
