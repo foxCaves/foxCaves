@@ -135,20 +135,6 @@ function get_ctx_database()
 	return database
 end
 
-function ctx_init()
-	ngx.ctx.user = nil
-end
-
-function cookies_ctx_init()
-	ctx_init()
-	check_cookies()
-end
-
-function api_ctx_init(allow_guest)
-	cookies_ctx_init()
-	check_api_login(allow_guest)
-end
-
 function check_email(email)
 	if not ngx.re.match(email, "^[a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\\.[a-zA-Z]{2,}$", "o") then
 		return VALIDATION_STATE_INVALID

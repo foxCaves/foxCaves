@@ -1,14 +1,12 @@
--- ROUTE:DELETE:/api/v1/links/{id}
-api_ctx_init()
-if not ngx.ctx.user then return end
+register_route("/api/v1/links/{id}", "DELETE", make_route_opts(), function()
+    local res = get_ctx_database():query_safe('DELETE FROM links WHERE id = %s AND "user" = %s', ngx.ctx.route_vars.id, ngx.ctx.user.id)
 
-local res = get_ctx_database():query_safe('DELETE FROM links WHERE id = %s AND "user" = %s', ngx.ctx.route_vars.id, ngx.ctx.user.id)
-
-if res.affected_rows > 0 then
-    raw_push_action({
-        action = "link:delete",
-        link = linkinfo,
-    })
-else
-    ngx.status = 400
-end
+    if res.affected_rows > 0 then
+        raw_push_action({
+            action = "link:delete",
+            link = linkinfo,
+        })
+    else
+        ngx.status = 400
+    end
+end)

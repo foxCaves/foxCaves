@@ -3,13 +3,33 @@ local ROUTE_TREE = {
     methods = {},
 }
 
+local BASE_OPTS = {
+    cookie_login = true,
+    api_login = true,
+    allow_guest = false,
+}
+function make_route_opts(opts)
+    for k, v in pairs(BASE_OPTS) do
+        if opts[k] == nil then
+            opts[k] = v
+        end
+    end
+    return opts
+end
+function make_route_opts_anon()
+    return make_route_opts({
+        cookie_login = false,
+        api_login = false,
+        allow_guest = true,
+    })
+end
+
 local c_open, c_close = ('{}'):byte(1,2)
 
-local dofile = dofile
 local explode = explode
 local pairs = pairs
 
-local function add_route(url, method, file, func)
+function register_route(url, method, options, func)
     method = method:upper()
     local urlsplit = explode("/", url:sub(2))
     
@@ -40,10 +60,10 @@ local function add_route(url, method, file, func)
     end
 
     route.methods[method] = {
-        file = file,
         mappings = mappings,
         id = route_id,
         func = func,
+        options = options,
     }
 end
 
@@ -53,14 +73,7 @@ local function scan_route_file(file)
     fh:close()
 
     local func = load(data, file)
-
-    local matches = ngx.re.gmatch(data, "^-- ROUTE:([A-Za-z,]+):([^\\s]+)\\s*$", "m")
-    for m in matches do
-        local methods = explode(",", m[1])
-        for _, method in pairs(methods) do
-            add_route(m[2], method, file, func)
-        end
-    end
+    func()
 end
 
 local function scan_route_dir(dir)
@@ -108,7 +121,27 @@ function execute_route()
     ngx.header["FoxCaves-Route-Method"] = method
     ngx.header["FoxCaves-Route-ID"] = handler.id
 
+    local opts = handler.options
+
+    if opts.cookie_login then
+        check_cookies()
+    end
+
+    if opts.api_login then
+        if check_api_login() then
+            return
+        end
+    end
+
+    if (not opts.allow_guest) and (not ngx.ctx.user) then
+        api_not_logged_in_error()
+        return
+    end
+
     handler.func()
 end
 
 scan_route_dir(MAIN_DIR .. "routes")
+register_route = nil
+make_route_opts = nil
+BASE_OPTS = nil
