@@ -55,7 +55,7 @@ function loadfile_cached(file)
 
 	if IS_PRODUCTION then
 		filecache[file] = func
-		ngx.log(ngx.INFO, "Caching Lua file: " .. file)
+		ngx.log(ngx.ERR, "Caching Lua file: " .. file)
 	end
 
 	return func
