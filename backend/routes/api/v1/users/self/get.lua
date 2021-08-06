@@ -3,7 +3,6 @@ register_route("/api/v1/users/self", "GET", make_route_opts(), function()
     user.password = nil
     user.loginkey = nil
     user.sessionid = nil
-    user.salt = nil
     user.usedbytes = user_calculate_usedbytes(user)
     return user
 end)
