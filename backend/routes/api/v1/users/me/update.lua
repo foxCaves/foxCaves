@@ -2,7 +2,7 @@
 cookies_ctx_init()
 if not ngx.ctx.user then return api_not_logged_in_error() end
 
-local database = ngx.ctx.database
+local database = get_ctx_database()
 
 local args = get_post_args()
 local user = ngx.ctx.user

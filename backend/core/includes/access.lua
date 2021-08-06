@@ -33,7 +33,7 @@ function check_user_password(userdata, password)
 		authOk = argon2.verify(userdata.password, password)
 	end
 	if authOk and authNeedsUpdate then
-		ngx.ctx.database:query_safe('UPDATE users SET password = %s WHERE id = %s', argon2.hash_encoded(password, randstr(32)), userdata.id)
+		get_ctx_database():query_safe('UPDATE users SET password = %s WHERE id = %s', argon2.hash_encoded(password, randstr(32)), userdata.id)
 	end
 	return authOk	
 end
@@ -50,7 +50,7 @@ end
 function do_login(username_or_id, password, options)
 	if ngx.ctx.user then return LOGIN_SUCCESS end
 
-	local redis = ngx.ctx.redis
+	local redis = get_ctx_redis()
 
 	options = options or {}
 	local nosession = options.nosession
@@ -62,7 +62,7 @@ function do_login(username_or_id, password, options)
 
 	local id_field = login_with_id and "id" or "lower(username)"
 
-	local resultarr = ngx.ctx.database:query_safe('SELECT * FROM users WHERE ' .. id_field .. ' = %s', tostring(username_or_id):lower())
+	local resultarr = get_ctx_database():query_safe('SELECT * FROM users WHERE ' .. id_field .. ' = %s', tostring(username_or_id):lower())
 	local result = resultarr[1]
 	if result then
 		if result.active == 0 then
@@ -94,7 +94,7 @@ end
 function do_logout()
 	ngx.header['Set-Cookie'] = {"sessionid=NULL; HttpOnly; Path=/; Secure;", "loginkey=NULL; HttpOnly; Path=/; Secure;"}
 	if (not ngx.ctx.user) or (not ngx.ctx.user.sessionid) then return end
-	ngx.ctx.redis:del("sessions:" .. ngx.ctx.user.sessionid)
+	get_ctx_redis():del("sessions:" .. ngx.ctx.user.sessionid)
 	ngx.ctx.user = nil
 end
 
@@ -113,7 +113,7 @@ function send_login_key()
 end
 
 function check_cookies()
-	local redis = ngx.ctx.redis
+	local redis = get_ctx_redis()
 
 	local cookies = ngx.var.http_Cookie
 	if cookies then
@@ -147,7 +147,7 @@ function check_cookies()
 				local uid = auth[2]
 				auth = auth[3]
 				if uid and auth then
-					local resultarr = ngx.ctx.database:query_safe('SELECT loginkey FROM users WHERE id = %s', uid)
+					local resultarr = get_ctx_database():query_safe('SELECT loginkey FROM users WHERE id = %s', uid)
 					local result = resultarr[1]
 					if result then
 						if hash_login_key(result.loginkey) == ngx.decode_base64(auth) then

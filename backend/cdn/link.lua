@@ -1,6 +1,6 @@
 ctx_init()
 
-local dest = ngx.ctx.database:query_safe('SELECT url FROM links WHERE id = %s', ngx.var.linkid)
+local dest = get_ctx_database():query_safe('SELECT url FROM links WHERE id = %s', ngx.var.linkid)
 dest = dest[1]
 
 ngx.header["Content-Type"] = "text/plain"

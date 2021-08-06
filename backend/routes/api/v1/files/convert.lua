@@ -22,7 +22,7 @@ end
 local newfilename = dbdata.name
 newfilename = newfilename:sub(1, newfilename:len() - dbdata.extension:len()) .. newextension
 
-local database = ngx.ctx.database
+local database = get_ctx_database()
 
 local fh = io.open("/var/www/foxcaves/tmp/files/" .. fileid .. dbdata.extension, "w")
 fh:write(data)

@@ -115,11 +115,28 @@ function make_database()
 	return database
 end
 
+function get_ctx_redis()
+	local redis = ngx.ctx.__redis
+	if redis then
+		return redis
+	end
+	redis = make_redis()
+	ngx.ctx.__redis = redis
+	return redis
+end
+
+function get_ctx_database()
+	local database = ngx.ctx.__database
+	if database then
+		return database
+	end
+	database = make_database()
+	ngx.ctx.__database = database
+	return database
+end
+
 function ctx_init()
 	ngx.ctx.user = nil
-
-	ngx.ctx.redis = make_redis()
-	ngx.ctx.database = make_database()
 end
 
 function cookies_ctx_init()
@@ -137,7 +154,7 @@ function check_email(email)
 		return VALIDATION_STATE_INVALID
 	end
 
-	local res = ngx.ctx.database:query_safe('SELECT id FROM users WHERE lower(email) = %s', email:lower())
+	local res = get_ctx_database():query_safe('SELECT id FROM users WHERE lower(email) = %s', email:lower())
 	if res[1] then
 		return VALIDATION_STATE_TAKEN
 	end
@@ -149,7 +166,7 @@ function check_username(username)
 		return VALIDATION_STATE_INVALID
 	end
 
-	local res = ngx.ctx.database:query_safe('SELECT id FROM users WHERE lower(username) = %s', username:lower())
+	local res = get_ctx_database():query_safe('SELECT id FROM users WHERE lower(username) = %s', username:lower())
 	if res[1] then
 		return VALIDATION_STATE_TAKEN
 	end
@@ -179,7 +196,7 @@ function raw_push_action(data, user)
 	if not user then
 		user = ngx.ctx.user
 	end
-	ngx.ctx.redis:publish("push:" .. user.id, cjson.encode(data))
+	get_ctx_redis():publish("push:" .. user.id, cjson.encode(data))
 end
 
 function api_not_logged_in_error()

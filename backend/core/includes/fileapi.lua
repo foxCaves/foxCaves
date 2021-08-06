@@ -25,7 +25,7 @@ local function file_get(fileid, user)
 		file = fileid
 		fileid = file.id
 	else
-		file = ngx.ctx.database:query_safe('SELECT * FROM files WHERE id = %s', fileid)
+		file = get_ctx_database():query_safe('SELECT * FROM files WHERE id = %s', fileid)
 		file = file[1]
 	end
 	
@@ -83,7 +83,7 @@ function file_delete(fileid, user)
 
 	file.thumbnail = nil
 
-	ngx.ctx.database:query_safe('DELETE FROM files WHERE id = %s', fileid)
+	get_ctx_database():query_safe('DELETE FROM files WHERE id = %s', fileid)
 
 	file_push_action('delete', file, { id = file.user })
 

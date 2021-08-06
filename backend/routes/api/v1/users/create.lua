@@ -1,7 +1,7 @@
 -- ROUTE:POST:/api/v1/users
 cookies_ctx_init()
 
-local database = ngx.ctx.database
+local database = get_ctx_database()
 local args = get_post_args()
 
 local username = args.username or ""

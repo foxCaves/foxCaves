@@ -11,7 +11,7 @@ function link_get(linkid, user)
 		link = linkid
 		linkid = link.id
 	else
-		link = ngx.ctx.database:query_safe('SELECT * FROM links WHERE id = %s', linkid)
+		link = get_ctx_database():query_safe('SELECT * FROM links WHERE id = %s', linkid)
 		link = link[1]
 	end
 

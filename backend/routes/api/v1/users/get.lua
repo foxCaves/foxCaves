@@ -1,7 +1,7 @@
 -- ROUTE:GET:/api/v1/users/{id}
 ctx_init()
 
-local userres = ngx.ctx.database:query_safe('SELECT id, username FROM users WHERE id = %s', ngx.ctx.route_vars.id)
+local userres = get_ctx_database():query_safe('SELECT id, username FROM users WHERE id = %s', ngx.ctx.route_vars.id)
 local user = userres[1]
 if not user then
     ngx.status = 404

@@ -15,10 +15,8 @@ local randstr = randstr
 local unpack = unpack
 local explode = explode
 
-__on_shutdown()
-
-local redis = make_redis()
-local make_redis = make_redis
+local redis = get_ctx_redis()
+local sub_redis = make_redis(true)
 
 local server = require("resty.websocket.server")
 local ws, err = server:new({
@@ -235,7 +233,6 @@ local function websocket_read()
 	should_run = false
 end
 
-local sub_redis = make_redis(true)
 function get_id_from_packet(str)
     str = str:sub(2, str:find("|") - 1)
     return str

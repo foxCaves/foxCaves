@@ -2,7 +2,7 @@
 api_ctx_init()
 if not ngx.ctx.user then return end
 
-local database = ngx.ctx.database
+local database = get_ctx_database()
 
 local file = file_get_public(ngx.ctx.route_vars.id, ngx.ctx.user.id)
 if not file then

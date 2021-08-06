@@ -1,5 +1,5 @@
 function user_require_email_confirmation(user)
-	local redis = ngx.ctx.redis
+	local redis = get_ctx_redis()
 
 	if not user then
 		user = ngx.ctx.user
@@ -13,7 +13,7 @@ function user_require_email_confirmation(user)
     local email_text = "Hello, " .. user.username .. "!\n\nYou have recently registered or changed your E-Mail on foxCaves.\nPlease click the following link to activate your E-Mail:\n"
     email_text = email_text .. MAIN_URL .. "/email/code?code=" .. emailid .. "\n\n"
     email_text = email_text .. "Kind regards,\nfoxCaves Support"
-    ngx.ctx.database:query_safe('UPDATE users SET active = 0 WHERE active = 1 AND id = %s', user.id)
+    get_ctx_database():query_safe('UPDATE users SET active = 0 WHERE active = 1 AND id = %s', user.id)
 
 	local emailkey = "emailkeys:" .. emailid
     redis:hmset(emailkey, "user", user.id, "action", "activation")
@@ -25,12 +25,12 @@ function user_require_email_confirmation(user)
 end
 
 function user_calculate_usedbytes(user)
-	local res = ngx.ctx.database:query_safe('SELECT SUM(size) AS usedbytes FROM files WHERE "user" = %s', user.id)
+	local res = get_ctx_database():query_safe('SELECT SUM(size) AS usedbytes FROM files WHERE "user" = %s', user.id)
 	return res[1].usedbytes or 0
 end
 
 function make_new_login_key(userdata)
-	local redis = ngx.ctx.redis
+	local redis = get_ctx_redis()
 
 	local send_userdata = false
 	local sessionid_skip = nil
@@ -44,7 +44,7 @@ function make_new_login_key(userdata)
 	end
 
 	local str = randstr(64)
-    ngx.ctx.database:query_safe('UPDATE users SET loginkey = %s WHERE id = %s', str, userdata.id)
+    get_ctx_database():query_safe('UPDATE users SET loginkey = %s WHERE id = %s', str, userdata.id)
 
 	raw_push_action({
 		action = "kick",
@@ -76,5 +76,5 @@ function make_new_api_key(userdata)
 	end
 	local str = randstr(64)
 	userdata.apikey = str
-    ngx.ctx.database:query_safe('UPDATE users SET apikey = %s WHERE id = %s', str, userdata.id)
+    get_ctx_database():query_safe('UPDATE users SET apikey = %s WHERE id = %s', str, userdata.id)
 end

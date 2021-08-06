@@ -2,7 +2,7 @@
 api_ctx_init()
 if not ngx.ctx.user then return end
 
-local database = ngx.ctx.database
+local database = get_ctx_database()
 
 local name = ngx.var.arg_name
 

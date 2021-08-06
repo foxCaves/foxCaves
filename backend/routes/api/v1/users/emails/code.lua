@@ -1,8 +1,8 @@
 -- ROUTE:POST:/api/v1/users/emails/code
 ctx_init()
 
-local database = ngx.ctx.database
-local redis = ngx.ctx.redis
+local database = get_ctx_database()
+local redis = get_ctx_redis()
 local args = get_post_args()
 
 local code = args.code or ""
