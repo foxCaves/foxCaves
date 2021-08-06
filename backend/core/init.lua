@@ -1,5 +1,6 @@
 ENVIRONMENT = os.getenv("ENVIRONMENT") or "development"
 IS_PRODUCTION = (ENVIRONMENT == "production")
+INIT_COMPLETE = false
 
 local function load_revision()
 	local fh = io.open("/var/www/foxcaves/.revision", "r")
@@ -55,7 +56,9 @@ function loadfile_cached(file)
 
 	if IS_PRODUCTION then
 		filecache[file] = func
-		ngx.log(ngx.ERR, "Caching Lua file: " .. file)
+		if INIT_COMPLETE then
+			ngx.log(ngx.ERR, "Caching Lua file during runtime in production: " .. file)
+		end
 	end
 
 	return func
@@ -104,4 +107,5 @@ local function scan_include_dir(dir)
 end
 scan_include_dir("core/includes")
 
+INIT_COMPLETE = true
 collectgarbage("collect")
