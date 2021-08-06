@@ -78,10 +78,7 @@ local function scan_route_dir(dir)
 end
 
 function execute_route()
-    local url = ngx.var.override_uri
-    if (not url) or (url == "") then
-        url = ngx.var.uri
-    end
+    local url = ngx.var.uri
     local method = ngx.var.request_method:upper()
     local urlsplit = explode("/", url:sub(2))
 
