@@ -8,5 +8,3 @@ if not user then
     return
 end
 ngx.print(cjson.encode(user))
-
-ngx.log(ngx.ERR, "meow!")

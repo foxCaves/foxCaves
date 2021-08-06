@@ -62,7 +62,6 @@ end
 local loadfile_cached = loadfile_cached
 function dofile_cached(file)
 	local func = loadfile_cached(file)
-	ngx.log(ngx.ERR, tostring(func))
 	return func()
 end
 
