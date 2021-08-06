@@ -48,7 +48,7 @@ function loadfile_cached(file)
 	local data = fh:read("*all")
 	fh:close()
 
-	local func, err = load("return function()\n"..data.."\nend", file)
+	local func, err = load(data, file)
 	if err then
 		error(err)
 	end
