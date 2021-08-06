@@ -9,6 +9,10 @@ local BASE_OPTS = {
     allow_guest = false,
 }
 function make_route_opts(opts)
+    if not opts then
+        return BASE_OPTS
+    end
+
     for k, v in pairs(BASE_OPTS) do
         if opts[k] == nil then
             opts[k] = v
