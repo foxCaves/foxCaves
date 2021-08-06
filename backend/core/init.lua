@@ -61,8 +61,10 @@ function loadfile_cached(file)
 end
 local loadfile_cached = loadfile_cached
 function dofile_cached(file)
+	ngx.log(ngx.ERR, "meow1")
 	local func = loadfile_cached(file)
-	return setfenv(func, getfenv())()
+	ngx.log(ngx.ERR, "meow2")
+	return func()
 end
 
 local loadfile = loadfile
