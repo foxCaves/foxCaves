@@ -9,7 +9,7 @@ local dofile = dofile
 local explode = explode
 local pairs = pairs
 
-local function add_route(url, method, file)
+local function add_route(url, method, file, func)
     method = method:upper()
     local urlsplit = explode("/", url:sub(2))
     
@@ -43,6 +43,7 @@ local function add_route(url, method, file)
         file = file,
         mappings = mappings,
         id = route_id,
+        func = func,
     }
 end
 
@@ -51,15 +52,13 @@ local function scan_route_file(file)
     local data = fh:read("*all")
     fh:close()
 
-    if IS_PRODUCTION then
-        loadfile_cached(file) -- precache routes
-    end
+    local func = load(data, file)
 
     local matches = ngx.re.gmatch(data, "^-- ROUTE:([A-Za-z,]+):([^\\s]+)\\s*$", "m")
     for m in matches do
         local methods = explode(",", m[1])
         for _, method in pairs(methods) do
-            add_route(m[2], method, file)
+            add_route(m[2], method, file, func)
         end
     end
 end
