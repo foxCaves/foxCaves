@@ -37,24 +37,27 @@ local getfenv = getfenv
 local filecache = {}
 function loadfile_cached(file)
 	local code = filecache[file]
-	if not code then
-		local fh = io.open(file, "r")
-		if not fh then
-			error("Could not open file: " .. file)
-		end
-		local data = fh:read("*all")
-		fh:close()
-
-		local err
-		code, err = load("return function()\n"..data.."\nend", file)
-		if err then
-			error(err)
-		end
-
-		if IS_PRODUCTION then
-			filecache[file] = code
-		end
+	if code then
+		return code
 	end
+
+	local fh = io.open(file, "r")
+	if not fh then
+		error("Could not open file: " .. file)
+	end
+	local data = fh:read("*all")
+	fh:close()
+
+	local err
+	code, err = load("return function()\n"..data.."\nend", file)
+	if err then
+		error(err)
+	end
+
+	if IS_PRODUCTION then
+		filecache[file] = code
+	end
+
 	return code
 end
 local loadfile_cached = loadfile_cached
