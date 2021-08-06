@@ -25,8 +25,6 @@ register_route("/api/v1/ws/livedraw", "GET", make_route_opts({ allow_guest = tru
 		return api_error("WebSocket requests only")
 	end
 
-	module("liveedit_websocket")
-
 	local EVENT_WIDTH = "w"
 	local EVENT_COLOR = "c"
 	local EVENT_BRUSH = "b"
