@@ -13,20 +13,22 @@ register_route("/api/v1/users/self", "PATCH", make_route_opts({ api_login = fals
     user.sessionid = nil
 
     if args.email then
-        if args.email:lower() == ngx.ctx.user.email:lower() then
-            user.email = args.email
-        else
+        local reconfirm = false
+        if args.email:lower() ~= user.email:lower() then
             local emailcheck = check_email(args.email)
             if emailcheck == VALIDATION_STATE_INVALID then
                 return api_error("email invalid")
             elseif emailcheck == VALIDATION_STATE_TAKEN then
                 return api_error("email taken")
             else
-                -- TODO: re-ask for verification here
-                user.email = args.email
+                reconfirm = true
             end
         end
+        user.email = args.email
         database:query_safe('UPDATE users SET email = %s WHERE id = %s', user.email, user.id)
+        if reconfirm then
+            user_require_email_confirmation(user)
+        end
     end
 
     if args.password then
