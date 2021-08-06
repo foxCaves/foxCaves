@@ -1,4 +1,4 @@
-register_route("/api/v1/users/self", "POST", make_route_opts({ api_login = false }), function()
+register_route("/api/v1/users/self", "PATCH", make_route_opts({ api_login = false }), function()
     local database = get_ctx_database()
 
     local args = get_post_args()
