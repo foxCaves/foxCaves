@@ -50,6 +50,11 @@ local function scan_route_file(file)
     local fh = io.open(file)
     local data = fh:read("*all")
     fh:close()
+
+    if IS_PRODUCTION then
+        loadfile_cached(file) -- precache routes
+    end
+
     local matches = ngx.re.gmatch(data, "^-- ROUTE:([A-Za-z,]+):([^\\s]+)\\s*$", "m")
     for m in matches do
         local methods = explode(",", m[1])

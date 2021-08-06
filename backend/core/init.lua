@@ -32,33 +32,35 @@ function explode(div,str) -- credit: http://richard.warburton.it
 	return arr
 end
 
-local c_slash = ("/"):byte(1)
 local setfenv = setfenv
 local getfenv = getfenv
 local filecache = {}
-function dofile_cached(file)
-	local cache_key
-	if file:byte(1) == c_slash then
-		cache_key = file
-	else
-		cache_key = lfs.currentdir().."/"..file
-	end
-	local code = filecache[cache_key]
+function loadfile_cached(file)
+	local code = filecache[file]
 	if (not IS_PRODUCTION) or (not code) then
 		local fh = io.open(file, "r")
 		if not fh then
 			error("Could not open file: " .. file)
 		end
-		code = fh:read("*all")
+		local data = fh:read("*all")
 		fh:close()
+
 		local err
-		code, err = load("return function()\n"..code.."\nend", file)
-		if err then error(err) end
-		filecache[cache_key] = code
+		code, err = load("return function()\n"..data.."\nend", file)
+		if err then
+			error(err)
+		end
+		filecache[file] = code
 	end
-	return setfenv(code(), getfenv())()
+	return code
+end
+local loadfile_cached = loadfile_cached
+function dofile_cached(file)
+	local code = loadfile_cached(file)
+	return setfenv(code, getfenv())()
 end
 
+local loadfile = loadfile
 function dofile(file)
 	loadfile(file)()
 end
