@@ -48,10 +48,10 @@
 			<input type="button" onclick="submitChangeAPIKey();" name="regenerate_api_key" class="btn" value="Regenerate API key" />
 		</div>
 	</div>
-	<legend>Kill all other sessions</legend>
+	<legend>Kill all sessions</legend>
 	<div class="control-group">
 		<div class="controls">
-			<input type="button" onclick="submitKillSessions();" name="kill_sessions" class="btn" value="Kill all other sessions" />
+			<input type="button" onclick="submitKillSessions();" name="kill_sessions" class="btn" value="Kill all sessions" />
 		</div>
 	</div>
 	<legend>Delete Account</legend>
