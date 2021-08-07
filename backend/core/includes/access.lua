@@ -64,31 +64,40 @@ function do_login(username_or_id, password, options)
 
 	local resultarr = get_ctx_database():query_safe('SELECT * FROM users WHERE ' .. id_field .. ' = %s', tostring(username_or_id):lower())
 	local result = resultarr[1]
-	if result then
-		if result.active == 0 then
-			return LOGIN_USER_INACTIVE
-		elseif result.active == -1 then
-			return LOGIN_USER_BANNED
+	if not result then
+		return LOGIN_BAD_PASSWORD
+	end
+
+	if result.active == 0 then
+		return LOGIN_USER_INACTIVE
+	elseif result.active == -1 then
+		return LOGIN_USER_BANNED
+	end
+	
+	if login_with_id then
+		if hash_login_key(result.loginkey) ~= ngx.decode_base64(password) then
+			return LOGIN_BAD_PASSWORD
 		end
-		if login_with_id or check_auth(result, password, options) then
-			if not nosession then
-				local sessionid = randstr(32)
-				ngx.header['Set-Cookie'] = {"sessionid=" .. sessionid .. "; HttpOnly; Path=/; Secure;"}
-				result.sessionid = sessionid
-
-				sessionid = "sessions:" .. sessionid
-				redis:set(sessionid, result.id)
-				redis:expire(sessionid, SESSION_EXPIRE_DELAY)
-			end
-
-			result.totalbytes = STORAGE_BASE + result.bonusbytes
-			ngx.ctx.user = result
-
-			return LOGIN_SUCCESS
+	else
+		if not check_auth(result, password, options) then
+			return LOGIN_BAD_PASSWORD
 		end
 	end
 
-	return LOGIN_BAD_PASSWORD
+	if not nosession then
+		local sessionid = randstr(32)
+		ngx.header['Set-Cookie'] = {"sessionid=" .. sessionid .. "; HttpOnly; Path=/; Secure;"}
+		result.sessionid = sessionid
+
+		sessionid = "sessions:" .. sessionid
+		redis:hmset(sessionid, "id", result.id, "loginkey", hash_login_key(result.loginkey))
+		redis:expire(sessionid, SESSION_EXPIRE_DELAY)
+	end
+
+	result.totalbytes = STORAGE_BASE + result.bonusbytes
+	ngx.ctx.user = result
+
+	return LOGIN_SUCCESS
 end
 
 function do_logout()
@@ -124,9 +133,9 @@ function check_cookies()
 			auth = auth[2]
 			if auth then
 				local sessID = "sessions:" .. auth
-				local result = redis:get(sessID)
+				local result = redis:hgetall(sessID)
 				if result and result ~= ngx.null then
-					do_login(result, nil, { nosession = true, login_with_id = true })
+					do_login(result.id, result.loginkey, { nosession = true, login_with_id = true })
 					if not ngx.ctx.user then
 						do_logout()
 						return
@@ -147,15 +156,9 @@ function check_cookies()
 				local uid = auth[2]
 				auth = auth[3]
 				if uid and auth and uuid.is_valid(uid) then
-					local resultarr = get_ctx_database():query_safe('SELECT loginkey FROM users WHERE id = %s', uid)
-					local result = resultarr[1]
-					if result then
-						if hash_login_key(result.loginkey) == ngx.decode_base64(auth) then
-							do_login(uid, nil, { login_with_id = true })
-							ngx.ctx.user.remember_me = true
-							send_login_key()
-						end
-					end
+					do_login(uid, auth, { login_with_id = true })
+					ngx.ctx.user.remember_me = true
+					send_login_key()
 				end
 			end
 		end

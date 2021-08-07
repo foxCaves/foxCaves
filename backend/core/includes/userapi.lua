@@ -50,17 +50,6 @@ function make_new_login_key(userdata)
 		action = "kick",
 	}, userdata)
 
-	local allsessions = redis:keys("sessions:*")
-	if type(allsessions) ~= "table" then allsessions = {} end
-
-	redis:multi()
-	for _,v in next, allsessions do
-		if v ~= sessionid_skip and redis:get(v) == userdata.id then
-			redis:del(v)
-		end
-	end
-	redis:exec()
-
 	if send_userdata then
 		ngx.ctx.user.loginkey = str
 		send_login_key()
