@@ -15,13 +15,12 @@ register_route("/api/v1/users/self", "PATCH", make_route_opts({ api_login = fals
     if args.email then
         local reconfirm = false
         if args.email:lower() ~= user.email:lower() then
+            reconfirm = true
             local emailcheck = check_email(args.email)
             if emailcheck == VALIDATION_STATE_INVALID then
                 return api_error("email invalid")
             elseif emailcheck == VALIDATION_STATE_TAKEN then
                 return api_error("email taken")
-            else
-                reconfirm = true
             end
         end
         user.email = args.email
