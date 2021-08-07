@@ -86,8 +86,6 @@ register_route("/api/v1/ws/livedraw", "GET", make_route_opts({ allow_guest = tru
 		polygon = true
 	}
 
-	local chr_a, chr_f, chr_0, chr_9 = ("af09"):byte(1, 4)
-
 	local event_handlers = {
 		[EVENT_BRUSH] = function(user, data)
 			if #data ~= 1 then error("Invalid payload") end
