@@ -9,7 +9,7 @@
 
 		<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" type="text/javascript"></script>
 		<script src="https://browser.sentry-cdn.com/6.6.0/bundle.min.js" integrity="sha384-vPBC54nCGwq3pbZ+Pz+wRJ/AakVC5QupQkiRoGc7OuSGE9NDfsvOKeHVvx0GUSYp" crossorigin="anonymous"></script>
-		<script type="text/javascript">window.SHORT_URL="<%= SHORT_URL %>";Sentry.init({dsn:'https://5d99e8f38f4c48e8b9f2803cba13caad@o804863.ingest.sentry.io/5803116',release:'<%= VERSION %>'});</script>
+		<script type="text/javascript">Sentry.init({dsn:'https://5d99e8f38f4c48e8b9f2803cba13caad@o804863.ingest.sentry.io/5803116',release:'<%= VERSION %>'});</script>
 		<script src="/static/js/init.js" type="text/javascript"></script>
 		<title><%= MAINTITLE %> - foxCaves</title>
 	</head>

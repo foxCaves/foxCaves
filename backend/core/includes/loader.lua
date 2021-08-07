@@ -1,6 +1,49 @@
 local run_request
 
-if ENVIRONMENT == "development" then
+if ENVIRONMENT == "production" or SENTRY_DSN then
+	local rvn = require("raven").new({
+		sender = require("raven.senders.ngx").new({
+			dsn = SENTRY_DSN,
+		}),
+		tags = {
+			environment = ENVIRONMENT,
+			release = REVISION,
+		},
+	})
+
+	local capture_error_handler = rvn:gen_capture_err()
+
+	-- https://github.com/cloudflare/raven-lua/blob/master/raven/init.lua#L352
+	local function rvn_call_ext(conf, f)
+		-- When used with ngx_lua, connecting a tcp socket in xpcall error handler
+		-- will cause a "yield across C-call boundary" error. To avoid this, we
+		-- move all the network operations outside of the xpcall error handler.
+		local res = { xpcall(f, capture_error_handler) }
+		if not res[1] then
+			rvn:send_report(res[2], conf)
+			res[2] = res[2].message -- turn the error object back to its initial form
+		end
+
+		return unpack(res)
+	end
+
+	run_request = function(func)
+		local isok, err = rvn_call_ext({
+			tags = {
+				userid = ngx.ctx.user and ngx.ctx.user.id or "N/A",
+				ip = ngx.var.remote_addr,
+				url = ngx.var.request_uri,
+			},
+		}, execute_route)
+		ngx.req.discard_body()
+		if not isok then
+			ngx.status = 500
+			ngx.log(ngx.ERR, "Lua error: " .. err)
+		end
+		__on_shutdown()
+		ngx.eof()
+	end
+else
 	local function makeTableRecurse(var, done)
 		local t = type(var)
 		if t == "table" then
@@ -197,49 +240,6 @@ if ENVIRONMENT == "development" then
 			ngx.status = 500
 			ngx.log(ngx.ERR, "Lua error: " .. err)
 			ngx.print(err)
-		end
-		__on_shutdown()
-		ngx.eof()
-	end
-else
-	local rvn = require("raven").new({
-		sender = require("raven.senders.ngx").new({
-			dsn = "https://5f77aea36e6c4aa2882adc43f9718c44@o804863.ingest.sentry.io/5803114",
-		}),
-		tags = {
-			environment = ENVIRONMENT,
-			release = REVISION,
-		},
-	})
-
-	local capture_error_handler = rvn:gen_capture_err()
-
-	-- https://github.com/cloudflare/raven-lua/blob/master/raven/init.lua#L352
-	local function rvn_call_ext(conf, f)
-		-- When used with ngx_lua, connecting a tcp socket in xpcall error handler
-		-- will cause a "yield across C-call boundary" error. To avoid this, we
-		-- move all the network operations outside of the xpcall error handler.
-		local res = { xpcall(f, capture_error_handler) }
-		if not res[1] then
-			rvn:send_report(res[2], conf)
-			res[2] = res[2].message -- turn the error object back to its initial form
-		end
-
-		return unpack(res)
-	end
-
-	run_request = function(func)
-		local isok, err = rvn_call_ext({
-			tags = {
-				userid = ngx.ctx.user and ngx.ctx.user.id or "N/A",
-				ip = ngx.var.remote_addr,
-				url = ngx.var.request_uri,
-			},
-		}, execute_route)
-		ngx.req.discard_body()
-		if not isok then
-			ngx.status = 500
-			ngx.log(ngx.ERR, "Lua error: " .. err)
 		end
 		__on_shutdown()
 		ngx.eof()

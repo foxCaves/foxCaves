@@ -105,8 +105,6 @@ function evalTemplate(name, params)
 	params.tostring = tostring
 	params.tinsert = table.insert
 	params.tconcat = table.concat
-	params.SHORT_URL = SHORT_URL
-	params.MAIN_URL = MAIN_URL
 	params.G = _G
 	params.VERSION = getVersion()
 

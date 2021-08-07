@@ -55,7 +55,6 @@ interface UserInfo {
 	totalbytes: number;
 }
 let currentUser: UserInfo | undefined = undefined;
-declare const SHORT_URL: string;
 
 let REQUIRE_GUEST: boolean = false;
 let REQUIRE_LOGGED_IN: boolean = false;
