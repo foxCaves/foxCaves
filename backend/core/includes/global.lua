@@ -86,7 +86,7 @@ function make_redis(close_on_shutdown)
 	if close_on_shutdown then
 		register_shutdown(function() database:close() end)
 	else
-		register_shutdown(function() database:set_keepalive(dbconfig.redis.keepalive_timeout or 10000, dbconfig.redis.keepalive_count or 100) end)
+		register_shutdown(function() database:set_keepalive(dbconfig.redis.keepalive_timeout or 10000, dbconfig.redis.keepalive_count or 10) end)
 	end
 
 	return database
@@ -112,7 +112,7 @@ function make_database()
 		return res
 	end
 
-	register_shutdown(function() database:keepalive(dbconfig.postgres.keepalive_timeout or 10000, dbconfig.postgres.keepalive_count or 100) end)
+	register_shutdown(function() database:keepalive(dbconfig.postgres.keepalive_timeout or 10000, dbconfig.postgres.keepalive_count or 10) end)
 
 	return database
 end
