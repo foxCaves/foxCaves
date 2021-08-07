@@ -33,7 +33,9 @@ register_route("/api/v1/users", "POST", make_route_opts_anon(), function()
         return api_error("email taken")
     end
 
-    local res = database:query_safe('INSERT INTO users (username, email, password) VALUES (%s, %s, %s) RETURNING id, username, email', username, email, argon2.hash_encoded(password, randstr(32)))
+    local id = uuid.generate_random()
+
+    local res = database:query_safe('INSERT INTO users (id, username, email, password) VALUES (%s, %s, %s, %s) RETURNING id, username, email', id, username, email, argon2.hash_encoded(password, randstr(32)))
     local user = res[1]
 
     make_new_login_key(user)

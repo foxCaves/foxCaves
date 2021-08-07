@@ -6,7 +6,7 @@ GRANT ALL PRIVILEGES ON DATABASE foxcaves TO foxcaves;
 \c foxcaves foxcaves;
 
 CREATE TABLE users (
-    id BIGSERIAL PRIMARY KEY,
+    id UUID PRIMARY KEY,
     username VARCHAR(255),
     email VARCHAR(255),
     password VARCHAR(255),
@@ -20,7 +20,7 @@ CREATE UNIQUE INDEX ON users (lower(email));
 
 CREATE TABLE files (
     id VARCHAR(32) PRIMARY KEY,
-    "user" BIGINT REFERENCES users (id),
+    "user" UUID REFERENCES users (id),
     name VARCHAR(255),
     extension VARCHAR(255),
     type INT,
@@ -32,7 +32,7 @@ CREATE INDEX ON files ("user");
 
 CREATE TABLE links (
     id VARCHAR(32) PRIMARY KEY,
-    "user" BIGINT REFERENCES users (id),
+    "user" UUID REFERENCES users (id),
     url VARCHAR(4096),
     time BIGINT
 );

@@ -16,11 +16,12 @@ RUN npm run build
 
 FROM openresty/openresty:alpine-fat
 
-RUN apk update && apk add redis s6 imagemagick git argon2-libs argon2-dev argon2 postgresql runuser
+RUN apk update && apk add redis s6 imagemagick git argon2-libs argon2-dev argon2 postgresql runuser libuuid
+RUN mkdir -p /usr/local/share/lua/5.1
 RUN /usr/local/openresty/bin/opm get openresty/lua-resty-redis openresty/lua-resty-websocket thibaultcha/lua-argon2-ffi
 RUN /usr/local/openresty/luajit/bin/luarocks install luafilesystem
 RUN /usr/local/openresty/luajit/bin/luarocks install pgmoon
-RUN mkdir -p /usr/local/share/lua/5.1
+RUN /usr/local/openresty/luajit/bin/luarocks install lua-resty-uuid
 RUN git clone https://github.com/cloudflare/raven-lua.git /tmp/raven-lua && mv /tmp/raven-lua/raven /usr/local/share/lua/5.1/ && rm -rf /tmp/raven-lua
 RUN adduser --disabled-password www-data
 

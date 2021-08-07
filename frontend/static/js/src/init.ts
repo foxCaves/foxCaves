@@ -47,7 +47,7 @@ function randomString(length: number = 10): string {
 }
 
 interface UserInfo {
-	id: number;
+	id: string;
 	username: string;
 	email: string;
 	apikey: string;
