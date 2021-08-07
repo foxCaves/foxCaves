@@ -90,7 +90,7 @@ function do_login(username_or_id, password, options)
 		result.sessionid = sessionid
 
 		sessionid = "sessions:" .. sessionid
-		redis:hmset(sessionid, "id", result.id, "loginkey", hash_login_key(result.loginkey))
+		redis:hmset(sessionid, "id", result.id, "loginkey", ngx.encode_base64(hash_login_key(result.loginkey)))
 		redis:expire(sessionid, SESSION_EXPIRE_DELAY)
 	end
 
