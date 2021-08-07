@@ -16,10 +16,10 @@ ENV_STAGING = 4
 
 local function init_environment()
 	local envtbl = {
-		"production" = ENV_PRODUCTION,
-		"development" = ENV_DEVELOPMENT,
-		"testing" = ENV_TESTING,
-		"staging" = ENV_STAGING,
+		production = ENV_PRODUCTION,
+		development = ENV_DEVELOPMENT,
+		testing = ENV_TESTING,
+		staging = ENV_STAGING,
 	}
 	ENVIRONMENT = envtbl[os.getenv("ENVIRONMENT")]
 	if not ENVIRONMENT then
