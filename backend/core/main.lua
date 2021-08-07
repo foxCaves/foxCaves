@@ -9,6 +9,25 @@ local function load_revision()
 end
 load_revision()
 
+ENV_PRODUCTION = 1
+ENV_DEVELOPMENT = 2
+ENV_TESTING = 3
+ENV_STAGING = 4
+
+local function init_environment()
+	local envtbl = {
+		"production" = ENV_PRODUCTION,
+		"development" = ENV_DEVELOPMENT,
+		"testing" = ENV_TESTING,
+		"staging" = ENV_STAGING,
+	}
+	ENVIRONMENT = envtbl[os.getenv("ENVIRONMENT")]
+	if not ENVIRONMENT then
+		error("Invalid environment")
+	end
+end
+init_environment()
+
 function explode(div,str) -- credit: http://richard.warburton.it
 	local pos, arr = 0, {}
 	-- for each divider found

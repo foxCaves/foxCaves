@@ -1,6 +1,6 @@
 local run_request
 
-if IS_PRODUCTION or SENTRY_DSN then
+if SENTRY_DSN then
 	local rvn = require("raven").new({
 		sender = require("raven.senders.ngx").new({
 			dsn = SENTRY_DSN,
@@ -239,7 +239,9 @@ else
 		if not isok then
 			ngx.status = 500
 			ngx.log(ngx.ERR, "Lua error: " .. err)
-			ngx.print(err)
+			if ENVIRONMENT ~= ENV_PRODUCTION then
+				ngx.print(err)
+			end
 		end
 		__on_shutdown()
 		ngx.eof()
