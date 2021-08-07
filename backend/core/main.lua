@@ -21,10 +21,12 @@ local function init_environment()
 		testing = ENV_TESTING,
 		staging = ENV_STAGING,
 	}
-	ENVIRONMENT = envtbl[os.getenv("ENVIRONMENT")]
+	local str = os.getenv("ENVIRONMENT"):lower()
+	ENVIRONMENT = envtbl[str]
 	if not ENVIRONMENT then
 		error("Invalid environment")
 	end
+	ENVIRONMENT_STRING = str
 end
 init_environment()
 
