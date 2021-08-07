@@ -62,8 +62,8 @@ register_route("/api/v1/ws/livedraw", "GET", make_route_opts({ allow_guest = tru
 	end
 
 	local function internal_error(str)
-		error("Internal error")
 		ngx.log(ngx.ERR, "Livedraw lua error: " .. str)
+		error("Internal error")
 	end
 
 	local function pcall_internal(...)
