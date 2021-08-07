@@ -146,7 +146,7 @@ function check_cookies()
 			else
 				local uid = auth[2]
 				auth = auth[3]
-				if uid and auth then
+				if uid and auth and uuid.is_valid(uid) then
 					local resultarr = get_ctx_database():query_safe('SELECT loginkey FROM users WHERE id = %s', uid)
 					local result = resultarr[1]
 					if result then
