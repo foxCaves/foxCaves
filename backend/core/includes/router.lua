@@ -1,6 +1,6 @@
 local explode = explode
-local pairs = pairs
 local type = type
+local next = next
 
 local ROUTE_TREE = {
     children = {},
@@ -17,7 +17,7 @@ function make_route_opts(opts)
         return BASE_OPTS
     end
 
-    for k, v in pairs(BASE_OPTS) do
+    for k, v in next, BASE_OPTS do
         if opts[k] == nil then
             opts[k] = v
         end
@@ -43,7 +43,7 @@ function register_route(url, method, options, func)
 
     local mappings = {}
     local route = ROUTE_TREE
-    for i, rawseg in pairs(urlsplit) do
+    for i, rawseg in next, urlsplit do
         local rawseg_len = rawseg:len()
         local seg = rawseg
         if rawseg:byte(1) == c_open and rawseg:byte(rawseg_len) == c_close then
@@ -103,7 +103,7 @@ function execute_route()
 
     local candidate = ROUTE_TREE
 
-    for i, seg in pairs(urlsplit) do
+    for i, seg in next, urlsplit do
         candidate = candidate.children[seg] or candidate.children['*']
         if not candidate then
             ngx.status = 404
@@ -119,7 +119,7 @@ function execute_route()
 
     ngx.ctx.route_id = handler.id
     ngx.ctx.route_vars = {}
-    for i, mapping in pairs(handler.mappings) do
+    for i, mapping in next, handler.mappings do
         ngx.ctx.route_vars[mapping] = urlsplit[i]
     end
 
@@ -161,7 +161,11 @@ function execute_route()
         ngx.print(res)
     else
 	    ngx.header["Content-Type"] = "application/json"
-        ngx.print(cjson.encode(res))
+        if opts.empty_is_array and not next(res) then
+            ngx.print('[]')
+        else
+            ngx.print(cjson.encode(res))
+        end
     end
 end
 
