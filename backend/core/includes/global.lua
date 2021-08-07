@@ -9,6 +9,8 @@ local pgmoon = require("pgmoon")
 VALIDATION_STATE_INVALID = -1
 VALIDATION_STATE_TAKEN = -2
 
+local next = next
+
 function register_shutdown(func)
 	if not ngx.ctx.shutdown_funcs then
 		ngx.ctx.shutdown_funcs = {}
@@ -100,7 +102,7 @@ function make_database()
 	function database:query_safe(query, ...)
 		local args = {...}
 		for i,v in next, args do
-			args[i] = database:escape_literal(tostring(v))
+			args[i] = database:escape_literal(v)
 		end
 		query = query:format(unpack(args))
 		local res, err = self:query(query)
