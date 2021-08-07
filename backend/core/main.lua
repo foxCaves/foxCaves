@@ -1,3 +1,7 @@
+ENVIRONMENT = os.getenv("ENVIRONMENT") or "development"
+IS_PRODUCTION = (ENVIRONMENT == "production")
+INIT_COMPLETE = false
+
 local function load_revision()
 	local fh = io.open("/var/www/foxcaves/.revision", "r")
 	if not fh then
@@ -57,3 +61,5 @@ local function scan_include_dir(dir)
     end
 end
 scan_include_dir("core/includes")
+
+INIT_COMPLETE = true

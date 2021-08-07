@@ -1,6 +1,6 @@
 local run_request
 
-if IS_PRODUCTION or SENTRY_DSN then
+if ENVIRONMENT == "production" or SENTRY_DSN then
 	local rvn = require("raven").new({
 		sender = require("raven.senders.ngx").new({
 			dsn = SENTRY_DSN,

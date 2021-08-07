@@ -1,7 +1,5 @@
 dofile("/var/www/foxcaves/config/main.lua")
 
-IS_PRODUCTION = (ENVIRONMENT == "production")
-
 MAIN_DIR = "/var/www/foxcaves/lua/"
 lfs = require("lfs")
 cjson = require("cjson")
