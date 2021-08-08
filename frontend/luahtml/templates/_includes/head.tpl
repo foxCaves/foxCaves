@@ -39,8 +39,6 @@
 								<a class="dropdown-toggle" data-toggle="dropdown">Welcome, <span id="username_text">User</span> <b class="caret"></b></a>
 								<ul class="dropdown-menu">
 									<li class="show_loginonly"><a href="/myaccount">My account</a></li>
-									<!--<li class="show_loginonly divider"></li>
-									<li class="show_loginonly"><a href="/cam">Camera Snapshot</a></li>-->
 									<li class="show_loginonly divider"></li>
 									<li class="show_loginonly"><a class="pointer" onclick="doLogout();">Logout</a></li>
 									<li class="show_guestonly"><a href="/login">Login</a></li>
