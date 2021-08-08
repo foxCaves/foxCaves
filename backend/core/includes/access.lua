@@ -39,9 +39,12 @@ function check_user_password(userdata, password)
 end
 
 local function check_auth(userdata, password, options)
-	local login_with_apikey = options.login_with_apikey
-	if login_with_apikey then
+	if options.login_with_apikey then
 		return userdata.apikey == password
+	end
+
+	if options.login_with_loginkey then
+		return hash_login_key(result.loginkey) == ngx.decode_base64(password)
 	end
 
 	return check_user_password(userdata, password)
@@ -72,20 +75,14 @@ function do_login(username_or_id, password, options)
 		return LOGIN_BAD_PASSWORD
 	end
 
+	if not check_auth(result, password, options) then
+		return LOGIN_BAD_PASSWORD
+	end
+
 	if result.active == 0 then
 		return LOGIN_USER_INACTIVE
 	elseif result.active == -1 then
 		return LOGIN_USER_BANNED
-	end
-	
-	if login_with_id then
-		if hash_login_key(result.loginkey) ~= ngx.decode_base64(password) then
-			return LOGIN_BAD_PASSWORD
-		end
-	else
-		if not check_auth(result, password, options) then
-			return LOGIN_BAD_PASSWORD
-		end
 	end
 
 	if not nosession then
@@ -136,7 +133,7 @@ function check_cookies()
 			sessionid = sessionid[2]
 			local sessionKey = "sessions:" .. sessionid
 			local result = redis:hgetall(sessionKey)
-			if result and do_login(result.id, result.loginkey, { nosession = true, login_with_id = true }) == LOGIN_SUCCESS then
+			if result and do_login(result.id, result.loginkey, { nosession = true, login_with_id = true, login_with_loginkey = true }) == LOGIN_SUCCESS then
 				ngx.ctx.user.sessionid = sessionid
 				ngx.header['Set-Cookie'] = {"sessionid=" .. sessionid .. "; HttpOnly; Path=/; Secure;"}
 				redis:expire(sessionKey, SESSION_EXPIRE_DELAY)
@@ -149,7 +146,7 @@ function check_cookies()
 				ngx.ctx.user.remember_me = true
 				send_login_key()
 			else
-				if do_login(loginkey[2], loginkey[3], { login_with_id = true }) == LOGIN_SUCCESS then
+				if do_login(loginkey[2], loginkey[3], { login_with_id = true, login_with_loginkey = true }) == LOGIN_SUCCESS then
 					ngx.ctx.user.remember_me = true
 					send_login_key()
 				end
