@@ -1,5 +1,6 @@
-<%+ includes/_head %>
-<h2>Manage links (<a class="pointer" onclick="newLink();">Create</a>) (<a class="pointer" onclick="return refreshLinks();">Refresh</a>)</h2>
+<% MAINTITLE = "My links" %>
+<%+ _includes/head %>
+<h2><%= MAINTITLE %> (<a class="pointer" onclick="newLink();">Create</a>) (<a class="pointer" onclick="return refreshLinks();">Refresh</a>)</h2>
 <table class="table">
 	<thead>
 		<tr>
@@ -11,4 +12,4 @@
 	<tbody id="links_table"></tbody>
 </table>
 <script type="text/javascript" src="/static/js/mylinks.js"></script>
-<%+ includes/_foot %>
+<%+ _includes/foot %>

@@ -1,5 +1,5 @@
 <% MAINTITLE = "Privacy policy" %>
-<%+ includes/_head %>
+<%+ _includes/head %>
 	<div class="row">
 		<div class="span12">
 			<section id="definitions">
@@ -48,4 +48,4 @@
 			</section>
 		</div>
 	</div>
-<%+ includes/_foot %>
+<%+ _includes/foot %>

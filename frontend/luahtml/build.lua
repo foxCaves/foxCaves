@@ -3,9 +3,9 @@ dofile("template.lua")
 
 local DISTDIR = "../dist"
 
-local function storeTemplate(name, maintitle)
+local function storeTemplate(name)
     local params = {
-        MAINTITLE = maintitle,
+        MAINTITLE = "TEST",
     }
     local template = evalTemplate(name, params)
     local fh = io.open(DISTDIR .. "/" .. name .. ".html", "w")
@@ -17,18 +17,20 @@ os.execute("mkdir -p '" .. DISTDIR .. "'")
 os.execute("mkdir '" .. DISTDIR .. "/legal'")
 os.execute("mkdir '" .. DISTDIR .. "/email'")
 
-storeTemplate("email/activation", "Activation E-Mail")
-storeTemplate("email/forgotpwd", "Forgot password")
-storeTemplate("email/code", "E-Mail code check", "email/code")
-storeTemplate("index", "Home")
-storeTemplate("legal/terms_of_service", "Terms of Service")
-storeTemplate("legal/privacy_policy", "Privacy policy")
-storeTemplate("live", "Live drawing")
-storeTemplate("login", "Login")
-storeTemplate("myaccount", "My account")
-storeTemplate("myfiles", "My files")
-storeTemplate("mylinks", "My links")
-storeTemplate("register", "Register")
-storeTemplate("view", "View file")
+local function scanTemplateDir(dir)
+    for file in lfs.dir(dir) do
+        local first = file:sub(1, 1)
+        if first ~= "." and first ~= "_" then
+            local absfile = dir .. "/" .. file
+            local attributes = lfs.attributes(absfile)
+            if attributes.mode == "file" then
+                storeTemplate(absfile)
+            elseif attributes.mode == "directory" then
+                scanTemplateDir(absfile)
+            end
+        end
+    end
+end
+scanTemplateDir("templates")
 
 print("Done!")

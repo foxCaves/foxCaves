@@ -1,4 +1,5 @@
-<%+ includes/_head %>
+<% MAINTITLE = "E-Mail code check" %>
+<%+ _includes/head %>
 <h2><%= MAINTITLE %></h2>
 <script type="text/javascript" src="/static/js/emailcode.js"></script>
-<%+ includes/_foot %>
+<%+ _includes/foot %>

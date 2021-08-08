@@ -1,4 +1,4 @@
-<%+ includes/_head %>
+<%+ _includes/head %>
 	<h3>Live drawing file</h3>
 	<div class="well well-small" style="text-align: left;">
 		<form class="form-horizontal">
@@ -50,4 +50,4 @@
 		</fieldset>
 	</div>
 	<script type="text/javascript" src="/static/js/live.js"></script>
-<%+ includes/_foot %>
+<%+ _includes/foot %>

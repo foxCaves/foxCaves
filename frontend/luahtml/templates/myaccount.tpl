@@ -1,5 +1,6 @@
-<%+ includes/_head %>
-<h2>Manage account</h2>
+<% MAINTITLE = "My account" %>
+<%+ _includes/head %>
+<h2><%= MAINTITLE %></h2>
 <form id="account_form" action="" method="post" class="form-horizontal">
 	<div class="control-group">
 		<label class="control-label">Current password</label>
@@ -62,4 +63,4 @@
 	</div>
 </form>
 <script type="text/javascript" src="/static/js/myaccount.js"></script>
-<%+ includes/_foot %>
+<%+ _includes/foot %>

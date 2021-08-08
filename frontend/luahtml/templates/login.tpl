@@ -1,5 +1,6 @@
-<%+ includes/_head %>
-<h2>Login</h2>
+<% MAINTITLE = "Login" %>
+<%+ _includes/head %>
+<h2><%= MAINTITLE %></h2>
 <form id="login_form" method="post" class="form-horizontal">
 	<legend>Please enter your details to login</legend>
 	<div class="control-group">
@@ -25,4 +26,4 @@
 	</div>
 </form>
 <script type="text/javascript" src="/static/js/login.js"></script>
-<%+ includes/_foot %>
+<%+ _includes/foot %>

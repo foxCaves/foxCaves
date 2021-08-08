@@ -1,4 +1,4 @@
-<%+ includes/_head %>
+<%+ _includes/head %>
 <h2><%= MAINTITLE %></h2>
 <form id="email_form" method="post" class="form-horizontal">
 	<legend>Please enter your username and E-Mail</legend>
@@ -22,4 +22,4 @@
 	</div>
 </form>
 <script type="text/javascript" src="/static/js/email.js"></script>
-<%+ includes/_foot %>
+<%+ _includes/foot %>
