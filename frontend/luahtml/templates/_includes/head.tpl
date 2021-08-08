@@ -9,8 +9,7 @@
 
 		<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" type="text/javascript"></script>
 		<script src="https://browser.sentry-cdn.com/6.6.0/bundle.min.js" integrity="sha384-vPBC54nCGwq3pbZ+Pz+wRJ/AakVC5QupQkiRoGc7OuSGE9NDfsvOKeHVvx0GUSYp" crossorigin="anonymous"></script>
-		<script type="text/javascript" src="/api/v1/config/client.js"></script>
-		<script type="text/javascript">if(CONFIG.sentry_dsn){Sentry.init({dsn:CONFIG.sentry_dsn,release:'<%= VERSION %>'});}</script>
+		<script type="text/javascript" src="/api/v1/config/client/<%= VERSION %>/config.js"></script>
 		<script src="/static/js/init.js" type="text/javascript"></script>
 		<title><%= MAINTITLE %> - foxCaves</title>
 	</head>

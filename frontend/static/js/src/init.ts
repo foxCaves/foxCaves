@@ -1,3 +1,19 @@
+interface Config {
+	sentry_dsn?: string;
+	backend_release: string;
+	frontend_release: string;
+	main_url: string;
+	short_url: string;
+}
+declare const CONFIG: Config;
+
+if(CONFIG.sentry_dsn && (window as any).Sentry) {
+	(window as any).Sentry.init({
+		dsn: CONFIG.sentry_dsn,
+		release: CONFIG.frontend_release,
+	});
+}
+
 const pushHandlers: {
 	[key: string]: (data: any) => boolean | void;
 } = {};
