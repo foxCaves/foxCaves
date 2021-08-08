@@ -132,12 +132,10 @@ function check_cookies()
 			sessionid = sessionid[2]
 			local sessionKey = "sessions:" .. sessionid
 			local result = redis:hgetall(sessionKey)
-			if result and result ~= ngx.null then
-				if do_login(result.id, result.loginkey, { nosession = true, login_with_id = true }) == LOGIN_SUCCESS then
-					ngx.ctx.user.sessionid = sessionid
-					ngx.header['Set-Cookie'] = {"sessionid=" .. sessionid .. "; HttpOnly; Path=/; Secure;"}
-					redis:expire(sessionKey, SESSION_EXPIRE_DELAY)
-				end
+			if result and result ~= ngx.null and do_login(result.id, result.loginkey, { nosession = true, login_with_id = true }) == LOGIN_SUCCESS then
+				ngx.ctx.user.sessionid = sessionid
+				ngx.header['Set-Cookie'] = {"sessionid=" .. sessionid .. "; HttpOnly; Path=/; Secure;"}
+				redis:expire(sessionKey, SESSION_EXPIRE_DELAY)
 			end
 		end
 
