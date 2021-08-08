@@ -102,8 +102,9 @@ end
 
 function do_logout()
 	ngx.header['Set-Cookie'] = {"sessionid=NULL; HttpOnly; Path=/; Secure;", "loginkey=NULL; HttpOnly; Path=/; Secure;"}
-	if (not ngx.ctx.user) or (not ngx.ctx.user.sessionid) then return end
-	get_ctx_redis():del("sessions:" .. ngx.ctx.user.sessionid)
+	if ngx.ctx.user and ngx.ctx.user.sessionid then
+		get_ctx_redis():del("sessions:" .. ngx.ctx.user.sessionid)
+	end
 	ngx.ctx.user = nil
 end
 
@@ -126,41 +127,39 @@ function check_cookies()
 
 	local cookies = ngx.var.http_Cookie
 	if cookies then
-		local auth
-
-		auth = ngx.re.match(cookies, "^(.*; *)?sessionid=([a-zA-Z0-9]+)( *;.*)?$", "o")
-		if auth then
-			auth = auth[2]
-			if auth then
-				local sessID = "sessions:" .. auth
-				local result = redis:hgetall(sessID)
-				if result and result ~= ngx.null then
-					do_login(result.id, result.loginkey, { nosession = true, login_with_id = true })
-					if not ngx.ctx.user then
-						do_logout()
-						return
-					end
-					ngx.ctx.user.sessionid = auth
-					ngx.header['Set-Cookie'] = {"sessionid=" .. auth .. "; HttpOnly; Path=/; Secure;"}
-					redis:expire(sessID, SESSION_EXPIRE_DELAY)
+		local sessionid = ngx.re.match(cookies, "^(.*; *)?sessionid=([a-zA-Z0-9]+)( *;.*)?$", "o")
+		if sessionid then
+			sessionid = sessionid[2]
+			local sessionKey = "sessions:" .. sessionid
+			local result = redis:hgetall(sessionKey)
+			if result and result ~= ngx.null then
+				do_login(result.id, result.loginkey, { nosession = true, login_with_id = true })
+				if ngx.ctx.user then
+					ngx.ctx.user.sessionid = sessionid
+					ngx.header['Set-Cookie'] = {"sessionid=" .. sessionid .. "; HttpOnly; Path=/; Secure;"}
+					redis:expire(sessionKey, SESSION_EXPIRE_DELAY)
 				end
 			end
 		end
 
-		auth = ngx.re.match(cookies, "^(.*; *)?loginkey=([0-9a-f-]+)\\.([a-zA-Z0-9+/=]+)( *;.*)?$", "o")
-		if auth then
+		local loginkey = ngx.re.match(cookies, "^(.*; *)?loginkey=([0-9a-f-]+)\\.([a-zA-Z0-9+/=]+)( *;.*)?$", "o")
+		if loginkey then
 			if ngx.ctx.user then
 				ngx.ctx.user.remember_me = true
 				send_login_key()
 			else
-				local uid = auth[2]
-				auth = auth[3]
-				if uid and auth and uuid.is_valid(uid) then
-					do_login(uid, auth, { login_with_id = true })
+				local uid = loginkey[2]
+				loginkey = loginkey[3]
+				if uid and loginkey and uuid.is_valid(uid) then
+					do_login(uid, loginkey, { login_with_id = true })
 					ngx.ctx.user.remember_me = true
 					send_login_key()
 				end
 			end
+		end
+
+		if (sessionid or loginkey) and not ngx.ctx.user then
+			do_logout()
 		end
 	end
 end
