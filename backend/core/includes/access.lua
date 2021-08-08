@@ -56,7 +56,11 @@ function do_login(username_or_id, password, options)
 	local nosession = options.nosession
 	local login_with_id = options.login_with_id
 
-	if not username_or_id then
+	if (not username_or_id) or (not password) then
+		return LOGIN_BAD_PASSWORD
+	end
+
+	if login_with_id and not uuid.is_valid(username_or_id) then
 		return LOGIN_BAD_PASSWORD
 	end
 
@@ -132,7 +136,7 @@ function check_cookies()
 			sessionid = sessionid[2]
 			local sessionKey = "sessions:" .. sessionid
 			local result = redis:hgetall(sessionKey)
-			if result and result ~= ngx.null and do_login(result.id, result.loginkey, { nosession = true, login_with_id = true }) == LOGIN_SUCCESS then
+			if result and do_login(result.id, result.loginkey, { nosession = true, login_with_id = true }) == LOGIN_SUCCESS then
 				ngx.ctx.user.sessionid = sessionid
 				ngx.header['Set-Cookie'] = {"sessionid=" .. sessionid .. "; HttpOnly; Path=/; Secure;"}
 				redis:expire(sessionKey, SESSION_EXPIRE_DELAY)
@@ -145,9 +149,7 @@ function check_cookies()
 				ngx.ctx.user.remember_me = true
 				send_login_key()
 			else
-				local uid = loginkey[2]
-				loginkey = loginkey[3]
-				if uid and loginkey and uuid.is_valid(uid) and do_login(uid, loginkey, { login_with_id = true }) == LOGIN_SUCCESS then
+				if do_login(loginkey[2], loginkey[3], { login_with_id = true }) == LOGIN_SUCCESS then
 					ngx.ctx.user.remember_me = true
 					send_login_key()
 				end
