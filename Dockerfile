@@ -2,6 +2,7 @@ FROM node:current AS builder
 
 RUN apt update && apt -y install luajit luarocks
 RUN luarocks install lrexlib-pcre
+RUN luarocks install luafilesystem
 RUN mkdir /opt/stage
 WORKDIR /opt/stage
 COPY frontend/package.json /opt/stage/

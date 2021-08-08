@@ -1,4 +1,7 @@
+local lfs = require("lfs")
+
 print("Building...")
+
 dofile("template.lua")
 
 local DISTDIR = "../dist"
