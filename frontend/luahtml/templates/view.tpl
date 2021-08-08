@@ -1,6 +1,7 @@
 <% MAINTITLE = "View file" %>
 <%+ _includes/head %>
-	<h3>Viewing file: <span id="view-name">Loading...</span></h3>
+	<h3><%= MAINTITLE %>: <span id="view-name">Loading...</span></h3>
+
 	<div class="well well-small" style="text-align: left;">
 		<form class="form-horizontal">
 			<div class="control-group">
@@ -35,8 +36,11 @@
 			</div>
 		</form>
 	</div>
+
 	<a href="#" id="download-button" class="btn btn-large btn-block btn-primary">Download file</a>
+
 	<div id="preview-wrapper"><h5>Loading...</h5></div>
+
 	<script type="text/javascript" src="/static/js/view.js"></script>
 	<script type="text/javascript" src="/static/js/dancer.js"></script>
 	<script type="text/javascript" src="/static/js/audiovis.js"></script>

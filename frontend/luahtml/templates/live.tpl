@@ -1,6 +1,7 @@
 <% MAINTITLE = "Live drawing" %>
 <%+ _includes/head %>
 	<h3><%= MAINTITLE %></h3>
+
 	<div class="well well-small" style="text-align: left;">
 		<form class="form-horizontal">
 			<div class="control-group" for="inviteid">
@@ -13,9 +14,11 @@
 			</div>
 		</form>
 	</div>
+
 	<div style="text-align:center;" id="livedraw-wrapper">
 		<canvas id="livedraw" style="margin:auto"></canvas>
 	</div>
+
 	<div id="live-draw-options">
 		<fieldset>
 			<legend>Brush Settings</legend>
@@ -50,5 +53,6 @@
 			<a class="btn" download="livedraw-edited.png" onclick="this.href=finalCanvas.toDataURL('image/png')">Download</a>
 		</fieldset>
 	</div>
+
 	<script type="text/javascript" src="/static/js/live.js"></script>
 <%+ _includes/foot %>
