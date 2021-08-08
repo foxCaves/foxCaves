@@ -7,7 +7,7 @@ end
 LOGIN_SUCCESS = 1
 LOGIN_USER_INACTIVE = 0
 LOGIN_USER_BANNED = -1
-LOGIN_BAD_PASSWORD = -10
+LOGIN_BAD_CREDENTIALS = -10
 
 local KILOBYTE = 1024
 local MEGABYTE = KILOBYTE * 1024
@@ -38,19 +38,15 @@ function check_user_password(userdata, password)
 	return authOk	
 end
 
-local function check_auth(userdata, password, options)
-	if options.login_with_apikey then
-		return userdata.apikey == password
-	end
-
-	if options.login_with_loginkey then
-		return hash_login_key(userdata.loginkey) == ngx.decode_base64(password)
-	end
-
-	return check_user_password(userdata, password)
+LOGIN_METHOD_PASSWORD = check_user_password
+function LOGIN_METHOD_APIKEY(userdata, apikey)
+	return userdata.apikey == apikey
+end
+function LOGIN_METHOD_LOGINKEY(userdata, loginkey)
+	return hash_login_key(userdata.loginkey) == ngx.decode_base64(loginkey)
 end
 
-function do_login(username_or_id, password, options)
+function do_login(username_or_id, credential, options)
 	if ngx.ctx.user then return LOGIN_SUCCESS end
 
 	local redis = get_ctx_redis()
@@ -59,12 +55,12 @@ function do_login(username_or_id, password, options)
 	local nosession = options.nosession
 	local login_with_id = options.login_with_id
 
-	if (not username_or_id) or (not password) then
-		return LOGIN_BAD_PASSWORD
+	if (not username_or_id) or (not credential) then
+		return LOGIN_BAD_CREDENTIALS
 	end
 
 	if login_with_id and not uuid.is_valid(username_or_id) then
-		return LOGIN_BAD_PASSWORD
+		return LOGIN_BAD_CREDENTIALS
 	end
 
 	local id_field = login_with_id and "id" or "lower(username)"
@@ -72,11 +68,12 @@ function do_login(username_or_id, password, options)
 	local resultarr = get_ctx_database():query_safe('SELECT * FROM users WHERE ' .. id_field .. ' = %s', tostring(username_or_id):lower())
 	local result = resultarr[1]
 	if not result then
-		return LOGIN_BAD_PASSWORD
+		return LOGIN_BAD_CREDENTIALS
 	end
 
-	if not check_auth(result, password, options) then
-		return LOGIN_BAD_PASSWORD
+	local auth_func = options.login_method or LOGIN_METHOD_PASSWORD
+	if not auth_func(result, credential) then
+		return LOGIN_BAD_CREDENTIALS
 	end
 
 	if result.active == 0 then
@@ -133,7 +130,7 @@ function check_cookies()
 			sessionid = sessionid[2]
 			local sessionKey = "sessions:" .. sessionid
 			local result = redis:hgetall(sessionKey)
-			if result and do_login(result.id, result.loginkey, { nosession = true, login_with_id = true, login_with_loginkey = true }) == LOGIN_SUCCESS then
+			if result and do_login(result.id, result.loginkey, { nosession = true, login_with_id = true, login_method = LOGIN_METHOD_LOGINKEY }) == LOGIN_SUCCESS then
 				ngx.ctx.user.sessionid = sessionid
 				ngx.header['Set-Cookie'] = {"sessionid=" .. sessionid .. "; HttpOnly; Path=/; Secure;"}
 				redis:expire(sessionKey, SESSION_EXPIRE_DELAY)
@@ -146,7 +143,7 @@ function check_cookies()
 				ngx.ctx.user.remember_me = true
 				send_login_key()
 			else
-				if do_login(loginkey[2], loginkey[3], { login_with_id = true, login_with_loginkey = true }) == LOGIN_SUCCESS then
+				if do_login(loginkey[2], loginkey[3], { login_with_id = true, login_method = LOGIN_METHOD_LOGINKEY }) == LOGIN_SUCCESS then
 					ngx.ctx.user.remember_me = true
 					send_login_key()
 				end

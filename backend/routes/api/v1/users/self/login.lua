@@ -17,7 +17,7 @@ register_route("/api/v1/users/self/login", "POST", make_route_opts({ allow_guest
         return api_error("Account inactive")
     elseif result == LOGIN_USER_BANNED then
         return api_error("Account banned")
-    elseif result == LOGIN_BAD_PASSWORD then
+    elseif result == LOGIN_BAD_CREDENTIALS then
         return api_error("Invalid username/password")
     elseif result ~= LOGIN_SUCCESS then
         return api_error("Unknown login error")
