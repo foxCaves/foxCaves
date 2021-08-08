@@ -17,8 +17,6 @@ local function storeTemplate(name)
 end
 
 os.execute("mkdir -p '" .. DISTDIR .. "'")
-os.execute("mkdir '" .. DISTDIR .. "/legal'")
-os.execute("mkdir '" .. DISTDIR .. "/email'")
 
 local function scanTemplateDirInt(dir, ext, extlen, basedirlen)
     for file in lfs.dir(dir) do
@@ -26,9 +24,11 @@ local function scanTemplateDirInt(dir, ext, extlen, basedirlen)
         if first ~= "." and first ~= "_" then
             local absfile = dir .. "/" .. file
             local attributes = lfs.attributes(absfile)
+            local relfile = absfile:sub(basedirlen)
             if attributes.mode == "file" and file:sub(file:len() - (extlen - 1)) == ext then
-                storeTemplate(absfile:sub(1, absfile:len() - extlen):sub(basedirlen))
+                storeTemplate(relfile:sub(1, relfile:len() - extlen))
             elseif attributes.mode == "directory" then
+                os.execute("mkdir '" .. DISTDIR .. "/" .. relfile .. "'")
                 scanTemplateDirInt(absfile, ext, extlen, basedirlen)
             end
         end
