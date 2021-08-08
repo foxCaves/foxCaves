@@ -1,2 +1,2 @@
-<%+ head %>
-<%+ foot %>
+<%+ includes/_head %>
+<%+ includes/_foot %>

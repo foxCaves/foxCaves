@@ -1,4 +1,4 @@
-<%+ head %>
+<%+ includes/_head %>
 <h2>Register</h2>
 <form method="post" id="register_form" class="form-horizontal">
 	<legend>Please enter your requested user details</legend>
@@ -39,4 +39,4 @@
 	</div>
 </form>
 <script type="text/javascript" src="/static/js/register.js"></script>
-<%+ foot %>
+<%+ includes/_foot %>

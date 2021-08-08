@@ -1,4 +1,4 @@
-<%+ head %>
+<%+ includes/_head %>
 	<h3>Viewing file: <span id="view-name">Loading...</span></h3>
 	<div class="well well-small" style="text-align: left;">
 		<form class="form-horizontal">
@@ -39,4 +39,4 @@
 	<script type="text/javascript" src="/static/js/view.js"></script>
 	<script type="text/javascript" src="/static/js/dancer.js"></script>
 	<script type="text/javascript" src="/static/js/audiovis.js"></script>
-<%+ foot %>
+<%+ includes/_foot %>

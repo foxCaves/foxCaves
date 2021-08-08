@@ -3,12 +3,12 @@ dofile("template.lua")
 
 local DISTDIR = "../dist"
 
-local function storeTemplate(name, maintitle, file, params)
-    file = file or name
-    params = params or {}
-    params.MAINTITLE = maintitle
+local function storeTemplate(name, maintitle)
+    local params = {
+        MAINTITLE = maintitle,
+    }
     local template = evalTemplate(name, params)
-    local fh = io.open(DISTDIR .. "/" .. file .. ".html", "w")
+    local fh = io.open(DISTDIR .. "/" .. name .. ".html", "w")
     fh:write(template)
     fh:close()
 end
@@ -17,13 +17,12 @@ os.execute("mkdir -p '" .. DISTDIR .. "'")
 os.execute("mkdir '" .. DISTDIR .. "/legal'")
 os.execute("mkdir '" .. DISTDIR .. "/email'")
 
-storeTemplate("live", "Cam", "cam")
-storeTemplate("email", "Activation E-Mail", "email/activation", { ACTION = "activation" })
-storeTemplate("email", "Forgot password", "email/forgotpwd", { ACTION = "forgotpwd" })
-storeTemplate("emailcode", "E-Mail code check", "email/code")
+storeTemplate("email/activation", "Activation E-Mail")
+storeTemplate("email/forgotpwd", "Forgot password")
+storeTemplate("email/code", "E-Mail code check", "email/code")
 storeTemplate("index", "Home")
-storeTemplate("terms_of_service", "Terms of Service", "legal/terms_of_service")
-storeTemplate("privacy_policy", "Privacy policy", "legal/privacy_policy")
+storeTemplate("legal/terms_of_service", "Terms of Service")
+storeTemplate("legal/privacy_policy", "Privacy policy")
 storeTemplate("live", "Live drawing")
 storeTemplate("login", "Login")
 storeTemplate("myaccount", "My account")

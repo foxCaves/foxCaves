@@ -1,4 +1,4 @@
-<%+ head %>
+<%+ includes/_head %>
 <div id="uploader"></div>
 <br />
 <h2 id="file-refresh">Manage files (<a class="pointer" onclick="return refreshFiles();">Refresh</a>)</h2>
@@ -9,4 +9,4 @@
 <ul id="file_manager"></ul>
 <div style="display: none;" id="recycle_bin"></div>
 <script type="text/javascript" src="/static/js/myfiles.js"></script>
-<%+ foot %>
+<%+ includes/_foot %>

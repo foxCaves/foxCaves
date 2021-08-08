@@ -1,4 +1,4 @@
-<%+ head %>
+<%+ includes/_head %>
 <h2>Manage account</h2>
 <form id="account_form" action="" method="post" class="form-horizontal">
 	<div class="control-group">
@@ -62,4 +62,4 @@
 	</div>
 </form>
 <script type="text/javascript" src="/static/js/myaccount.js"></script>
-<%+ foot %>
+<%+ includes/_foot %>

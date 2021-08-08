@@ -1,5 +1,5 @@
 <% MAINTITLE = "Terms of service" %>
-<%+ head %>
+<%+ includes/_head %>
 	<div class="row">
 		<div class="span12">
 			<section id="definitions">
@@ -65,4 +65,4 @@
 			</section>
 		</div>
 	</div>
-<%+ foot %>
+<%+ includes/_foot %>
