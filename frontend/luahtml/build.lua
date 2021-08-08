@@ -35,7 +35,7 @@ local function scanTemplateDirInt(dir, basedirlen)
     end
 end
 local function scanTemplateDir(dir)
-    scanTemplateDirInt(dir, dir:len() + 1)
+    scanTemplateDirInt(dir, dir:len() + 2)
 end
 scanTemplateDir("templates")
 
