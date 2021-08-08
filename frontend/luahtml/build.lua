@@ -26,7 +26,7 @@ local function scanTemplateDirInt(dir, ext, extlen, basedirlen)
         if first ~= "." and first ~= "_" then
             local absfile = dir .. "/" .. file
             local attributes = lfs.attributes(absfile)
-            if attributes.mode == "file" and file:sub(file:len() - extlen) == ext then
+            if attributes.mode == "file" and file:sub(file:len() - (extlen - 1)) == ext then
                 storeTemplate(absfile:sub(1, absfile:len() - extlen):sub(basedirlen))
             elseif attributes.mode == "directory" then
                 scanTemplateDirInt(absfile, ext, extlen, basedirlen)
