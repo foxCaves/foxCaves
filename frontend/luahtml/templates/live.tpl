@@ -1,5 +1,6 @@
+<% MAINTITLE = "Live drawing" %>
 <%+ _includes/head %>
-	<h3>Live drawing file</h3>
+	<h3><%= MAINTITLE %></h3>
 	<div class="well well-small" style="text-align: left;">
 		<form class="form-horizontal">
 			<div class="control-group" for="inviteid">
