@@ -44,7 +44,7 @@ local function check_auth(userdata, password, options)
 	end
 
 	if options.login_with_loginkey then
-		return hash_login_key(result.loginkey) == ngx.decode_base64(password)
+		return hash_login_key(userdata.loginkey) == ngx.decode_base64(password)
 	end
 
 	return check_user_password(userdata, password)
