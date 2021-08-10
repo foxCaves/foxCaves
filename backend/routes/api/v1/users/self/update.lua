@@ -31,7 +31,7 @@ register_route("/api/v1/users/self", "PATCH", make_route_opts({ api_login = fals
     end
 
     if args.password then
-        database:query_safe('UPDATE users SET password = %s WHERE id = %s', argon2.hash_encoded(args.password, randstr(32)), user.id)
+        database:query_safe('UPDATE users SET password = %s WHERE id = %s', hash_password(args.password), user.id)
         user.password = "CHANGED"
         args.loginkey = "CHANGE"
     end

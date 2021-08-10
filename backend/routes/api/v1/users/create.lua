@@ -35,7 +35,7 @@ register_route("/api/v1/users", "POST", make_route_opts_anon(), function()
 
     local id = uuid.generate_random()
 
-    local res = database:query_safe('INSERT INTO users (id, username, email, password) VALUES (%s, %s, %s, %s) RETURNING id, username, email', id, username, email, argon2.hash_encoded(password, randstr(32)))
+    local res = database:query_safe('INSERT INTO users (id, username, email, password) VALUES (%s, %s, %s, %s) RETURNING id, username, email', id, username, email, hash_password(password))
     local user = res[1]
 
     make_new_login_key(user)

@@ -15,6 +15,10 @@ local GIGABYTE = MEGABYTE * 1024
 
 local STORAGE_BASE = 1 * GIGABYTE
 
+function hash_password(password)
+	return argon2.hash(password, randstr(32))
+end
+
 function check_user_password(userdata, password)
 	local authOk = false
 	local authNeedsUpdate = false
@@ -33,7 +37,7 @@ function check_user_password(userdata, password)
 		authOk = argon2.verify(userdata.password, password)
 	end
 	if authOk and authNeedsUpdate then
-		get_ctx_database():query_safe('UPDATE users SET password = %s WHERE id = %s', argon2.hash_encoded(password, randstr(32)), userdata.id)
+		get_ctx_database():query_safe('UPDATE users SET password = %s WHERE id = %s', hash_password(password), userdata.id)
 	end
 	return authOk	
 end
