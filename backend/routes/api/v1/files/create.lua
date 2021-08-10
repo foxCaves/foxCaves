@@ -121,9 +121,9 @@ register_route("/api/v1/files", "POST", make_route_opts(), function()
 
 	local fileType, thumbnailType, thumbnail = mimeHandlers[prefix](suffix)
 
-	file_upload(fileid, name, extension, thumbnail, mtype, thumbnailType)
-
 	database:query_safe('INSERT INTO files (id, name, "user", extension, type, size, time, thumbnail) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)', fileid, name, ngx.ctx.user.id, extension, fileType, filesize, ngx.time(), thumbnail or "")
+
+	file_upload(fileid, name, extension, thumbnail, mtype, thumbnailType)
 
 	local filedata = file_get_public(fileid)
 	file_push_action('create', filedata)
