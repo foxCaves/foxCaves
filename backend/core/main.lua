@@ -59,3 +59,9 @@ for _, v in pairs(on_load_done_funcs) do
 	v()
 end
 on_load_done_funcs = nil
+
+setmetatable(_G, { 
+	__newindex = function(t, k, v)
+		error("Attempt to write to _G: " .. k)
+	end,
+})
