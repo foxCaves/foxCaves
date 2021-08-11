@@ -181,10 +181,10 @@ function get_post_args()
 end
 
 function raw_push_action(data, user)
-	if not user then
-		user = ngx.ctx.user
+	if user.id then
+		user = user.id
 	end
-	get_ctx_redis():publish("push:" .. user.id, cjson.encode(data))
+	get_ctx_redis():publish("push:" .. user, cjson.encode(data))
 end
 
 function api_not_logged_in_error()

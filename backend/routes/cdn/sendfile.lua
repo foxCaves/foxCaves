@@ -1,6 +1,6 @@
 register_route("/cdn/sendfile/{action}/{fileid}/{extension}", "GET", make_route_opts_anon(), function()
 	local function send_file(disposition_type)
-		local file = file_get_public(ngx.ctx.route_vars.fileid)
+		local file = File.GetByID(ngx.ctx.route_vars.fileid)
 
 		if (not file) or file.extension:sub(2):lower() ~= ngx.ctx.route_vars.extension:lower() then
 			return api_error("File not found", 404)

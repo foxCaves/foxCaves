@@ -9,21 +9,14 @@ register_route("/api/v1/files", "POST", make_route_opts(), function()
 
 	name = ngx.unescape_uri(name)
 
-	local nameregex = ngx.re.match(name, "^([^<>\r\n\t]*?)(\\.[a-zA-Z0-9]+)?$", "o")
-	if (not nameregex) or (not nameregex[1]) then
-		return api_error("Invalid name")
-	end
-
-	local fileid = randstr(10)
-
 	ngx.req.read_body()
-	local file = ngx.req.get_body_file()
+	local filetmp = ngx.req.get_body_file()
 	local filedata = ngx.req.get_body_data()
-	if (not file) and (not filedata) then
+	if (not filetmp) and (not filedata) then
 		return api_error("No body")
 	end
 
-	local filesize = file and lfs.attributes(file, "size") or filedata:len()
+	local filesize = filetmp and lfs.attributes(filetmp, "size") or filedata:len()
 	if (not filesize) or filesize <= 0 then
 		return api_error("Empty body")
 	end
@@ -32,27 +25,11 @@ register_route("/api/v1/files", "POST", make_route_opts(), function()
 		return api_error("Over quota", 402)
 	end
 
-	local extension = nameregex[2]
-	if not extension then
-		extension = ".bin"
-	else
-		extension = extension:lower()
-	end
+	local file = File.New()
+	file.user = ngx.ctx.user.id
 
-	local headers = ngx.req.get_headers()
-	if headers.x_is_base64 == "yes" then
-		if file then
-			local f = io.open(file, "rb")
-			filedata = f:read("*all")
-			f:close()
-			os.remove(file)
-			file = nil
-		end
-		filedata = ngx.decode_base64(filedata)
-	end
-
-	if file then
-		os.rename(file, "/var/www/foxcaves/tmp/files/" .. fileid .. extension)
+	if filetmp then
+		os.rename(filetmp, "/var/www/foxcaves/tmp/files/" .. fileid .. extension)
 	else
 		f = io.open("/var/www/foxcaves/tmp/files/" .. fileid .. extension, "wb")
 		f:write(filedata)
@@ -60,72 +37,7 @@ register_route("/api/v1/files", "POST", make_route_opts(), function()
 		filedata = nil
 	end
 
-	local mtype = mimetypes[extension] or "application/octet-stream"
-
-	local mimeHandlers = {
-		image = function()
-			local thumbext = ".png"
-			local thumbnail = fileid .. thumbext
-			os.execute(
-				string.format(
-					'/usr/bin/convert "/var/www/foxcaves/tmp/files/%s%s" -thumbnail x300 -resize "300x<" -resize 50%% -gravity center -crop 150x150+0+0 +repage -format png "/var/www/foxcaves/tmp/thumbs/%s"',
-					fileid,
-					extension,
-					thumbnail
-				)
-			)
-
-			if not lfs.attributes("/var/www/foxcaves/tmp/thumbs/" .. thumbnail, "size") then
-				return FILE_TYPE_IMAGE, nil, nil
-			end
-			return FILE_TYPE_IMAGE, "image/png", thumbext
-		end,
-
-		text = function()
-			local fh = io.open("/var/www/foxcaves/tmp/files/" .. fileid .. extension, "r")
-			local content = escape_html(fh:read(4096))
-
-			if fh:read(1) then
-				content = content .. "\n<i>[...]</i>"
-			end
-			fh:close()
-
-			if content:sub(1,3) == "\xef\xbb\xbf" then
-				content = content:sub(4)
-			end
-
-			fh = io.open("/var/www/foxcaves/tmp/thumbs/" .. fileid .. extension, "w")
-			fh:write(content)
-			fh:close()
-
-			return FILE_TYPE_TEXT, "text/plain", extension
-		end,
-
-		video = function()
-			return FILE_TYPE_VIDEO, nil, nil
-		end,
-
-		audio = function()
-			return FILE_TYPE_AUDIO, nil, nil
-		end,
-
-		application = function(suffix)
-			if(suffix == "pdf") then
-				return FILE_TYPE_IFRAME, nil, nil
-			end
-			return FILE_TYPE_OTHER, nil, nil
-		end
-	}
-
-	local prefix, suffix = mtype:match("([a-z]+)/([a-z]+)")
-
-	local fileType, thumbnailType, thumbnail = mimeHandlers[prefix](suffix)
-
-	database:query_safe('INSERT INTO files (id, name, "user", extension, type, size, time, thumbnail) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)', fileid, name, ngx.ctx.user.id, extension, fileType, filesize, ngx.time(), thumbnail or "")
-
-	file_upload(fileid, name, extension, thumbnail, mtype, thumbnailType)
-
-	local filedata = file_get_public(fileid)
-	file_push_action('create', filedata)
-	return filedata
+	file:MoveUploadData("/var/www/foxcaves/tmp/files/" .. file.id .. self.extension)
+	file:Save()
+	return file
 end)

@@ -1,10 +1,13 @@
 register_route("/api/v1/files/{id}", "PATCH", make_route_opts(), function()
     local database = get_ctx_database()
 
-    local file = file_get_public(ngx.ctx.route_vars.id, ngx.ctx.user.id)
+    local file = File.GetByID(ngx.ctx.route_vars.id)
     if not file then
-        return api_error("File not found or not owned by you", 404)
+        return api_error("File not found", 404)
     end
+	if file.user ~= ngx.ctx.user.id then
+		return api_error("Not your file", 403)
+	end
 
     local newname = ngx.unescape_uri(ngx.var.arg_name)
 
@@ -13,13 +16,6 @@ register_route("/api/v1/files/{id}", "PATCH", make_route_opts(), function()
     end
 
     file.name = newname
-
-    database:query_safe('UPDATE files SET name = %s WHERE id = %s', newname, file.id)
-
-    file_push_action('refresh', {
-        id = file.id,
-        name = newname,
-    })
-
+    file:Save()
     return file
 end)
