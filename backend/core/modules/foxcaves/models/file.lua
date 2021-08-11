@@ -1,11 +1,11 @@
 local lfs = require("lfs")
+local path = require("path")
 local utils = require("foxcaves.utils")
 local database = require("foxcaves.database")
 local events = require("foxcaves.events")
 local random = require("foxcaves.random")
 local User = require("foxcaves.models.user")
 local url_config = require("foxcaves.config").urls
-local path = require("lpath")
 
 local io = io
 local string = string
