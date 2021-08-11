@@ -206,6 +206,6 @@ function execute()
     end
 end
 
-scan_route_dir("routes")
+scan_route_dir(LUA_ROOT .. "routes")
 
 return M

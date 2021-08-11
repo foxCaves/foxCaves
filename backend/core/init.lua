@@ -17,4 +17,4 @@ setmetatable(_G, {
 	end,
 })
 
-package.path = package.path .. ";" .. CORE_ROOT .. "/modules/?.lua"
+package.path = package.path .. ";" .. CORE_ROOT .. "modules/?.lua"
