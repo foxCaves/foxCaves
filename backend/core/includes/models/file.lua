@@ -187,7 +187,7 @@ function FileMT:SetName(name)
         return false
     end
 
-    self.name = nameregex[1]
+    self.name = name
     self.extension = nameregex[2]
     if not self.extension then
         self.extension = ".bin"
