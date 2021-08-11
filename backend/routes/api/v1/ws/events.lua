@@ -12,6 +12,8 @@ register_route("/api/v1/ws/events", "GET", make_route_opts(), function()
         return api_error("WebSocket requests only")
     end
 
+    local should_run = true
+
     local function kick()
         ws:send_close()
         should_run = false
@@ -22,8 +24,6 @@ register_route("/api/v1/ws/events", "GET", make_route_opts(), function()
         kick()
         return
     end
-
-    local should_run = true
 
     local function websocket_read()
         while should_run do
