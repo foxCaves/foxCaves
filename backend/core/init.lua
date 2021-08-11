@@ -14,6 +14,7 @@ setmetatable(_G, {
 })
 
 -- BEGIN: chdir to script's path
+ngx.log(ngx.ERR, debug.getinfo(2, "S").source)
 require("lfs").chdir(debug.getinfo(2, "S").source:sub(2):match("(.*/)") .. "/../")
 -- END:   chdir to script's path
 
