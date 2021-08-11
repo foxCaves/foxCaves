@@ -1,3 +1,6 @@
+-- Permissible _G vars, due to silly libraries
+lfs = false
+
 setmetatable(_G, {
 	__index = function(t, k)
 		error("Attempt to read unknown from _G: " .. k)
