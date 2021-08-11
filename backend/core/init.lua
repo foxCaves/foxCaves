@@ -11,7 +11,6 @@ setmetatable(_G, {
 	end,
 })
 
-
 -- Load paths
 local path = require("path")
 local CORE_ROOT = path.abs(debug.getinfo(1, "S").source:sub(2):match("(.*/)"))
