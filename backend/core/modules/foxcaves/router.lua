@@ -16,6 +16,8 @@ local require = require
 
 local G = _G
 
+local ROUTES_ROOT = LUA_ROOT .. "routes"
+
 local M = {}
 setfenv(1, M)
 
@@ -206,6 +208,6 @@ function execute()
     end
 end
 
-scan_route_dir(LUA_ROOT .. "routes")
+scan_route_dir(ROUTES_ROOT)
 
 return M
