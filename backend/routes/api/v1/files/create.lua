@@ -28,16 +28,16 @@ register_route("/api/v1/files", "POST", make_route_opts(), function()
 	local file = File.New()
 	file.user = ngx.ctx.user.id
 
-	if filetmp then
-		os.rename(filetmp, "/var/www/foxcaves/tmp/files/" .. fileid .. extension)
-	else
-		f = io.open("/var/www/foxcaves/tmp/files/" .. fileid .. extension, "wb")
+	if not filetmp then
+		filemtp = "/var/www/foxcaves/tmp/files/" .. file.id .. extension
+		f = io.open(filemtp, "wb")
 		f:write(filedata)
 		f:close()
 		filedata = nil
 	end
+	file:MoveUploadData(filemtp)
 
-	file:MoveUploadData("/var/www/foxcaves/tmp/files/" .. file.id .. self.extension)
 	file:Save()
+
 	return file
 end)
