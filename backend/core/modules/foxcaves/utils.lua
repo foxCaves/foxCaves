@@ -1,5 +1,4 @@
 local cjson = require("cjson")
-local redis = require("foxcaves.redis")
 local ngx = ngx
 local table = table
 local type = type
@@ -41,13 +40,6 @@ end
 function get_post_args()
 	ngx.req.read_body()
 	return ngx.req.get_post_args()
-end
-
-function raw_push_action(data, user)
-	if user.id then
-		user = user.id
-	end
-	redis.get_shared():publish("push:" .. user, cjson.encode(data))
 end
 
 function api_error(error, code)

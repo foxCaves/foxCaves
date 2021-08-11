@@ -1,5 +1,5 @@
-local utils = require("foxcaves.utils")
 local database = require("foxcaves.database")
+local events = require("foxcaves.events")
 
 local LinkMT = {}
 Link = {}
@@ -55,7 +55,7 @@ end
 function LinkMT:Delete()
     database.get_shared():query_safe('DELETE FROM links WHERE id = %s', self.id)
 
-	utils.raw_push_action({
+	events.push_raw({
         action = 'link:delete',
         link = self
     }, self.user)
@@ -81,7 +81,7 @@ function LinkMT:Save()
         database.get_shared():query_safe('UPDATE links SET "user" = %s, url = %s, time = %s WHERE id = %s', self.user, self.url, self.time, self.id)
         primary_push_action = 'refresh'
     end
-	utils.raw_push_action({
+	events.push_raw({
 		action = "link:" .. primary_push_action,
 		link = self,
 	}, self.user)

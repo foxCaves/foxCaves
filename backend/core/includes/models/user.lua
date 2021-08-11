@@ -1,8 +1,8 @@
 local uuid = require("resty.uuid")
 local argon2 = require("argon2")
-local utils = require("foxcaves.utils")
 local database = require("foxcaves.database")
 local redis = require("foxcaves.redis")
+local events = require("foxcaves.events")
 
 local UserMT = {}
 User = {}
@@ -175,7 +175,7 @@ function UserMT:Save()
     end
 
     if self.kick_user then
-        utils.raw_push_action({
+        events.push_raw({
             action = "kick",
         }, self)
 

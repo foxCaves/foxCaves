@@ -1,6 +1,7 @@
 local lfs = require("lfs")
 local utils = require("foxcaves.utils")
 local database = require("foxcaves.database")
+local events = require("foxcaves.events")
 
 local FILE_STORAGE_PATH = "/var/www/foxcaves/storage/"
 
@@ -215,7 +216,7 @@ function FileMT:Delete()
 
 	database.get_shared():query_safe('DELETE FROM files WHERE id = %s', self.id)
 
-	utils.raw_push_action({
+	events.push_raw({
         action = 'file:delete',
         file = self
     }, self.user)
@@ -279,11 +280,11 @@ function FileMT:Save()
         database.get_shared():query_safe('UPDATE files SET name = %s, "user" = %s, extension = %s, type = %s, size = %s, time = %s, thumbnail = %s WHERE id = %s', self.name, self.user, self.extension, self.type, self.size, self.time, self.thumbnail or "", self.id)
         primary_push_action = 'refresh'
     end
-	utils.raw_push_action({
+	events.push_raw({
 		action = "file:" .. primary_push_action,
 		file = self,
 	}, self.user)
-	utils.raw_push_action({
+	events.push_raw({
 		action = "usedbytes",
 		usedbytes = User.CalculateUsedBytes(self.user),
 	}, self.user)
