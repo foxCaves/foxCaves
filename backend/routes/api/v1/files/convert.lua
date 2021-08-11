@@ -24,8 +24,8 @@ register_route("/api/v1/files/{id}/convert", "POST", make_route_opts(), function
 	local newfilename = file.name
 	newfilename = newfilename:sub(1, newfilename:len() - file.extension:len()) .. newextension
 
-	local tmptmpfile = "../tmp/files/original_" .. file.id .. file.extension
-	local tmpfile = "../tmp/files/new_" .. file.id .. newextension
+	local tmptmpfile = Files.Paths.Temp .. "file_original_" .. file.id .. file.extension
+	local tmpfile =  Files.Paths.Temp .. "file_new_" .. file.id .. newextension
 
 	local fh = io.open(tmptmpfile, "w")
 	fh:write(data)

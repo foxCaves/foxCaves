@@ -36,7 +36,7 @@ register_route("/api/v1/files", "POST", make_route_opts(), function()
 	end
 
 	if not filetmp then
-		filetmp = "../tmp/files/" .. file.id .. file.extension
+		filetmp =  Files.Paths.Temp .. "file_" .. file.id .. file.extension
 		f = io.open(filetmp, "wb")
 		f:write(filedata)
 		f:close()

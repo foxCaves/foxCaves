@@ -13,8 +13,6 @@ local ngx = ngx
 local next = next
 local setmetatable = setmetatable
 
-local FILE_STORAGE_PATH = "../storage/"
-
 local FileMT = {}
 
 local File = {
@@ -26,6 +24,10 @@ local File = {
         Audio = 4,
         Iframe = 5,
     },
+    Paths = {
+        Storage = ROOT .. "storage/",
+        Temp = ROOT .. "tmp/",
+    }
 }
 
 setfenv(1, File)
@@ -156,9 +158,9 @@ end
 
 local function file_manualdelete(file, isdir)
 	if isdir then
-		lfs.rmdir(FILE_STORAGE_PATH .. file)
+		lfs.rmdir(Paths.Storage .. file)
 	else
-		os.remove(FILE_STORAGE_PATH .. file)
+		os.remove(Paths.Storage .. file)
 	end
 end
 
@@ -235,7 +237,7 @@ function FileMT:Delete()
 end
 
 function FileMT:Download()
-    return file_fullread(FILE_STORAGE_PATH .. self.id .. "/file" .. self.extension)
+    return file_fullread(Paths.Storage .. self.id .. "/file" .. self.extension)
 end
 
 function FileMT:SetOwner(user)
@@ -266,17 +268,17 @@ end
 function FileMT:MoveUploadData(src)
     self.size = lfs.attributes(src, "size")
 
-    local thumbDest = "../tmp/thumbs/" .. self.id
+    local thumbDest = Paths.Temp .. "thumb_" .. self.id
     
 	local prefix, suffix = self.mimetype:match("([a-z]+)/([a-z]+)")
 	self.type, self.thumbnail = mimeHandlers[prefix](src, thumbDest, suffix)
 
-	lfs.mkdir(FILE_STORAGE_PATH .. self.id)
+	lfs.mkdir(Paths.Storage .. self.id)
 
-	file_move(src, FILE_STORAGE_PATH .. self.id .. "/file" .. self.extension)
+	file_move(src, Paths.Storage .. self.id .. "/file" .. self.extension)
 
 	if self.thumbnail and self.thumbnail ~= "" then
-		file_move(thumbDest .. self.thumbnail, FILE_STORAGE_PATH .. self.id .. "/thumb" .. self.thumbnail)
+		file_move(thumbDest .. self.thumbnail, Paths.Storage .. self.id .. "/thumb" .. self.thumbnail)
 	end
 
     self:ComputeVirtuals()

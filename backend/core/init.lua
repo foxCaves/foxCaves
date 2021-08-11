@@ -2,6 +2,10 @@
 lfs = false
 -- END:   Permissible _G vars, due to silly libraries
 
+local CORE_ROOT = debug.getinfo(1, "S").source:sub(2):match("(.*/)")
+LUA_ROOT = CORE_ROOT .. "../"
+ROOT = LUA_ROOT .. "../"
+
 ENVIRONMENT = os.getenv("ENVIRONMENT"):lower()
 
 setmetatable(_G, {
@@ -13,8 +17,4 @@ setmetatable(_G, {
 	end,
 })
 
--- BEGIN: chdir to script's path
-require("lfs").chdir(debug.getinfo(1, "S").source:sub(2):match("(.*/)") .. "/../")
--- END:   chdir to script's path
-
-package.path = package.path .. ";core/modules/?.lua"
+package.path = package.path .. ";" .. CORE_ROOT .. "/modules/?.lua"
