@@ -1,5 +1,6 @@
 local utils = require("foxcaves.utils")
 local redis = require("foxcaves.redis")
+local mail = require("foxcaves.mail")
 local User = require("foxcaves.models.user")
 
 register_route("/api/v1/users/emails/request", "POST", make_route_opts_anon(), function()
@@ -45,5 +46,5 @@ register_route("/api/v1/users/emails/request", "POST", make_route_opts_anon(), f
     redis_inst:hmset(emailkey, "user", userid, "action", action)
     redis_inst:expire(emailkey, 172800) --48 hours
 
-    mail(user.email, subject, email, "noreply@foxcav.es", "foxCaves")
+    mail.send(user.email, subject, email, "noreply@foxcav.es", "foxCaves")
 end)

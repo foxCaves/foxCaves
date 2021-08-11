@@ -1,5 +1,6 @@
 local utils = require("foxcaves.utils")
 local redis = require("foxcaves.redis")
+local mail = require("foxcaves.mail")
 local User = require("foxcaves.models.user")
 
 register_route("/api/v1/users/emails/code", "POST", make_route_opts_anon(), function()
@@ -34,7 +35,7 @@ register_route("/api/v1/users/emails/code", "POST", make_route_opts_anon(), func
         user:Save()
 
         local email = "Hello, " .. user.username .. "!\n\nHere is your new password:\n" .. newPassword .. "\nPlease log in at " .. CONFIG.urls.main .. "/login and change it as soon as possible.\n\nKind regards,\nfoxCaves Support"
-        mail(user.email, "foxCaves - New password", email, "noreply@foxcav.es", "foxCaves")
+        mail.send(user.email, "foxCaves - New password", email, "noreply@foxcav.es", "foxCaves")
     end
 
     return { action = res.action }

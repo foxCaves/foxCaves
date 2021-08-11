@@ -3,6 +3,7 @@ local argon2 = require("argon2")
 local database = require("foxcaves.database")
 local redis = require("foxcaves.redis")
 local events = require("foxcaves.events")
+local mail = require("foxcaves.mail")
 
 local UserMT = {}
 local User = {}
@@ -169,7 +170,7 @@ function UserMT:Save()
         redis_inst:hmset(emailkey, "user", self.id, "action", "activation")
         redis_inst:expire(emailkey, 172800) --48 hours
     
-        mail(self.email, "foxCaves - Activation E-Mail", email_text, "noreply@foxcav.es", "foxCaves")
+        mail.send(self.email, "foxCaves - Activation E-Mail", email_text, "noreply@foxcav.es", "foxCaves")
 
         self.require_email_confirmation = nil
     end
