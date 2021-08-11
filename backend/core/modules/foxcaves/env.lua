@@ -14,5 +14,5 @@ end
 
 return {
     id = id,
-    string = str,
+    name = str,
 }
