@@ -1,18 +1,21 @@
 local utils = require("foxcaves.utils")
 local redis = require("foxcaves.redis")
 local random = require("foxcaves.random")
+local consts = require("foxcaves.consts")
 local User = require("foxcaves.models.user")
+
+local ngx = ngx
+local table = table
+local type = type
+
+local M = {}
+setfenv(1, M)
 
 local SESSION_EXPIRE_DELAY = 7200
 
 local function hash_login_key(loginkey)
 	return ngx.hmac_sha1(loginkey or ngx.ctx.user.loginkey, ngx.var.http_user_agent or ngx.var.remote_addr)
 end
-
-LOGIN_SUCCESS = 1
-LOGIN_USER_INACTIVE = 0
-LOGIN_USER_BANNED = -1
-LOGIN_BAD_CREDENTIALS = -10
 
 function LOGIN_METHOD_PASSWORD(userdata, password)
 	return userdata:CheckPassword(password)
@@ -24,15 +27,15 @@ function LOGIN_METHOD_LOGINKEY(userdata, loginkey)
 	return hash_login_key(userdata.loginkey) == ngx.decode_base64(loginkey)
 end
 
-function do_login(username_or_id, credential, options)
-	if ngx.ctx.user then return LOGIN_SUCCESS end
+function login(username_or_id, credential, options)
+	if ngx.ctx.user then return consts.LOGIN_SUCCESS end
 
 	options = options or {}
 	local nosession = options.nosession
 	local login_with_id = options.login_with_id
 
 	if (not username_or_id) or (not credential) then
-		return LOGIN_BAD_CREDENTIALS
+		return consts.LOGIN_BAD_CREDENTIALS
 	end
 
 	local user
@@ -43,18 +46,18 @@ function do_login(username_or_id, credential, options)
 	end
 
 	if not user then
-		return LOGIN_BAD_CREDENTIALS
+		return consts.LOGIN_BAD_CREDENTIALS
 	end
 
 	local auth_func = options.login_method or LOGIN_METHOD_PASSWORD
 	if not auth_func(user, credential) then
-		return LOGIN_BAD_CREDENTIALS
+		return consts.LOGIN_BAD_CREDENTIALS
 	end
 
 	if user.active == 0 then
-		return LOGIN_USER_INACTIVE
+		return consts.LOGIN_USER_INACTIVE
 	elseif user.active == -1 then
-		return LOGIN_USER_BANNED
+		return consts.LOGIN_USER_BANNED
 	end
 
 	if not nosession then
@@ -71,10 +74,10 @@ function do_login(username_or_id, credential, options)
 
 	ngx.ctx.user = user
 
-	return LOGIN_SUCCESS
+	return consts.LOGIN_SUCCESS
 end
 
-function do_logout()
+function logout()
 	ngx.header['Set-Cookie'] = {"sessionid=NULL; HttpOnly; Path=/; Secure;", "loginkey=NULL; HttpOnly; Path=/; Secure;"}
 	if ngx.ctx.sessionid then
 		redis.get_shared():del("sessions:" .. ngx.ctx.sessionid)
@@ -83,7 +86,10 @@ function do_logout()
 end
 
 function send_login_key()
-	if not ngx.ctx.remember_me then return end
+	if not ngx.ctx.remember_me then
+		return
+	end
+
 	local expires = "; Expires=" .. ngx.cookie_time(ngx.time() + (30 * 24 * 60 * 60))
 	local hdr = ngx.header['Set-Cookie']
 	expires = "loginkey=" .. ngx.ctx.user.id .. "." .. ngx.encode_base64(hash_login_key()) .. expires .. "; HttpOnly; Path=/; Secure;"
@@ -105,7 +111,7 @@ function check_cookies()
 			sessionid = sessionid[2]
 			local sessionKey = "sessions:" .. sessionid
 			local result = redis_inst:hgetall(sessionKey)
-			if result and do_login(result.id, result.loginkey, { nosession = true, login_with_id = true, login_method = LOGIN_METHOD_LOGINKEY }) == LOGIN_SUCCESS then
+			if result and login(result.id, result.loginkey, { nosession = true, login_with_id = true, login_method = LOGIN_METHOD_LOGINKEY }) == consts.LOGIN_SUCCESS then
 				ngx.ctx.sessionid = sessionid
 				ngx.header['Set-Cookie'] = {"sessionid=" .. sessionid .. "; HttpOnly; Path=/; Secure;"}
 				redis_inst:expire(sessionKey, SESSION_EXPIRE_DELAY)
@@ -118,7 +124,7 @@ function check_cookies()
 				ngx.ctx.remember_me = true
 				send_login_key()
 			else
-				if do_login(loginkey[2], loginkey[3], { login_with_id = true, login_method = LOGIN_METHOD_LOGINKEY }) == LOGIN_SUCCESS then
+				if login(loginkey[2], loginkey[3], { login_with_id = true, login_method = LOGIN_METHOD_LOGINKEY }) == consts.LOGIN_SUCCESS then
 					ngx.ctx.remember_me = true
 					send_login_key()
 				end
@@ -126,7 +132,7 @@ function check_cookies()
 		end
 
 		if (sessionid or loginkey) and not ngx.ctx.user then
-			do_logout()
+			logout()
 		end
 	end
 end
@@ -152,10 +158,12 @@ end
 function check_api_login()
 	local user, apikey = parse_authorization_header(ngx.var.http_authorization)
 	if user and apikey then
-		local success = (do_login(user, apikey, { nosession = true, login_method = LOGIN_METHOD_APIKEY }) == LOGIN_SUCCESS)
+		local success = (login(user, apikey, { nosession = true, login_method = LOGIN_METHOD_APIKEY }) == consts.LOGIN_SUCCESS)
 		if not success then
 			utils.api_error("Invalid username or API key", 401)
 			return true
 		end
 	end
 end
+
+return M

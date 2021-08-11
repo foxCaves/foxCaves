@@ -1,4 +1,6 @@
 local utils = require("foxcaves.utils")
+local consts = require("foxcaves.consts")
+local auth = require("foxcaves.auth")
 
 register_route("/api/v1/users/self/login", "POST", make_route_opts({ allow_guest = true, api_login = false }), function()
     local args = utils.get_post_args()
@@ -14,19 +16,19 @@ register_route("/api/v1/users/self/login", "POST", make_route_opts({ allow_guest
         return utils.api_error("No password")
     end
 
-    local result = do_login(args.username, args.password)
-    if result == LOGIN_USER_INACTIVE then
+    local result = auth.login(args.username, args.password)
+    if result == consts.USER_INACTIVE then
         return utils.api_error("Account inactive")
-    elseif result == LOGIN_USER_BANNED then
+    elseif result == consts.LOGIN_USER_BANNED then
         return utils.api_error("Account banned")
-    elseif result == LOGIN_BAD_CREDENTIALS then
+    elseif result == consts.LOGIN_BAD_CREDENTIALS then
         return utils.api_error("Invalid username/password")
-    elseif result ~= LOGIN_SUCCESS then
+    elseif result ~= consts.LOGIN_SUCCESS then
         return utils.api_error("Unknown login error")
     else
         if args.remember == "true" then
             ngx.ctx.remember_me = true
-            send_login_key()
+            auth.send_login_key()
         end
     end
 

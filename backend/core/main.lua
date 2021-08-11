@@ -34,21 +34,6 @@ init_environment()
 
 dofile("/var/www/foxcaves/config/" .. ENVIRONMENT_STRING .. ".lua")
 
-local function scan_include_dir(dir)
-    for file in lfs.dir(dir) do
-        if file:sub(1, 1) ~= "." then
-            local absfile = dir .. "/" .. file
-            local attributes = lfs.attributes(absfile)
-            if attributes.mode == "file" then
-                loadfile(absfile)()
-            elseif attributes.mode == "directory" then
-                scan_include_dir(absfile)
-            end
-        end
-    end
-end
-scan_include_dir("core/includes")
-
 require("foxcaves.router").load()
 
 setmetatable(_G, { 

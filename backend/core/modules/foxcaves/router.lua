@@ -1,9 +1,8 @@
 local lfs = require("lfs")
 local cjson = require("cjson")
 local utils = require("foxcaves.utils")
+local auth = require("foxcaves.auth")
 
-local check_cookies = check_cookies
-local check_api_login = check_api_login
 local explode = utils.explode
 local type = type
 local next = next
@@ -146,13 +145,11 @@ function execute()
     local opts = handler.options
 
     if opts.cookie_login then
-        check_cookies()
+        auth.check_cookies()
     end
 
     if opts.api_login then
-        if check_api_login() then
-            return
-        end
+        auth.check_api_login()
     end
 
     if (not opts.allow_guest) and (not ngx.ctx.user) then

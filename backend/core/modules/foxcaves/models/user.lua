@@ -6,6 +6,7 @@ local events = require("foxcaves.events")
 local mail = require("foxcaves.mail")
 local random = require("foxcaves.random")
 local consts = require("foxcaves.consts")
+local auth = require("foxcaves.auth")
 
 local UserMT = {}
 local User = {}
@@ -191,7 +192,7 @@ function UserMT:MakeNewLoginKey()
     self.kick_user = true
     if ngx.ctx.user and self.id == ngx.ctx.user.id then
         ngx.ctx.user = self
-        send_login_key()
+        auth.send_login_key()
     end
 end
 
