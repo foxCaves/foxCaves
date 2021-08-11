@@ -1,5 +1,6 @@
--- Permissible _G vars, due to silly libraries
+-- BEGIN: Permissible _G vars, due to silly libraries
 lfs = false
+-- END:   Permissible _G vars, due to silly libraries
 
 setmetatable(_G, {
 	__index = function(t, k)
