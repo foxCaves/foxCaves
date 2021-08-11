@@ -135,6 +135,7 @@ function File.New()
     local file = {
         not_in_db = true,
         id = randstr(10),
+        time = ngx.time(),
     }
     setmetatable(file, FileMT)
     return file
