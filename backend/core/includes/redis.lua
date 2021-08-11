@@ -1,4 +1,5 @@
 local resty_redis = require("resty.redis")
+local utils = require("utils")
 local next = next
 
 function make_redis(close_on_shutdown)
@@ -54,9 +55,9 @@ function make_redis(close_on_shutdown)
 	end
 
 	if close_on_shutdown then
-		register_shutdown(function() database:close() end)
+		utils.register_shutdown(function() database:close() end)
 	else
-		register_shutdown(function() database:set_keepalive(CONFIG.redis.keepalive_timeout or 10000, CONFIG.redis.keepalive_count or 10) end)
+		utils.register_shutdown(function() database:set_keepalive(CONFIG.redis.keepalive_timeout or 10000, CONFIG.redis.keepalive_count or 10) end)
 	end
 
 	return database

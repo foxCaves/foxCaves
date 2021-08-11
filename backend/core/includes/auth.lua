@@ -1,5 +1,7 @@
 local SESSION_EXPIRE_DELAY = 7200
 
+local utils = require("utils")
+
 local function hash_login_key(loginkey)
 	return ngx.hmac_sha1(loginkey or ngx.ctx.user.loginkey, ngx.var.http_user_agent or ngx.var.remote_addr)
 end
@@ -150,7 +152,7 @@ function check_api_login()
 	if user and apikey then
 		local success = (do_login(user, apikey, { nosession = true, login_method = LOGIN_METHOD_APIKEY }) == LOGIN_SUCCESS)
 		if not success then
-			api_error("Invalid username or API key", 401)
+			utils.api_error("Invalid username or API key", 401)
 			return true
 		end
 	end

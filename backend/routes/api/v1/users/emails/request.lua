@@ -1,25 +1,27 @@
+local utils = require("utils")
+
 register_route("/api/v1/users/emails/request", "POST", make_route_opts_anon(), function()
     local redis = get_ctx_redis()
-    local args = get_post_args()
+    local args = utils.get_post_args()
 
     local action = args.action or ""
     if action == "" then
-        return api_error("action required")
+        return utils.api_error("action required")
     end
 
     local username = args.username or ""
     if username == "" then
-        return api_error("username required")
+        return utils.api_error("username required")
     end
 
     local email = args.email or ""
     if email == "" then
-        return api_error("email required")
+        return utils.api_error("email required")
     end
 
     local user = User.GetByUsername(username)
     if (not user) or (user.email:lower() ~= email:lower()) then
-        return api_error("User not found", 404)
+        return utils.api_error("User not found", 404)
     end
 
     local emailid = randstr(32)
@@ -33,7 +35,7 @@ register_route("/api/v1/users/emails/request", "POST", make_route_opts_anon(), f
         email = email .. " reset your password. To have a random password sent to you E-Mail"
         subject = "foxCaves - Reset your password"
     else
-        return api_error("action invalid")
+        return utils.api_error("action invalid")
     end
     email = email .. " just click on the following link:\n" .. CONFIG.urls.main .."/email/code?code=" .. emailid .. "\n\nKind regards,\nfoxCaves Support"
 

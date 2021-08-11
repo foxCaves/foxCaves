@@ -1,4 +1,5 @@
 local run_request
+local utils = require("utils")
 
 if CONFIG.sentry.dsn then
 	local rvn = require("raven").new({
@@ -40,7 +41,7 @@ if CONFIG.sentry.dsn then
 			ngx.status = 500
 			ngx.log(ngx.ERR, "Lua error: " .. err)
 		end
-		__on_shutdown()
+		utils.__on_shutdown()
 		ngx.eof()
 	end
 else
@@ -64,9 +65,9 @@ else
 
 			return "DONE"
 		elseif t == "function" then
-			return escape_html(tostring(var))
+			return utils.escape_html(tostring(var))
 		else
-			return escape_html(tostring(var):sub(1, 1024))
+			return utils.escape_html(tostring(var):sub(1, 1024))
 		end
 	end
 
@@ -109,9 +110,9 @@ else
 				for i = minline, maxline do
 					table.insert(out, "<li class=\"L0\" value=\"" .. i.."\">")
 					if(curr == i) then
-						table.insert(out, "<span class=\"errorline\">" .. escape_html(iter()) .. "</span></li>")
+						table.insert(out, "<span class=\"errorline\">" .. utils.escape_html(iter()) .. "</span></li>")
 					else
-						table.insert(out, escape_html(iter()))
+						table.insert(out, utils.escape_html(iter()))
 					end
 					if i < maxline then
 						table.insert(out, "</li>")
@@ -243,7 +244,7 @@ else
 				ngx.print(err)
 			end
 		end
-		__on_shutdown()
+		utils.__on_shutdown()
 		ngx.eof()
 	end
 end

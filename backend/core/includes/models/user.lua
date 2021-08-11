@@ -1,5 +1,6 @@
 local uuid = require("resty.uuid")
 local argon2 = require("argon2")
+local utils = require("utils")
 
 local UserMT = {}
 User = {}
@@ -171,7 +172,7 @@ function UserMT:Save()
     end
 
     if self.kick_user then
-        raw_push_action({
+        utils.raw_push_action({
             action = "kick",
         }, self)
 

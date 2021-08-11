@@ -1,3 +1,5 @@
+local utils = require("utils")
+
 local LinkMT = {}
 Link = {}
 
@@ -52,7 +54,7 @@ end
 function LinkMT:Delete()
     get_ctx_database():query_safe('DELETE FROM links WHERE id = %s', self.id)
 
-	raw_push_action({
+	utils.raw_push_action({
         action = 'link:delete',
         link = self
     }, self.user)
@@ -78,7 +80,7 @@ function LinkMT:Save()
         get_ctx_database():query_safe('UPDATE links SET "user" = %s, url = %s, time = %s WHERE id = %s', self.user, self.url, self.time, self.id)
         primary_push_action = 'refresh'
     end
-	raw_push_action({
+	utils.raw_push_action({
 		action = "link:" .. primary_push_action,
 		link = self,
 	}, self.user)

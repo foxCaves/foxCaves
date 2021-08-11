@@ -1,17 +1,18 @@
 local lfs = require("lfs")
+local utils = require("utils")
 
 register_route("/api/v1/files/{id}/convert", "POST", make_route_opts(), function()
 	local file = File.GetByID(ngx.ctx.route_vars.id)
 	if not file then
-		return api_error("Not found", 404)
+		return utils.api_error("Not found", 404)
 	end
 	if file.user ~= ngx.ctx.user.id then
-		return api_error("Not your file", 403)
+		return utils.api_error("Not your file", 403)
 	end
 
 	local newextension = ngx.var.arg_newtype:lower()
 	if newextension ~= "jpg" and newextension ~= "png" and newextension ~= "gif" and newextension ~= "bmp" then
-		return api_error("Bad newtype for convert")
+		return utils.api_error("Bad newtype for convert")
 	end
 	newextension = "." .. newextension
 
@@ -31,7 +32,7 @@ register_route("/api/v1/files/{id}/convert", "POST", make_route_opts(), function
 
 	local newsize = lfs.attributes(tmpfile, "size")
 	if not newsize then
-		return api_error("Internal error", 500)
+		return utils.api_error("Internal error", 500)
 	end
 
 	file:SetName(newfilename)

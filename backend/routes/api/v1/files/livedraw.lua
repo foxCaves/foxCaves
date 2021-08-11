@@ -1,3 +1,5 @@
+local utils = require('utils')
+
 register_route("/api/v1/files/{id}/livedraw", "GET", make_route_opts({ allow_guest = true }), function()
     local WS_URL = ngx.re.gsub(CONFIG.urls.main, "^http", "ws", "o")
 
@@ -5,7 +7,7 @@ register_route("/api/v1/files/{id}/livedraw", "GET", make_route_opts({ allow_gue
     local session = ngx.var.arg_session
 
     if not id or not session then
-        return api_error("Missing id or session", 400)
+        return utils.api_error("Missing id or session", 400)
     end
 
     return {

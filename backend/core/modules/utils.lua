@@ -1,4 +1,10 @@
 local cjson = require("cjson")
+local ngx = ngx
+local table = table
+local type = type
+local get_ctx_redis = get_ctx_redis
+
+module("utils")
 
 function register_shutdown(func)
 	if not ngx.ctx.shutdown_funcs then
@@ -12,10 +18,7 @@ function __on_shutdown()
 	end
 
 	for _, v in next, ngx.ctx.shutdown_funcs do
-		local isok, err = pcall(v)
-		if not isok then
-			ngx.log(ngx.ERR, "Shutdown function failed: " .. err)
-		end
+		v()
 	end
 	ngx.ctx.shutdown_funcs = nil
 end
@@ -44,10 +47,6 @@ function raw_push_action(data, user)
 		user = user.id
 	end
 	get_ctx_redis():publish("push:" .. user, cjson.encode(data))
-end
-
-function api_not_logged_in_error()
-	return api_error("Not logged in", 403)
 end
 
 function api_error(error, code)

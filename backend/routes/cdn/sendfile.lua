@@ -1,9 +1,11 @@
+local utils = require("utils")
+
 register_route("/cdn/sendfile/{action}/{fileid}/{extension}", "GET", make_route_opts_anon(), function()
 	local function send_file(disposition_type)
 		local file = File.GetByID(ngx.ctx.route_vars.fileid)
 
 		if (not file) or file.extension:sub(2):lower() ~= ngx.ctx.route_vars.extension:lower() then
-			return api_error("File not found", 404)
+			return utils.api_error("File not found", 404)
 		end
 
 		ngx.header["Content-Dispotition"] = disposition_type .. "; filename=" .. file.name

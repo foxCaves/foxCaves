@@ -1,3 +1,5 @@
+local utils = require("utils")
+
 local pgmoon = require("pgmoon")
 local next = next
 
@@ -23,7 +25,7 @@ function make_database()
 		return res
 	end
 
-	register_shutdown(function() database:keepalive(CONFIG.postgres.keepalive_timeout or 10000, CONFIG.postgres.keepalive_count or 10) end)
+	utils.register_shutdown(function() database:keepalive(CONFIG.postgres.keepalive_timeout or 10000, CONFIG.postgres.keepalive_count or 10) end)
 
 	return database
 end

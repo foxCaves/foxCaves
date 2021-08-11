@@ -1,4 +1,5 @@
 local lfs = require("lfs")
+local utils = require("utils")
 
 local FILE_STORAGE_PATH = "/var/www/foxcaves/storage/"
 
@@ -74,7 +75,7 @@ local mimeHandlers = {
 
     text = function(src, dest)
         local fh = io.open(src, "r")
-        local content = escape_html(fh:read(4096))
+        local content = utils.escape_html(fh:read(4096))
 
         if fh:read(1) then
             content = content .. "\n<i>[...]</i>"
@@ -213,7 +214,7 @@ function FileMT:Delete()
 
 	get_ctx_database():query_safe('DELETE FROM files WHERE id = %s', self.id)
 
-	raw_push_action({
+	utils.raw_push_action({
         action = 'file:delete',
         file = self
     }, self.user)
@@ -277,11 +278,11 @@ function FileMT:Save()
         get_ctx_database():query_safe('UPDATE files SET name = %s, "user" = %s, extension = %s, type = %s, size = %s, time = %s, thumbnail = %s WHERE id = %s', self.name, self.user, self.extension, self.type, self.size, self.time, self.thumbnail or "", self.id)
         primary_push_action = 'refresh'
     end
-	raw_push_action({
+	utils.raw_push_action({
 		action = "file:" .. primary_push_action,
 		file = self,
 	}, self.user)
-	raw_push_action({
+	utils.raw_push_action({
 		action = "usedbytes",
 		usedbytes = User.CalculateUsedBytes(self.user),
 	}, self.user)

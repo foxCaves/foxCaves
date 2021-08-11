@@ -1,9 +1,11 @@
+local utils = require("utils")
+
 register_route("/api/v1/users/self", "PATCH", make_route_opts({ api_login = false }), function()
-    local args = get_post_args()
+    local args = utils.get_post_args()
     local user = ngx.ctx.user
 
     if not user:CheckPassword(args.current_password) then
-        return api_error("current_password invalid", 403)
+        return utils.api_error("current_password invalid", 403)
     end
 
     local obj = {
@@ -14,9 +16,9 @@ register_route("/api/v1/users/self", "PATCH", make_route_opts({ api_login = fals
     if args.email then
         local emailcheck = user:SetEMail(args.email)
         if emailcheck == VALIDATION_STATE_INVALID then
-            return api_error("email invalid")
+            return utils.api_error("email invalid")
         elseif emailcheck == VALIDATION_STATE_TAKEN then
-            return api_error("email taken")
+            return utils.api_error("email taken")
         end
         obj.email = user.email
     end

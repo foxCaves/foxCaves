@@ -11,7 +11,7 @@ register_route("/api/v1/ws/livedraw", "GET", make_route_opts({ allow_guest = tru
 	local ngx = ngx
 	local randstr = randstr
 	local unpack = unpack
-	local explode = explode
+	local utils = require("utils")
 
 	local redis = get_ctx_redis()
 	local sub_redis = make_redis(true)
@@ -22,7 +22,7 @@ register_route("/api/v1/ws/livedraw", "GET", make_route_opts({ allow_guest = tru
 		max_payload_len = 65535,
 	})
 	if not ws then
-		return api_error("WebSocket requests only")
+		return utils.api_error("WebSocket requests only")
 	end
 
 	local EVENT_WIDTH = "w"
@@ -181,7 +181,7 @@ register_route("/api/v1/ws/livedraw", "GET", make_route_opts({ allow_guest = tru
 		local data = {}
 		if rawdata:len() > 1 then
 			rawdata = rawdata:sub(2)
-			data = explode("|", rawdata)
+			data = utils.explode("|", rawdata)
 		else
 			rawdata = ""
 		end

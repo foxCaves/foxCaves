@@ -1,7 +1,8 @@
 local lfs = require("lfs")
 local cjson = require("cjson")
 
-local explode
+local utils = require("utils")
+local explode = utils.explode
 local type = type
 local next = next
 
@@ -148,7 +149,7 @@ function execute_route()
     end
 
     if (not opts.allow_guest) and (not ngx.ctx.user) then
-        res, code = api_not_logged_in_error()
+        res, code = utils.api_error("Not logged in", 403)
     end
 
     if not res then
@@ -175,10 +176,7 @@ function execute_route()
     end
 end
 
-on_load_done(function()
-    explode = _G.explode
-    scan_route_dir("routes")
-    register_route = nil
-    make_route_opts = nil
-    make_route_opts_anon = nil
-end)
+scan_route_dir("routes")
+register_route = nil
+make_route_opts = nil
+make_route_opts_anon = nil
