@@ -172,7 +172,7 @@ function execute_route()
     end
 end
 
-scan_route_dir(MAIN_DIR .. "routes")
+scan_route_dir("routes")
 register_route = nil
 make_route_opts = nil
 make_route_opts_anon = nil
