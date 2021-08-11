@@ -1,13 +1,11 @@
 register_route("/api/v1/links/{id}", "DELETE", make_route_opts(), function()
-    local link = link_get(ngx.ctx.route_vars.id, ngx.ctx.user.id)
-    if not link then
-        return api_error("Could not delete link", 400) 
-    end
-    
-    get_ctx_database():query_safe('DELETE FROM links WHERE id = %s', link.id)
-
-    raw_push_action({
-        action = "link:delete",
-        link = link,
-    })
+	local link = Link.GetByID(ngx.ctx.route_vars.id)
+	if not link then
+		return api_error("Not found", 404)
+	end
+	if link.user ~= ngx.ctx.user.id then
+		return api_error("Not your link", 403)
+	end
+	link:Delete()
+	return link
 end)
