@@ -29,13 +29,13 @@ register_route("/api/v1/files", "POST", make_route_opts(), function()
 	file.user = ngx.ctx.user.id
 
 	if not filetmp then
-		filemtp = "/var/www/foxcaves/tmp/files/" .. file.id .. extension
-		f = io.open(filemtp, "wb")
+		filetmp = "/var/www/foxcaves/tmp/files/" .. file.id .. extension
+		f = io.open(filetmp, "wb")
 		f:write(filedata)
 		f:close()
 		filedata = nil
 	end
-	file:MoveUploadData(filemtp)
+	file:MoveUploadData(filetmp)
 
 	file:Save()
 
