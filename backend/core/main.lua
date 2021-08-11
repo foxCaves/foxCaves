@@ -1,3 +1,5 @@
+local lfs = require("lfs")
+
 local function load_revision()
 	local fh = io.open("/var/www/foxcaves/.revision", "r")
 	if not fh then

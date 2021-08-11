@@ -1,3 +1,5 @@
+local cjson = require("cjson")
+
 function register_shutdown(func)
 	if not ngx.ctx.shutdown_funcs then
 		ngx.ctx.shutdown_funcs = {}

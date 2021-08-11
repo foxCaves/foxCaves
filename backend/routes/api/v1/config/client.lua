@@ -1,3 +1,5 @@
+local cjson = require("cjson")
+
 local function get_config()
     return {
         sentry_dsn = CONFIG.sentry.dsn_frontend,

@@ -1,3 +1,5 @@
+local cjson = require("cjson")
+
 register_route("/api/v1/ws/events", "GET", make_route_opts(), function()
     local redis = make_redis(true)
 

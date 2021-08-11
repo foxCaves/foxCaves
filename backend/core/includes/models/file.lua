@@ -1,3 +1,5 @@
+local lfs = require("lfs")
+
 local FILE_STORAGE_PATH = "/var/www/foxcaves/storage/"
 
 local FileMT = {}

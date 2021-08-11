@@ -1,3 +1,5 @@
+local lfs = require("lfs")
+
 register_route("/api/v1/files", "POST", make_route_opts(), function()
 	local name = ngx.var.arg_name
 

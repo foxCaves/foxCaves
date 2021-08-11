@@ -1,3 +1,6 @@
+local uuid = require("resty.uuid")
+local argon2 = require("argon2")
+
 local UserMT = {}
 User = {}
 
@@ -15,6 +18,10 @@ local function makeusermt(user)
 end
 
 function User.GetByID(id)
+    if not uuid.is_valid(id) then
+        return nil
+    end
+
 	local user = get_ctx_database():query_safe('SELECT * FROM users WHERE id = %s', id)
 	user = user[1]
 

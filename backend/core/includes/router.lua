@@ -1,3 +1,6 @@
+local lfs = require("lfs")
+local cjson = require("cjson")
+
 local explode = explode
 local type = type
 local next = next

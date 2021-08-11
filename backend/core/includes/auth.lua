@@ -32,10 +32,6 @@ function do_login(username_or_id, credential, options)
 		return LOGIN_BAD_CREDENTIALS
 	end
 
-	if login_with_id and not uuid.is_valid(username_or_id) then
-		return LOGIN_BAD_CREDENTIALS
-	end
-
 	local user
 	if login_with_id then
 		user = User.GetByID(username_or_id)
