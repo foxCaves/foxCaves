@@ -1,5 +1,5 @@
 local lfs = require("lfs")
-local utils = require("utils")
+local utils = require("foxcaves.utils")
 
 register_route("/api/v1/files/{id}/convert", "POST", make_route_opts(), function()
 	local file = File.GetByID(ngx.ctx.route_vars.id)

@@ -1,5 +1,5 @@
-local utils = require("utils")
-local database = require("database")
+local utils = require("foxcaves.utils")
+local database = require("foxcaves.database")
 
 local LinkMT = {}
 Link = {}

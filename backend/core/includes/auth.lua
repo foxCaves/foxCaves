@@ -1,7 +1,7 @@
 local SESSION_EXPIRE_DELAY = 7200
 
-local utils = require("utils")
-local redis = require("redis")
+local utils = require("foxcaves.utils")
+local redis = require("foxcaves.redis")
 
 local function hash_login_key(loginkey)
 	return ngx.hmac_sha1(loginkey or ngx.ctx.user.loginkey, ngx.var.http_user_agent or ngx.var.remote_addr)

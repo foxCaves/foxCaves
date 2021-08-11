@@ -1,5 +1,5 @@
 local run_request
-local utils = require("utils")
+local utils = require("foxcaves.utils")
 
 if CONFIG.sentry.dsn then
 	local rvn = require("raven").new({

@@ -1,4 +1,4 @@
-local utils = require("utils")
+local utils = require("foxcaves.utils")
 
 register_route("/api/v1/users", "POST", make_route_opts_anon(), function()
     local args = utils.get_post_args()

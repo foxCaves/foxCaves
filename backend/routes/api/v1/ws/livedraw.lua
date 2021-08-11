@@ -1,4 +1,4 @@
-local redis = require("redis")
+local redis = require("foxcaves.redis")
 
 register_route("/api/v1/ws/livedraw", "GET", make_route_opts({ allow_guest = true }), function()
 	local next = next
@@ -13,7 +13,7 @@ register_route("/api/v1/ws/livedraw", "GET", make_route_opts({ allow_guest = tru
 	local ngx = ngx
 	local randstr = randstr
 	local unpack = unpack
-	local utils = require("utils")
+	local utils = require("foxcaves.utils")
 
 	local main_redis = redis.get_shared()
 	local sub_redis = redis.make(true)

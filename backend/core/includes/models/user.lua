@@ -1,8 +1,8 @@
 local uuid = require("resty.uuid")
 local argon2 = require("argon2")
-local utils = require("utils")
-local database = require("database")
-local redis = require("redis")
+local utils = require("foxcaves.utils")
+local database = require("foxcaves.database")
+local redis = require("foxcaves.redis")
 
 local UserMT = {}
 User = {}

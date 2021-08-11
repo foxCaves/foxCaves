@@ -1,5 +1,5 @@
 local resty_redis = require("resty.redis")
-local utils = require("utils")
+local utils = require("foxcaves.utils")
 local next = next
 local error = error
 local ngx = ngx

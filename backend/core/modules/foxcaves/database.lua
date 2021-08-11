@@ -1,4 +1,4 @@
-local utils = require("utils")
+local utils = require("foxcaves.utils")
 local pgmoon = require("pgmoon")
 local next = next
 local error = error

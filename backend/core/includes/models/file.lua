@@ -1,6 +1,6 @@
 local lfs = require("lfs")
-local utils = require("utils")
-local database = require("database")
+local utils = require("foxcaves.utils")
+local database = require("foxcaves.database")
 
 local FILE_STORAGE_PATH = "/var/www/foxcaves/storage/"
 

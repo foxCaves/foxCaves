@@ -1,5 +1,5 @@
 local cjson = require("cjson")
-local redis = require("redis")
+local redis = require("foxcaves.redis")
 local ngx = ngx
 local table = table
 local type = type

@@ -1,4 +1,4 @@
-local utils = require("utils")
+local utils = require("foxcaves.utils")
 
 register_route("/cdn/sendfile/{action}/{fileid}/{extension}", "GET", make_route_opts_anon(), function()
 	local function send_file(disposition_type)

@@ -1,4 +1,4 @@
-local utils = require("utils")
+local utils = require("foxcaves.utils")
 
 register_route("/api/v1/users/self/login", "POST", make_route_opts({ allow_guest = true, api_login = false }), function()
     local args = utils.get_post_args()

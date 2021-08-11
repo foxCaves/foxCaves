@@ -1,5 +1,5 @@
 local cjson = require("cjson")
-local redis = require("redis")
+local redis = require("foxcaves.redis")
 
 register_route("/api/v1/ws/events", "GET", make_route_opts(), function()
     local redis_inst = redis.make(true)

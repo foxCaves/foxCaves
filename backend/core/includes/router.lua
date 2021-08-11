@@ -1,7 +1,7 @@
 local lfs = require("lfs")
 local cjson = require("cjson")
 
-local utils = require("utils")
+local utils = require("foxcaves.utils")
 local explode = utils.explode
 local type = type
 local next = next

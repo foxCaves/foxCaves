@@ -1,4 +1,4 @@
-local utils = require("utils")
+local utils = require("foxcaves.utils")
 
 register_route("/api/v1/files/{id}", "DELETE", make_route_opts(), function()
 	local file = File.GetByID(ngx.ctx.route_vars.id)
