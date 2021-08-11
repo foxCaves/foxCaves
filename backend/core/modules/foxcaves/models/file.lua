@@ -29,7 +29,7 @@ local File = {
     },
 }
 
-setmetatable(1, File)
+setfenv(1, File)
 
 local mimetypes = {
 	[".bmp"] = "image/bmp",
