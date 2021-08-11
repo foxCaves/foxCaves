@@ -9,6 +9,12 @@ register_route("/api/v1/files", "POST", make_route_opts(), function()
 
 	name = ngx.unescape_uri(name)
 
+	local file = File.New()
+	file.user = ngx.ctx.user.id
+	if not file:SetName(name) then
+		return api_error("Invalid name")
+	end
+
 	ngx.req.read_body()
 	local filetmp = ngx.req.get_body_file()
 	local filedata = ngx.req.get_body_data()
@@ -24,9 +30,6 @@ register_route("/api/v1/files", "POST", make_route_opts(), function()
 	if user_calculate_usedbytes(ngx.ctx.user) + filesize > ngx.ctx.user.totalbytes then
 		return api_error("Over quota", 402)
 	end
-
-	local file = File.New()
-	file.user = ngx.ctx.user.id
 
 	if not filetmp then
 		filetmp = "/var/www/foxcaves/tmp/files/" .. file.id .. extension

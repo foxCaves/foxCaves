@@ -176,12 +176,25 @@ function FileMT:Download()
     return file_fullread(FILE_STORAGE_PATH .. self.id .. "/file" .. self.extension)
 end
 
-function FileMT:MoveUploadData(src)
-	local nameregex = ngx.re.match(name, "^([^<>\r\n\t]*?)(\\.[a-zA-Z0-9]+)?$", "o")
+function FileMT:SetName(name)
+	local nameregex = ngx.re.match(src, "^([^<>\r\n\t]*?)(\\.[a-zA-Z0-9]+)?$", "o")
+
+    if (not nameregex) or (not nameregex[1]) then
+        return false
+    end
 
     self.name = nameregex[1]
     self.extension = nameregex[2]
+    if not self.extension then
+        self.extension = ".bin"
+    else
+        self.extension = self.extension:lower()
+    end
 
+    return true
+end
+
+function FileMT:MoveUploadData(src)
     self.size = lfs.attributes(src, "size")
 
     self:ComputeVirtuals()
