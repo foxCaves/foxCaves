@@ -228,7 +228,7 @@ register_route("/api/v1/ws/livedraw", "GET", make_route_opts({ allow_guest = tru
 		should_run = false
 	end
 
-	function get_id_from_packet(str)
+	local function get_id_from_packet(str)
 		str = str:sub(2, str:find("|") - 1)
 		return str
 	end
