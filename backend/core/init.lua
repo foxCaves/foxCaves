@@ -1,8 +1,6 @@
 -- Load modules, ensure they don't leave globals behind
 local path = require("path")
 _G.path = nil
-require("lfs")
-_G.lfs = nil
 
 -- Load paths
 local CORE_ROOT = path.abs(debug.getinfo(1, "S").source:sub(2):match("(.*/)"))
@@ -24,6 +22,9 @@ setmetatable(_G, {
 		error("Attempt to read unknown from _G: " .. k)
 	end,
 	__newindex = function(t, k, v)
+		if k == "lfs" then
+			return
+		end
 		error("Attempt to write to _G: " .. k)
 	end,
 })
