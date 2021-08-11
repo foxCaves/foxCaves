@@ -2,6 +2,7 @@ local cjson = require("cjson")
 local ngx = ngx
 local table = table
 local type = type
+local next = next
 local get_ctx_redis = get_ctx_redis
 
 module("utils")
