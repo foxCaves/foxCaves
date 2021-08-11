@@ -34,10 +34,13 @@ init_environment()
 
 dofile("/var/www/foxcaves/config/" .. ENVIRONMENT_STRING .. ".lua")
 
-require("foxcaves.router").load()
-
-setmetatable(_G, { 
+setmetatable(_G, {
+	__index = function(t, k)
+		error("Attempt to read unknown from _G: " .. k)
+	end,
 	__newindex = function(t, k, v)
 		error("Attempt to write to _G: " .. k)
 	end,
 })
+
+require("foxcaves.router").load()
