@@ -2,8 +2,16 @@ local database = require("foxcaves.database")
 local events = require("foxcaves.events")
 local random = require("foxcaves.random")
 
+local setmetatable = setmetatable
+local ngx = ngx
+local next = next
+
+local url_config = CONFIG.urls
+
 local LinkMT = {}
 local Link = {}
+
+setfenv(1, Link)
 
 local function makelinkmt(link)
     link.not_in_db = nil
@@ -12,19 +20,19 @@ local function makelinkmt(link)
     return link
 end
 
-function Link.GetByUser(user)
+function GetByUser(user)
     if user.id then
         user = user.id
     end
 
     local links = database.get_shared():query_safe('SELECT * FROM links WHERE "user" = %s', user)
-    for k,v in pairs(links) do
+    for k,v in next, links do
         links[k] = makelinkmt(v)
     end
     return links
 end
 
-function Link.GetByID(id)
+function GetByID(id)
 	if not id then 
 		return nil
 	end
@@ -39,7 +47,7 @@ function Link.GetByID(id)
 	return makelinkmt(links)
 end
 
-function Link.New()
+function New()
     local link = {
         not_in_db = true,
         id = random.string(10),
@@ -50,7 +58,7 @@ function Link.New()
 end
 
 function LinkMT:ComputeVirtuals()
-    self.short_url = CONFIG.urls.short .. "/g" .. self.id
+    self.short_url = url_config.short .. "/g" .. self.id
 end
 
 function LinkMT:Delete()
