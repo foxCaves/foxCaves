@@ -1,8 +1,8 @@
 -- Load modules, ensure they don't leave globals behind
 local path = require("path")
-path = nil
+_G.path = nil
 require("lfs")
-lfs = nil
+_G.lfs = nil
 
 -- Load paths
 local CORE_ROOT = path.abs(debug.getinfo(1, "S").source:sub(2):match("(.*/)"))
