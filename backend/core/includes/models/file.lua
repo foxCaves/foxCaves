@@ -122,7 +122,8 @@ function File.GetByID(id)
 	end
 
 	local file = get_ctx_database():query_safe('SELECT * FROM files WHERE id = %s', id)
-	
+	file = file[1]
+
 	if not file then
 		return nil
 	end
