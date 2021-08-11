@@ -1,7 +1,7 @@
 local lfs = require("lfs")
 local cjson = require("cjson")
 
-local explode = explode
+local explode
 local type = type
 local next = next
 
@@ -176,6 +176,7 @@ function execute_route()
 end
 
 on_load_done(function()
+    explode = _G.explode
     scan_route_dir("routes")
     register_route = nil
     make_route_opts = nil

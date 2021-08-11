@@ -54,6 +54,7 @@ local function scan_include_dir(dir)
 end
 scan_include_dir("core/includes")
 
+on_load_done = nil
 for _, v in pairs(on_load_done_funcs) do
 	v()
 end
