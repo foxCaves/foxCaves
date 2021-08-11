@@ -9,40 +9,9 @@ LOGIN_USER_INACTIVE = 0
 LOGIN_USER_BANNED = -1
 LOGIN_BAD_CREDENTIALS = -10
 
-local KILOBYTE = 1024
-local MEGABYTE = KILOBYTE * 1024
-local GIGABYTE = MEGABYTE * 1024
-
-local STORAGE_BASE = 1 * GIGABYTE
-
-function hash_password(password)
-	return argon2.hash(password, randstr(32))
+function LOGIN_METHOD_PASSWORD(userdata, password)
+	return userdata:CheckPassword(password)
 end
-
-function check_user_password(userdata, password)
-	local authOk = false
-	local authNeedsUpdate = false
-	if userdata.password:sub(1, 13) == "$fcvhmacsha1$" then
-		local pw = userdata.password:sub(14)
-		local saltIdx = pw:find("$", 1, true)
-		local salt = pw:sub(1, saltIdx - 1)
-		pw = pw:sub(saltIdx + 1)
-
-		pw = ngx.decode_base64(pw)
-		salt = ngx.decode_base64(salt)
-
-		authOk = ngx.hmac_sha1(salt, password) == pw
-		authNeedsUpdate = true
-	else
-		authOk = argon2.verify(userdata.password, password)
-	end
-	if authOk and authNeedsUpdate then
-		get_ctx_database():query_safe('UPDATE users SET password = %s WHERE id = %s', hash_password(password), userdata.id)
-	end
-	return authOk	
-end
-
-LOGIN_METHOD_PASSWORD = check_user_password
 function LOGIN_METHOD_APIKEY(userdata, apikey)
 	return userdata.apikey == apikey
 end
@@ -67,51 +36,53 @@ function do_login(username_or_id, credential, options)
 		return LOGIN_BAD_CREDENTIALS
 	end
 
-	local id_field = login_with_id and "id" or "lower(username)"
+	local user
+	if login_with_id then
+		user = User.GetByID(username_or_id)
+	else
+		user = User.GetByUsername(username_or_id)
+	end
 
-	local resultarr = get_ctx_database():query_safe('SELECT * FROM users WHERE ' .. id_field .. ' = %s', tostring(username_or_id):lower())
-	local result = resultarr[1]
-	if not result then
+	if not user then
 		return LOGIN_BAD_CREDENTIALS
 	end
 
 	local auth_func = options.login_method or LOGIN_METHOD_PASSWORD
-	if not auth_func(result, credential) then
+	if not auth_func(user, credential) then
 		return LOGIN_BAD_CREDENTIALS
 	end
 
-	if result.active == 0 then
+	if user.active == 0 then
 		return LOGIN_USER_INACTIVE
-	elseif result.active == -1 then
+	elseif user.active == -1 then
 		return LOGIN_USER_BANNED
 	end
 
 	if not nosession then
 		local sessionid = randstr(32)
 		ngx.header['Set-Cookie'] = {"sessionid=" .. sessionid .. "; HttpOnly; Path=/; Secure;"}
-		result.sessionid = sessionid
+		ngx.ctx.sessionid = sessionid
 
 		sessionid = "sessions:" .. sessionid
-		redis:hmset(sessionid, "id", result.id, "loginkey", ngx.encode_base64(hash_login_key(result.loginkey)))
+		redis:hmset(sessionid, "id", user.id, "loginkey", ngx.encode_base64(hash_login_key(user.loginkey)))
 		redis:expire(sessionid, SESSION_EXPIRE_DELAY)
 	end
 
-	result.totalbytes = STORAGE_BASE + result.bonusbytes
-	ngx.ctx.user = result
+	ngx.ctx.user = user
 
 	return LOGIN_SUCCESS
 end
 
 function do_logout()
 	ngx.header['Set-Cookie'] = {"sessionid=NULL; HttpOnly; Path=/; Secure;", "loginkey=NULL; HttpOnly; Path=/; Secure;"}
-	if ngx.ctx.user and ngx.ctx.user.sessionid then
-		get_ctx_redis():del("sessions:" .. ngx.ctx.user.sessionid)
+	if ngx.ctx.sessionid then
+		get_ctx_redis():del("sessions:" .. ngx.ctx.sessionid)
 	end
 	ngx.ctx.user = nil
 end
 
 function send_login_key()
-	if not ngx.ctx.user.remember_me then return end
+	if not ngx.ctx.remember_me then return end
 	local expires = "; Expires=" .. ngx.cookie_time(ngx.time() + (30 * 24 * 60 * 60))
 	local hdr = ngx.header['Set-Cookie']
 	expires = "loginkey=" .. ngx.ctx.user.id .. "." .. ngx.encode_base64(hash_login_key()) .. expires .. "; HttpOnly; Path=/; Secure;"
@@ -135,7 +106,7 @@ function check_cookies()
 			local sessionKey = "sessions:" .. sessionid
 			local result = redis:hgetall(sessionKey)
 			if result and do_login(result.id, result.loginkey, { nosession = true, login_with_id = true, login_method = LOGIN_METHOD_LOGINKEY }) == LOGIN_SUCCESS then
-				ngx.ctx.user.sessionid = sessionid
+				ngx.ctx.sessionid = sessionid
 				ngx.header['Set-Cookie'] = {"sessionid=" .. sessionid .. "; HttpOnly; Path=/; Secure;"}
 				redis:expire(sessionKey, SESSION_EXPIRE_DELAY)
 			end
@@ -144,11 +115,11 @@ function check_cookies()
 		local loginkey = ngx.re.match(cookies, "^(.*; *)?loginkey=([0-9a-f-]+)\\.([a-zA-Z0-9+/=]+)( *;.*)?$", "o")
 		if loginkey then
 			if ngx.ctx.user then
-				ngx.ctx.user.remember_me = true
+				ngx.ctx.remember_me = true
 				send_login_key()
 			else
 				if do_login(loginkey[2], loginkey[3], { login_with_id = true, login_method = LOGIN_METHOD_LOGINKEY }) == LOGIN_SUCCESS then
-					ngx.ctx.user.remember_me = true
+					ngx.ctx.remember_me = true
 					send_login_key()
 				end
 			end

@@ -6,6 +6,7 @@ dbconfig.postgres.socket_type = "nginx"
 local resty_redis = require("resty.redis")
 local pgmoon = require("pgmoon")
 
+VALIDATION_STATE_OK = 0
 VALIDATION_STATE_INVALID = -1
 VALIDATION_STATE_TAKEN = -2
 
@@ -137,30 +138,6 @@ function get_ctx_database()
 	return database
 end
 
-function check_email(email)
-	if not ngx.re.match(email, "^[a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\\.[a-zA-Z]{2,}$", "o") then
-		return VALIDATION_STATE_INVALID
-	end
-
-	local res = get_ctx_database():query_safe('SELECT id FROM users WHERE lower(email) = %s', email:lower())
-	if res[1] then
-		return VALIDATION_STATE_TAKEN
-	end
-	return nil
-end
-
-function check_username(username)
-	if not ngx.re.match(username, "^[a-zA-Z0-9 .,;_-]+$", "o") then
-		return VALIDATION_STATE_INVALID
-	end
-
-	local res = get_ctx_database():query_safe('SELECT id FROM users WHERE lower(username) = %s', username:lower())
-	if res[1] then
-		return VALIDATION_STATE_TAKEN
-	end
-	return nil
-end
-
 local repTbl = {
 	["&"] = "&amp;",
 	["<"] = "&lt;",
@@ -193,11 +170,4 @@ end
 
 function api_error(error, code)
 	return { error = error }, (code or 400)
-end
-
-function printTemplateAndClose(name, params)
-	ngx.print(evalTemplate(name, params))
-end
-function printStaticTemplateAndClose(name, params, cachekey)
-	ngx.print(evalTemplateAndCache(name, params, cachekey))
 end

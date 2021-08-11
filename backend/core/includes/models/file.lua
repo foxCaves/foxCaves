@@ -240,7 +240,7 @@ function FileMT:Save()
 	}, self.user)
 	raw_push_action({
 		action = "usedbytes",
-		usedbytes = user_calculate_usedbytes(self.user),
+		usedbytes = User.CalculateUsedBytes(self.user),
 	}, self.user)
 end
 

@@ -23,8 +23,10 @@ register_route("/api/v1/users/self/login", "POST", make_route_opts({ allow_guest
         return api_error("Unknown login error")
     else
         if args.remember == "true" then
-            ngx.ctx.user.remember_me = true
+            ngx.ctx.remember_me = true
             send_login_key()
         end
     end
+
+    return ngx.ctx.user:GetPrivate()
 end)

@@ -1,5 +1,4 @@
 register_route("/api/v1/users/emails/code", "POST", make_route_opts_anon(), function()
-    local database = get_ctx_database()
     local redis = get_ctx_redis()
     local args = get_post_args()
 
@@ -15,21 +14,23 @@ register_route("/api/v1/users/emails/code", "POST", make_route_opts_anon(), func
         return api_error("code invalid")
     end
 
-    local userres = database:query_safe('SELECT * FROM users WHERE id = %s', res.user)
-    local userdata = userres[1]
-    if not userdata then
+    local user = User.GetByID(res.user)
+    if not user then
         return api_error("Bad user")
     end
 
     if res.action == "activation" then
-        database:query_safe('UPDATE users SET active = 1 WHERE active = 0 AND id = %s', res.user)
+        user.active = 1
+        user:Save()
     elseif res.action == "forgotpwd" then
         local newPassword = randstr(16)
-        database:query_safe('UPDATE users SET password = %s WHERE id = %s', hash_password(newPassword), res.user)
-        make_new_login_key(userdata)
+    
+        user:SetPassword(newPassword)
+        user:MakeNewLoginKey()
+        user:Save()
 
-        local email = "Hello, " .. userdata.username .. "!\n\nHere is your new password:\n" .. newPassword .. "\nPlease log in at " .. MAIN_URL .. "/login and change it as soon as possible.\n\nKind regards,\nfoxCaves Support"
-        mail(userdata.email, "foxCaves - New password", email, "noreply@foxcav.es", "foxCaves")
+        local email = "Hello, " .. user.username .. "!\n\nHere is your new password:\n" .. newPassword .. "\nPlease log in at " .. MAIN_URL .. "/login and change it as soon as possible.\n\nKind regards,\nfoxCaves Support"
+        mail(user.email, "foxCaves - New password", email, "noreply@foxcav.es", "foxCaves")
     end
 
     return { action = res.action }

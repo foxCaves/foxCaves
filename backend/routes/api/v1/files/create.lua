@@ -1,6 +1,4 @@
 register_route("/api/v1/files", "POST", make_route_opts(), function()
-	local database = get_ctx_database()
-
 	local name = ngx.var.arg_name
 
 	if not name then
@@ -27,7 +25,7 @@ register_route("/api/v1/files", "POST", make_route_opts(), function()
 		return api_error("Empty body")
 	end
 
-	if user_calculate_usedbytes(ngx.ctx.user) + filesize > ngx.ctx.user.totalbytes then
+	if User.CalculateUsedBytes(ngx.ctx.user) + filesize > ngx.ctx.user.totalbytes then
 		return api_error("Over quota", 402)
 	end
 

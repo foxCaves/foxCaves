@@ -1,6 +1,4 @@
 register_route("/api/v1/files/{id}", "PATCH", make_route_opts(), function()
-    local database = get_ctx_database()
-
     local file = File.GetByID(ngx.ctx.route_vars.id)
     if not file then
         return api_error("File not found", 404)
