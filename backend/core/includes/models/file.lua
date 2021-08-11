@@ -177,7 +177,7 @@ function FileMT:Download()
 end
 
 function FileMT:SetName(name)
-	local nameregex = ngx.re.match(src, "^([^<>\r\n\t]*?)(\\.[a-zA-Z0-9]+)?$", "o")
+	local nameregex = ngx.re.match(name, "^([^<>\r\n\t]*?)(\\.[a-zA-Z0-9]+)?$", "o")
 
     if (not nameregex) or (not nameregex[1]) then
         return false
