@@ -8,8 +8,14 @@ local random = require("foxcaves.random")
 local consts = require("foxcaves.consts")
 local auth = require("foxcaves.auth")
 
+local setmetatable = setmetatable
+local ngx = ngx
+local next = next
+
 local UserMT = {}
 local User = {}
+
+setfenv(1, User)
 
 local KILOBYTE = 1024
 local MEGABYTE = KILOBYTE * 1024
