@@ -25,7 +25,10 @@ function user_require_email_confirmation(user)
 end
 
 function user_calculate_usedbytes(user)
-	local res = get_ctx_database():query_safe('SELECT SUM(size) AS usedbytes FROM files WHERE "user" = %s', user.id)
+	if user.id then
+		user = user.id
+	end
+	local res = get_ctx_database():query_safe('SELECT SUM(size) AS usedbytes FROM files WHERE "user" = %s', user)
 	return res[1].usedbytes or 0
 end
 
