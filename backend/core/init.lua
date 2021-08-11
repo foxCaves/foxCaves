@@ -13,7 +13,8 @@ setmetatable(_G, {
 	end,
 })
 
-require("lfs").chdir("/var/www/foxcaves/lua")
-package.path = package.path .. ";core/modules/?.lua"
+-- BEGIN: chdir to script's path
+require("lfs").chdir(debug.getinfo(2, "S").source:sub(2):match("(.*/)") .. "/../")
+-- END:   chdir to script's path
 
-collectgarbage("collect")
+package.path = package.path .. ";core/modules/?.lua"

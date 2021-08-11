@@ -1,5 +1,5 @@
 local function load_revision()
-	local fh = io.open("/var/www/foxcaves/.revision", "r")
+	local fh = io.open("../.revision", "r")
 	if not fh then
 		return
 	end

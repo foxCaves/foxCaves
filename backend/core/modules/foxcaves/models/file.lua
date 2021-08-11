@@ -13,7 +13,7 @@ local ngx = ngx
 local next = next
 local setmetatable = setmetatable
 
-local FILE_STORAGE_PATH = "/var/www/foxcaves/storage/"
+local FILE_STORAGE_PATH = "../storage/"
 
 local FileMT = {}
 
@@ -266,7 +266,7 @@ end
 function FileMT:MoveUploadData(src)
     self.size = lfs.attributes(src, "size")
 
-    local thumbDest = "/var/www/foxcaves/tmp/thumbs/" .. self.id
+    local thumbDest = "../tmp/thumbs/" .. self.id
     
 	local prefix, suffix = self.mimetype:match("([a-z]+)/([a-z]+)")
 	self.type, self.thumbnail = mimeHandlers[prefix](src, thumbDest, suffix)
