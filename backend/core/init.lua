@@ -2,6 +2,8 @@
 lfs = false
 -- END:   Permissible _G vars, due to silly libraries
 
+ENVIRONMENT = os.getenv("ENVIRONMENT"):lower()
+
 setmetatable(_G, {
 	__index = function(t, k)
 		error("Attempt to read unknown from _G: " .. k)
