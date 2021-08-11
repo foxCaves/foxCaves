@@ -18,8 +18,8 @@ register_route("/api/v1/files/{id}/convert", "POST", make_route_opts(), function
 	local newfilename = file.name
 	newfilename = newfilename:sub(1, newfilename:len() - file.extension:len()) .. newextension
 
-	local tmptmpfile = "/var/www/foxcaves/tmp/files/" .. file.id .. file.extension
-	local tmpfile = "/var/www/foxcaves/tmp/files/" .. file.id .. newextension
+	local tmptmpfile = "/var/www/foxcaves/tmp/files/original_" .. file.id .. file.extension
+	local tmpfile = "/var/www/foxcaves/tmp/files/new_" .. file.id .. newextension
 
 	local fh = io.open(tmptmpfile, "w")
 	fh:write(data)
