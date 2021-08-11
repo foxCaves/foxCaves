@@ -78,7 +78,10 @@ local function scan_route_file(file)
     local data = fh:read("*all")
     fh:close()
 
-    local func = load(data, file)
+    local func, err = load(data, file)
+    if not func then
+        error("Error loading route: " .. err)
+    end
     func()
 end
 
