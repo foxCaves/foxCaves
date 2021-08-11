@@ -176,7 +176,7 @@ function UserMT:MakeNewLoginKey()
     self.loginkey = randstr(64)
     self.kick_user = true
     if ngx.ctx.user and self.id == ngx.ctx.user.id then
-        ngx.ctx.user.loginkey = str
+        ngx.ctx.user = self
         send_login_key()
     end
 end
