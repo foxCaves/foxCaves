@@ -211,6 +211,8 @@ function FileMT:MoveUploadData(src)
 	if self.thumbnail and self.thumbnail ~= "" then
 		file_move(thumbDest .. self.thumbnail, FILE_STORAGE_PATH .. self.id .. "/thumb" .. self.thumbnail)
 	end
+
+    self:ComputeVirtuals()
 end
 
 function FileMT:Save()
