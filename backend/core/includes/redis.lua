@@ -8,7 +8,7 @@ function make_redis(close_on_shutdown)
 	end
 	database:set_timeout(60000)
 
-	local ok, err = database:connect(CONFIG.redis.ip, CONFIG.redis.port)
+	local ok, err = database:connect(CONFIG.redis.host, CONFIG.redis.port)
 	if not ok then
 		error("Error connecting to DB: " .. err)
 	end
