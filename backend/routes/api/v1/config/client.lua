@@ -1,12 +1,12 @@
+local revision = require("foxcaves.revision")
 local cjson = require("cjson")
 local CONFIG = CONFIG
-local REVISION = REVISION
 local ngx = ngx
 
 local function get_config()
     return {
         sentry_dsn = CONFIG.sentry.dsn_frontend,
-        backend_release = REVISION,
+        backend_release = revision.hash,
         frontend_release = ngx.unescape_uri(ngx.var.arg_frontend_release or "UNKNOWN"),
         main_url = CONFIG.urls.main,
         short_url = CONFIG.urls.short,

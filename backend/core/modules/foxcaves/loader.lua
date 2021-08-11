@@ -1,7 +1,10 @@
 local utils = require("foxcaves.utils")
 local router = require("foxcaves.router")
+local consts = require("foxcaves.consts")
 local raven = require("raven")
 local raven_sender = require("raven.senders.ngx")
+local env = require("foxcaves.env")
+local revision = require("foxcaves.revision")
 local ngx = ngx
 local xpcall = xpcall
 local table = table
@@ -14,9 +17,6 @@ local type = type
 local next = next
 local tostring = tostring
 local sentry_config = CONFIG.sentry
-local ENVIRONMENT = ENVIRONMENT
-local REVISION = REVISION
-local ENV_PRODUCTION = ENV_PRODUCTION
 
 local M = {}
 setfenv(1, M)
@@ -27,8 +27,8 @@ if sentry_config.dsn then
 			dsn = sentry_config.dsn,
 		}),
 		tags = {
-			environment = ENVIRONMENT,
-			release = REVISION,
+			environment = env.name,
+			release = revision.hash,
 		},
 	})
 
@@ -260,7 +260,7 @@ else
 		if not isok then
 			ngx.status = 500
 			ngx.log(ngx.ERR, "Lua error: " .. err)
-			if ENVIRONMENT ~= ENV_PRODUCTION then
+			if ENVIRONMENT ~= consts.ENV_PRODUCTION then
 				ngx.print(err)
 			end
 		end
