@@ -22,7 +22,7 @@ setmetatable(_G, {
 		error("Attempt to read unknown from _G: " .. k)
 	end,
 	__newindex = function(t, k, v)
-		if k == "lfs" then
+		if k == "lfs" or k == "path" then
 			return
 		end
 		error("Attempt to write to _G: " .. k)
