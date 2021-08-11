@@ -6,7 +6,8 @@ local ngx = ngx
 
 local config = CONFIG.redis
 
-module("redis")
+local M = {}
+setfenv(1, M)
 
 function make(close_on_shutdown)
 	local database, err = resty_redis:new()
@@ -78,3 +79,5 @@ function get_shared()
 	ngx.ctx.__redis = redis
 	return redis
 end
+
+return M

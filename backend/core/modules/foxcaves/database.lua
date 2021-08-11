@@ -7,7 +7,8 @@ local unpack = unpack
 
 local config = CONFIG.postgres
 
-module("database")
+local M = {}
+setfenv(1, M)
 
 config.socket_type = "nginx"
 
@@ -45,3 +46,5 @@ function get_shared()
 	ngx.ctx.__database = database
 	return database
 end
+
+return M

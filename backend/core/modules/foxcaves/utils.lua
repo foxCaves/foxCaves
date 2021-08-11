@@ -3,7 +3,8 @@ local table = table
 local type = type
 local next = next
 
-module("utils")
+local M = {}
+setfenv(1, M)
 
 function register_shutdown(func)
 	if not ngx.ctx.shutdown_funcs then
@@ -55,3 +56,5 @@ function explode(div,str) -- credit: http://richard.warburton.it
 	table.insert(arr, str:sub(pos)) -- Attach chars right of last divider
 	return arr
 end
+
+return M

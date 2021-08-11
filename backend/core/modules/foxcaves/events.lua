@@ -1,7 +1,8 @@
 local redis = require("foxcaves.redis")
 local cjson = require("cjson")
 
-module("events")
+local M = {}
+setfenv(1, M)
 
 function push_raw(data, user)
 	if user.id then
@@ -9,3 +10,5 @@ function push_raw(data, user)
 	end
 	redis.get_shared():publish("push:" .. user, cjson.encode(data))
 end
+
+return M
