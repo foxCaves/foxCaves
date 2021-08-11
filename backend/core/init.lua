@@ -1,6 +1,5 @@
-local MAINDIR = "/var/www/foxcaves/lua"
-require("lfs").chdir(MAINDIR)
-package.path = package.path .. ";" .. MAINDIR .. "/core/modules/?.lua"
+require("lfs").chdir("/var/www/foxcaves/lua")
+package.path = package.path .. ";core/modules/?.lua"
 
 local loadfile = loadfile
 function dofile(file)
