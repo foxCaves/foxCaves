@@ -46,7 +46,7 @@ function dofile(file)
 	loadfile(file)()
 end
 
-dofile("/var/www/foxcaves/" .. ENVIRONMENT_STRING .. ".lua")
+dofile("/var/www/foxcaves/config/" .. ENVIRONMENT_STRING .. ".lua")
 SHORT_URL = CONFIG.urls.short
 MAIN_URL = CONFIG.urls.main
 
