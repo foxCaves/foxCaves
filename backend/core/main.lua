@@ -1,8 +1,8 @@
 local lfs = require("lfs")
 
-local loadfile = loadfile
-function dofile(file)
-	loadfile(file)()
+local on_load_done_funcs = {}
+function on_load_done(func)
+	table.insert(on_load_done_funcs, func)
 end
 
 local function load_revision()
@@ -53,3 +53,8 @@ local function scan_include_dir(dir)
     end
 end
 scan_include_dir("core/includes")
+
+for _, v in pairs(on_load_done_funcs) do
+	v()
+end
+on_load_done_funcs = nil
