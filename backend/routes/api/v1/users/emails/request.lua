@@ -1,6 +1,7 @@
 local utils = require("foxcaves.utils")
 local redis = require("foxcaves.redis")
 local mail = require("foxcaves.mail")
+local random = require("foxcaves.random")
 local User = require("foxcaves.models.user")
 
 register_route("/api/v1/users/emails/request", "POST", make_route_opts_anon(), function()
@@ -26,7 +27,7 @@ register_route("/api/v1/users/emails/request", "POST", make_route_opts_anon(), f
         return utils.api_error("User not found", 404)
     end
 
-    local emailid = randstr(32)
+    local emailid = random.string(32)
 
     local email = "Hello, " .. user.username .. "!\n\nYou have recently requested to "
     local subject

@@ -1,20 +1,20 @@
 local redis = require("foxcaves.redis")
+local random = require("foxcaves.random")
+local utils = require("foxcaves.utils")
+
+local next = next
+local tonumber = tonumber
+local tostring = tostring
+local setmetatable = setmetatable
+local pcall = pcall
+local table_insert = table.insert
+local table_concat = table.concat
+local string_format = string.format
+local time = os.time
+local ngx = ngx
+local unpack = unpack
 
 register_route("/api/v1/ws/livedraw", "GET", make_route_opts({ allow_guest = true }), function()
-	local next = next
-	local tonumber = tonumber
-	local tostring = tostring
-	local setmetatable = setmetatable
-	local pcall = pcall
-	local table_insert = table.insert
-	local table_concat = table.concat
-	local string_format = string.format
-	local time = os.time
-	local ngx = ngx
-	local randstr = randstr
-	local unpack = unpack
-	local utils = require("foxcaves.utils")
-
 	local main_redis = redis.get_shared()
 	local sub_redis = redis.make(true)
 
@@ -263,7 +263,7 @@ register_route("/api/v1/ws/livedraw", "GET", make_route_opts({ allow_guest = tru
 		user.name = ngx.ctx.user.username
 	end
 
-	local wsid = randstr(16)
+	local wsid = random.string(16)
 	if not user.name then
 		user.name = string_format("Guest %s", wsid)
 	end

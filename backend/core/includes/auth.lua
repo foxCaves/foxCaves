@@ -1,5 +1,6 @@
 local utils = require("foxcaves.utils")
 local redis = require("foxcaves.redis")
+local random = require("foxcaves.random")
 local User = require("foxcaves.models.user")
 
 local SESSION_EXPIRE_DELAY = 7200
@@ -57,7 +58,7 @@ function do_login(username_or_id, credential, options)
 	end
 
 	if not nosession then
-		local sessionid = randstr(32)
+		local sessionid = random.string(32)
 		ngx.header['Set-Cookie'] = {"sessionid=" .. sessionid .. "; HttpOnly; Path=/; Secure;"}
 		ngx.ctx.sessionid = sessionid
 

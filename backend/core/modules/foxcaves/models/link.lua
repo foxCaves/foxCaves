@@ -1,5 +1,6 @@
 local database = require("foxcaves.database")
 local events = require("foxcaves.events")
+local random = require("foxcaves.random")
 
 local LinkMT = {}
 local Link = {}
@@ -41,7 +42,7 @@ end
 function Link.New()
     local link = {
         not_in_db = true,
-        id = randstr(10),
+        id = random.string(10),
         time = ngx.time(),
     }
     setmetatable(link, LinkMT)

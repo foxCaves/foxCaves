@@ -1,3 +1,10 @@
+local io = io
+local bit = bit
+local table = table
+
+local M = {}
+setfenv(1, M)
+
 local function random(min, max, randomstream)
 	local a,b,c,d = randomstream:read(4):byte(1,4)
 
@@ -20,7 +27,7 @@ local chars = {
 	"0","1","2","3","4","5","6","7","8","9"
 }
 local charcount = #chars
-function randstr(len)
+function string(len)
 	local randomstream = io.open("/dev/urandom", "r")
 	local ret = {}
 	for i=1,len do
@@ -29,3 +36,5 @@ function randstr(len)
 	randomstream:close()
 	return table.concat(ret)
 end
+
+return M

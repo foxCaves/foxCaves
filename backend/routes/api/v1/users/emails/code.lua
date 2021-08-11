@@ -1,6 +1,7 @@
 local utils = require("foxcaves.utils")
 local redis = require("foxcaves.redis")
 local mail = require("foxcaves.mail")
+local random = require("foxcaves.random")
 local User = require("foxcaves.models.user")
 
 register_route("/api/v1/users/emails/code", "POST", make_route_opts_anon(), function()
@@ -28,7 +29,7 @@ register_route("/api/v1/users/emails/code", "POST", make_route_opts_anon(), func
         user.active = 1
         user:Save()
     elseif res.action == "forgotpwd" then
-        local newPassword = randstr(16)
+        local newPassword = random.string(16)
     
         user:SetPassword(newPassword)
         user:MakeNewLoginKey()

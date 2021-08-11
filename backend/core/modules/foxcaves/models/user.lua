@@ -4,6 +4,7 @@ local database = require("foxcaves.database")
 local redis = require("foxcaves.redis")
 local events = require("foxcaves.events")
 local mail = require("foxcaves.mail")
+local random = require("foxcaves.random")
 
 local UserMT = {}
 local User = {}
@@ -101,7 +102,7 @@ function UserMT:SetUsername(username)
 end
 
 function UserMT:SetPassword(password)
-    self.password = argon2.hash(password, randstr(32))
+    self.password = argon2.hash(password, random.string(32))
 end
 
 function UserMT:CheckPassword(password)
@@ -159,7 +160,7 @@ function UserMT:Save()
     end
 
     if self.require_email_confirmation then
-        local emailid = randstr(32)
+        local emailid = random.string(32)
 
         local email_text = "Hello, " .. self.username .. "!\n\nYou have recently registered or changed your E-Mail on foxCaves.\nPlease click the following link to activate your E-Mail:\n"
         email_text = email_text .. CONFIG.urls.main .. "/email/code?code=" .. emailid .. "\n\n"
@@ -185,7 +186,7 @@ function UserMT:Save()
 end
 
 function UserMT:MakeNewLoginKey()
-    self.loginkey = randstr(64)
+    self.loginkey = random.string(64)
     self.kick_user = true
     if ngx.ctx.user and self.id == ngx.ctx.user.id then
         ngx.ctx.user = self
@@ -194,7 +195,7 @@ function UserMT:MakeNewLoginKey()
 end
 
 function UserMT:MakeNewAPIKey()
-    self.apikey = randstr(64)
+    self.apikey = random.string(64)
 end
 
 UserMT.__index = UserMT

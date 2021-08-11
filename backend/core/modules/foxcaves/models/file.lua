@@ -2,6 +2,7 @@ local lfs = require("lfs")
 local utils = require("foxcaves.utils")
 local database = require("foxcaves.database")
 local events = require("foxcaves.events")
+local random = require("foxcaves.random")
 local User = require("foxcaves.models.user")
 
 local FILE_STORAGE_PATH = "/var/www/foxcaves/storage/"
@@ -189,7 +190,7 @@ end
 function File.New()
     local file = {
         not_in_db = true,
-        id = randstr(10),
+        id = random.string(10),
         time = ngx.time(),
     }
     setmetatable(file, FileMT)
