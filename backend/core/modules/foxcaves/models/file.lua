@@ -5,6 +5,15 @@ local events = require("foxcaves.events")
 local random = require("foxcaves.random")
 local User = require("foxcaves.models.user")
 
+local io = io
+local string = string
+local os = os
+local ngx = ngx
+local next = next
+local setmetatable = setmetatable
+
+local url_config = CONFIG.urls
+
 local FILE_STORAGE_PATH = "/var/www/foxcaves/storage/"
 
 local FileMT = {}
@@ -19,6 +28,8 @@ local File = {
         Iframe = 5,
     },
 }
+
+setmetatable(1, File)
 
 local mimetypes = {
 	[".bmp"] = "image/bmp",
@@ -72,9 +83,9 @@ local mimeHandlers = {
         )
 
         if not lfs.attributes(thumbnail, "size") then
-            return File.Type.Image, nil
+            return Type.Image, nil
         end
-        return File.Type.Image, thumbext
+        return Type.Image, thumbext
     end,
 
     text = function(src, dest)
@@ -94,22 +105,22 @@ local mimeHandlers = {
         fh:write(content)
         fh:close()
 
-        return File.Type.Text, ".txt"
+        return Type.Text, ".txt"
     end,
 
     video = function()
-        return File.Type.Video, nil
+        return Type.Video, nil
     end,
 
     audio = function()
-        return File.Type.Audio, nil
+        return Type.Audio, nil
     end,
 
     application = function(src, dest, suffix)
         if suffix == "pdf" then
-            return File.Type.Iframe, nil
+            return Type.Iframe, nil
         end
-        return File.Type.Other, nil
+        return Type.Other, nil
     end
 }
 
@@ -160,19 +171,19 @@ local function file_deletestorage(file)
 	file_manualdelete(file.id, true)
 end
 
-function File.GetByUser(user)
+function GetByUser(user)
     if user.id then
         user = user.id
     end
 
     local files = database.get_shared():query_safe('SELECT * FROM files WHERE "user" = %s', user)
-    for k,v in pairs(files) do
+    for k,v in next, files do
         files[k] = makefilemt(v)
     end
     return files
 end
 
-function File.GetByID(id)
+function GetByID(id)
 	if not id then 
 		return nil
 	end
@@ -187,7 +198,7 @@ function File.GetByID(id)
 	return makefilemt(file)
 end
 
-function File.New()
+function New()
     local file = {
         not_in_db = true,
         id = random.string(10),
@@ -199,17 +210,17 @@ end
 
 function FileMT:ComputeVirtuals()
     if self.thumbnail and self.thumbnail ~= "" then
-		self.thumbnail_url = CONFIG.urls.short .. "/thumbs/" .. self.id .. self.thumbnail
+		self.thumbnail_url = url_config.short .. "/thumbs/" .. self.id .. self.thumbnail
 	end
-	if self.type == File.Type.Image and self.thumbnail_url then
+	if self.type == Type.Image and self.thumbnail_url then
 		self.thumbnail_image = self.thumbnail_url
 	else
-		self.thumbnail_image = CONFIG.urls.main .. "/static/img/thumbs/ext_" .. self.extension .. ".png"
+		self.thumbnail_image = url_config.main .. "/static/img/thumbs/ext_" .. self.extension .. ".png"
 	end
 
-	self.view_url = CONFIG.urls.short .. "/v" .. self.id
-	self.direct_url = CONFIG.urls.short .. "/f" .. self.id .. self.extension
-	self.download_url = CONFIG.urls.short .. "/d" .. self.id .. self.extension
+	self.view_url = url_config.short .. "/v" .. self.id
+	self.direct_url = url_config.short .. "/f" .. self.id .. self.extension
+	self.download_url = url_config.short .. "/d" .. self.id .. self.extension
 	self.mimetype = mimetypes[self.extension] or "application/octet-stream"
 end
 
