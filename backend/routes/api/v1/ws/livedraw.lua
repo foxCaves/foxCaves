@@ -149,7 +149,7 @@ register_route("/api/v1/ws/livedraw", "GET", make_route_opts({ allow_guest = tru
 	end
 
 
-	USERMETA = {}
+	local USERMETA = {}
 	USERMETA.__index = USERMETA
 	function USERMETA:send(data)
 		ws:send_text(data)
