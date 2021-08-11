@@ -151,7 +151,7 @@ function UserMT:Save()
         local emailid = randstr(32)
 
         local email_text = "Hello, " .. self.username .. "!\n\nYou have recently registered or changed your E-Mail on foxCaves.\nPlease click the following link to activate your E-Mail:\n"
-        email_text = email_text .. MAIN_URL .. "/email/code?code=" .. emailid .. "\n\n"
+        email_text = email_text .. CONFIG.urls.main .. "/email/code?code=" .. emailid .. "\n\n"
         email_text = email_text .. "Kind regards,\nfoxCaves Support"
     
         local emailkey = "emailkeys:" .. emailid

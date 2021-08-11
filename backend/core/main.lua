@@ -47,8 +47,6 @@ function dofile(file)
 end
 
 dofile("/var/www/foxcaves/config/" .. ENVIRONMENT_STRING .. ".lua")
-SHORT_URL = CONFIG.urls.short
-MAIN_URL = CONFIG.urls.main
 
 local function scan_include_dir(dir)
     for file in lfs.dir(dir) do

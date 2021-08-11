@@ -35,7 +35,7 @@ register_route("/api/v1/users/emails/request", "POST", make_route_opts_anon(), f
     else
         return api_error("action invalid")
     end
-    email = email .. " just click on the following link:\n" .. MAIN_URL .."/email/code?code=" .. emailid .. "\n\nKind regards,\nfoxCaves Support"
+    email = email .. " just click on the following link:\n" .. CONFIG.urls.main .."/email/code?code=" .. emailid .. "\n\nKind regards,\nfoxCaves Support"
 
     local emailkey = "emailkeys:" .. emailid
     redis:hmset(emailkey, "user", userid, "action", action)

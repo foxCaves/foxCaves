@@ -192,17 +192,17 @@ end
 
 function FileMT:ComputeVirtuals()
     if self.thumbnail and self.thumbnail ~= "" then
-		self.thumbnail_url = SHORT_URL .. "/thumbs/" .. self.id .. self.thumbnail
+		self.thumbnail_url = CONFIG.urls.short .. "/thumbs/" .. self.id .. self.thumbnail
 	end
 	if self.type == File.Type.Image and self.thumbnail_url then
 		self.thumbnail_image = self.thumbnail_url
 	else
-		self.thumbnail_image = MAIN_URL .. "/static/img/thumbs/ext_" .. self.extension .. ".png"
+		self.thumbnail_image = CONFIG.urls.main .. "/static/img/thumbs/ext_" .. self.extension .. ".png"
 	end
 
-	self.view_url = SHORT_URL .. "/v" .. self.id
-	self.direct_url = SHORT_URL .. "/f" .. self.id .. self.extension
-	self.download_url = SHORT_URL .. "/d" .. self.id .. self.extension
+	self.view_url = CONFIG.urls.short .. "/v" .. self.id
+	self.direct_url = CONFIG.urls.short .. "/f" .. self.id .. self.extension
+	self.download_url = CONFIG.urls.short .. "/d" .. self.id .. self.extension
 	self.mimetype = mimetypes[self.extension] or "application/octet-stream"
 end
 
