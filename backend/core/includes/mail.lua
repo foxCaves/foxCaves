@@ -1,13 +1,5 @@
 local IS_MAIL_DEVELOPMENT = false
 
-dofile("/var/www/foxcaves/config/mail.lua")
-local mailip = mailip
-local mailuser = mailuser
-local mailpass = mailpass
-_G.mailip = nil
-_G.mailuser = nil
-_G.mailpass = nil
-
 local function smtp_recv_line(sock)
 	local recv = sock:receive("*l")
 	while recv and recv:sub(4,4) == "-" do
@@ -32,7 +24,7 @@ end
 function mail(to_addr, subject, content, from_addr, from_name, headers)
 	local sock = ngx.socket.tcp()
 
-	local ok, err = sock:connect(mailip, 465)
+	local ok, err = sock:connect(CONFIG.email.ip, 465)
 	if not ok then
 		error("Failed to connect to SMTP: " .. err)
 	end
@@ -49,8 +41,8 @@ function mail(to_addr, subject, content, from_addr, from_name, headers)
 		from_name = from_addr
 	end
 
-	if mailuser and mailpass then
-		smtp_send_line(sock, "AUTH PLAIN "..ngx.encode_base64(string.format("%s\0%s\0%s", mailuser, mailuser, mailpass)))
+	if CONFIG.email.username and CONFIG.email.password then
+		smtp_send_line(sock, "AUTH PLAIN "..ngx.encode_base64(string.format("%s\0%s\0%s", CONFIG.email.username, CONFIG.email.username, CONFIG.email.password)))
 	end
 
 	if from_addr then

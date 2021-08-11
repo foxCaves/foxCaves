@@ -2,14 +2,55 @@ local FILE_STORAGE_PATH = "/var/www/foxcaves/storage/"
 
 local FileMT = {}
 
-File = {}
+File = {
+    Type = {
+        Other = 0,
+        Image = 1,
+        Text = 2,
+        Video = 3,
+        Audio = 4,
+        Iframe = 5,
+    },
+}
 
-FILE_TYPE_OTHER = 0
-FILE_TYPE_IMAGE = 1
-FILE_TYPE_TEXT = 2
-FILE_TYPE_VIDEO = 3
-FILE_TYPE_AUDIO = 4
-FILE_TYPE_IFRAME = 5
+local mimetypes = {
+	[".bmp"] = "image/bmp",
+	[".c"] = "text/plain",
+	[".cpp"] = "text/plain",
+	[".cs"] = "text/plain",
+	[".css"] = "text/css",
+	[".flac"] = "audio/flac",
+	[".gif"] = "image/gif",
+	[".h"] = "text/plain",
+	[".htaccess"] = "text/plain",
+	[".htm"] = "text/html",
+	[".html"] = "text/html",
+	[".java"] = "text/plain",
+	[".jpeg"] = "image/jpeg",
+	[".jpg"] = "image/jpeg",
+	[".js"] = "text/javascript",
+	[".lua"] = "text/plain",
+	[".mp3"] = "audio/mpeg",
+	[".mp4"] = "video/mp4",
+	[".ogg"] = "audio/ogg",
+	[".pdf"] = "application/pdf",
+	[".php"] = "text/plain",
+	[".php3"] = "text/plain",
+	[".php4"] = "text/plain",
+	[".php5"] = "text/plain",
+	[".php6"] = "text/plain",
+	[".phtm"] = "text/plain",
+	[".phtml"] = "text/plain",
+	[".pl"] = "text/plain",
+	[".png"] = "image/png",
+	[".py"] = "text/plain",
+	[".shtm"] = "text/html",
+	[".shtml"] = "text/html",
+	[".txt"] = "text/plain",
+	[".vb"] = "text/plain",
+	[".wav"] = "audio/wav",
+	[".webm"] = "video/webm",
+}
 
 local mimeHandlers = {
     image = function(src, dest)
@@ -24,9 +65,9 @@ local mimeHandlers = {
         )
 
         if not lfs.attributes(thumbnail, "size") then
-            return FILE_TYPE_IMAGE, nil
+            return File.Type.Image, nil
         end
-        return FILE_TYPE_IMAGE, thumbext
+        return File.Type.Image, thumbext
     end,
 
     text = function(src, dest)
@@ -46,22 +87,22 @@ local mimeHandlers = {
         fh:write(content)
         fh:close()
 
-        return FILE_TYPE_TEXT, ".txt"
+        return File.Type.Text, ".txt"
     end,
 
     video = function()
-        return FILE_TYPE_VIDEO, nil
+        return File.Type.Video, nil
     end,
 
     audio = function()
-        return FILE_TYPE_AUDIO, nil
+        return File.Type.Audio, nil
     end,
 
     application = function(src, dest, suffix)
         if suffix == "pdf" then
-            return FILE_TYPE_IFRAME, nil
+            return File.Type.Iframe, nil
         end
-        return FILE_TYPE_OTHER, nil
+        return File.Type.Other, nil
     end
 }
 
@@ -153,7 +194,7 @@ function FileMT:ComputeVirtuals()
     if self.thumbnail and self.thumbnail ~= "" then
 		self.thumbnail_url = SHORT_URL .. "/thumbs/" .. self.id .. self.thumbnail
 	end
-	if self.type == FILE_TYPE_IMAGE and self.thumbnail_url then
+	if self.type == File.Type.Image and self.thumbnail_url then
 		self.thumbnail_image = self.thumbnail_url
 	else
 		self.thumbnail_image = MAIN_URL .. "/static/img/thumbs/ext_" .. self.extension .. ".png"

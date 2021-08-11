@@ -46,23 +46,9 @@ function dofile(file)
 	loadfile(file)()
 end
 
-function parse_authorization_header(auth)
-	if not auth then
-		return
-	end
-	if auth:sub(1, 6):lower() ~= "basic " then
-		return
-	end
-	auth = ngx.decode_base64(auth:sub(7))
-	if not auth or auth == "" then
-		return
-	end
-	local colonPos = auth:find(":", 1, true)
-	if not colonPos then
-		return
-	end
-	return auth:sub(1, colonPos - 1), auth:sub(colonPos + 1)
-end
+dofile("/var/www/foxcaves/" .. ENVIRONMENT_STRING .. ".lua")
+SHORT_URL = CONFIG.urls.short
+MAIN_URL = CONFIG.urls.main
 
 local function scan_include_dir(dir)
     for file in lfs.dir(dir) do

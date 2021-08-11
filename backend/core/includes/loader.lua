@@ -1,9 +1,9 @@
 local run_request
 
-if SENTRY_DSN then
+if CONFIG.sentry.dsn then
 	local rvn = require("raven").new({
 		sender = require("raven.senders.ngx").new({
-			dsn = SENTRY_DSN,
+			dsn = CONFIG.sentry.dsn,
 		}),
 		tags = {
 			environment = ENVIRONMENT,

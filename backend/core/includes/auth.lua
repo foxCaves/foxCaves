@@ -130,3 +130,32 @@ function check_cookies()
 		end
 	end
 end
+
+local function parse_authorization_header(auth)
+	if not auth then
+		return
+	end
+	if auth:sub(1, 6):lower() ~= "basic " then
+		return
+	end
+	auth = ngx.decode_base64(auth:sub(7))
+	if not auth or auth == "" then
+		return
+	end
+	local colonPos = auth:find(":", 1, true)
+	if not colonPos then
+		return
+	end
+	return auth:sub(1, colonPos - 1), auth:sub(colonPos + 1)
+end
+
+function check_api_login()
+	local user, apikey = parse_authorization_header(ngx.var.http_authorization)
+	if user and apikey then
+		local success = (do_login(user, apikey, { nosession = true, login_method = LOGIN_METHOD_APIKEY }) == LOGIN_SUCCESS)
+		if not success then
+			api_error("Invalid username or API key", 401)
+			return true
+		end
+	end
+end

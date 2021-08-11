@@ -1,6 +1,6 @@
 local function get_config()
     return {
-        sentry_dsn = SENTRY_DSN_CLIENT,
+        sentry_dsn = CONFIG.sentry.dsn_frontend,
         backend_release = REVISION,
         frontend_release = ngx.unescape_uri(ngx.var.arg_frontend_release or "UNKNOWN"),
         main_url = MAIN_URL,
