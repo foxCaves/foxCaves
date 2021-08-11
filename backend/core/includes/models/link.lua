@@ -46,7 +46,7 @@ function Link.New()
 end
 
 function LinkMT:ComputeVirtuals()
-    self.CONFIG.urls.short = CONFIG.urls.short .. "/g" .. self.id
+    self.short_url = CONFIG.urls.short .. "/g" .. self.id
 end
 
 function LinkMT:Delete()
