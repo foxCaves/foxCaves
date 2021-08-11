@@ -1,3 +1,5 @@
+local redis = require("redis")
+
 register_route("/api/v1/ws/livedraw", "GET", make_route_opts({ allow_guest = true }), function()
 	local next = next
 	local tonumber = tonumber
@@ -13,8 +15,8 @@ register_route("/api/v1/ws/livedraw", "GET", make_route_opts({ allow_guest = tru
 	local unpack = unpack
 	local utils = require("utils")
 
-	local redis = get_ctx_redis()
-	local sub_redis = make_redis(true)
+	local main_redis = redis.get_shared()
+	local sub_redis = redis.make(true)
 
 	local server = require("resty.websocket.server")
 	local ws, err = server:new({
@@ -174,7 +176,7 @@ register_route("/api/v1/ws/livedraw", "GET", make_route_opts({ allow_guest = tru
 		self.id = nil
 	end
 	function USERMETA:publish(evid, data)
-		redis:publish("livedraw:" .. self.channel, string_format("%c%s|%s", evid, self.id, data or ""))
+		main_redis:publish("livedraw:" .. self.channel, string_format("%c%s|%s", evid, self.id, data or ""))
 	end
 	function USERMETA:event_received(rawdata)
 		local evid = rawdata:byte(1)

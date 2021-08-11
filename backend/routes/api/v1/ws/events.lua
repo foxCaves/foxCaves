@@ -1,7 +1,8 @@
 local cjson = require("cjson")
+local redis = require("redis")
 
 register_route("/api/v1/ws/events", "GET", make_route_opts(), function()
-    local redis = make_redis(true)
+    local redis_inst = redis.make(true)
 
     local server = require("resty.websocket.server")
     local ws, err = server:new({
@@ -19,7 +20,7 @@ register_route("/api/v1/ws/events", "GET", make_route_opts(), function()
         should_run = false
     end
 
-    local res, err = redis:subscribe("push:" ..  ngx.ctx.user.id)
+    local res, err = redis_inst:subscribe("push:" ..  ngx.ctx.user.id)
     if err then
         kick()
         return
@@ -42,7 +43,7 @@ register_route("/api/v1/ws/events", "GET", make_route_opts(), function()
 
     local function redis_read()
         while should_run do
-            local res, err = redis:read_reply()
+            local res, err = redis_inst:read_reply()
             if err and err ~= "timeout" then
                 return kick()
             end

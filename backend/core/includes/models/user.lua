@@ -1,6 +1,8 @@
 local uuid = require("resty.uuid")
 local argon2 = require("argon2")
 local utils = require("utils")
+local database = require("database")
+local redis = require("redis")
 
 local UserMT = {}
 User = {}
@@ -23,7 +25,7 @@ function User.GetByID(id)
         return nil
     end
 
-	local user = get_ctx_database():query_safe('SELECT * FROM users WHERE id = %s', id)
+	local user = database.get_shared():query_safe('SELECT * FROM users WHERE id = %s', id)
 	user = user[1]
 
 	if not user then
@@ -34,7 +36,7 @@ function User.GetByID(id)
 end
 
 function User.GetByUsername(username)
-	local user = get_ctx_database():query_safe('SELECT * FROM users WHERE lower(username) = %s', username:lower())
+	local user = database.get_shared():query_safe('SELECT * FROM users WHERE lower(username) = %s', username:lower())
 	user = user[1]
 
 	if not user then
@@ -58,7 +60,7 @@ function User.CalculateUsedBytes(user)
     if user.id then
         user = user.id
     end
-    local res = get_ctx_database():query_safe('SELECT SUM(size) AS usedbytes FROM files WHERE "user" = %s', user)
+    local res = database.get_shared():query_safe('SELECT SUM(size) AS usedbytes FROM files WHERE "user" = %s', user)
 	return res[1].usedbytes or 0
 end
 
@@ -67,7 +69,7 @@ function UserMT:SetEMail(email)
 		return VALIDATION_STATE_INVALID
 	end
 
-	local res = get_ctx_database():query_safe('SELECT id FROM users WHERE lower(email) = %s', email:lower())
+	local res = database.get_shared():query_safe('SELECT id FROM users WHERE lower(email) = %s', email:lower())
 	if res[1] then
 		return VALIDATION_STATE_TAKEN
 	end
@@ -87,7 +89,7 @@ function UserMT:SetUsername(username)
 		return VALIDATION_STATE_INVALID
 	end
 
-	local res = get_ctx_database():query_safe('SELECT id FROM users WHERE lower(username) = %s', username:lower())
+	local res = database.get_shared():query_safe('SELECT id FROM users WHERE lower(username) = %s', username:lower())
 	if res[1] then
 		return VALIDATION_STATE_TAKEN
 	end
@@ -149,10 +151,10 @@ end
 
 function UserMT:Save()
     if self.not_in_db then
-        get_ctx_database():query_safe('INSERT INTO users (id, username, email, password, loginkey, apikey, active, bonusbytes) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)', self.id, self.username, self.email, self.password, self.loginkey, self.apikey, self.active, self.bonusbytes)
+        database.get_shared():query_safe('INSERT INTO users (id, username, email, password, loginkey, apikey, active, bonusbytes) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)', self.id, self.username, self.email, self.password, self.loginkey, self.apikey, self.active, self.bonusbytes)
         self.not_in_db = nil
     else
-        get_ctx_database():query_safe('UPDATE users SET username = %s, email = %s, password = %s, loginkey = %s, apikey = %s, active = %s, bonusbytes = %s WHERE id = %s', self.username, self.email, self.password, self.loginkey, self.apikey, self.active, self.bonusbytes, self.id)
+        database.get_shared():query_safe('UPDATE users SET username = %s, email = %s, password = %s, loginkey = %s, apikey = %s, active = %s, bonusbytes = %s WHERE id = %s', self.username, self.email, self.password, self.loginkey, self.apikey, self.active, self.bonusbytes, self.id)
     end
 
     if self.require_email_confirmation then
@@ -162,9 +164,10 @@ function UserMT:Save()
         email_text = email_text .. CONFIG.urls.main .. "/email/code?code=" .. emailid .. "\n\n"
         email_text = email_text .. "Kind regards,\nfoxCaves Support"
     
+        local redis_inst = redis.get_shared()
         local emailkey = "emailkeys:" .. emailid
-        redis:hmset(emailkey, "user", self.id, "action", "activation")
-        redis:expire(emailkey, 172800) --48 hours
+        redis_inst:hmset(emailkey, "user", self.id, "action", "activation")
+        redis_inst:expire(emailkey, 172800) --48 hours
     
         mail(self.email, "foxCaves - Activation E-Mail", email_text, "noreply@foxcav.es", "foxCaves")
 

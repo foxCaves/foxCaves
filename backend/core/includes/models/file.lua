@@ -1,5 +1,6 @@
 local lfs = require("lfs")
 local utils = require("utils")
+local database = require("database")
 
 local FILE_STORAGE_PATH = "/var/www/foxcaves/storage/"
 
@@ -161,7 +162,7 @@ function File.GetByUser(user)
         user = user.id
     end
 
-    local files = get_ctx_database():query_safe('SELECT * FROM files WHERE "user" = %s', user)
+    local files = database.get_shared():query_safe('SELECT * FROM files WHERE "user" = %s', user)
     for k,v in pairs(files) do
         files[k] = makefilemt(v)
     end
@@ -173,7 +174,7 @@ function File.GetByID(id)
 		return nil
 	end
 
-	local file = get_ctx_database():query_safe('SELECT * FROM files WHERE id = %s', id)
+	local file = database.get_shared():query_safe('SELECT * FROM files WHERE id = %s', id)
 	file = file[1]
 
 	if not file then
@@ -212,7 +213,7 @@ end
 function FileMT:Delete()
     file_deletestorage(self)
 
-	get_ctx_database():query_safe('DELETE FROM files WHERE id = %s', self.id)
+	database.get_shared():query_safe('DELETE FROM files WHERE id = %s', self.id)
 
 	utils.raw_push_action({
         action = 'file:delete',
@@ -271,11 +272,11 @@ end
 function FileMT:Save()
     local primary_push_action
     if self.not_in_db then
-        get_ctx_database():query_safe('INSERT INTO files (id, name, "user", extension, type, size, time, thumbnail) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)', self.id, self.name, self.user, self.extension, self.type, self.size, self.time, self.thumbnail or "")
+        database.get_shared():query_safe('INSERT INTO files (id, name, "user", extension, type, size, time, thumbnail) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)', self.id, self.name, self.user, self.extension, self.type, self.size, self.time, self.thumbnail or "")
         primary_push_action = 'create'
         self.not_in_db = nil
     else
-        get_ctx_database():query_safe('UPDATE files SET name = %s, "user" = %s, extension = %s, type = %s, size = %s, time = %s, thumbnail = %s WHERE id = %s', self.name, self.user, self.extension, self.type, self.size, self.time, self.thumbnail or "", self.id)
+        database.get_shared():query_safe('UPDATE files SET name = %s, "user" = %s, extension = %s, type = %s, size = %s, time = %s, thumbnail = %s WHERE id = %s', self.name, self.user, self.extension, self.type, self.size, self.time, self.thumbnail or "", self.id)
         primary_push_action = 'refresh'
     end
 	utils.raw_push_action({

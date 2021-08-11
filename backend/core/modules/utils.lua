@@ -1,9 +1,9 @@
 local cjson = require("cjson")
+local redis = require("redis")
 local ngx = ngx
 local table = table
 local type = type
 local next = next
-local get_ctx_redis = get_ctx_redis
 
 module("utils")
 
@@ -47,7 +47,7 @@ function raw_push_action(data, user)
 	if user.id then
 		user = user.id
 	end
-	get_ctx_redis():publish("push:" .. user, cjson.encode(data))
+	redis.get_shared():publish("push:" .. user, cjson.encode(data))
 end
 
 function api_error(error, code)

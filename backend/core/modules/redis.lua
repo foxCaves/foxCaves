@@ -1,21 +1,27 @@
 local resty_redis = require("resty.redis")
 local utils = require("utils")
 local next = next
+local error = error
+local ngx = ngx
 
-function make_redis(close_on_shutdown)
+local config = CONFIG.redis
+
+module("redis")
+
+function make(close_on_shutdown)
 	local database, err = resty_redis:new()
 	if not database then
 		error("Error initializing DB: " .. err)
 	end
 	database:set_timeout(60000)
 
-	local ok, err = database:connect(CONFIG.redis.host, CONFIG.redis.port)
+	local ok, err = database:connect(config.host, config.port)
 	if not ok then
 		error("Error connecting to DB: " .. err)
 	end
 
-	if database:get_reused_times() == 0 and CONFIG.redis.password then
-		local ok, err = database:auth(CONFIG.redis.password)
+	if database:get_reused_times() == 0 and config.password then
+		local ok, err = database:auth(config.password)
 		if not ok then
 			error("Error connecting to DB: " .. err)
 		end
@@ -57,18 +63,18 @@ function make_redis(close_on_shutdown)
 	if close_on_shutdown then
 		utils.register_shutdown(function() database:close() end)
 	else
-		utils.register_shutdown(function() database:set_keepalive(CONFIG.redis.keepalive_timeout or 10000, CONFIG.redis.keepalive_count or 10) end)
+		utils.register_shutdown(function() database:set_keepalive(config.keepalive_timeout or 10000, config.keepalive_count or 10) end)
 	end
 
 	return database
 end
 
-function get_ctx_redis()
+function get_shared()
 	local redis = ngx.ctx.__redis
 	if redis then
 		return redis
 	end
-	redis = make_redis()
+	redis = make()
 	ngx.ctx.__redis = redis
 	return redis
 end

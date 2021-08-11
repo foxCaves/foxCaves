@@ -1,4 +1,5 @@
 local utils = require("utils")
+local database = require("database")
 
 local LinkMT = {}
 Link = {}
@@ -15,7 +16,7 @@ function Link.GetByUser(user)
         user = user.id
     end
 
-    local links = get_ctx_database():query_safe('SELECT * FROM links WHERE "user" = %s', user)
+    local links = database.get_shared():query_safe('SELECT * FROM links WHERE "user" = %s', user)
     for k,v in pairs(links) do
         links[k] = makelinkmt(v)
     end
@@ -27,7 +28,7 @@ function Link.GetByID(id)
 		return nil
 	end
 
-	local links = get_ctx_database():query_safe('SELECT * FROM links WHERE id = %s', id)
+	local links = database.get_shared():query_safe('SELECT * FROM links WHERE id = %s', id)
 	links = links[1]
 
 	if not links then
@@ -52,7 +53,7 @@ function LinkMT:ComputeVirtuals()
 end
 
 function LinkMT:Delete()
-    get_ctx_database():query_safe('DELETE FROM links WHERE id = %s', self.id)
+    database.get_shared():query_safe('DELETE FROM links WHERE id = %s', self.id)
 
 	utils.raw_push_action({
         action = 'link:delete',
@@ -73,11 +74,11 @@ end
 function LinkMT:Save()
     local primary_push_action
     if self.not_in_db then
-        get_ctx_database():query_safe('INSERT INTO links (id, "user", url, time) VALUES (%s, %s, %s, %s)', self.id, self.user, self.url, self.time)
+        database.get_shared():query_safe('INSERT INTO links (id, "user", url, time) VALUES (%s, %s, %s, %s)', self.id, self.user, self.url, self.time)
         primary_push_action = 'create'
         self.not_in_db = nil
     else
-        get_ctx_database():query_safe('UPDATE links SET "user" = %s, url = %s, time = %s WHERE id = %s', self.user, self.url, self.time, self.id)
+        database.get_shared():query_safe('UPDATE links SET "user" = %s, url = %s, time = %s WHERE id = %s', self.user, self.url, self.time, self.id)
         primary_push_action = 'refresh'
     end
 	utils.raw_push_action({

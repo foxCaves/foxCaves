@@ -1,17 +1,18 @@
 local utils = require("utils")
+local redis = require("redis")
 
 register_route("/api/v1/users/emails/code", "POST", make_route_opts_anon(), function()
-    local redis = get_ctx_redis()
     local args = utils.get_post_args()
-
+    
     local code = args.code or ""
     if code == "" then
         return utils.api_error("code required")
     end
-
+    
+    local redis_inst = redis.get_shared()
     local codekey = "emailkeys:" .. ngx.unescape_uri(args.code)
-    local res = redis:hgetall(codekey)
-    redis:del(codekey)
+    local res = redis_inst:hgetall(codekey)
+    redis_inst:del(codekey)
     if not (res and res.user and res ~= ngx.null) then
         return utils.api_error("code invalid")
     end

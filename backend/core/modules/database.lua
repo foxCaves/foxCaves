@@ -1,12 +1,18 @@
 local utils = require("utils")
-
 local pgmoon = require("pgmoon")
 local next = next
+local error = error
+local ngx = ngx
+local unpack = unpack
 
-CONFIG.postgres.socket_type = "nginx"
+local config = CONFIG.postgres
 
-function make_database()
-	local database = pgmoon.new(CONFIG.postgres)
+module("database")
+
+config.socket_type = "nginx"
+
+function make()
+	local database = pgmoon.new(config)
 	local isok, err = database:connect()
 	if not isok then
 		error(err)
@@ -25,17 +31,17 @@ function make_database()
 		return res
 	end
 
-	utils.register_shutdown(function() database:keepalive(CONFIG.postgres.keepalive_timeout or 10000, CONFIG.postgres.keepalive_count or 10) end)
+	utils.register_shutdown(function() database:keepalive(config.keepalive_timeout or 10000, config.keepalive_count or 10) end)
 
 	return database
 end
 
-function get_ctx_database()
+function get_shared()
 	local database = ngx.ctx.__database
 	if database then
 		return database
 	end
-	database = make_database()
+	database = make()
 	ngx.ctx.__database = database
 	return database
 end

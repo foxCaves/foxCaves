@@ -1,6 +1,7 @@
 local SESSION_EXPIRE_DELAY = 7200
 
 local utils = require("utils")
+local redis = require("redis")
 
 local function hash_login_key(loginkey)
 	return ngx.hmac_sha1(loginkey or ngx.ctx.user.loginkey, ngx.var.http_user_agent or ngx.var.remote_addr)
@@ -23,8 +24,6 @@ end
 
 function do_login(username_or_id, credential, options)
 	if ngx.ctx.user then return LOGIN_SUCCESS end
-
-	local redis = get_ctx_redis()
 
 	options = options or {}
 	local nosession = options.nosession
@@ -62,8 +61,10 @@ function do_login(username_or_id, credential, options)
 		ngx.ctx.sessionid = sessionid
 
 		sessionid = "sessions:" .. sessionid
-		redis:hmset(sessionid, "id", user.id, "loginkey", ngx.encode_base64(hash_login_key(user.loginkey)))
-		redis:expire(sessionid, SESSION_EXPIRE_DELAY)
+		
+		local redis_inst = redis.get_shared()
+		redis_inst:hmset(sessionid, "id", user.id, "loginkey", ngx.encode_base64(hash_login_key(user.loginkey)))
+		redis_inst:expire(sessionid, SESSION_EXPIRE_DELAY)
 	end
 
 	ngx.ctx.user = user
@@ -74,7 +75,7 @@ end
 function do_logout()
 	ngx.header['Set-Cookie'] = {"sessionid=NULL; HttpOnly; Path=/; Secure;", "loginkey=NULL; HttpOnly; Path=/; Secure;"}
 	if ngx.ctx.sessionid then
-		get_ctx_redis():del("sessions:" .. ngx.ctx.sessionid)
+		redis.get_shared():del("sessions:" .. ngx.ctx.sessionid)
 	end
 	ngx.ctx.user = nil
 end
@@ -94,19 +95,18 @@ function send_login_key()
 end
 
 function check_cookies()
-	local redis = get_ctx_redis()
-
 	local cookies = ngx.var.http_Cookie
 	if cookies then
 		local sessionid = ngx.re.match(cookies, "^(.*; *)?sessionid=([a-zA-Z0-9]+)( *;.*)?$", "o")
 		if sessionid then
+			local redis_inst = redis.get_shared()
 			sessionid = sessionid[2]
 			local sessionKey = "sessions:" .. sessionid
-			local result = redis:hgetall(sessionKey)
+			local result = redis_inst:hgetall(sessionKey)
 			if result and do_login(result.id, result.loginkey, { nosession = true, login_with_id = true, login_method = LOGIN_METHOD_LOGINKEY }) == LOGIN_SUCCESS then
 				ngx.ctx.sessionid = sessionid
 				ngx.header['Set-Cookie'] = {"sessionid=" .. sessionid .. "; HttpOnly; Path=/; Secure;"}
-				redis:expire(sessionKey, SESSION_EXPIRE_DELAY)
+				redis_inst:expire(sessionKey, SESSION_EXPIRE_DELAY)
 			end
 		end
 

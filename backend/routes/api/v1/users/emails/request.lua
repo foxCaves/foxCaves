@@ -1,7 +1,7 @@
 local utils = require("utils")
+local redis = require("redis")
 
 register_route("/api/v1/users/emails/request", "POST", make_route_opts_anon(), function()
-    local redis = get_ctx_redis()
     local args = utils.get_post_args()
 
     local action = args.action or ""
@@ -39,9 +39,10 @@ register_route("/api/v1/users/emails/request", "POST", make_route_opts_anon(), f
     end
     email = email .. " just click on the following link:\n" .. CONFIG.urls.main .."/email/code?code=" .. emailid .. "\n\nKind regards,\nfoxCaves Support"
 
+    local redis_inst = redis.get_shared()
     local emailkey = "emailkeys:" .. emailid
-    redis:hmset(emailkey, "user", userid, "action", action)
-    redis:expire(emailkey, 172800) --48 hours
+    redis_inst:hmset(emailkey, "user", userid, "action", action)
+    redis_inst:expire(emailkey, 172800) --48 hours
 
     mail(user.email, subject, email, "noreply@foxcav.es", "foxCaves")
 end)
