@@ -7,7 +7,9 @@ local CORE_ROOT = path.abs(debug.getinfo(1, "S").source:sub(2):match("(.*/)"))
 LUA_ROOT = path.abs(CORE_ROOT .. "/../")
 ROOT = path.abs(LUA_ROOT .. "/../")
 
-ENVIRONMENT = os.getenv("ENVIRONMENT"):lower()
+OSENV = {
+	ENVIRONMENT = os.getenv("ENVIRONMENT")
+}
 
 setmetatable(_G, {
 	__index = function(t, k)

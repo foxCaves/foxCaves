@@ -6,7 +6,7 @@ local envtbl = {
     testing = consts.ENV_TESTING,
     staging = consts.ENV_STAGING,
 }
-local str = ENVIRONMENT
+local str = OSENV.ENVIRONMENT:lower()
 local id = envtbl[str]
 if not id then
     error("Invalid environment: " .. str)
