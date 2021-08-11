@@ -166,11 +166,10 @@ function FileMT:Delete()
 
 	get_ctx_database():query_safe('DELETE FROM files WHERE id = %s', self.id)
 
-	raw_push_action('file:delete', {
-        file = {
-            id = self.user
-        }
-    })
+	raw_push_action({
+        action = 'file:delete',
+        file = self
+    }, self.user)
 end
 
 function FileMT:Download()
