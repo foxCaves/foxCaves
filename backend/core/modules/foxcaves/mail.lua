@@ -1,8 +1,9 @@
 local IS_MAIL_DEVELOPMENT = false
 
+local config = require("foxcaves.config").email
+
 local error = error
 local ngx = ngx
-local config = CONFIG.email
 
 local M = {}
 setfenv(1, M)

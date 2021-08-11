@@ -1,11 +1,10 @@
 local utils = require("foxcaves.utils")
+local config = require("foxcaves.config").postgres
 local pgmoon = require("pgmoon")
 local next = next
 local error = error
 local ngx = ngx
 local unpack = unpack
-
-local config = CONFIG.postgres
 
 local M = {}
 setfenv(1, M)

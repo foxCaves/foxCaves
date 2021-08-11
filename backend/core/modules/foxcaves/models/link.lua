@@ -1,12 +1,11 @@
 local database = require("foxcaves.database")
 local events = require("foxcaves.events")
 local random = require("foxcaves.random")
+local url_config = require("foxcaves.config").urls
 
 local setmetatable = setmetatable
 local ngx = ngx
 local next = next
-
-local url_config = CONFIG.urls
 
 local LinkMT = {}
 local Link = {}

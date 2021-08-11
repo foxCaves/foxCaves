@@ -4,6 +4,7 @@ local database = require("foxcaves.database")
 local events = require("foxcaves.events")
 local random = require("foxcaves.random")
 local User = require("foxcaves.models.user")
+local url_config = require("foxcaves.config").urls
 
 local io = io
 local string = string
@@ -11,8 +12,6 @@ local os = os
 local ngx = ngx
 local next = next
 local setmetatable = setmetatable
-
-local url_config = CONFIG.urls
 
 local FILE_STORAGE_PATH = "/var/www/foxcaves/storage/"
 

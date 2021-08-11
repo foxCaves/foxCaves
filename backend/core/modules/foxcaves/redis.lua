@@ -1,10 +1,9 @@
 local resty_redis = require("resty.redis")
 local utils = require("foxcaves.utils")
+local config = require("foxcaves.config").redis
 local next = next
 local error = error
 local ngx = ngx
-
-local config = CONFIG.redis
 
 local M = {}
 setfenv(1, M)

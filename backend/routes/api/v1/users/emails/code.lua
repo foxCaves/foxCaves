@@ -3,8 +3,8 @@ local redis = require("foxcaves.redis")
 local mail = require("foxcaves.mail")
 local random = require("foxcaves.random")
 local User = require("foxcaves.models.user")
+local main_url = require("foxcaves.config").urls.main
 local ngx = ngx
-local main_url = CONFIG.urls.main
 
 register_route("/api/v1/users/emails/code", "POST", make_route_opts_anon(), function()
     local args = utils.get_post_args()

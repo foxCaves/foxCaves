@@ -5,6 +5,7 @@ local raven = require("raven")
 local raven_sender = require("raven.senders.ngx")
 local env = require("foxcaves.env")
 local revision = require("foxcaves.revision")
+local sentry_config = require("foxcaves.config").sentry
 local ngx = ngx
 local xpcall = xpcall
 local table = table
@@ -16,7 +17,6 @@ local string = string
 local type = type
 local next = next
 local tostring = tostring
-local sentry_config = CONFIG.sentry
 
 local M = {}
 setfenv(1, M)

@@ -7,6 +7,7 @@ local mail = require("foxcaves.mail")
 local random = require("foxcaves.random")
 local consts = require("foxcaves.consts")
 local auth = require("foxcaves.auth")
+local main_url = require("foxcaves.config").urls.main
 
 local setmetatable = setmetatable
 local ngx = ngx
@@ -171,7 +172,7 @@ function UserMT:Save()
         local emailid = random.string(32)
 
         local email_text = "Hello, " .. self.username .. "!\n\nYou have recently registered or changed your E-Mail on foxCaves.\nPlease click the following link to activate your E-Mail:\n"
-        email_text = email_text .. CONFIG.urls.main .. "/email/code?code=" .. emailid .. "\n\n"
+        email_text = email_text .. main_url .. "/email/code?code=" .. emailid .. "\n\n"
         email_text = email_text .. "Kind regards,\nfoxCaves Support"
     
         local redis_inst = redis.get_shared()
