@@ -21,7 +21,7 @@ register_route("/api/v1/files/{id}/convert", "POST", make_route_opts(), function
 	local tmptmpfile = "/var/www/foxcaves/tmp/files/" .. file.id .. file.extension
 	local tmpfile = "/var/www/foxcaves/tmp/files/" .. file.id .. newextension
 
-	local fh = io.open(tmpfile, "w")
+	local fh = io.open(tmptmpfile, "w")
 	fh:write(data)
 	fh:close()
 	os.execute('/usr/bin/convert "' .. tmptmpfile .. '" -format ' .. newextension:sub(2) .. ' "' .. tmpfile .. '"')
