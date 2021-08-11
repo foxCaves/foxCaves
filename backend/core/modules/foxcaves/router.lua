@@ -207,6 +207,5 @@ function execute()
 end
 
 scan_route_dir("routes")
-ngx.log(ngx.ERR, "Registered routes!")
 
 return M
