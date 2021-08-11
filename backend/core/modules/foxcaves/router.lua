@@ -38,7 +38,10 @@ local ROUTE_REG_TABLE = setmetatable({}, {
     end,
 })
 
-local ROUTE_TREE
+local ROUTE_TREE = {
+    children = {},
+    methods = {},
+}
 
 local BASE_OPTS = {
     cookie_login = true,
@@ -203,13 +206,6 @@ function execute()
     end
 end
 
-function load()
-    ROUTE_TREE = {
-        children = {},
-        methods = {},
-    }
-
-    scan_route_dir("routes")
-end
+scan_route_dir("routes")
 
 return M
