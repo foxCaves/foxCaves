@@ -1,20 +1,35 @@
+ENV_PRODUCTION = 1
+ENV_DEVELOPMENT = 2
+ENV_TESTING = 3
+ENV_STAGING = 4
+ENV_INVALID = -1
+
+REVISION = "unknown"
+ENVIRONMENT_STRING = "invalid"
+ENVIRONMENT = ENV_INVALID
+
+CONFIG = {}
+
+setmetatable(_G, {
+	__index = function(t, k)
+		error("Attempt to read unknown from _G: " .. k)
+	end,
+	__newindex = function(t, k, v)
+		error("Attempt to write to _G: " .. k)
+	end,
+})
+
 local lfs = require("lfs")
 
 local function load_revision()
 	local fh = io.open("/var/www/foxcaves/.revision", "r")
 	if not fh then
-		REVISION = "unknown"
 		return
 	end
 	REVISION = fh:read("*all"):gsub("%s+", "")
 	fh:close()
 end
 load_revision()
-
-ENV_PRODUCTION = 1
-ENV_DEVELOPMENT = 2
-ENV_TESTING = 3
-ENV_STAGING = 4
 
 local function init_environment()
 	local envtbl = {
@@ -33,14 +48,5 @@ end
 init_environment()
 
 dofile("/var/www/foxcaves/config/" .. ENVIRONMENT_STRING .. ".lua")
-
-setmetatable(_G, {
-	__index = function(t, k)
-		error("Attempt to read unknown from _G: " .. k)
-	end,
-	__newindex = function(t, k, v)
-		error("Attempt to write to _G: " .. k)
-	end,
-})
 
 require("foxcaves.router").load()
