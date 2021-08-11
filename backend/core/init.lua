@@ -14,6 +14,4 @@ setmetatable(_G, {
 require("lfs").chdir("/var/www/foxcaves/lua")
 package.path = package.path .. ";core/modules/?.lua"
 
-dofile("/var/www/foxcaves/config/" .. require("foxcaves.env").name .. ".lua")
-
 collectgarbage("collect")
