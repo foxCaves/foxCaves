@@ -1,4 +1,5 @@
 local utils = require("foxcaves.utils")
+local consts = require("foxcaves.consts")
 local User = require("foxcaves.models.user")
 
 register_route("/api/v1/users", "POST", make_route_opts_anon(), function()
@@ -26,16 +27,16 @@ register_route("/api/v1/users", "POST", make_route_opts_anon(), function()
     user.bonusbytes = 0
     
     local usernamecheck = user:SetUsername(username)
-    if usernamecheck == VALIDATION_STATE_INVALID then
+    if usernamecheck == consts.VALIDATION_STATE_INVALID then
         return utils.api_error("username invalid")
-    elseif usernamecheck == VALIDATION_STATE_TAKEN then
+    elseif usernamecheck == consts.VALIDATION_STATE_TAKEN then
         return utils.api_error("username taken")
     end
     
     local emailcheck = user:SetEMail(email)
-    if emailcheck == VALIDATION_STATE_INVALID then
+    if emailcheck == consts.VALIDATION_STATE_INVALID then
         return utils.api_error("email invalid")
-    elseif emailcheck == VALIDATION_STATE_TAKEN then
+    elseif emailcheck == consts.VALIDATION_STATE_TAKEN then
         return utils.api_error("email taken")
     end
     

@@ -5,6 +5,7 @@ local redis = require("foxcaves.redis")
 local events = require("foxcaves.events")
 local mail = require("foxcaves.mail")
 local random = require("foxcaves.random")
+local consts = require("foxcaves.consts")
 
 local UserMT = {}
 local User = {}
@@ -68,12 +69,12 @@ end
 
 function UserMT:SetEMail(email)
 	if not ngx.re.match(email, "^[a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\\.[a-zA-Z]{2,}$", "o") then
-		return VALIDATION_STATE_INVALID
+		return consts.VALIDATION_STATE_INVALID
 	end
 
 	local res = database.get_shared():query_safe('SELECT id FROM users WHERE lower(email) = %s', email:lower())
 	if res[1] then
-		return VALIDATION_STATE_TAKEN
+		return consts.VALIDATION_STATE_TAKEN
 	end
 
     local oldemail = self.email
@@ -83,22 +84,22 @@ function UserMT:SetEMail(email)
         self.require_email_confirmation = true
     end
 
-    return VALIDATION_STATE_OK
+    return consts.VALIDATION_STATE_OK
 end
 
 function UserMT:SetUsername(username)
 	if not ngx.re.match(username, "^[a-zA-Z0-9 .,;_-]+$", "o") then
-		return VALIDATION_STATE_INVALID
+		return consts.VALIDATION_STATE_INVALID
 	end
 
 	local res = database.get_shared():query_safe('SELECT id FROM users WHERE lower(username) = %s', username:lower())
 	if res[1] then
-		return VALIDATION_STATE_TAKEN
+		return consts.VALIDATION_STATE_TAKEN
 	end
 
     self.username = username
 
-    return VALIDATION_STATE_OK
+    return consts.VALIDATION_STATE_OK
 end
 
 function UserMT:SetPassword(password)

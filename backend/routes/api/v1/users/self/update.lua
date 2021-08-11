@@ -1,4 +1,5 @@
 local utils = require("foxcaves.utils")
+local consts = require("foxcaves.consts")
 
 register_route("/api/v1/users/self", "PATCH", make_route_opts({ api_login = false }), function()
     local args = utils.get_post_args()
@@ -15,9 +16,9 @@ register_route("/api/v1/users/self", "PATCH", make_route_opts({ api_login = fals
 
     if args.email then
         local emailcheck = user:SetEMail(args.email)
-        if emailcheck == VALIDATION_STATE_INVALID then
+        if emailcheck == consts.VALIDATION_STATE_INVALID then
             return utils.api_error("email invalid")
-        elseif emailcheck == VALIDATION_STATE_TAKEN then
+        elseif emailcheck == consts.VALIDATION_STATE_TAKEN then
             return utils.api_error("email taken")
         end
         obj.email = user.email

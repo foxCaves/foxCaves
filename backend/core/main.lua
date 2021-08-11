@@ -49,11 +49,10 @@ local function scan_include_dir(dir)
 end
 scan_include_dir("core/includes")
 
+require("foxcaves.router").load()
+
 setmetatable(_G, { 
 	__newindex = function(t, k, v)
 		error("Attempt to write to _G: " .. k)
 	end,
 })
-
-require("foxcaves.router").load()
-

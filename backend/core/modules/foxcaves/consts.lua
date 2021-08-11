@@ -1,3 +1,8 @@
+local M = {}
+setfenv(1, M)
+
 VALIDATION_STATE_OK = 0
 VALIDATION_STATE_INVALID = -1
 VALIDATION_STATE_TAKEN = -2
+
+return M
