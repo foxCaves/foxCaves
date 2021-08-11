@@ -191,13 +191,13 @@ function FileMT:SetName(name)
         self.extension = self.extension:lower()
     end
 
+    self:ComputeVirtuals()
+
     return true
 end
 
 function FileMT:MoveUploadData(src)
     self.size = lfs.attributes(src, "size")
-
-    self:ComputeVirtuals()
 
     local thumbDest = "/var/www/foxcaves/tmp/thumbs/" .. self.id
     
