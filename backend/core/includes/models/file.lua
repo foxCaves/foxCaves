@@ -176,6 +176,10 @@ function FileMT:Download()
     return file_fullread(FILE_STORAGE_PATH .. self.id .. "/file" .. self.extension)
 end
 
+function FileMT:SetOwner(user)
+    self.user = user.id or user
+end
+
 function FileMT:SetName(name)
 	local nameregex = ngx.re.match(name, "^([^<>\r\n\t]*?)(\\.[a-zA-Z0-9]+)?$", "o")
 

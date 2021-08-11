@@ -10,7 +10,7 @@ register_route("/api/v1/files", "POST", make_route_opts(), function()
 	name = ngx.unescape_uri(name)
 
 	local file = File.New()
-	file.user = ngx.ctx.user.id
+	file:SetOwner(ngx.ctx.user)
 	if not file:SetName(name) then
 		return api_error("Invalid name")
 	end
