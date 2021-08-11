@@ -3,8 +3,8 @@ local function get_config()
         sentry_dsn = CONFIG.sentry.dsn_frontend,
         backend_release = REVISION,
         frontend_release = ngx.unescape_uri(ngx.var.arg_frontend_release or "UNKNOWN"),
-        CONFIG.urls.main = CONFIG.urls.main,
-        CONFIG.urls.short = CONFIG.urls.short,
+        main_url = CONFIG.urls.main,
+        short_url = CONFIG.urls.short,
     }
 end
 
