@@ -1,4 +1,4 @@
-local utils = require('utils')
+local utils = require("foxcaves.utils")
 
 register_route("/api/v1/files/{id}/livedraw", "GET", make_route_opts({ allow_guest = true }), function()
     local WS_URL = ngx.re.gsub(CONFIG.urls.main, "^http", "ws", "o")
