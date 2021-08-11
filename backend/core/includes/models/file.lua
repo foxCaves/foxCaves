@@ -73,14 +73,6 @@ local function file_fullread(filename)
 	return cont
 end
 
-function File.ManualDelete(file, isdir)
-	if isdir then
-		lfs.rmdir(FILE_STORAGE_PATH .. file)
-	else
-		os.remove(FILE_STORAGE_PATH .. file)
-	end
-end
-
 local function file_move(src, dst)
 	local fhsrc = io.open(src, "rb")
 	local fhdst = io.open(dst, "wb")
@@ -102,6 +94,22 @@ local function makefilemt(file)
     setmetatable(file, FileMT)
     file:ComputeVirtuals()
     return file
+end
+
+local function file_manualdelete(file, isdir)
+	if isdir then
+		lfs.rmdir(FILE_STORAGE_PATH .. file)
+	else
+		os.remove(FILE_STORAGE_PATH .. file)
+	end
+end
+
+local function file_deletestorage(file)
+	file_manualdelete(file.id .. "/file" .. file.extension)
+	if file.thumbnail and file.thumbnail ~= "" then
+		file_manualdelete(file.id .. "/thumb" .. file.thumbnail)
+	end
+	file_manualdelete(file.id, true)
 end
 
 function File.GetByUser(user)
@@ -158,11 +166,7 @@ function FileMT:ComputeVirtuals()
 end
 
 function FileMT:Delete()
-	File.ManualDelete(self.id .. "/file" .. self.extension)
-	if self.thumbnail and self.thumbnail ~= "" then
-		File.ManualDelete(self.id .. "/thumb" .. self.thumbnail)
-	end
-	File.ManualDelete(self.id, true)
+    file_deletestorage(self)
 
 	get_ctx_database():query_safe('DELETE FROM files WHERE id = %s', self.id)
 
@@ -187,13 +191,14 @@ function FileMT:SetName(name)
         return false
     end
 
-    self.name = name
-    self.extension = nameregex[2]
-    if not self.extension then
-        self.extension = ".bin"
-    else
-        self.extension = self.extension:lower()
+    local newextension = (nameregex[2] or ".bin"):lower()
+
+    if self.extension and self.extension ~= newextension then
+        file_deletestorage(self)
     end
+
+    self.name = name
+    self.extension = newextension
 
     self:ComputeVirtuals()
 

@@ -1,5 +1,11 @@
 register_route("/api/v1/files/{id}/convert", "POST", make_route_opts(), function()
-	local fileid = ngx.ctx.route_vars.id
+	local file = File.GetByID(ngx.ctx.route_vars.id)
+	if not file then
+		return api_error("Not found", 404)
+	end
+	if file.user ~= ngx.ctx.user.id then
+		return api_error("Not your file", 403)
+	end
 
 	local newextension = ngx.var.arg_newtype:lower()
 	if newextension ~= "jpg" and newextension ~= "png" and newextension ~= "gif" and newextension ~= "bmp" then
@@ -7,37 +13,26 @@ register_route("/api/v1/files/{id}/convert", "POST", make_route_opts(), function
 	end
 	newextension = "." .. newextension
 
-	local succ, data, dbdata = file_download(fileid, ngx.ctx.user.id)
-	if(not succ) or dbdata.extension == newextension or dbdata.type ~= 1 then
-		return api_error("File not found or not owned by you")
-	end
+	local data = file:Download()
 
-	local newfilename = dbdata.name
-	newfilename = newfilename:sub(1, newfilename:len() - dbdata.extension:len()) .. newextension
+	local newfilename = file.name
+	newfilename = newfilename:sub(1, newfilename:len() - file.extension:len()) .. newextension
 
-	local database = get_ctx_database()
+	local tmptmpfile = "/var/www/foxcaves/tmp/files/" .. fileid .. file.extension
+	local tmpfile = "/var/www/foxcaves/tmp/files/" .. fileid .. newextension
 
-	local fh = io.open("/var/www/foxcaves/tmp/files/" .. fileid .. dbdata.extension, "w")
+	local fh = io.open(tmpfile, "w")
 	fh:write(data)
 	fh:close()
-	os.execute('/usr/bin/convert "/var/www/foxcaves/tmp/files/' .. fileid .. dbdata.extension .. '" -format ' .. newextension:sub(2) .. ' "/var/www/foxcaves/tmp/files/' .. fileid .. newextension .. '"')
-	os.remove("/var/www/foxcaves/tmp/files/" .. fileid .. dbdata.extension)
+	os.execute('/usr/bin/convert "' .. tmptmpfile .. '" -format ' .. newextension:sub(2) .. ' "' .. tmpfile .. '"')
+	os.remove(tmptmpfile)
 
-	local newsize = lfs.attributes("/var/www/foxcaves/tmp/files/" .. fileid .. newextension, "size")
+	local newsize = lfs.attributes(tmpfile, "size")
 	if not newsize then
 		return api_error("Internal error", 500)
 	end
 
-	database:query_safe('UPDATE files SET extension = %s, name = %s, size = %s WHERE id = %s', newextension, newfilename, newsize, fileid)
-	newsize = newsize - dbdata.size
-
-	file_upload(fileid, newfilename, newextension, "", mimetypes[newextension], nil)
-	file_manualdelete(fileid .. "/file" .. dbdata.extension)
-
-	file_push_action('refresh', {
-		id = fileid,
-		extension = newextension,
-		name = newfilename,
-		size = newsize,
-	})
+	file:SetName(newfilename)
+	file:MoveUploadData(tmpfile)
+	file:Save()
 end)
