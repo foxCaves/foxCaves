@@ -1,5 +1,6 @@
 local utils = require("foxcaves.utils")
 local File = require("foxcaves.models.file")
+local ngx = ngx
 
 register_route("/cdn/sendfile/{action}/{fileid}/{extension}", "GET", make_route_opts_anon(), function()
 	local function send_file(disposition_type)

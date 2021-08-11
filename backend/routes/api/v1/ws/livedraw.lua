@@ -1,6 +1,7 @@
 local redis = require("foxcaves.redis")
 local random = require("foxcaves.random")
 local utils = require("foxcaves.utils")
+local server = require("resty.websocket.server")
 
 local next = next
 local tonumber = tonumber
@@ -18,7 +19,6 @@ register_route("/api/v1/ws/livedraw", "GET", make_route_opts({ allow_guest = tru
 	local main_redis = redis.get_shared()
 	local sub_redis = redis.make(true)
 
-	local server = require("resty.websocket.server")
 	local ws, err = server:new({
 		timeout = 5000,
 		max_payload_len = 65535,

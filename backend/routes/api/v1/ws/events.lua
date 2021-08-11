@@ -1,10 +1,11 @@
 local cjson = require("cjson")
 local redis = require("foxcaves.redis")
+local server = require("resty.websocket.server")
+local ngx = ngx
 
 register_route("/api/v1/ws/events", "GET", make_route_opts(), function()
     local redis_inst = redis.make(true)
 
-    local server = require("resty.websocket.server")
     local ws, err = server:new({
         timeout = 5000,
         max_payload_len = 65535,

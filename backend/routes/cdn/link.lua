@@ -1,5 +1,6 @@
 local utils = require("foxcaves.utils")
 local database = require("foxcaves.database")
+local ngx = ngx
 
 register_route("/cdn/link/{linkid}", "GET", make_route_opts_anon(), function()
     local dest = database.get_shared():query_safe('SELECT url FROM links WHERE id = %s', ngx.ctx.route_vars.linkid)
