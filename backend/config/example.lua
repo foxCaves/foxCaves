@@ -1,6 +1,6 @@
 CONFIG = {
     redis = {
-        ip = "127.0.0.1",
+        host = "127.0.0.1",
         port = 6379,
         password = nil,
     },
@@ -8,7 +8,7 @@ CONFIG = {
         -- pgmoon options
     },
     email = {
-        ip = "email-smtp.us-east-1.amazonaws.com",
+        host = "email-smtp.us-east-1.amazonaws.com",
         user = "",
         password = "",
     },
