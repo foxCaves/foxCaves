@@ -1,10 +1,30 @@
-local run_request
 local utils = require("foxcaves.utils")
+local execute_route = execute_route
+local raven = require("raven")
+local raven_sender = require("raven.senders.ngx")
+local ngx = ngx
+local xpcall = xpcall
+local table = table
+local math = math
+local unpack = unpack
+local io = io
+local debug = debug
+local string = string
+local type = type
+local next = next
+local tostring = tostring
+local sentry_config = CONFIG.sentry
+local ENVIRONMENT = ENVIRONMENT
+local REVISION = REVISION
+local ENV_PRODUCTION = ENV_PRODUCTION
 
-if CONFIG.sentry.dsn then
-	local rvn = require("raven").new({
-		sender = require("raven.senders.ngx").new({
-			dsn = CONFIG.sentry.dsn,
+local M = {}
+setfenv(1, M)
+
+if sentry_config.dsn then
+	local rvn = raven.new({
+		sender = raven_sender.new({
+			dsn = sentry_config.dsn,
 		}),
 		tags = {
 			environment = ENVIRONMENT,
@@ -28,7 +48,7 @@ if CONFIG.sentry.dsn then
 		return unpack(res)
 	end
 
-	run_request = function(func)
+	function run(func)
 		local isok, err = rvn_call_ext({
 			tags = {
 				userid = ngx.ctx.user and ngx.ctx.user.id or "N/A",
@@ -166,7 +186,7 @@ else
 			local tbl = {}
 			for i = 1, 100 do
 				local k, v = debug.getupvalue(func, i)
-				if(not k) then
+				if not k then
 					break
 				end
 				tbl[k] = v
@@ -234,7 +254,7 @@ else
 		return table.concat(out, "")
 	end
 
-	run_request = function(func)
+	function run(func)
 		local isok, err = xpcall(execute_route, debug_trace)
 		ngx.req.discard_body()
 		if not isok then
@@ -249,4 +269,4 @@ else
 	end
 end
 
-run_request_route = run_request
+return M
