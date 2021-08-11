@@ -23,6 +23,7 @@ RUN /usr/local/openresty/bin/opm get openresty/lua-resty-redis openresty/lua-res
 RUN /usr/local/openresty/luajit/bin/luarocks install luafilesystem
 RUN /usr/local/openresty/luajit/bin/luarocks install pgmoon
 RUN /usr/local/openresty/luajit/bin/luarocks install lua-resty-uuid
+RUN /usr/local/openresty/luajit/bin/luarocks install lpath
 RUN git clone https://github.com/cloudflare/raven-lua.git /tmp/raven-lua && mv /tmp/raven-lua/raven /usr/local/share/lua/5.1/ && rm -rf /tmp/raven-lua
 RUN adduser --disabled-password www-data
 

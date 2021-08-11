@@ -5,6 +5,7 @@ local events = require("foxcaves.events")
 local random = require("foxcaves.random")
 local User = require("foxcaves.models.user")
 local url_config = require("foxcaves.config").urls
+local path = require("lpath")
 
 local io = io
 local string = string
@@ -25,8 +26,8 @@ local File = {
         Iframe = 5,
     },
     Paths = {
-        Storage = ROOT .. "storage/",
-        Temp = ROOT .. "tmp/",
+        Storage = path.abs(ROOT .. "/storage/"),
+        Temp = path.abs(ROOT .. "/tmp/"),
     }
 }
 

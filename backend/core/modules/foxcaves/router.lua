@@ -16,7 +16,7 @@ local require = require
 
 local G = _G
 
-local ROUTES_ROOT = LUA_ROOT .. "routes"
+local ROUTES_ROOT = LUA_ROOT .. "/routes"
 
 local M = {}
 setfenv(1, M)

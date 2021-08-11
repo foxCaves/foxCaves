@@ -2,9 +2,10 @@
 lfs = false
 -- END:   Permissible _G vars, due to silly libraries
 
-local CORE_ROOT = debug.getinfo(1, "S").source:sub(2):match("(.*/)")
-LUA_ROOT = CORE_ROOT .. "../"
-ROOT = LUA_ROOT .. "../"
+local path = require("lpath")
+local CORE_ROOT = path.abs(debug.getinfo(1, "S").source:sub(2):match("(.*/)"))
+LUA_ROOT = path.abs(CORE_ROOT .. "/../")
+ROOT = path.abs(LUA_ROOT .. "/../")
 
 ENVIRONMENT = os.getenv("ENVIRONMENT"):lower()
 
@@ -17,4 +18,4 @@ setmetatable(_G, {
 	end,
 })
 
-package.path = package.path .. ";" .. CORE_ROOT .. "modules/?.lua"
+package.path = package.path .. ";" .. CORE_ROOT .. "/modules/?.lua"
