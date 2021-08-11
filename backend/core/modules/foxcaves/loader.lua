@@ -1,5 +1,5 @@
 local utils = require("foxcaves.utils")
-local execute_route = execute_route
+local router = require("foxcaves.router")
 local raven = require("raven")
 local raven_sender = require("raven.senders.ngx")
 local ngx = ngx
@@ -55,7 +55,7 @@ if sentry_config.dsn then
 				ip = ngx.var.remote_addr,
 				url = ngx.var.request_uri,
 			},
-		}, execute_route)
+		}, router.execute)
 		ngx.req.discard_body()
 		if not isok then
 			ngx.status = 500
@@ -255,7 +255,7 @@ else
 	end
 
 	function run(func)
-		local isok, err = xpcall(execute_route, debug_trace)
+		local isok, err = xpcall(router.execute, debug_trace)
 		ngx.req.discard_body()
 		if not isok then
 			ngx.status = 500

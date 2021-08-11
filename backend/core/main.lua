@@ -1,10 +1,5 @@
 local lfs = require("lfs")
 
-local on_load_done_funcs = {}
-function on_load_done(func)
-	table.insert(on_load_done_funcs, func)
-end
-
 local function load_revision()
 	local fh = io.open("/var/www/foxcaves/.revision", "r")
 	if not fh then
@@ -54,11 +49,7 @@ local function scan_include_dir(dir)
 end
 scan_include_dir("core/includes")
 
-on_load_done = nil
-for _, v in pairs(on_load_done_funcs) do
-	v()
-end
-on_load_done_funcs = nil
+require("foxcaves.router").load()
 
 setmetatable(_G, { 
 	__newindex = function(t, k, v)

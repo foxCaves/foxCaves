@@ -1,22 +1,29 @@
 local lfs = require("lfs")
 local cjson = require("cjson")
-
 local utils = require("foxcaves.utils")
+
+local check_cookies = check_cookies
+local check_api_login = check_api_login
 local explode = utils.explode
 local type = type
 local next = next
+local io = io
+local ngx = ngx
+local lua_load = load
 
-local ROUTE_TREE = {
-    children = {},
-    methods = {},
-}
+local G = _G
+
+local M = {}
+setfenv(1, M)
+
+local ROUTE_TREE
 
 local BASE_OPTS = {
     cookie_login = true,
     api_login = true,
     allow_guest = false,
 }
-function make_route_opts(opts)
+local function make_route_opts(opts)
     if not opts then
         return BASE_OPTS
     end
@@ -33,13 +40,13 @@ local BASE_OPTS_ANON = make_route_opts({
     api_login = false,
     allow_guest = true,
 })
-function make_route_opts_anon()
+local function make_route_opts_anon()
     return BASE_OPTS_ANON
 end
 
 local c_open, c_close = ('{}'):byte(1,2)
 
-function register_route(url, method, options, func)
+local function register_route(url, method, options, func)
     method = method:upper()
     local urlsplit = explode("/", url:sub(2))
     
@@ -82,7 +89,7 @@ local function scan_route_file(file)
     local data = fh:read("*all")
     fh:close()
 
-    local func, err = load(data, file)
+    local func, err = lua_load(data, file)
     if not func then
         error("Error loading route: " .. err)
     end
@@ -103,7 +110,7 @@ local function scan_route_dir(dir)
     end
 end
 
-function execute_route()
+function execute()
     local url = ngx.var.uri
     local method = ngx.var.request_method:upper()
     local urlsplit = explode("/", url:sub(2))
@@ -176,7 +183,19 @@ function execute_route()
     end
 end
 
-scan_route_dir("routes")
-register_route = nil
-make_route_opts = nil
-make_route_opts_anon = nil
+function load()
+    ROUTE_TREE = {
+        children = {},
+        methods = {},
+    }
+
+    G.make_route_opts = make_route_opts
+    G.make_route_opts_anon = make_route_opts_anon
+    G.register_route = register_route
+    scan_route_dir("routes")
+    G.register_route = nil
+    G.make_route_opts = nil
+    G.make_route_opts_anon = nil
+end
+
+return M
