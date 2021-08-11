@@ -1,5 +1,10 @@
 local lfs = require("lfs")
 
+local loadfile = loadfile
+function dofile(file)
+	loadfile(file)()
+end
+
 local function load_revision()
 	local fh = io.open("/var/www/foxcaves/.revision", "r")
 	if not fh then
@@ -31,22 +36,6 @@ local function init_environment()
 	ENVIRONMENT_STRING = str
 end
 init_environment()
-
-function explode(div,str) -- credit: http://richard.warburton.it
-	local pos, arr = 0, {}
-	-- for each divider found
-	for st, sp in function() return str:find(div,pos,true) end do
-		table.insert(arr,str:sub(pos,st-1)) -- Attach chars left of current divider
-		pos = sp + 1 -- Jump past current divider
-	end
-	table.insert(arr, str:sub(pos)) -- Attach chars right of last divider
-	return arr
-end
-
-local loadfile = loadfile
-function dofile(file)
-	loadfile(file)()
-end
 
 dofile("/var/www/foxcaves/config/" .. ENVIRONMENT_STRING .. ".lua")
 
