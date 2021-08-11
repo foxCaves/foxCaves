@@ -5,7 +5,7 @@ local redis = require("foxcaves.redis")
 local events = require("foxcaves.events")
 
 local UserMT = {}
-User = {}
+local User = {}
 
 local KILOBYTE = 1024
 local MEGABYTE = KILOBYTE * 1024
@@ -197,3 +197,5 @@ function UserMT:MakeNewAPIKey()
 end
 
 UserMT.__index = UserMT
+
+return User

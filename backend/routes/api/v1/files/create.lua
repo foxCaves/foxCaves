@@ -1,5 +1,6 @@
 local lfs = require("lfs")
 local utils = require("foxcaves.utils")
+local File = require("foxcaves.models.file")
 
 register_route("/api/v1/files", "POST", make_route_opts(), function()
 	local name = ngx.var.arg_name
@@ -28,7 +29,7 @@ register_route("/api/v1/files", "POST", make_route_opts(), function()
 		return utils.api_error("Empty body")
 	end
 
-	if User.CalculateUsedBytes(ngx.ctx.user) + filesize > ngx.ctx.user.totalbytes then
+	if ngx.ctx.user:CalculateUsedBytes() + filesize > ngx.ctx.user.totalbytes then
 		return utils.api_error("Over quota", 402)
 	end
 

@@ -1,5 +1,6 @@
 local utils = require("foxcaves.utils")
 local redis = require("foxcaves.redis")
+local User = require("foxcaves.models.user")
 
 register_route("/api/v1/users/emails/request", "POST", make_route_opts_anon(), function()
     local args = utils.get_post_args()

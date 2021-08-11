@@ -2,12 +2,13 @@ local lfs = require("lfs")
 local utils = require("foxcaves.utils")
 local database = require("foxcaves.database")
 local events = require("foxcaves.events")
+local User = require("foxcaves.models.user")
 
 local FILE_STORAGE_PATH = "/var/www/foxcaves/storage/"
 
 local FileMT = {}
 
-File = {
+local File = {
     Type = {
         Other = 0,
         Image = 1,
@@ -291,3 +292,5 @@ function FileMT:Save()
 end
 
 FileMT.__index = FileMT
+
+return File

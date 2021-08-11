@@ -2,7 +2,7 @@ local database = require("foxcaves.database")
 local events = require("foxcaves.events")
 
 local LinkMT = {}
-Link = {}
+local Link = {}
 
 local function makelinkmt(link)
     link.not_in_db = nil
@@ -88,3 +88,5 @@ function LinkMT:Save()
 end
 
 LinkMT.__index = LinkMT
+
+return Link
