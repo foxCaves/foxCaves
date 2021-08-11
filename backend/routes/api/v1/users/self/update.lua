@@ -1,5 +1,6 @@
 local utils = require("foxcaves.utils")
 local consts = require("foxcaves.consts")
+local ngx = ngx
 
 register_route("/api/v1/users/self", "PATCH", make_route_opts({ api_login = false }), function()
     local args = utils.get_post_args()

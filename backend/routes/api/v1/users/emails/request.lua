@@ -3,6 +3,7 @@ local redis = require("foxcaves.redis")
 local mail = require("foxcaves.mail")
 local random = require("foxcaves.random")
 local User = require("foxcaves.models.user")
+local main_url = CONFIG.urls.main
 
 register_route("/api/v1/users/emails/request", "POST", make_route_opts_anon(), function()
     local args = utils.get_post_args()
@@ -40,7 +41,7 @@ register_route("/api/v1/users/emails/request", "POST", make_route_opts_anon(), f
     else
         return utils.api_error("action invalid")
     end
-    email = email .. " just click on the following link:\n" .. CONFIG.urls.main .."/email/code?code=" .. emailid .. "\n\nKind regards,\nfoxCaves Support"
+    email = email .. " just click on the following link:\n" .. main_url .."/email/code?code=" .. emailid .. "\n\nKind regards,\nfoxCaves Support"
 
     local redis_inst = redis.get_shared()
     local emailkey = "emailkeys:" .. emailid

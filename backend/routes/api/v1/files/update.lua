@@ -1,5 +1,6 @@
 local utils = require("foxcaves.utils")
 local File = require("foxcaves.models.file")
+local ngx = ngx
 
 register_route("/api/v1/files/{id}", "PATCH", make_route_opts(), function()
     local file = File.GetByID(ngx.ctx.route_vars.id)

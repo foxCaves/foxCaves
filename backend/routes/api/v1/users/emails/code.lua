@@ -3,6 +3,8 @@ local redis = require("foxcaves.redis")
 local mail = require("foxcaves.mail")
 local random = require("foxcaves.random")
 local User = require("foxcaves.models.user")
+local ngx = ngx
+local main_url = CONFIG.urls.main
 
 register_route("/api/v1/users/emails/code", "POST", make_route_opts_anon(), function()
     local args = utils.get_post_args()
@@ -35,7 +37,7 @@ register_route("/api/v1/users/emails/code", "POST", make_route_opts_anon(), func
         user:MakeNewLoginKey()
         user:Save()
 
-        local email = "Hello, " .. user.username .. "!\n\nHere is your new password:\n" .. newPassword .. "\nPlease log in at " .. CONFIG.urls.main .. "/login and change it as soon as possible.\n\nKind regards,\nfoxCaves Support"
+        local email = "Hello, " .. user.username .. "!\n\nHere is your new password:\n" .. newPassword .. "\nPlease log in at " .. main_url .. "/login and change it as soon as possible.\n\nKind regards,\nfoxCaves Support"
         mail.send(user.email, "foxCaves - New password", email, "noreply@foxcav.es", "foxCaves")
     end
 

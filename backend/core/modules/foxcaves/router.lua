@@ -9,11 +9,34 @@ local next = next
 local io = io
 local ngx = ngx
 local lua_load = load
+local setfenv = setfenv
+local setmetatable = setmetatable
+local error = error
+local require = require
 
 local G = _G
 
 local M = {}
 setfenv(1, M)
+
+local EMPTY_TABLE = setmetatable({}, {
+    __index = function(t, k)
+        error("Accessing on EMPTY table: " .. k)
+    end,
+    __newindex = function(t, k, v)
+        error("Assigning on EMPTY table: " .. k)
+    end,
+})
+
+local ROUTE_REG_MT = {}
+local ROUTE_REG_TABLE = setmetatable({}, {
+    __index = function(t, k)
+        return ROUTE_REG_MT[k] or G[k] or error("Accessing on ROUTE table: " .. k)
+    end,
+    __newindex = function(t, k, v)
+        error("Assigning on ROUTE table: " .. k)
+    end,
+})
 
 local ROUTE_TREE
 
@@ -22,7 +45,7 @@ local BASE_OPTS = {
     api_login = true,
     allow_guest = false,
 }
-local function make_route_opts(opts)
+function ROUTE_REG_MT.make_route_opts(opts)
     if not opts then
         return BASE_OPTS
     end
@@ -34,18 +57,18 @@ local function make_route_opts(opts)
     end
     return opts
 end
-local BASE_OPTS_ANON = make_route_opts({
+local BASE_OPTS_ANON = ROUTE_REG_MT.make_route_opts({
     cookie_login = false,
     api_login = false,
     allow_guest = true,
 })
-local function make_route_opts_anon()
+function ROUTE_REG_MT.make_route_opts_anon()
     return BASE_OPTS_ANON
 end
 
 local c_open, c_close = ('{}'):byte(1,2)
 
-local function register_route(url, method, options, func)
+function ROUTE_REG_MT.register_route(url, method, options, func)
     method = method:upper()
     local urlsplit = explode("/", url:sub(2))
     
@@ -78,7 +101,7 @@ local function register_route(url, method, options, func)
     route.methods[method] = {
         mappings = mappings,
         id = route_id,
-        func = func,
+        func = setfenv(func, EMPTY_TABLE),
         options = options,
     }
 end
@@ -92,7 +115,7 @@ local function scan_route_file(file)
     if not func then
         error("Error loading route: " .. err)
     end
-    func()
+    setfenv(func, ROUTE_REG_TABLE)()
 end
 
 local function scan_route_dir(dir)
@@ -186,13 +209,7 @@ function load()
         methods = {},
     }
 
-    G.make_route_opts = make_route_opts
-    G.make_route_opts_anon = make_route_opts_anon
-    G.register_route = register_route
     scan_route_dir("routes")
-    G.register_route = nil
-    G.make_route_opts = nil
-    G.make_route_opts_anon = nil
 end
 
 return M

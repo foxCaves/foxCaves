@@ -1,5 +1,6 @@
 local utils = require("foxcaves.utils")
 local Link = require("foxcaves.models.link")
+local ngx = ngx
 
 register_route("/api/v1/links", "POST", make_route_opts(), function()
 	local link = Link.New()

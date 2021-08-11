@@ -1,4 +1,7 @@
 local cjson = require("cjson")
+local CONFIG = CONFIG
+local REVISION = REVISION
+local ngx = ngx
 
 local function get_config()
     return {
