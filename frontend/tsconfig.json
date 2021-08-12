@@ -10,7 +10,7 @@
     "declarationMap": false,                      /* Generates a sourcemap for each corresponding '.d.ts' file. */
     "sourceMap": true,                           /* Generates corresponding '.map' file. */
     "inlineSources": true,
-    "outDir": "./dist",                              /* Redirect output structure to the directory. */
+    "outDir": "./.tmp/js",                              /* Redirect output structure to the directory. */
     "removeComments": true,                      /* Do not emit comments to output. */
     "strict": true,                                 /* Enable all strict type-checking options. */
     "noUnusedLocals": true,
@@ -19,5 +19,5 @@
     "allowJs": true,
     "types": ["jquery"]
   },
-  "include": ["./src"]
+  "include": ["./static/js"]
 }

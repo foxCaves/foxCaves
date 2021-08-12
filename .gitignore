@@ -1,5 +1,4 @@
 /backend/config
 /frontend/dist
-/frontend/html_out
-/frontend/static/js/dist
+/frontend/.tmp
 node_modules

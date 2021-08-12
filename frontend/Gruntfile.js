@@ -1,5 +1,6 @@
 module.exports = function(grunt) {
 	const source_directory = 'static',
+		  temp_directory = '.tmp',
 		  target_directory = 'dist/static';
 
 	grunt.initConfig({
@@ -30,7 +31,7 @@ module.exports = function(grunt) {
 			dist: {
 				files: [{
 					expand: true,
-					cwd: `${source_directory}/js/dist/`,
+					cwd: `${temp_directory}/js/`,
 					src: ['**/*.js'],
 					dest: `${target_directory}/js/`,
 				}],
@@ -73,7 +74,7 @@ module.exports = function(grunt) {
 				},
 				files: [{
 					expand: true,
-					cwd: `html_out/`,
+					cwd: `.tmp/html/`,
 					src: ['**/*.html'],
 					dest: `dist/`,
 				}]
