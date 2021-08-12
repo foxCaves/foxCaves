@@ -84,7 +84,13 @@ module.exports = function(grunt) {
 			}
 		},
 		concurrent: {
-			dist: ['imagemin:dist', 'cssmin:dist', 'uglify:dist', 'copy:dist', 'exec:luahtml_dist']
+			dist: [
+				'imagemin:dist',
+				'cssmin:dist',
+				['exec:typescript_dist', 'uglify:dist'],
+				'copy:dist',
+				['exec:luahtml_dist', 'htmlmin:dist'],
+			]
 		},
 		clean: {
 			prebuild: ['.tmp', 'dist'],
@@ -103,9 +109,7 @@ module.exports = function(grunt) {
 
 	grunt.registerTask('default', [
 		'clean:prebuild',
-		'exec:typescript_dist',
 		'concurrent:dist',
-		'htmlmin:dist',
 		'clean:postbuild'
 	]);
 };
