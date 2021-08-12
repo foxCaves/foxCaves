@@ -58,7 +58,7 @@ function preprocessTemplate(code, insideother)
 			if(marker == "=") then
 				table.insert(concatTbl, "tinsert(retTbl, "..match..")")
 			elseif(marker == "+") then
-				table.insert(concatTbl, loadTemplateFile(match, true))
+				table.insert(concatTbl, loadTemplateFile(match .. ".html", true))
 			elseif(marker == "#") then
 				table.insert(concatTbl, 'tinsert(retTbl, "' .. loadstring("return " .. match)() .. '")')
 			else
