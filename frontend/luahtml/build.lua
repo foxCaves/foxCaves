@@ -8,6 +8,18 @@ local DISTDIR = "../dist"
 
 local function storeTemplate(name)
     local template = evalTemplate(name)
+
+	template = template:gsub("<!--(.-)-->", "")
+	template = template:gsub("%s+", " ")
+
+    if template:sub(1, 1) == " " then
+        template = template:sub(2)
+    end
+    local len = template:len()
+    if template:sub(len, 1) == " " then
+        template = template:sub(1, len - 1)
+    end
+
     local fh = io.open(DISTDIR .. "/" .. name, "w")
     fh:write(template)
     fh:close()

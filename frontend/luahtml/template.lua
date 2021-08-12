@@ -21,11 +21,6 @@ local function loadTemplateFile(name, insideother)
 
 	code = preprocessTemplate(code, insideother)
 
-	code = code:gsub("<!--(.-)-->", "")
-	code = code:gsub("%s%s+", " ")
-	--code = code:gsub("^[\r\n\t ]+", "")
-	--code = code:gsub("[\r\n\t ]+$", "")
-
 	return code
 end
 
