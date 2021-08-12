@@ -1,7 +1,8 @@
 module.exports = function(grunt) {
 	const source_directory = 'static',
 		  temp_directory = '.tmp',
-		  target_directory = 'dist/static';
+		  target_directory = 'dist',
+		  target_static_directory = `${target_directory}/static`;
 
 	grunt.initConfig({
 		pkg: grunt.file.readJSON('package.json'),
@@ -11,7 +12,7 @@ module.exports = function(grunt) {
 					expand: true,
 					cwd: `${source_directory}/img/`,
 					src: ['**/*.{png,gif}'],
-					dest: `${target_directory}/img/`,
+					dest: `${target_static_directory}/img/`,
 				}]
 			}
 		},
@@ -33,7 +34,7 @@ module.exports = function(grunt) {
 					expand: true,
 					cwd: `${temp_directory}/js/`,
 					src: ['**/*.js'],
-					dest: `${target_directory}/js/`,
+					dest: `${target_static_directory}/js/`,
 				}],
 			}
 		},
@@ -43,7 +44,7 @@ module.exports = function(grunt) {
 					expand: true,
 					cwd: `${source_directory}/css/`,
 					src: ['**/*.css'],
-					dest: `${target_directory}/css/`,
+					dest: `${target_static_directory}/css/`,
 				}]
 			}
 		},
@@ -53,14 +54,14 @@ module.exports = function(grunt) {
 					expand: true,
 					cwd: 'root/',
 					src: ['**'],
-					dest: 'dist/'
+					dest: `${target_directory}/`,
 				}]
 			}
 		},
 		exec: {
 			luahtml_dist: {
 				cwd: 'luahtml/',
-				cmd: 'luajit build.lua'
+				cmd: `luajit build.lua ../${temp_directory}/html/`,
 			},
 			typescript_dist: {
 				cmd: 'tsc --project .'
@@ -79,7 +80,7 @@ module.exports = function(grunt) {
 					expand: true,
 					cwd: `.tmp/html/`,
 					src: ['**/*.html'],
-					dest: `dist/`,
+					dest: `${target_directory}/`,
 				}]
 			}
 		},
