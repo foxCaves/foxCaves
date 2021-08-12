@@ -81,7 +81,7 @@ async function fetchCurrentUser() {
 function fetchCurrentUserDone() {
 	if (currentUser) {
 		if (REQUIRE_GUEST) {
-			document.location.href = '/myfiles';
+			document.location.href = '/files';
 			return;
 		}
 		$('.show_loginonly').show();

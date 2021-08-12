@@ -1,4 +1,4 @@
-<% MAINTITLE = "My account" %>
+<% MAINTITLE = "Account" %>
 <%+ _includes/head %>
 	<h2><%= MAINTITLE %></h2>
 
@@ -64,5 +64,5 @@
 		</div>
 	</form>
 
-	<script type="text/javascript" src="/static/js/myaccount.js"></script>
+	<script type="text/javascript" src="/static/js/account.js"></script>
 <%+ _includes/foot %>

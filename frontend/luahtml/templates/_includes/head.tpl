@@ -20,8 +20,8 @@
 					<a class="brand" href="/">foxCaves</a>
 					<div class="nav-collapse">
 						<ul class="nav" id="nav-main">
-							<li data-menu-id="1" class="show_loginonly"><a href="/myfiles">My files</a></li>
-							<li data-menu-id="2" class="show_loginonly"><a href="/mylinks">My links</a></li>
+							<li data-menu-id="1" class="show_loginonly"><a href="/files">Files</a></li>
+							<li data-menu-id="2" class="show_loginonly"><a href="/links">Links</a></li>
 							<li data-menu-id="3" class="show_guestonly"><a href="/login">Login</a></li>
 							<li data-menu-id="4" class="show_guestonly"><a href="/register">Register</a></li>
 						</ul>
@@ -38,7 +38,7 @@
 							<li class="dropdown">
 								<a class="dropdown-toggle" data-toggle="dropdown">Welcome, <span id="username_text">User</span> <b class="caret"></b></a>
 								<ul class="dropdown-menu">
-									<li class="show_loginonly"><a href="/myaccount">My account</a></li>
+									<li class="show_loginonly"><a href="/account">Account</a></li>
 									<li class="show_loginonly divider"></li>
 									<li class="show_loginonly"><a class="pointer" onclick="doLogout();">Logout</a></li>
 									<li class="show_guestonly"><a href="/login">Login</a></li>

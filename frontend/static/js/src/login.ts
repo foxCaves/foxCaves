@@ -11,6 +11,6 @@ async function submitLoginFormSimple() {
         password: form.password.value,
         remember: form.remember.checked ? 'true' : 'false',
     })) {
-        document.location.href = "/myfiles";
+        document.location.href = "/files";
     }
 }

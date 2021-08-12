@@ -1,4 +1,4 @@
-<% MAINTITLE = "My links" %>
+<% MAINTITLE = "Links" %>
 <%+ _includes/head %>
 	<h2><%= MAINTITLE %> (<a class="pointer" onclick="newLink();">Create</a>) (<a class="pointer" onclick="return refreshLinks();">Refresh</a>)</h2>
 	
@@ -13,5 +13,5 @@
 		<tbody id="links_table"></tbody>
 	</table>
 	
-	<script type="text/javascript" src="/static/js/mylinks.js"></script>
+	<script type="text/javascript" src="/static/js/links.js"></script>
 <%+ _includes/foot %>

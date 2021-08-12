@@ -1,4 +1,4 @@
-<% MAINTITLE = "My files" %>
+<% MAINTITLE = "Files" %>
 <%+ _includes/head %>
 	<div id="uploader"></div>
 
@@ -15,5 +15,5 @@
 
 	<div style="display: none;" id="recycle_bin"></div>
 
-	<script type="text/javascript" src="/static/js/myfiles.js"></script>
+	<script type="text/javascript" src="/static/js/files.js"></script>
 <%+ _includes/foot %>
