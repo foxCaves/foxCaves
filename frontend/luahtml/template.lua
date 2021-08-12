@@ -2,7 +2,7 @@ local rex = require("rex_pcre")
 
 local preprocessTemplate
 
-local function getVersion()
+local function getRevision()
 	local fh = io.open("../.revision", "r")
 	if not fh then
 		error("Missing .revision file!")
@@ -11,6 +11,7 @@ local function getVersion()
 	fh:close()
 	return ret:gsub("%s+", "")
 end
+local revision = getRevision()
 
 local function loadTemplateFile(name, insideother)
 	local file = io.open("templates/" .. name, "r")
@@ -45,7 +46,7 @@ function preprocessTemplate(code, insideother)
 
 	while true do
 		startPos, endPos, marker, match = string.find(code, "<%%([#=+]?)%s*(.-)%s*%%>", endPos+1)
-		if(not startPos) then
+		if not startPos then
 			break
 		end
 
@@ -54,12 +55,12 @@ function preprocessTemplate(code, insideother)
 			table.insert(concatTbl, "tinsert(retTbl, [["..codeBlock.."]])")
 		end
 
-		if(match ~= "") then
-			if(marker == "=") then
+		if match ~= "" then
+			if marker == "=" then
 				table.insert(concatTbl, "tinsert(retTbl, "..match..")")
-			elseif(marker == "+") then
+			elseif marker == "+" then
 				table.insert(concatTbl, loadTemplateFile(match .. ".html", true))
-			elseif(marker == "#") then
+			elseif marker == "#" then
 				table.insert(concatTbl, 'tinsert(retTbl, "' .. loadstring("return " .. match)() .. '")')
 			else
 				table.insert(concatTbl, match)
@@ -72,7 +73,9 @@ function preprocessTemplate(code, insideother)
 	if codeBlock ~= "" then
 		table.insert(concatTbl, "tinsert(retTbl, [["..codeBlock.."]])")
 	end
-	if not insideother then table.insert(concatTbl, "return tconcat(retTbl) end") end
+	if not insideother then
+		table.insert(concatTbl, "return tconcat(retTbl) end")
+	end
 	return table.concat(concatTbl, "\n")
 end
 
@@ -91,22 +94,15 @@ local function loadTemplate(name)
 	return func
 end
 
-function evalTemplate(name, params)
+function evalTemplate(name)
 	local tpl = loadTemplate(name)()
 	if type(tpl) == "string" then
 		return tpl
 	end
 
-	if not params then params = {} end
-
-	params.pairs = pairs
-	params.ipairs = ipairs
-	params.next = next
-	params.tostring = tostring
-	params.tinsert = table.insert
-	params.tconcat = table.concat
-	params.G = _G
-	params.VERSION = getVersion()
+	local params = {
+		REVISION = revision,
+	}
 
 	return setfenv(tpl, params)()
 end

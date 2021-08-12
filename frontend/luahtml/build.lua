@@ -7,10 +7,7 @@ dofile("template.lua")
 local DISTDIR = "../dist"
 
 local function storeTemplate(name)
-    local params = {
-        MAINTITLE = "TEST",
-    }
-    local template = evalTemplate(name, params)
+    local template = evalTemplate(name)
     local fh = io.open(DISTDIR .. "/" .. name, "w")
     fh:write(template)
     fh:close()
