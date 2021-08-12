@@ -84,7 +84,6 @@ module.exports = function(grunt) {
 			dist: ['imagemin:dist', 'cssmin:dist', 'uglify:dist', 'copy:dist', 'exec:luahtml_dist']
 		},
 		clean: {
-			prebuild: ['.tmp', 'dist'],
 			postbuild: ['.tmp']
 		},
 	});
@@ -99,7 +98,6 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks('grunt-contrib-copy');
 
 	grunt.registerTask('default', [
-		'clean:prebuild',
 		'concurrent:dist',
 		'htmlmin:dist',
 		'clean:postbuild'
