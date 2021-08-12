@@ -13,7 +13,7 @@ local function getVersion()
 end
 
 local function loadTemplateFile(name, insideother)
-	local file = io.open("templates/"..name..".tpl")
+	local file = io.open("templates/" .. name, "r")
 	if not file then
 		error("Could not open template: " .. name)
 	end
