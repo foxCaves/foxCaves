@@ -6,6 +6,7 @@ local raven_sender = require("raven.senders.ngx")
 local env = require("foxcaves.env")
 local revision = require("foxcaves.revision")
 local sentry_config = require("foxcaves.config").sentry
+local main_url = require("foxcaves.config").urls.main
 local ngx = ngx
 local xpcall = xpcall
 local table = table
@@ -200,16 +201,18 @@ else
 
 	local function debug_trace(err)
 		local out = {
-			"<html><head>\
-			<script type=\"text/javascript\" src=\"https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js\"></script>\
-			<script type=\"text/javascript\" src=\"https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js\"></script>\
-			<script src=\"https://cdnjs.cloudflare.com/ajax/libs/prettify/r298/prettify.min.js\" type=\"text/javascript\"></script>\
-			<script src=\"https://cdnjs.cloudflare.com/ajax/libs/prettify/r298/lang-lua.min.js\" type=\"text/javascript\"></script>\
-			<script type=\"text/javascript\" src=\"https://foxcav.es/static/js/errorpage.js\"></script>\
-			<link rel=\"stylesheet\" type=\"text/css\" href=\"https://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/themes/base/jquery-ui.css\" />\
-			<link rel=\"stylesheet\" type=\"text/css\" href=\"https://foxcav.es/static/css/errorpage.css\" />\
-			<link rel=\"stylesheet\" type=\"text/css\" href=\"https://foxcav.es/static/css/prettify.css\" />\
-			</head><body><h1 class=\"ui-widget\">Original Error:",
+			[[
+				<html><head>
+				<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+				<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js" crossorigin="anonymous"></script>
+				<script src="https://cdnjs.cloudflare.com/ajax/libs/prettify/r298/prettify.min.js" type="text/javascript" crossorigin="anonymous"></script>
+				<script src="https://cdnjs.cloudflare.com/ajax/libs/prettify/r298/lang-lua.min.js" type="text/javascript" crossorigin="anonymous"></script>
+				<script type="text/javascript" src="]] .. main_url .. [[/static/js/errorpage.js" crossorigin="anonymous"></script>
+				<link rel="stylesheet" type="text/css" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/themes/base/jquery-ui.css" crossorigin="anonymous" />
+				<link rel="stylesheet" type="text/css" href="]] .. main_url .. [[/static/css/errorpage.css" crossorigin="anonymous" />
+				<link rel="stylesheet" type="text/css" href="]] .. main_url .. [[/static/css/prettify.css" crossorigin="anonymous" />
+				</head><body><h1 class="ui-widget">Original Error:
+			]],
 			err,
 			"</h1><div class='accordion'><h3 class='autoclick'><a href='#'>UserInfo</a></h3><div>",
 			string.format(
