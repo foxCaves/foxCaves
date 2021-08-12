@@ -11,7 +11,6 @@ local function storeTemplate(name)
 
 	template = template:gsub("<!--(.-)-->", "")
 	template = template:gsub("%s+", " ")
-    template = template:gsub("> <", "><")
 
     if template:sub(1, 1) == " " then
         template = template:sub(2)
