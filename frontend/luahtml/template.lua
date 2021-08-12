@@ -1,5 +1,3 @@
-local rex = require("rex_pcre")
-
 local preprocessTemplate
 
 local function getRevision()
@@ -23,10 +21,10 @@ local function loadTemplateFile(name, insideother)
 
 	code = preprocessTemplate(code, insideother)
 
-	code = rex.gsub(code, "<!--(.*?)-->", "", nil)
-	code = rex.gsub(code, "(?>[^\\S ]\\s*| \\s{2,})(?=[^<]*+(?:<(?!/?(?:textarea|script|pre)\\b)[^<]*+)*+(?:<(?>textarea|script|pre)\\b| \\z))", " ", nil, "ix")
-	--code = rex.gsub(code, "^[\r\n\t ]+", "")
-	--code = rex.gsub(code, "[\r\n\t ]+$", "")
+	code = code:gsub("<!--(.-)-->", "")
+	code = code:gsub("%s%s+", " ")
+	--code = code:gsub("^[\r\n\t ]+", "")
+	--code = code:gsub("[\r\n\t ]+$", "")
 
 	return code
 end
