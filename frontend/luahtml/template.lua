@@ -45,7 +45,7 @@ function preprocessTemplate(code, insideother)
 	end
 
 	while true do
-		startPos, endPos, marker, match = string.find(code, "<%%([#=+]?)%s*(.-)%s*%%>", endPos+1)
+		startPos, endPos, marker, match = string.find(code, "<%%([=+#]) +(.-) +%%>", endPos+1)
 		if not startPos then
 			break
 		end
@@ -60,7 +60,7 @@ function preprocessTemplate(code, insideother)
 				table.insert(concatTbl, "table.insert(retTbl, "..match..")")
 			elseif marker == "+" then
 				table.insert(concatTbl, loadTemplateFile(match, true))
-			else
+			elseif marker == "#" then
 				table.insert(concatTbl, match)
 			end
 		end
