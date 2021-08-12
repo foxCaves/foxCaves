@@ -52,16 +52,16 @@ function preprocessTemplate(code, insideother)
 
 		local codeBlock = code:sub(lastCut, startPos-1)
 		if codeBlock ~= "" then
-			table.insert(concatTbl, "tinsert(retTbl, [["..codeBlock.."]])")
+			table.insert(concatTbl, "table.insert(retTbl, [["..codeBlock.."]])")
 		end
 
 		if match ~= "" then
 			if marker == "=" then
-				table.insert(concatTbl, "tinsert(retTbl, "..match..")")
+				table.insert(concatTbl, "table.insert(retTbl, "..match..")")
 			elseif marker == "+" then
 				table.insert(concatTbl, loadTemplateFile(match .. ".html", true))
 			elseif marker == "#" then
-				table.insert(concatTbl, 'tinsert(retTbl, "' .. loadstring("return " .. match)() .. '")')
+				table.insert(concatTbl, 'table.insert(retTbl, "' .. loadstring("return " .. match)() .. '")')
 			else
 				table.insert(concatTbl, match)
 			end
@@ -71,10 +71,10 @@ function preprocessTemplate(code, insideother)
 	if(lastCut == 1 and not insideother) then return "return [["..code.."]]" end
 	local codeBlock = code:sub(lastCut, code:len())
 	if codeBlock ~= "" then
-		table.insert(concatTbl, "tinsert(retTbl, [["..codeBlock.."]])")
+		table.insert(concatTbl, "table.insert(retTbl, [["..codeBlock.."]])")
 	end
 	if not insideother then
-		table.insert(concatTbl, "return tconcat(retTbl) end")
+		table.insert(concatTbl, "return table.concat(retTbl) end")
 	end
 	return table.concat(concatTbl, "\n")
 end
@@ -102,6 +102,7 @@ function evalTemplate(name)
 
 	local params = {
 		REVISION = revision,
+		table = table,
 	}
 
 	return setfenv(tpl, params)()
