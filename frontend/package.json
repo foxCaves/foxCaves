@@ -3,7 +3,7 @@
 	"version": "0.0.0",
 	"description": "",
 	"scripts": {
-		"build": "rimraf ./.tmp && rimraf ./dist && tsc --project . && grunt"
+		"build": "rimraf ./.tmp ./dist && tsc --project . && grunt"
 	},
 	"repository": {
 		"type": "git",
