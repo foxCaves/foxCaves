@@ -111,10 +111,14 @@ function fileUpload(name: string, fileData: ArrayBufferLike | string) {
 
 			if(xhr.status == 200) {
 				processNextFile();
+				const response = JSON.parse(xhr.responseText) as FileInfo;
+				FILES[response.id] = response;
+				addFileLI(response.id);
 			} else {
 				processNextFile();
-				if(!wasAborted)
+				if (!wasAborted) {
 					alert("Upload error: " + xhr.responseText);
+				}
 			}
 		}
 	};
@@ -341,9 +345,11 @@ function deleteFile(fileid: string, doConfirm?: boolean) {
 	fetch(`/api/v1/files/${fileid}`, { method: 'DELETE' })
 	.then(response => {
 		if(response.status < 200 || response.status > 299) {
-			refreshFileLI(fileid);
 			alert("Error deleting file :(");
+			refreshFiles();
+			return;
 		}
+		removeFileLI(fileid);
 	});
 
 	return false;

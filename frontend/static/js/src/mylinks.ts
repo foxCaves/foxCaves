@@ -26,6 +26,8 @@ function createLink(linkurl: string) {
 	fetch("/api/v1/links?url="+encodeURIComponent(linkurl), { method: 'POST' })
 	.then(res => res.json())
 	.then(data => {
+		LINKS[data.id] = data;
+		addLinkRow(data.id);
 		prompt("Here is your shortened link", data.short_url);
 	});
 }
@@ -40,9 +42,11 @@ function deleteLink(id: string, doConfirm?: boolean) {
 	fetch(`/api/v1/links/${id}`, { method: 'DELETE' })
 	.then(response => {
 		if(response.status < 200 || response.status > 299) {
-			refreshLinkRow(id);
 			alert("Error deleting link :(");
+			refreshLinks();
+			return;
 		}
+		removeLinkRow(id);
 	});
 
 	return false;
@@ -126,7 +130,7 @@ function refreshLinks() {
 
 		$('#links_table > tr').each(function(_, ele) {
 			const linkid = getLinkIDFromID($(ele).attr('id')!);
-			if(!links_rev[linkid]) {
+			if (!links_rev[linkid]) {
 				delete LINKS[linkid];
 				removeLinkRow(linkid);
 			}
