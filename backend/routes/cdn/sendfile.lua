@@ -2,9 +2,9 @@ local utils = require("foxcaves.utils")
 local File = require("foxcaves.models.file")
 local ngx = ngx
 
-register_route("/cdn/sendfile/{action}/{fileid}/{extension}", "GET", make_route_opts_anon(), function()
+register_route("/cdn/sendfile/{action}/{id}/{extension}", "GET", make_route_opts_anon(), function()
 	local function send_file(disposition_type)
-		local file = File.GetByID(ngx.ctx.route_vars.fileid)
+		local file = File.GetByID(ngx.ctx.route_vars.id)
 
 		if (not file) or file.extension:sub(2):lower() ~= ngx.ctx.route_vars.extension:lower() then
 			return utils.api_error("File not found", 404)

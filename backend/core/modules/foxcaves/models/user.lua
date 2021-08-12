@@ -36,8 +36,7 @@ function User.GetByID(id)
         return nil
     end
 
-	local user = database.get_shared():query_safe('SELECT * FROM users WHERE id = %s', id)
-	user = user[1]
+	local user = database.get_shared():query_safe_single('SELECT * FROM users WHERE id = %s', id)
 
 	if not user then
 		return nil
@@ -47,8 +46,7 @@ function User.GetByID(id)
 end
 
 function User.GetByUsername(username)
-	local user = database.get_shared():query_safe('SELECT * FROM users WHERE lower(username) = %s', username:lower())
-	user = user[1]
+	local user = database.get_shared():query_safe_single('SELECT * FROM users WHERE lower(username) = %s', username:lower())
 
 	if not user then
 		return nil

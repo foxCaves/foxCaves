@@ -218,10 +218,10 @@ function refreshFiles() {
 		}
 
 		$('#file_manager > li').each(function(_, ele) {
-			const fileid = getFileIDFromID($(ele).attr('id')!);
-			if(!files_rev[fileid]) {
-				delete FILES[fileid];
-				removeFileLI(fileid);
+			const id = getFileIDFromID($(ele).attr('id')!);
+			if(!files_rev[id]) {
+				delete FILES[id];
+				removeFileLI(id);
 			}
 		});
 	});
@@ -304,52 +304,52 @@ function setupFileJS(parent: JQuery | HTMLElement) {
 	});
 }
 
-function addFileLI(fileid: string, no_refresh_if_exist?: boolean) {
-	if(document.getElementById("file_"+fileid)) {
+function addFileLI(id: string, no_refresh_if_exist?: boolean) {
+	if(document.getElementById("file_"+id)) {
 		if(!no_refresh_if_exist) {
-			refreshFileLI(fileid);
+			refreshFileLI(id);
 		}
 		return;
 	}
 	const ele = document.getElementById("file_manager")!;
-	const newFile = getFileLI(fileid);
+	const newFile = getFileLI(id);
 	if (!newFile) {
-		removeFileLI(fileid);
+		removeFileLI(id);
 		return;
 	}
 	ele.insertBefore(newFile, ele.firstChild);
 	setupFileJS(newFile);
 }
 
-function removeFileLI(fileid: string) {
-	$('#file_'+fileid).remove();
+function removeFileLI(id: string) {
+	$('#file_'+id).remove();
 }
 
-function refreshFileLI(fileid: string) {
-	const newFile = getFileLI(fileid);
+function refreshFileLI(id: string) {
+	const newFile = getFileLI(id);
 	if (!newFile) {
-		removeFileLI(fileid);
+		removeFileLI(id);
 		return;
 	}
-	$('#file_'+fileid).replaceWith(newFile);
+	$('#file_'+id).replaceWith(newFile);
 	setupFileJS(newFile);
 }
 
-function deleteFile(fileid: string, doConfirm?: boolean) {
+function deleteFile(id: string, doConfirm?: boolean) {
 	if(doConfirm && !confirm("Are you sure you want to delete this file")) {
 		return;
 	}
 
-	$("#file_"+fileid).css("border", "1px solid red"); //Highlight file deletion
+	$("#file_"+id).css("border", "1px solid red"); //Highlight file deletion
 
-	fetch(`/api/v1/files/${fileid}`, { method: 'DELETE' })
+	fetch(`/api/v1/files/${id}`, { method: 'DELETE' })
 	.then(response => {
 		if(response.status < 200 || response.status > 299) {
 			alert("Error deleting file :(");
 			refreshFiles();
 			return;
 		}
-		removeFileLI(fileid);
+		removeFileLI(id);
 	});
 
 	return false;

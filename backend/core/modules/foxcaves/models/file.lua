@@ -190,8 +190,7 @@ function GetByID(id)
 		return nil
 	end
 
-	local file = database.get_shared():query_safe('SELECT * FROM files WHERE id = %s', id)
-	file = file[1]
+	local file = database.get_shared():query_safe_single('SELECT * FROM files WHERE id = %s', id)
 
 	if not file then
 		return nil

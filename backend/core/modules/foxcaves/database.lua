@@ -31,6 +31,11 @@ function make()
 		return res
 	end
 
+	function database:query_safe_single(query, ...)
+		local res = self:query_safe(query, ...)
+		return res[1]
+	end
+
 	utils.register_shutdown(function() database:keepalive(config.keepalive_timeout or 10000, config.keepalive_count or 10) end)
 
 	return database

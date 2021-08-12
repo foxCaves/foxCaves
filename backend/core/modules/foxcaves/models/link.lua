@@ -36,14 +36,13 @@ function GetByID(id)
 		return nil
 	end
 
-	local links = database.get_shared():query_safe('SELECT * FROM links WHERE id = %s', id)
-	links = links[1]
+	local link = database.get_shared():query_safe_single('SELECT * FROM links WHERE id = %s', id)
 
-	if not links then
+	if not link then
 		return nil
 	end
 
-	return makelinkmt(links)
+	return makelinkmt(link)
 end
 
 function New()

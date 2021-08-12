@@ -129,10 +129,10 @@ function refreshLinks() {
 		}
 
 		$('#links_table > tr').each(function(_, ele) {
-			const linkid = getLinkIDFromID($(ele).attr('id')!);
-			if (!links_rev[linkid]) {
-				delete LINKS[linkid];
-				removeLinkRow(linkid);
+			const id = getLinkIDFromID($(ele).attr('id')!);
+			if (!links_rev[id]) {
+				delete LINKS[id];
+				removeLinkRow(id);
 			}
 		});
 	});

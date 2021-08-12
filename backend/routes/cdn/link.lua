@@ -1,17 +1,16 @@
 local utils = require("foxcaves.utils")
-local database = require("foxcaves.database")
+local Link = require("foxcaves.models.link")
 local ngx = ngx
 
-register_route("/cdn/link/{linkid}", "GET", make_route_opts_anon(), function()
-    local dest = database.get_shared():query_safe('SELECT url FROM links WHERE id = %s', ngx.ctx.route_vars.linkid)
-    dest = dest[1]
+register_route("/cdn/link/{id}", "GET", make_route_opts_anon(), function()
+    local link = Link.GetByID(ngx.ctx.route_vars.id)
 
     ngx.header["Content-Type"] = "text/plain"
 
-    if not dest then
+    if not link then
         return utils.api_error("Link not found", 404)
     end
 
     ngx.status = 302
-    ngx.redirect(dest.url)
+    ngx.redirect(link.url)
 end)
