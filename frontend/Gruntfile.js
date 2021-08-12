@@ -74,7 +74,7 @@ module.exports = function(grunt) {
 				files: [{
 					expand: true,
 					cwd: `html_out/`,
-					src: ['**'],
+					src: ['**/*.html'],
 					dest: `dist/`,
 				}]
 			}
