@@ -4,13 +4,10 @@ print("Building...")
 
 dofile("template.lua")
 
-local DISTDIR = "../dist"
+local DISTDIR = "../html_out"
 
 local function storeTemplate(name)
     local template = evalTemplate(name)
-
-	template = template:gsub("<!--(.-)-->", "")
-	template = template:gsub("%s+", " ")
 
     if template:sub(1, 1) == " " then
         template = template:sub(2)
