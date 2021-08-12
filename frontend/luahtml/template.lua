@@ -68,7 +68,10 @@ function preprocessTemplate(code, insideother)
 		end
 		lastCut = endPos+1
 	end
-	if(lastCut == 1 and not insideother) then return "return [["..code.."]]" end
+	if lastCut == 1 and not insideother then
+		return "return [["..code.."]]"
+	end
+
 	local codeBlock = code:sub(lastCut, code:len())
 	if codeBlock ~= "" then
 		table.insert(concatTbl, "table.insert(retTbl, [["..codeBlock.."]])")
@@ -82,7 +85,7 @@ end
 local function loadTemplate(name)
 	local code = loadTemplateFile(name, false)
 	local func, err = load(code, "TEMPLATE:"..name)
-	if(not func) then
+	if not func then
 		error(
 			string.format(
 				"Failed to compile template %s : %s",
