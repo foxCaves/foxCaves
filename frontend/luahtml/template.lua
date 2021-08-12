@@ -60,8 +60,6 @@ function preprocessTemplate(code, insideother)
 				table.insert(concatTbl, "table.insert(retTbl, "..match..")")
 			elseif marker == "+" then
 				table.insert(concatTbl, loadTemplateFile(match, true))
-			elseif marker == "#" then
-				table.insert(concatTbl, 'table.insert(retTbl, "' .. loadstring("return " .. match)() .. '")')
 			else
 				table.insert(concatTbl, match)
 			end
