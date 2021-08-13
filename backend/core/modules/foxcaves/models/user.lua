@@ -111,7 +111,7 @@ function UserMT:SetUsername(username)
 end
 
 function UserMT:SetPassword(password)
-    self.password = argon2.hash(password, random.string(32))
+    self.password = argon2.hash_encoded(password, random.string(32))
 end
 
 function UserMT:CheckPassword(password)
