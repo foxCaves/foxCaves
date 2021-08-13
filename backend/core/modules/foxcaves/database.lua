@@ -4,7 +4,7 @@ local pgmoon = require("pgmoon")
 local next = next
 local error = error
 local ngx = ngx
-local unpack = table.unpack or unpack
+local unpack = unpack
 
 local M = {}
 setfenv(1, M)

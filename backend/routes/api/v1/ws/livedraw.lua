@@ -9,7 +9,7 @@ local setmetatable = setmetatable
 local pcall = pcall
 local string_format = string.format
 local ngx = ngx
-local unpack = table.unpack or unpack
+local unpack = unpack
 
 R.register_route("/api/v1/ws/livedraw", "GET", R.make_route_opts({ allow_guest = true }), function()
 	local main_redis = redis.get_shared()
