@@ -160,10 +160,9 @@ function M.execute()
         return
     end
 
-    ngx.ctx.route_id = handler.id
-    ngx.ctx.route_vars = {}
+    local route_vars = {}
     for i, mapping in next, handler.mappings do
-        ngx.ctx.route_vars[mapping] = urlsplit[i]
+        route_vars[mapping] = urlsplit[i]
     end
 
     ngx.header["FoxCaves-Route-URL"] = url
@@ -187,7 +186,7 @@ function M.execute()
     end
 
     if not res then
-        res, code = handler.func()
+        res, code = handler.func(route_vars)
         if not res then
             return
         end

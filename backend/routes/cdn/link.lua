@@ -2,8 +2,8 @@ local utils = require("foxcaves.utils")
 local Link = require("foxcaves.models.link")
 local ngx = ngx
 
-R.register_route("/cdn/link/{id}", "GET", R.make_route_opts_anon(), function()
-    local link = Link.GetByID(ngx.ctx.route_vars.id)
+R.register_route("/cdn/link/{id}", "GET", R.make_route_opts_anon(), function(route_vars)
+    local link = Link.GetByID(route_vars.id)
 
     ngx.header["Content-Type"] = "text/plain"
 

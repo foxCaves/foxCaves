@@ -5,8 +5,8 @@ local exec = require("foxcaves.exec")
 local ngx = ngx
 local io = io
 
-R.register_route("/api/v1/files/{id}/convert", "POST", R.make_route_opts(), function()
-	local file = File.GetByID(ngx.ctx.route_vars.id)
+R.register_route("/api/v1/files/{id}/convert", "POST", R.make_route_opts(), function(route_vars)
+	local file = File.GetByID(route_vars.id)
 	if not file then
 		return utils.api_error("Not found", 404)
 	end

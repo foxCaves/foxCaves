@@ -2,8 +2,8 @@ local utils = require("foxcaves.utils")
 local File = require("foxcaves.models.file")
 local ngx = ngx
 
-R.register_route("/api/v1/files/{id}", "PATCH", R.make_route_opts(), function()
-    local file = File.GetByID(ngx.ctx.route_vars.id)
+R.register_route("/api/v1/files/{id}", "PATCH", R.make_route_opts(), function(route_vars)
+    local file = File.GetByID(route_vars.id)
     if not file then
         return utils.api_error("File not found", 404)
     end
