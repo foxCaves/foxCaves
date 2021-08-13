@@ -1,5 +1,5 @@
+local bit = require("bit")
 local io = io
-local bit = bit
 local table = table
 
 local M = {}
