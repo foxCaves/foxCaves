@@ -49,9 +49,9 @@ function M.send(to_addr, subject, content, from_addr, from_name, headers)
 		from_name = from_addr
 	end
 
-	if config.username and config.password then
+	if config.user and config.password then
 		smtp_send_line(sock, "AUTH PLAIN " .. ngx.encode_base64(string.format("%s\0%s\0%s",
-																config.username, config.username, config.password)))
+																config.user, config.user, config.password)))
 	end
 
 	if from_addr then
