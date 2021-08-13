@@ -76,3 +76,5 @@ function M.send(to_addr, subject, content, from_addr, from_name, headers)
 	smtp_send_line(sock, "QUIT")
 	sock:close()
 end
+
+return M
