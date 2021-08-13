@@ -88,7 +88,7 @@ local function loadTemplate(name)
 	return func
 end
 
-function evalTemplate(name)
+local function evalTemplate(name)
 	local tpl = loadTemplate(name)()
 	if type(tpl) == "string" then
 		return tpl
@@ -101,3 +101,5 @@ function evalTemplate(name)
 
 	return setfenv(tpl, params)()
 end
+
+return evalTemplate

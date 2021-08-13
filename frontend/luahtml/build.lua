@@ -1,4 +1,5 @@
 local lfs = require("lfs")
+local evalTemplate = dofile("template.lua")
 
 print("Building...")
 
