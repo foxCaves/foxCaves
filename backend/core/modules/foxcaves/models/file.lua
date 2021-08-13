@@ -134,19 +134,7 @@ local function file_fullread(filename)
 end
 
 local function file_move(src, dst)
-	local fhsrc = io.open(src, "rb")
-	local fhdst = io.open(dst, "wb")
-
-	while true do
-		local buffer = fhsrc:read(4096)
-		if not buffer then break end
-		fhdst:write(buffer)
-	end
-
-	fhsrc:close()
-	fhdst:close()
-
-	os.remove(src)
+    exec.cmd("mv", src, dst)
 end
 
 local function makefilemt(file)
