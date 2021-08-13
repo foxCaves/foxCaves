@@ -1,6 +1,7 @@
 local utils = require("foxcaves.utils")
 local consts = require("foxcaves.consts")
 local auth = require("foxcaves.auth")
+local auth_utils = require("foxcaves.auth_utils")
 local ngx = ngx
 
 R.register_route("/api/v1/users/self/login", "POST",
@@ -30,7 +31,7 @@ R.register_route("/api/v1/users/self/login", "POST",
     else
         if args.remember == "true" then
             ngx.ctx.remember_me = true
-            auth.send_login_key()
+            auth_utils.send_login_key()
         end
     end
 
