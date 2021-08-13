@@ -7,9 +7,9 @@ local random = require("foxcaves.random")
 local User = require("foxcaves.models.user")
 local url_config = require("foxcaves.config").urls
 local ROOT = require("foxcaves.consts").ROOT
+local exec = require("foxcaves.exec")
 
 local io = io
-local string = string
 local os = os
 local ngx = ngx
 local next = next
@@ -77,13 +77,12 @@ local mimeHandlers = {
     image = function(src, dest)
         local thumbext = ".png"
         local thumbnail = dest .. thumbext
-        os.execute(string.format(
-            '/usr/bin/convert "%s" -thumbnail x300 -resize "300x<" -resize 50%% ' ..
-                '-gravity center -crop 150x150+0+0 +repage -format png "%s"',
-            src,
-            thumbnail
-        ))
-
+        exec.cmd(
+            "/usr/bin/convert", src,
+            "-thumbnail", "x300", "-resize", "300x<",
+            "-resize", "50%", "-gravity", "center", "-crop", "150x150+0+0",
+            "+repage", "-format", "png", thumbnail
+        )
         if not lfs.attributes(thumbnail, "size") then
             return File.Type.Image, nil
         end

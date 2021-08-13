@@ -1,6 +1,7 @@
 local lfs = require("lfs")
 local utils = require("foxcaves.utils")
 local File = require("foxcaves.models.file")
+local exec = require("foxcaves.exec")
 local ngx = ngx
 local io = io
 
@@ -30,7 +31,7 @@ R.register_route("/api/v1/files/{id}/convert", "POST", R.make_route_opts(), func
 	local fh = io.open(tmptmpfile, "w")
 	fh:write(data)
 	fh:close()
-	os.execute('/usr/bin/convert "' .. tmptmpfile .. '" -format ' .. newextension:sub(2) .. ' "' .. tmpfile .. '"')
+	exec.cmd("/usr/bin/convert", tmptmpfile, "-format", newextension:sub(2), tmpfile)
 	os.remove(tmptmpfile)
 
 	local newsize = lfs.attributes(tmpfile, "size")
