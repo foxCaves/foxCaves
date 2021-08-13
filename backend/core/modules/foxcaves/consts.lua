@@ -1,5 +1,4 @@
 local M = {}
-setfenv(1, M)
 
 M.VALIDATION_STATE_OK = 0
 M.VALIDATION_STATE_INVALID = -1
