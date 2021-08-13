@@ -23,5 +23,5 @@ rawset(_G, 'OSENV', {
 	ENVIRONMENT = true
 })
 for k, _ in pairs(OSENV) do
-	OSENV[k] = os.getenv(k)
+	rawset(OSENV, k, os.getenv(k))
 end
