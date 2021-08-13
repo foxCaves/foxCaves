@@ -78,7 +78,7 @@ local mimeHandlers = {
         local thumbext = ".png"
         local thumbnail = dest .. thumbext
         exec.cmd(
-            "/usr/bin/convert", src,
+            "convert", src,
             "-thumbnail", "x300", "-resize", "300x<",
             "-resize", "50%", "-gravity", "center", "-crop", "150x150+0+0",
             "+repage", "-format", "png", thumbnail
