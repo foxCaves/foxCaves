@@ -4,6 +4,7 @@ local config = require("foxcaves.config").email
 
 local error = error
 local ngx = ngx
+local string = string
 
 local M = {}
 setfenv(1, M)
