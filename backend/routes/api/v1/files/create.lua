@@ -4,7 +4,7 @@ local File = require("foxcaves.models.file")
 local ngx = ngx
 local io = io
 
-register_route("/api/v1/files", "POST", make_route_opts(), function()
+R.register_route("/api/v1/files", "POST", R.make_route_opts(), function()
 	local name = ngx.var.arg_name
 
 	if not name then
@@ -36,11 +36,10 @@ register_route("/api/v1/files", "POST", make_route_opts(), function()
 	end
 
 	if not filetmp then
-		filetmp =  Files.Paths.Temp .. "file_" .. file.id .. file.extension
-		f = io.open(filetmp, "wb")
+		filetmp =  File.Paths.Temp .. "file_" .. file.id .. file.extension
+		local f = io.open(filetmp, "wb")
 		f:write(filedata)
 		f:close()
-		filedata = nil
 	end
 	file:MoveUploadData(filetmp)
 

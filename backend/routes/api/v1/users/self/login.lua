@@ -3,7 +3,8 @@ local consts = require("foxcaves.consts")
 local auth = require("foxcaves.auth")
 local ngx = ngx
 
-register_route("/api/v1/users/self/login", "POST", make_route_opts({ allow_guest = true, api_login = false }), function()
+R.register_route("/api/v1/users/self/login", "POST",
+                    R.make_route_opts({ allow_guest = true, api_login = false }), function()
     local args = utils.get_post_args()
     if not args then
         return utils.api_error("No args")

@@ -3,7 +3,7 @@ local WS_URL = ngx.re.gsub(require("foxcaves.config").urls.main, "^http", "ws", 
 
 local ngx = ngx
 
-register_route("/api/v1/files/{id}/livedraw", "GET", make_route_opts({ allow_guest = true }), function()
+R.register_route("/api/v1/files/{id}/livedraw", "GET", R.make_route_opts({ allow_guest = true }), function()
     local id = ngx.ctx.route_vars.id
     local session = ngx.var.arg_session
 

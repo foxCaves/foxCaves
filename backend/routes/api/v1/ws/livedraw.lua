@@ -5,21 +5,17 @@ local server = require("resty.websocket.server")
 
 local next = next
 local tonumber = tonumber
-local tostring = tostring
 local setmetatable = setmetatable
 local pcall = pcall
-local table_insert = table.insert
-local table_concat = table.concat
 local string_format = string.format
-local time = os.time
 local ngx = ngx
 local unpack = unpack
 
-register_route("/api/v1/ws/livedraw", "GET", make_route_opts({ allow_guest = true }), function()
+R.register_route("/api/v1/ws/livedraw", "GET", R.make_route_opts({ allow_guest = true }), function()
 	local main_redis = redis.get_shared()
 	local sub_redis = redis.make(true)
 
-	local ws, err = server:new({
+	local ws, _ = server:new({
 		timeout = 5000,
 		max_payload_len = 65535,
 	})
@@ -45,12 +41,12 @@ register_route("/api/v1/ws/livedraw", "GET", make_route_opts({ allow_guest = tru
 	local EVENT_JOINDIRECT = "J"
 	local EVENT_LEAVE = "l"
 	local EVENT_ERROR = "e"
-	local EVENT_IMGBURST = "i"
+	--local EVENT_IMGBURST = "i"
 
 	local cEVENT_JOIN = EVENT_JOIN:byte()
 	local cEVENT_JOINDIRECT = EVENT_JOINDIRECT:byte()
 	local cEVENT_LEAVE = EVENT_LEAVE:byte()
-	local cEVENT_MOUSE_CURSOR = EVENT_MOUSE_CURSOR:byte()
+	--local cEVENT_MOUSE_CURSOR = EVENT_MOUSE_CURSOR:byte()
 
 	local should_run = true
 
@@ -114,25 +110,25 @@ register_route("/api/v1/ws/livedraw", "GET", make_route_opts({ allow_guest = tru
 			user.cursorX = x
 			user.cursorY = y
 		end,
-		[EVENT_MOUSE_CURSOR] = function(user, data)
+		[EVENT_MOUSE_CURSOR] = function()
 			return false
 		end,
-		[EVENT_CUSTOM] = function(user, data)
+		[EVENT_CUSTOM] = function(_, data)
 			if #data ~= 3 then error("Invalid payload") end
 		end,
-		[EVENT_RESET] = function(user, data)
+		[EVENT_RESET] = function(_, data)
 			if #data > 1 or (data[1] and data[1] ~= "") then
 				error("Invalid payload")
 			end
 		end,
-		[EVENT_LEAVE] = function(user, data)
+		[EVENT_LEAVE] = function(user)
 			user:kick()
 			return false
 		end,
-		[EVENT_JOIN] = function(user, data)
+		[EVENT_JOIN] = function()
 			return false
 		end,
-		[EVENT_JOINDIRECT] = function(user, data)
+		[EVENT_JOINDIRECT] = function()
 			return false
 		end,
 	}
@@ -151,9 +147,6 @@ register_route("/api/v1/ws/livedraw", "GET", make_route_opts({ allow_guest = tru
 
 	local USERMETA = {}
 	USERMETA.__index = USERMETA
-	function USERMETA:send(data)
-		ws:send_text(data)
-	end
 	function USERMETA:serialize()
 		return string_format(
 			"%s|%i|%s|%s|%i|%i",

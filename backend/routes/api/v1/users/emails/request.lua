@@ -5,7 +5,7 @@ local random = require("foxcaves.random")
 local User = require("foxcaves.models.user")
 local main_url = require("foxcaves.config").urls.main
 
-register_route("/api/v1/users/emails/request", "POST", make_route_opts_anon(), function()
+R.register_route("/api/v1/users/emails/request", "POST", R.make_route_opts_anon(), function()
     local args = utils.get_post_args()
 
     local action = args.action or ""
@@ -30,23 +30,24 @@ register_route("/api/v1/users/emails/request", "POST", make_route_opts_anon(), f
 
     local emailid = random.string(32)
 
-    local email = "Hello, " .. user.username .. "!\n\nYou have recently requested to "
+    local emailstr = "Hello, " .. user.username .. "!\n\nYou have recently requested to "
     local subject
     if action == "activation" then
-        email = email .. " have your activation E-Mail resent. To activate your user account"
+        emailstr = emailstr .. " have your activation E-Mail resent. To activate your user account"
         subject = "foxCaves - Activate your account"
     elseif action == "forgotpwd" then
-        email = email .. " reset your password. To have a random password sent to you E-Mail"
+        emailstr = emailstr .. " reset your password. To have a random password sent to you E-Mail"
         subject = "foxCaves - Reset your password"
     else
         return utils.api_error("action invalid")
     end
-    email = email .. " just click on the following link:\n" .. main_url .."/email/code?code=" .. emailid .. "\n\nKind regards,\nfoxCaves Support"
+    emailstr = emailstr .. " just click on the following link:\n" .. main_url .."/email/code?code=" .. emailid ..
+                            "\n\nKind regards,\nfoxCaves Support"
 
     local redis_inst = redis.get_shared()
     local emailkey = "emailkeys:" .. emailid
-    redis_inst:hmset(emailkey, "user", userid, "action", action)
+    redis_inst:hmset(emailkey, "user", user.id, "action", action)
     redis_inst:expire(emailkey, 172800) --48 hours
 
-    mail.send(user.email, subject, email, "noreply@foxcav.es", "foxCaves")
+    mail.send(user.email, subject, emailstr, "noreply@foxcav.es", "foxCaves")
 end)

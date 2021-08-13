@@ -4,7 +4,7 @@ local cjson = require("cjson")
 local M = {}
 setfenv(1, M)
 
-function push_raw(data, user)
+function M.push_raw(data, user)
 	if user.id then
 		user = user.id
 	end

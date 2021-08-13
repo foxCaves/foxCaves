@@ -11,7 +11,6 @@ local main_url = require("foxcaves.config").urls.main
 
 local setmetatable = setmetatable
 local ngx = ngx
-local next = next
 
 local UserMT = {}
 local User = {}
@@ -46,7 +45,10 @@ function User.GetByID(id)
 end
 
 function User.GetByUsername(username)
-	local user = database.get_shared():query_safe_single('SELECT * FROM users WHERE lower(username) = %s', username:lower())
+	local user = database.get_shared():query_safe_single(
+        'SELECT * FROM users WHERE lower(username) = %s',
+        username:lower()
+    )
 
 	if not user then
 		return nil
@@ -113,7 +115,7 @@ function UserMT:SetPassword(password)
 end
 
 function UserMT:CheckPassword(password)
-	local authOk = false
+	local authOk
 	local authNeedsUpdate = false
 	if self.password:sub(1, 13) == "$fcvhmacsha1$" then
 		local pw = self.password:sub(14)
@@ -160,24 +162,36 @@ end
 
 function UserMT:Save()
     if self.not_in_db then
-        database.get_shared():query_safe('INSERT INTO users (id, username, email, password, loginkey, apikey, active, bonusbytes) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)', self.id, self.username, self.email, self.password, self.loginkey, self.apikey, self.active, self.bonusbytes)
+        database.get_shared():query_safe(
+            'INSERT INTO users\
+                (id, username, email, password, loginkey, apikey, active, bonusbytes) VALUES\
+                (%s, %s, %s, %s, %s, %s, %s, %s)',
+            self.id, self.username, self.email, self.password, self.loginkey, self.apikey, self.active, self.bonusbytes
+        )
         self.not_in_db = nil
     else
-        database.get_shared():query_safe('UPDATE users SET username = %s, email = %s, password = %s, loginkey = %s, apikey = %s, active = %s, bonusbytes = %s WHERE id = %s', self.username, self.email, self.password, self.loginkey, self.apikey, self.active, self.bonusbytes, self.id)
+        database.get_shared():query_safe(
+            'UPDATE users\
+                SET username = %s, email = %s, password = %s, loginkey = %s, apikey = %s, active = %s, bonusbytes = %s\
+                WHERE id = %s',
+            self.username, self.email, self.password, self.loginkey, self.apikey, self.active, self.bonusbytes, self.id
+        )
     end
 
     if self.require_email_confirmation then
         local emailid = random.string(32)
 
-        local email_text = "Hello, " .. self.username .. "!\n\nYou have recently registered or changed your E-Mail on foxCaves.\nPlease click the following link to activate your E-Mail:\n"
+        local email_text = "Hello, " .. self.username .. "!" ..
+            "\n\nYou have recently registered or changed your E-Mail on foxCaves." ..
+            "\nPlease click the following link to activate your E-Mail:\n"
         email_text = email_text .. main_url .. "/email/code?code=" .. emailid .. "\n\n"
         email_text = email_text .. "Kind regards,\nfoxCaves Support"
-    
+
         local redis_inst = redis.get_shared()
         local emailkey = "emailkeys:" .. emailid
         redis_inst:hmset(emailkey, "user", self.id, "action", "activation")
         redis_inst:expire(emailkey, 172800) --48 hours
-    
+
         mail.send(self.email, "foxCaves - Activation E-Mail", email_text, "noreply@foxcav.es", "foxCaves")
 
         self.require_email_confirmation = nil

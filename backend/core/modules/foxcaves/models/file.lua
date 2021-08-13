@@ -76,18 +76,17 @@ local mimeHandlers = {
     image = function(src, dest)
         local thumbext = ".png"
         local thumbnail = dest .. thumbext
-        os.execute(
-            string.format(
-                '/usr/bin/convert "%s" -thumbnail x300 -resize "300x<" -resize 50%% -gravity center -crop 150x150+0+0 +repage -format png "%s"',
-                src,
-                thumbnail
-            )
-        )
+        os.execute(string.format(
+            '/usr/bin/convert "%s" -thumbnail x300 -resize "300x<" -resize 50%% ' ..
+                '-gravity center -crop 150x150+0+0 +repage -format png "%s"',
+            src,
+            thumbnail
+        ))
 
         if not lfs.attributes(thumbnail, "size") then
-            return Type.Image, nil
+            return File.Type.Image, nil
         end
-        return Type.Image, thumbext
+        return File.Type.Image, thumbext
     end,
 
     text = function(src, dest)
@@ -107,22 +106,22 @@ local mimeHandlers = {
         fh:write(content)
         fh:close()
 
-        return Type.Text, ".txt"
+        return File.Type.Text, ".txt"
     end,
 
     video = function()
-        return Type.Video, nil
+        return File.Type.Video, nil
     end,
 
     audio = function()
-        return Type.Audio, nil
+        return File.Type.Audio, nil
     end,
 
-    application = function(src, dest, suffix)
+    application = function(_, _, suffix)
         if suffix == "pdf" then
-            return Type.Iframe, nil
+            return File.Type.Iframe, nil
         end
-        return Type.Other, nil
+        return File.Type.Other, nil
     end
 }
 
@@ -159,9 +158,9 @@ end
 
 local function file_manualdelete(file, isdir)
 	if isdir then
-		lfs.rmdir(Paths.Storage .. file)
+		lfs.rmdir(File.Paths.Storage .. file)
 	else
-		os.remove(Paths.Storage .. file)
+		os.remove(File.Paths.Storage .. file)
 	end
 end
 
@@ -173,7 +172,7 @@ local function file_deletestorage(file)
 	file_manualdelete(file.id, true)
 end
 
-function GetByUser(user)
+function File.GetByUser(user)
     if user.id then
         user = user.id
     end
@@ -185,8 +184,8 @@ function GetByUser(user)
     return files
 end
 
-function GetByID(id)
-	if not id then 
+function File.GetByID(id)
+	if not id then
 		return nil
 	end
 
@@ -199,7 +198,7 @@ function GetByID(id)
 	return makefilemt(file)
 end
 
-function New()
+function File.New()
     local file = {
         not_in_db = true,
         id = random.string(10),
@@ -213,7 +212,7 @@ function FileMT:ComputeVirtuals()
     if self.thumbnail and self.thumbnail ~= "" then
 		self.thumbnail_url = url_config.short .. "/thumbs/" .. self.id .. self.thumbnail
 	end
-	if self.type == Type.Image and self.thumbnail_url then
+	if self.type == File.Type.Image and self.thumbnail_url then
 		self.thumbnail_image = self.thumbnail_url
 	else
 		self.thumbnail_image = url_config.main .. "/static/img/thumbs/ext_" .. self.extension .. ".png"
@@ -237,7 +236,7 @@ function FileMT:Delete()
 end
 
 function FileMT:Download()
-    return file_fullread(Paths.Storage .. self.id .. "/file" .. self.extension)
+    return file_fullread(File.Paths.Storage .. self.id .. "/file" .. self.extension)
 end
 
 function FileMT:SetOwner(user)
@@ -268,17 +267,17 @@ end
 function FileMT:MoveUploadData(src)
     self.size = lfs.attributes(src, "size")
 
-    local thumbDest = Paths.Temp .. "thumb_" .. self.id
-    
+    local thumbDest = File.Paths.Temp .. "thumb_" .. self.id
+
 	local prefix, suffix = self.mimetype:match("([a-z]+)/([a-z]+)")
 	self.type, self.thumbnail = mimeHandlers[prefix](src, thumbDest, suffix)
 
-	lfs.mkdir(Paths.Storage .. self.id)
+	lfs.mkdir(File.Paths.Storage .. self.id)
 
-	file_move(src, Paths.Storage .. self.id .. "/file" .. self.extension)
+	file_move(src, File.Paths.Storage .. self.id .. "/file" .. self.extension)
 
 	if self.thumbnail and self.thumbnail ~= "" then
-		file_move(thumbDest .. self.thumbnail, Paths.Storage .. self.id .. "/thumb" .. self.thumbnail)
+		file_move(thumbDest .. self.thumbnail, File.Paths.Storage .. self.id .. "/thumb" .. self.thumbnail)
 	end
 
     self:ComputeVirtuals()
@@ -287,11 +286,20 @@ end
 function FileMT:Save()
     local primary_push_action
     if self.not_in_db then
-        database.get_shared():query_safe('INSERT INTO files (id, name, "user", extension, type, size, time, thumbnail) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)', self.id, self.name, self.user, self.extension, self.type, self.size, self.time, self.thumbnail or "")
+        database.get_shared():query_safe(
+            'INSERT INTO files\
+                (id, name, "user", extension, type, size, time, thumbnail) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)',
+            self.id, self.name, self.user, self.extension, self.type, self.size, self.time, self.thumbnail or ""
+        )
         primary_push_action = 'create'
         self.not_in_db = nil
     else
-        database.get_shared():query_safe('UPDATE files SET name = %s, "user" = %s, extension = %s, type = %s, size = %s, time = %s, thumbnail = %s WHERE id = %s', self.name, self.user, self.extension, self.type, self.size, self.time, self.thumbnail or "", self.id)
+        database.get_shared():query_safe(
+            'UPDATE files\
+                SET name = %s, "user" = %s, extension = %s, type = %s, size = %s, time = %s, thumbnail = %s\
+                WHERE id = %s',
+            self.name, self.user, self.extension, self.type, self.size, self.time, self.thumbnail or "", self.id
+        )
         primary_push_action = 'refresh'
     end
 	events.push_raw({

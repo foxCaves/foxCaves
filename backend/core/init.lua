@@ -1,9 +1,9 @@
 -- Protect global table
 setmetatable(_G, {
-	__index = function(t, k)
+	__index = function(_, k)
 		error("Attempt to read unknown from _G: " .. k)
 	end,
-	__newindex = function(t, k, v)
+	__newindex = function(_, k)
 		if k == "lfs" or k == "path" then
 			return
 		end

@@ -12,7 +12,6 @@ local lua_load = load
 local setfenv = setfenv
 local setmetatable = setmetatable
 local error = error
-local require = require
 
 local G = _G
 
@@ -22,20 +21,23 @@ local M = {}
 setfenv(1, M)
 
 local EMPTY_TABLE = setmetatable({}, {
-    __index = function(t, k)
+    __index = function(_, k)
         error("Accessing on EMPTY table: " .. k)
     end,
-    __newindex = function(t, k, v)
+    __newindex = function(_, k)
         error("Assigning on EMPTY table: " .. k)
     end,
 })
 
 local ROUTE_REG_MT = {}
 local ROUTE_REG_TABLE = setmetatable({}, {
-    __index = function(t, k)
-        return ROUTE_REG_MT[k] or G[k] or error("Accessing on ROUTE table: " .. k)
+    __index = function(_, k)
+        if k == "R" then
+            return ROUTE_REG_MT
+        end
+        return G[k] or error("Accessing on ROUTE table: " .. k)
     end,
-    __newindex = function(t, k, v)
+    __newindex = function(_, k)
         error("Assigning on ROUTE table: " .. k)
     end,
 })
@@ -76,7 +78,7 @@ local c_open, c_close = ('{}'):byte(1,2)
 function ROUTE_REG_MT.register_route(url, method, options, func)
     method = method:upper()
     local urlsplit = explode("/", url:sub(2))
-    
+
     local route_id = method .. " " .. url
 
     local mappings = {}
@@ -137,14 +139,14 @@ local function scan_route_dir(dir)
     end
 end
 
-function execute()
+function M.execute()
     local url = ngx.var.uri
     local method = ngx.var.request_method:upper()
     local urlsplit = explode("/", url:sub(2))
 
     local candidate = ROUTE_TREE
 
-    for i, seg in next, urlsplit do
+    for _, seg in next, urlsplit do
         candidate = candidate.children[seg] or candidate.children['*']
         if not candidate then
             ngx.status = 404

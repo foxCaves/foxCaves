@@ -4,7 +4,7 @@ local File = require("foxcaves.models.file")
 local ngx = ngx
 local io = io
 
-register_route("/api/v1/files/{id}/convert", "POST", make_route_opts(), function()
+R.register_route("/api/v1/files/{id}/convert", "POST", R.make_route_opts(), function()
 	local file = File.GetByID(ngx.ctx.route_vars.id)
 	if not file then
 		return utils.api_error("Not found", 404)
@@ -24,8 +24,8 @@ register_route("/api/v1/files/{id}/convert", "POST", make_route_opts(), function
 	local newfilename = file.name
 	newfilename = newfilename:sub(1, newfilename:len() - file.extension:len()) .. newextension
 
-	local tmptmpfile = Files.Paths.Temp .. "file_original_" .. file.id .. file.extension
-	local tmpfile =  Files.Paths.Temp .. "file_new_" .. file.id .. newextension
+	local tmptmpfile = File.Paths.Temp .. "file_original_" .. file.id .. file.extension
+	local tmpfile =  File.Paths.Temp .. "file_new_" .. file.id .. newextension
 
 	local fh = io.open(tmptmpfile, "w")
 	fh:write(data)

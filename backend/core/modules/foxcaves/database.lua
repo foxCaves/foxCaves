@@ -11,7 +11,7 @@ setfenv(1, M)
 
 config.socket_type = "nginx"
 
-function make()
+function M.make()
 	local database = pgmoon.new(config)
 	local isok, err = database:connect()
 	if not isok then
@@ -24,9 +24,9 @@ function make()
 			args[i] = database:escape_literal(v)
 		end
 		query = query:format(unpack(args))
-		local res, err = self:query(query)
+		local res, qerr = self:query(query)
 		if not res then
-			error(err)
+			error(qerr)
 		end
 		return res
 	end
@@ -36,17 +36,19 @@ function make()
 		return res[1]
 	end
 
-	utils.register_shutdown(function() database:keepalive(config.keepalive_timeout or 10000, config.keepalive_count or 10) end)
+	utils.register_shutdown(function()
+		database:keepalive(config.keepalive_timeout or 10000, config.keepalive_count or 10)
+	end)
 
 	return database
 end
 
-function get_shared()
+function M.get_shared()
 	local database = ngx.ctx.__database
 	if database then
 		return database
 	end
-	database = make()
+	database = M.make()
 	ngx.ctx.__database = database
 	return database
 end

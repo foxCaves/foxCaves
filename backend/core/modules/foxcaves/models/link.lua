@@ -19,7 +19,7 @@ local function makelinkmt(link)
     return link
 end
 
-function GetByUser(user)
+function Link.GetByUser(user)
     if user.id then
         user = user.id
     end
@@ -31,8 +31,8 @@ function GetByUser(user)
     return links
 end
 
-function GetByID(id)
-	if not id then 
+function Link.GetByID(id)
+	if not id then
 		return nil
 	end
 
@@ -45,7 +45,7 @@ function GetByID(id)
 	return makelinkmt(link)
 end
 
-function New()
+function Link.New()
     local link = {
         not_in_db = true,
         id = random.string(10),
@@ -81,11 +81,17 @@ end
 function LinkMT:Save()
     local primary_push_action
     if self.not_in_db then
-        database.get_shared():query_safe('INSERT INTO links (id, "user", url, time) VALUES (%s, %s, %s, %s)', self.id, self.user, self.url, self.time)
+        database.get_shared():query_safe(
+            'INSERT INTO links (id, "user", url, time) VALUES (%s, %s, %s, %s)',
+            self.id, self.user, self.url, self.time
+        )
         primary_push_action = 'create'
         self.not_in_db = nil
     else
-        database.get_shared():query_safe('UPDATE links SET "user" = %s, url = %s, time = %s WHERE id = %s', self.user, self.url, self.time, self.id)
+        database.get_shared():query_safe(
+            'UPDATE links SET "user" = %s, url = %s, time = %s WHERE id = %s',
+            self.user, self.url, self.time, self.id
+        )
         primary_push_action = 'refresh'
     end
 	events.push_raw({

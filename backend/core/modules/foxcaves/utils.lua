@@ -6,13 +6,13 @@ local next = next
 local M = {}
 setfenv(1, M)
 
-function register_shutdown(func)
+function M.register_shutdown(func)
 	if not ngx.ctx.shutdown_funcs then
 		ngx.ctx.shutdown_funcs = {}
 	end
 	table.insert(ngx.ctx.shutdown_funcs, func)
 end
-function __on_shutdown()
+function M.__on_shutdown()
 	if not ngx.ctx.shutdown_funcs then
 		return
 	end
@@ -29,7 +29,7 @@ local repTbl = {
 	[">"] = "&gt;",
 }
 
-function escape_html(str)
+function M.escape_html(str)
 	if (not str) or type(str) ~= "string" then
 		return str
 	end
@@ -37,16 +37,16 @@ function escape_html(str)
 	return str
 end
 
-function get_post_args()
+function M.get_post_args()
 	ngx.req.read_body()
 	return ngx.req.get_post_args()
 end
 
-function api_error(error, code)
+function M.api_error(error, code)
 	return { error = error }, (code or 400)
 end
 
-function explode(div,str) -- credit: http://richard.warburton.it
+function M.explode(div,str) -- credit: http://richard.warburton.it
 	local pos, arr = 0, {}
 	-- for each divider found
 	for st, sp in function() return str:find(div,pos,true) end do

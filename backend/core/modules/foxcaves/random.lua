@@ -27,10 +27,10 @@ local chars = {
 	"0","1","2","3","4","5","6","7","8","9"
 }
 local charcount = #chars
-function string(len)
+function M.string(len)
 	local randomstream = io.open("/dev/urandom", "r")
 	local ret = {}
-	for i=1,len do
+	for _=1,len do
 		table.insert(ret, chars[random(1, charcount, randomstream)])
 	end
 	randomstream:close()

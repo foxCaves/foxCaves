@@ -8,20 +8,21 @@ local ngx = ngx
 local M = {}
 setfenv(1, M)
 
-function make(close_on_shutdown)
+function M.make(close_on_shutdown)
 	local database, err = resty_redis:new()
 	if not database then
 		error("Error initializing DB: " .. err)
 	end
 	database:set_timeout(60000)
 
-	local ok, err = database:connect(config.host, config.port)
+	local ok
+	ok, err = database:connect(config.host, config.port)
 	if not ok then
 		error("Error connecting to DB: " .. err)
 	end
 
 	if database:get_reused_times() == 0 and config.password then
-		local ok, err = database:auth(config.password)
+		ok, err = database:auth(config.password)
 		if not ok then
 			error("Error connecting to DB: " .. err)
 		end
@@ -61,20 +62,24 @@ function make(close_on_shutdown)
 	end
 
 	if close_on_shutdown then
-		utils.register_shutdown(function() database:close() end)
+		utils.register_shutdown(function()
+			database:close()
+		end)
 	else
-		utils.register_shutdown(function() database:set_keepalive(config.keepalive_timeout or 10000, config.keepalive_count or 10) end)
+		utils.register_shutdown(function()
+			database:set_keepalive(config.keepalive_timeout or 10000, config.keepalive_count or 10)
+		end)
 	end
 
 	return database
 end
 
-function get_shared()
+function M.get_shared()
 	local redis = ngx.ctx.__redis
 	if redis then
 		return redis
 	end
-	redis = make()
+	redis = M.make()
 	ngx.ctx.__redis = redis
 	return redis
 end

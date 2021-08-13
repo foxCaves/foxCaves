@@ -14,10 +14,10 @@ local function get_config()
     }
 end
 
-register_route("/api/v1/config/client", "GET", make_route_opts_anon(), function()
+R.register_route("/api/v1/config/client", "GET", R.make_route_opts_anon(), function()
     return get_config()
 end)
-register_route("/api/v1/config/client.js", "GET", make_route_opts_anon(), function()
+R.register_route("/api/v1/config/client.js", "GET", R.make_route_opts_anon(), function()
     ngx.header["Content-Type"] = "text/javascript"
     ngx.print("window.CONFIG = " .. cjson.encode(get_config()) .. ";")
 end)

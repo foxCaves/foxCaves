@@ -1,6 +1,5 @@
 local utils = require("foxcaves.utils")
 local router = require("foxcaves.router")
-local consts = require("foxcaves.consts")
 local raven = require("raven")
 local raven_sender = require("raven.senders.ngx")
 local env = require("foxcaves.env")
@@ -49,7 +48,7 @@ if sentry_config.dsn then
 		return unpack(res)
 	end
 
-	function run(func)
+	function M.run()
 		local isok, err = rvn_call_ext({
 			tags = {
 				userid = ngx.ctx.user and ngx.ctx.user.id or "N/A",
@@ -139,9 +138,9 @@ else
 						table.insert(out, "</li>")
 					end
 				end
-				if(maxline ~= endline) then
+				if maxline ~= endline then
 					local funcEnd
-					for i = maxline + 1, endline do
+					for _ = maxline + 1, endline do
 						funcStart = iter()
 						if funcStart then
 							funcEnd = funcStart
@@ -149,7 +148,8 @@ else
 							break
 						end
 					end
-					table.insert(out, "<span class='nocode'>\n...</span></li><li class=\"L0\" value=\"" .. endline .. "\">" .. funcEnd .. "</li>")
+					table.insert(out, "<span class='nocode'>\n...</span></li><li class=\"L0\" value=\"" ..
+										endline .. "\">" .. funcEnd .. "</li>")
 				else
 					table.insert(out, "</li>")
 				end
@@ -199,20 +199,29 @@ else
 		return ""
 	end
 
+	local dbg_trace_hdr = [[
+		<html><head>
+		<script type="text/javascript"
+			src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+		<script type="text/javascript"
+			src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js" crossorigin="anonymous"></script>
+		<script
+			src="https://cdnjs.cloudflare.com/ajax/libs/prettify/r298/prettify.min.js"
+			type="text/javascript" crossorigin="anonymous"></script>
+		<script
+			src="https://cdnjs.cloudflare.com/ajax/libs/prettify/r298/lang-lua.min.js"
+			type="text/javascript" crossorigin="anonymous"></script>
+		<script type="text/javascript" src="]] .. main_url .. [[/static/js/errorpage.js" crossorigin="anonymous"></script>
+		<link rel="stylesheet" type="text/css"
+			href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/themes/base/jquery-ui.css" crossorigin="anonymous" />
+		<link rel="stylesheet" type="text/css" href="]] .. main_url .. [[/static/css/errorpage.css" crossorigin="anonymous" />
+		<link rel="stylesheet" type="text/css" href="]] .. main_url .. [[/static/css/prettify.css" crossorigin="anonymous" />
+		</head><body><h1 class="ui-widget">Original Error:
+	]]
+
 	local function debug_trace(err)
 		local out = {
-			[[
-				<html><head>
-				<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
-				<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js" crossorigin="anonymous"></script>
-				<script src="https://cdnjs.cloudflare.com/ajax/libs/prettify/r298/prettify.min.js" type="text/javascript" crossorigin="anonymous"></script>
-				<script src="https://cdnjs.cloudflare.com/ajax/libs/prettify/r298/lang-lua.min.js" type="text/javascript" crossorigin="anonymous"></script>
-				<script type="text/javascript" src="]] .. main_url .. [[/static/js/errorpage.js" crossorigin="anonymous"></script>
-				<link rel="stylesheet" type="text/css" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/themes/base/jquery-ui.css" crossorigin="anonymous" />
-				<link rel="stylesheet" type="text/css" href="]] .. main_url .. [[/static/css/errorpage.css" crossorigin="anonymous" />
-				<link rel="stylesheet" type="text/css" href="]] .. main_url .. [[/static/css/prettify.css" crossorigin="anonymous" />
-				</head><body><h1 class="ui-widget">Original Error:
-			]],
+			dbg_trace_hdr,
 			err,
 			"</h1><div class='accordion'><h3 class='autoclick'><a href='#'>UserInfo</a></h3><div>",
 			string.format(
@@ -224,7 +233,7 @@ else
 			"</tbody></table></div>"
 		}
 
-		local cur = nil
+		local cur
 		for level = 2, 100 do
 			cur = debug.getinfo(level)
 
@@ -236,7 +245,8 @@ else
 			end
 
 			if level <= 2 then
-				table.insert(out, "<h3 class='autoclick'><a href='#'>Level " .. tostring(level) .. "</a></h3><div><div class='accordion'>")
+				table.insert(out, "<h3 class='autoclick'><a href='#'>Level " .. tostring(level) ..
+									"</a></h3><div><div class='accordion'>")
 			else
 				table.insert(out, "<h3><a href='#'>Level " .. tostring(level) .. "</a></h3><div><div class='accordion'>")
 			end
@@ -244,7 +254,8 @@ else
 			if(cur.currentline ~= -1) then
 				table.insert(out, "<li>Line: " .. cur.currentline .. "</li>")
 			end
-			table.insert(out, "<li>What: " .. (cur.name and "In function '" .. cur.name .. "'" or "In main chunk") .. "</li></ul></div>")
+			table.insert(out, "<li>What: " ..
+								(cur.name and "In function '" .. cur.name .. "'" or "In main chunk") .. "</li></ul></div>")
 
 			table.insert(out, getLocals(level))
 			table.insert(out, getUpValues(cur.func))
@@ -257,15 +268,12 @@ else
 		return table.concat(out, "")
 	end
 
-	function run(func)
+	function M.run()
 		local isok, err = xpcall(router.execute, debug_trace)
 		ngx.req.discard_body()
 		if not isok then
 			ngx.status = 500
 			ngx.log(ngx.ERR, "Lua error: " .. err)
-			if ENVIRONMENT ~= consts.ENV_PRODUCTION then
-				ngx.print(err)
-			end
 		end
 		utils.__on_shutdown()
 		ngx.eof()
