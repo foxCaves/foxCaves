@@ -68,7 +68,7 @@ function docReady() {
 }
 
 async function fetchCurrentUser() {
-	const res = await fetch('/api/v1/users/self');
+	const res = await fetch('/api/v1/users/self/details');
 	if (res.status !== 200) {
 		currentUser = undefined;
 		fetchCurrentUserDone();
