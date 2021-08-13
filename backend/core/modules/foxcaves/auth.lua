@@ -1,21 +1,16 @@
 local utils = require("foxcaves.utils")
+local auth_utils = require("foxcaves.auth_utils")
 local redis = require("foxcaves.redis")
 local random = require("foxcaves.random")
 local consts = require("foxcaves.consts")
 local User = require("foxcaves.models.user")
 
 local ngx = ngx
-local table = table
-local type = type
 
 local M = {}
 setfenv(1, M)
 
 local SESSION_EXPIRE_DELAY = 7200
-
-local function hash_login_key(loginkey)
-	return ngx.hmac_sha1(loginkey or ngx.ctx.user.loginkey, ngx.var.http_user_agent or ngx.var.remote_addr)
-end
 
 function M.LOGIN_METHOD_PASSWORD(userdata, password)
 	return userdata:CheckPassword(password)
@@ -24,7 +19,7 @@ function M.LOGIN_METHOD_APIKEY(userdata, apikey)
 	return userdata.apikey == apikey
 end
 function M.LOGIN_METHOD_LOGINKEY(userdata, loginkey)
-	return hash_login_key(userdata.loginkey) == ngx.decode_base64(loginkey)
+	return auth_utils.hash_login_key(userdata.loginkey) == ngx.decode_base64(loginkey)
 end
 
 function M.login(username_or_id, credential, options)
@@ -68,7 +63,7 @@ function M.login(username_or_id, credential, options)
 		sessionid = "sessions:" .. sessionid
 
 		local redis_inst = redis.get_shared()
-		redis_inst:hmset(sessionid, "id", user.id, "loginkey", ngx.encode_base64(hash_login_key(user.loginkey)))
+		redis_inst:hmset(sessionid, "id", user.id, "loginkey", ngx.encode_base64(auth_utils.hash_login_key(user.loginkey)))
 		redis_inst:expire(sessionid, SESSION_EXPIRE_DELAY)
 	end
 
@@ -83,24 +78,6 @@ function M.logout()
 		redis.get_shared():del("sessions:" .. ngx.ctx.sessionid)
 	end
 	ngx.ctx.user = nil
-end
-
-function M.send_login_key()
-	if not ngx.ctx.remember_me then
-		return
-	end
-
-	local expires = "; Expires=" .. ngx.cookie_time(ngx.time() + (30 * 24 * 60 * 60))
-	local hdr = ngx.header['Set-Cookie']
-	expires = "loginkey=" .. ngx.ctx.user.id .. "." .. ngx.encode_base64(hash_login_key()) ..
-				expires .. "; HttpOnly; Path=/; Secure;"
-	if type(hdr) == "table" then
-		table.insert(hdr, expires)
-	elseif hdr then
-		ngx.header['Set-Cookie'] = {hdr, expires}
-	else
-		ngx.header['Set-Cookie'] = {expires}
-	end
 end
 
 function M.check_cookies()
