@@ -102,13 +102,13 @@ function M.check_cookies()
 		if loginkey then
 			if ngx.ctx.user then
 				ngx.ctx.remember_me = true
-				M.send_login_key()
+				auth_utils.send_login_key()
 			else
 				if M.login(loginkey[2], loginkey[3], {
 								login_with_id = true, login_method = M.LOGIN_METHOD_LOGINKEY
 							}) == consts.LOGIN_SUCCESS then
 					ngx.ctx.remember_me = true
-					M.send_login_key()
+					auth_utils.send_login_key()
 				end
 			end
 		end
