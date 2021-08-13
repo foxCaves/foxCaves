@@ -11,12 +11,10 @@ setmetatable(_G, {
 	end,
 })
 
--- Load paths
+-- Load module path
 local path = require("path")
-local CORE_ROOT = path.abs(debug.getinfo(1, "S").source:sub(2):match("(.*/)"))
-rawset(_G, 'LUA_ROOT', path.abs(CORE_ROOT .. "/../"))
-rawset(_G, 'ROOT', path.abs(LUA_ROOT .. "/../"))
-package.path = package.path .. ";" .. path.abs(CORE_ROOT .. "/modules") .. "/?.lua"
+local core_root = path.abs(debug.getinfo(1, "S").source:sub(2):match("(.*/)"))
+package.path = package.path .. ";" .. path.abs(core_root .. "/modules") .. "/?.lua"
 
 -- Load environment vars
 rawset(_G, 'OSENV', {

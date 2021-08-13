@@ -15,7 +15,7 @@ local error = error
 
 local G = _G
 
-local ROUTES_ROOT = LUA_ROOT .. "/routes"
+local ROUTES_ROOT = require("path").abs(require("foxcaves.consts").LUA_ROOT .. "/routes")
 
 local M = {}
 setfenv(1, M)

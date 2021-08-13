@@ -6,6 +6,7 @@ local events = require("foxcaves.events")
 local random = require("foxcaves.random")
 local User = require("foxcaves.models.user")
 local url_config = require("foxcaves.config").urls
+local ROOT = require("foxcaves.consts").ROOT
 
 local io = io
 local string = string

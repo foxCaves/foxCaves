@@ -1,5 +1,5 @@
 local function load_revision()
-	local fh = io.open(ROOT .. "/.revision", "r")
+	local fh = io.open(require("foxcaves.consts").ROOT .. "/.revision", "r")
 	if not fh then
 		return
 	end
