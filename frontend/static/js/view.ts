@@ -34,7 +34,7 @@ async function loadFileInfo() {
 	const urlParams = new URLSearchParams(document.location.search);
 	const id = urlParams.get('id');
 	const res = await fetch(`/api/v1/files/${id}`);
-	const file = (await res.json()) as FileInfo;
+	const file = convertToDates((await res.json()) as FileInfo);
 
 	document.getElementById('view-name')!.innerText = file.name;
 	document.getElementById('view-time')!.innerText = formatDate(file.createdat);
