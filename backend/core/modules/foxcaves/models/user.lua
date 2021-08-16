@@ -162,7 +162,7 @@ end
 function UserMT:Save()
     if self.not_in_db then
         database.get_shared():query_safe(
-            'INSERT INTO users\
+            'INSERT INTO users \
                 (id, username, email, password, loginkey, apikey, active, bonusbytes) VALUES\
                 (%s, %s, %s, %s, %s, %s, %s, %s)',
             self.id, self.username, self.email, self.password, self.loginkey, self.apikey, self.active, self.bonusbytes
@@ -170,7 +170,7 @@ function UserMT:Save()
         self.not_in_db = nil
     else
         database.get_shared():query_safe(
-            'UPDATE users\
+            'UPDATE users \
                 SET username = %s, email = %s, password = %s, loginkey = %s, apikey = %s, active = %s, bonusbytes = %s, \
                     updatedat = now() \
                 WHERE id = %s',
