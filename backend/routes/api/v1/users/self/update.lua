@@ -23,6 +23,7 @@ R.register_route("/api/v1/users/self", "PATCH", R.make_route_opts({ api_login = 
             return utils.api_error("email taken")
         end
         obj.email = user.email
+        obj.active = user.active
     end
 
     if args.password then
