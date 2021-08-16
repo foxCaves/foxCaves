@@ -3,7 +3,7 @@ local io = io
 local table = table
 
 local M = {}
-setfenv(1, M)
+require("foxcaves.module_helper").setmodenv()
 
 local function random(min, max, randomstream)
 	local a,b,c,d = randomstream:read(4):byte(1,4)

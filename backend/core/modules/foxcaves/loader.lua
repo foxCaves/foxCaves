@@ -19,7 +19,7 @@ local next = next
 local tostring = tostring
 
 local M = {}
-setfenv(1, M)
+require("foxcaves.module_helper").setmodenv()
 
 if sentry_config.dsn then
 	local rvn = raven.new({

@@ -6,7 +6,7 @@ local error = error
 local ngx = ngx
 
 local M = {}
-setfenv(1, M)
+require("foxcaves.module_helper").setmodenv()
 
 function M.make(close_on_shutdown)
 	local database, err = resty_redis:new()

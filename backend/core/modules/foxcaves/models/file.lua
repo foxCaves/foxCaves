@@ -32,7 +32,7 @@ local File = {
     }
 }
 
-setfenv(1, File)
+require("foxcaves.module_helper").setmodenv()
 
 local mimetypes = {
 	[".bmp"] = "image/bmp",

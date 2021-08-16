@@ -15,7 +15,7 @@ local ngx = ngx
 local UserMT = {}
 local User = {}
 
-setfenv(1, User)
+require("foxcaves.module_helper").setmodenv()
 
 local KILOBYTE = 1024
 local MEGABYTE = KILOBYTE * 1024

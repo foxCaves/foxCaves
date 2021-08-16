@@ -1,7 +1,7 @@
 local ngx_pipe = require("ngx.pipe")
 
 local M = {}
-setfenv(1, M)
+require("foxcaves.module_helper").setmodenv()
 
 function M.cmd(...)
     local proc, err = ngx_pipe.spawn({...})

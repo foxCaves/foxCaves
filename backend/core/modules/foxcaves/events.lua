@@ -2,7 +2,7 @@ local redis = require("foxcaves.redis")
 local cjson = require("cjson")
 
 local M = {}
-setfenv(1, M)
+require("foxcaves.module_helper").setmodenv()
 
 function M.push_raw(data, user)
 	if user.id then

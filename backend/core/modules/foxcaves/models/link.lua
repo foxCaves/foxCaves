@@ -10,7 +10,7 @@ local next = next
 local LinkMT = {}
 local Link = {}
 
-setfenv(1, Link)
+require("foxcaves.module_helper").setmodenv()
 
 local function makelinkmt(link)
     link.not_in_db = nil

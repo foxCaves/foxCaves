@@ -4,7 +4,7 @@ local type = type
 local next = next
 
 local M = {}
-setfenv(1, M)
+require("foxcaves.module_helper").setmodenv()
 
 function M.register_shutdown(func)
 	if not ngx.ctx.shutdown_funcs then

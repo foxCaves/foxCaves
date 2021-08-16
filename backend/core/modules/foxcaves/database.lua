@@ -7,7 +7,7 @@ local ngx = ngx
 local unpack = unpack
 
 local M = {}
-setfenv(1, M)
+require("foxcaves.module_helper").setmodenv()
 
 config.socket_type = "nginx"
 

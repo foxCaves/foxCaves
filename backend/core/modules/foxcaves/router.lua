@@ -2,6 +2,8 @@ local lfs = require("lfs")
 local cjson = require("cjson")
 local utils = require("foxcaves.utils")
 local auth = require("foxcaves.auth")
+local consts = require("foxcaves.consts")
+local module_helper = require("foxcaves.module_helper")
 
 local explode = utils.explode
 local type = type
@@ -15,19 +17,10 @@ local error = error
 
 local G = _G
 
-local ROUTES_ROOT = require("path").abs(require("foxcaves.consts").LUA_ROOT .. "/routes")
+local ROUTES_ROOT = require("path").abs(consts.LUA_ROOT .. "/routes")
 
 local M = {}
-setfenv(1, M)
-
-local EMPTY_TABLE = setmetatable({}, {
-    __index = function(_, k)
-        error("Accessing on EMPTY table: " .. k)
-    end,
-    __newindex = function(_, k)
-        error("Assigning on EMPTY table: " .. k)
-    end,
-})
+require("foxcaves.module_helper").setmodenv()
 
 local ROUTE_REG_MT = {}
 local ROUTE_REG_TABLE = setmetatable({}, {
@@ -108,7 +101,7 @@ function ROUTE_REG_MT.register_route(url, method, options, func)
     route.methods[method] = {
         mappings = mappings,
         id = route_id,
-        func = setfenv(func, EMPTY_TABLE),
+        func = setfenv(func, module_helper.EMPTY_TABLE),
         options = options,
     }
 end

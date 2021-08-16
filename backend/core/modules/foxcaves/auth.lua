@@ -8,7 +8,7 @@ local User = require("foxcaves.models.user")
 local ngx = ngx
 
 local M = {}
-setfenv(1, M)
+require("foxcaves.module_helper").setmodenv()
 
 local SESSION_EXPIRE_DELAY = 7200
 

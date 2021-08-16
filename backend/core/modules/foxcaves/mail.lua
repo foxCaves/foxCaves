@@ -7,7 +7,7 @@ local ngx = ngx
 local string = string
 
 local M = {}
-setfenv(1, M)
+require("foxcaves.module_helper").setmodenv()
 
 local function smtp_recv_line(sock)
 	local recv = sock:receive("*l")
