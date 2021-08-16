@@ -172,7 +172,7 @@ function UserMT:Save()
         database.get_shared():query_safe(
             'UPDATE users \
                 SET username = %s, email = %s, password = %s, loginkey = %s, apikey = %s, active = %s, bonusbytes = %s, \
-                    updatedat = (now() at time zone \'utc\') \ \
+                    updatedat = (now() at time zone \'utc\') \
                 WHERE id = %s',
             self.username, self.email, self.password, self.loginkey, self.apikey, self.active, self.bonusbytes, self.id
         )
