@@ -274,7 +274,7 @@ function FileMT:Save()
     local primary_push_action
     if self.not_in_db then
         database.get_shared():query_safe(
-            'INSERT INTO files\
+            'INSERT INTO files \
                 (id, name, "user", extension, type, size, thumbnail) VALUES (%s, %s, %s, %s, %s, %s, %s)',
             self.id, self.name, self.user, self.extension, self.type, self.size, self.thumbnail or ""
         )
