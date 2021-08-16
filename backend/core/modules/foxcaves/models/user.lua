@@ -82,8 +82,7 @@ function UserMT:SetEMail(email)
 	end
 
     local require_email_confirmation = false
-    local oldemail = self.email
-    if (not oldemail) or email:lower() ~= oldemail:lower() then
+    if (not self.email) or email:lower() ~= self.email:lower() then
         self.active = 0
         require_email_confirmation = true
     end
