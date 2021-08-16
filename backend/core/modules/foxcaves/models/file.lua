@@ -283,7 +283,8 @@ function FileMT:Save()
     else
         database.get_shared():query_safe(
             'UPDATE files \
-                SET name = %s, "user" = %s, extension = %s, type = %s, size = %s, thumbnail = %s, updatedat = now() \
+                SET name = %s, "user" = %s, extension = %s, type = %s, size = %s, thumbnail = %s, \
+                updatedat = (now() at time zone \'utc\') \
                 WHERE id = %s',
             self.name, self.user, self.extension, self.type, self.size, self.thumbnail or "", self.id
         )

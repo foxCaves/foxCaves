@@ -88,7 +88,10 @@ function LinkMT:Save()
         self.not_in_db = nil
     else
         database.get_shared():query_safe(
-            'UPDATE links SET "user" = %s, url = %s, updatedat = now() WHERE id = %s',
+            'UPDATE links \
+                SET "user" = %s, url = %s, \
+                updatedat = (now() at time zone \'utc\') \
+                WHERE id = %s',
             self.user, self.url, self.id
         )
         primary_push_action = 'refresh'
