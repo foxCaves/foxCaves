@@ -5,6 +5,13 @@ mkdir -p /var/www/foxcaves/tmp /var/www/foxcaves/storage
 chown www-data:www-data /var/www/foxcaves/tmp /var/www/foxcaves/storage
 
 rm -f /etc/nginx/listener.conf
-ln -s "/etc/nginx/listener.$ENVIRONMENT.conf" /etc/nginx/listener.conf
+
+LISTENER_TYPE=nossl
+if [ -f /var/www/foxcaves/config/ssl.crt ]
+then
+    LISTENER_TYPE=ssl
+fi
+ln -s "/etc/nginx/listener.$LISTENER_TYPE.conf" /etc/nginx/listener.conf
+unset LISTENER_TYPE
 
 exec /usr/local/openresty/nginx/sbin/nginx -c /usr/local/openresty/nginx/conf/custom.conf
