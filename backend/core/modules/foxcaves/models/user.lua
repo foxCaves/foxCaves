@@ -174,14 +174,14 @@ function UserMT:Save()
         res = database.get_shared():query_safe_single(
             'UPDATE users \
                 SET username = %s, email = %s, password = %s, loginkey = %s, apikey = %s, active = %s, bonusbytes = %s, \
-                    updatedat = (now() at time zone \'utc\') \
+                    updated_at = (now() at time zone \'utc\') \
                 WHERE id = %s \
                 RETURNING ' .. database.TIME_COLUMNS,
             self.username, self.email, self.password, self.loginkey, self.apikey, self.active, self.bonusbytes, self.id
         )
     end
-    self.createdat = res.createdat
-    self.updatedat = res.updatedat
+    self.created_at = res.created_at
+    self.updated_at = res.updated_at
 
     if self.require_email_confirmation then
         local emailid = random.string(32)

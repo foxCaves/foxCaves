@@ -287,15 +287,15 @@ function FileMT:Save()
         res = database.get_shared():query_safe_single(
             'UPDATE files \
                 SET name = %s, "user" = %s, extension = %s, type = %s, size = %s, thumbnail = %s, \
-                updatedat = (now() at time zone \'utc\') \
+                updated_at = (now() at time zone \'utc\') \
                 WHERE id = %s \
                 RETURNING ' .. database.TIME_COLUMNS,
             self.name, self.user, self.extension, self.type, self.size, self.thumbnail or "", self.id
         )
         primary_push_action = 'refresh'
     end
-    self.createdat = res.createdat
-    self.updatedat = res.updatedat
+    self.created_at = res.created_at
+    self.updated_at = res.updated_at
 
 	events.push_raw({
 		action = "file:" .. primary_push_action,

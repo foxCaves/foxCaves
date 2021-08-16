@@ -43,8 +43,8 @@ R.register_route("/api/v1/users/self", "PATCH", R.make_route_opts({ api_login = 
 
     user:Save()
 
-    obj.updatedat = user.updatedat
-    obj.createdat = user.createdat
+    obj.updated_at = user.updated_at
+    obj.created_at = user.created_at
 
     return obj
 end)

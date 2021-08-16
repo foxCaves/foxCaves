@@ -10,18 +10,18 @@ function loadDone() {
 }
 
 interface TimedElement {
-	createdat: Date;
-	updatedat: Date;
+	created_at: Date;
+	updated_at: Date;
 }
 function sortByTime<T extends TimedElement>(arr: Array<T>) {
 	return arr.sort((a, b) => {
-		return a.createdat.getTime() - b.createdat.getTime();
+		return a.created_at.getTime() - b.created_at.getTime();
 	});
 }
 
 function convertToDates<T extends TimedElement>(data: T): T {
-	data.createdat = new Date(data.createdat);
-	data.updatedat = new Date(data.updatedat);
+	data.created_at = new Date(data.created_at);
+	data.updated_at = new Date(data.updated_at);
 	return data;
 }
 

@@ -92,15 +92,15 @@ function LinkMT:Save()
         res = database.get_shared():query_safe_single(
             'UPDATE links \
                 SET "user" = %s, url = %s, \
-                updatedat = (now() at time zone \'utc\') \
+                updated_at = (now() at time zone \'utc\') \
                 WHERE id = %s \
                 RETURNING ' .. database.TIME_COLUMNS,
             self.user, self.url, self.id
         )
         primary_push_action = 'refresh'
     end
-    self.createdat = res.createdat
-    self.updatedat = res.updatedat
+    self.created_at = res.created_at
+    self.updated_at = res.updated_at
 
 	events.push_raw({
 		action = "link:" .. primary_push_action,

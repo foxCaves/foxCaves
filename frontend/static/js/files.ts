@@ -246,7 +246,7 @@ function getFileLI(id: string) {
 		</ul>
 	</li>` : '';
 	const fileLI = `<li draggable="true" id="file_${file.id}" class="image_manage_main" style="background-image:url('${file.thumbnail_image}')">
-		<div class="image_manage_top" title="${formatDate(file.createdat)} [${escapedName}]">${escapedName}</div>
+		<div class="image_manage_top" title="${formatDate(file.created_at)} [${escapedName}]">${escapedName}</div>
 		<a href="/view?id=${file.id}"></a>
 		<div class="image_manage_bottom">
 			<span>
