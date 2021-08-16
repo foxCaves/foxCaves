@@ -164,7 +164,7 @@ end
 function UserMT:Save()
     local res
     if self.not_in_db then
-        res = database.get_shared():query_safe(
+        res = database.get_shared():query_safe_single(
             'INSERT INTO users \
                 (id, username, email, password, loginkey, apikey, active, bonusbytes) VALUES\
                 (%s, %s, %s, %s, %s, %s, %s, %s) \
@@ -173,7 +173,7 @@ function UserMT:Save()
         )
         self.not_in_db = nil
     else
-        res = database.get_shared():query_safe(
+        res = database.get_shared():query_safe_single(
             'UPDATE users \
                 SET username = %s, email = %s, password = %s, loginkey = %s, apikey = %s, active = %s, bonusbytes = %s, \
                     updatedat = (now() at time zone \'utc\') \
@@ -182,8 +182,8 @@ function UserMT:Save()
             self.username, self.email, self.password, self.loginkey, self.apikey, self.active, self.bonusbytes, self.id
         )
     end
-    self.createdat = res[1].createdat
-    self.updatedat = res[1].updatedat
+    self.createdat = res.createdat
+    self.updatedat = res.updatedat
 
     if self.require_email_confirmation then
         local emailid = random.string(32)

@@ -275,7 +275,7 @@ end
 function FileMT:Save()
     local res, primary_push_action
     if self.not_in_db then
-        res = database.get_shared():query_safe(
+        res = database.get_shared():query_safe_single(
             'INSERT INTO files \
                 (id, name, "user", extension, type, size, thumbnail) VALUES (%s, %s, %s, %s, %s, %s, %s) \
                 RETURNING ' .. database.TIME_COLUMNS,
@@ -284,7 +284,7 @@ function FileMT:Save()
         primary_push_action = 'create'
         self.not_in_db = nil
     else
-        res = database.get_shared():query_safe(
+        res = database.get_shared():query_safe_single(
             'UPDATE files \
                 SET name = %s, "user" = %s, extension = %s, type = %s, size = %s, thumbnail = %s, \
                 updatedat = (now() at time zone \'utc\') \
@@ -294,8 +294,8 @@ function FileMT:Save()
         )
         primary_push_action = 'refresh'
     end
-    self.createdat = res[1].createdat
-    self.updatedat = res[1].updatedat
+    self.createdat = res.createdat
+    self.updatedat = res.updatedat
 
 	events.push_raw({
 		action = "file:" .. primary_push_action,

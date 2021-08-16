@@ -82,14 +82,14 @@ end
 function LinkMT:Save()
     local res, primary_push_action
     if self.not_in_db then
-        res = database.get_shared():query_safe(
+        res = database.get_shared():query_safe_single(
             'INSERT INTO links (id, "user", url) VALUES (%s, %s, %s) RETURNING ' .. database.TIME_COLUMNS,
             self.id, self.user, self.url
         )
         primary_push_action = 'create'
         self.not_in_db = nil
     else
-        res = database.get_shared():query_safe(
+        res = database.get_shared():query_safe_single(
             'UPDATE links \
                 SET "user" = %s, url = %s, \
                 updatedat = (now() at time zone \'utc\') \
@@ -99,8 +99,8 @@ function LinkMT:Save()
         )
         primary_push_action = 'refresh'
     end
-    self.createdat = res[1].createdat
-    self.updatedat = res[1].updatedat
+    self.createdat = res.createdat
+    self.updatedat = res.updatedat
 
 	events.push_raw({
 		action = "link:" .. primary_push_action,
