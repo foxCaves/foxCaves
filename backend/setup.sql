@@ -13,7 +13,9 @@ CREATE TABLE users (
     active INT NOT NULL DEFAULT 0,
     bonusbytes BIGINT NOT NULL DEFAULT 0,
     loginkey VARCHAR(255),
-    apikey VARCHAR(255)
+    apikey VARCHAR(255),
+    createdat timestamp without time zone DEFAULT timezone('utc'::text, now()),
+    updatedat timestamp without time zone DEFAULT timezone('utc'::text, now())
 );
 CREATE UNIQUE INDEX ON users (lower(username));
 CREATE UNIQUE INDEX ON users (lower(email));
@@ -25,8 +27,9 @@ CREATE TABLE files (
     extension VARCHAR(255),
     type INT,
     size BIGINT,
-    time BIGINT,
-    thumbnail VARCHAR(255)
+    thumbnail VARCHAR(255),
+    createdat timestamp without time zone DEFAULT timezone('utc'::text, now()),
+    updatedat timestamp without time zone DEFAULT timezone('utc'::text, now())
 );
 CREATE INDEX ON files ("user");
 
@@ -34,6 +37,7 @@ CREATE TABLE links (
     id VARCHAR(32) PRIMARY KEY,
     "user" UUID REFERENCES users (id),
     url VARCHAR(4096),
-    time BIGINT
+    createdat timestamp without time zone DEFAULT timezone('utc'::text, now()),
+    updatedat timestamp without time zone DEFAULT timezone('utc'::text, now())
 );
 CREATE INDEX ON links ("user");
