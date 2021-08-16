@@ -11,7 +11,7 @@ require("foxcaves.module_helper").setmodenv()
 
 config.socket_type = "nginx"
 
-M.TIME_COLUMNS = 'to_json(updatedat) as updatedat, to_json(createdat) as createdat'
+M.TIME_COLUMNS = 'to_json(updatedat at time zone \'utc\') as updatedat, to_json(createdat at time zone \'utc\') as createdat'
 
 function M.make()
 	local database = pgmoon.new(config)
