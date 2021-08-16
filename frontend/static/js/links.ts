@@ -116,11 +116,12 @@ function removeLinkRow(id: string) {
 function refreshLinks() {
 	fetch(`/api/v1/links?t=${Date.now()}`)
 	.then(response => response.json())
+	.then(data => data.map(convertToDates))
 	.then(data => {
 		const links = sortByTime(data as LinkInfo[]);
 		const links_rev: { [key: string]: boolean } = {};
 		for (const link of links) {
-			LINKS[link.id] = convertToDates(link);
+			LINKS[link.id] = link;
 			links_rev[link.id] = true;
 			if(!document.getElementById("link_"+link.id)) {
 				addLinkRow(link.id);

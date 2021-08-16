@@ -206,11 +206,12 @@ function setupDropZone() {
 function refreshFiles() {
 	fetch(`/api/v1/files?t=${Date.now()}`)
 	.then(response => response.json())
+	.then(data => data.map(convertToDates))
 	.then(data => {
 		const files = sortByTime(data as FileInfo[]);
 		const files_rev: { [key: string]: boolean } = {};
 		for (const file of files) {
-			FILES[file.id] = convertToDates(file);
+			FILES[file.id] = file;
 			files_rev[file.id] = true;
 			if(!document.getElementById("file_"+file.id)) {
 				addFileLI(file.id);
