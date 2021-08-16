@@ -81,20 +81,14 @@ function UserMT:SetEMail(email)
 		return consts.VALIDATION_STATE_INVALID
 	end
 
-    local require_email_confirmation = false
     if (not self.email) or email:lower() ~= self.email:lower() then
-        self.active = 0
-        require_email_confirmation = true
-    end
-
-    if require_email_confirmation then
         local res = database.get_shared():query_safe('SELECT id FROM users WHERE lower(email) = %s', email:lower())
         if res[1] then
             return consts.VALIDATION_STATE_TAKEN
         end
+        self.active = 0
+        self.require_email_confirmation = true
     end
-
-    self.require_email_confirmation = require_email_confirmation
     self.email = email
 
     return consts.VALIDATION_STATE_OK
