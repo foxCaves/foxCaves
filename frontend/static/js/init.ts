@@ -18,12 +18,11 @@ const pushHandlers: {
 	[key: string]: (data: any) => boolean | void;
 } = {};
 
-interface FileInfo {
+interface FileInfo extends TimedElement {
 	extension: string;
 	download_url: string;
 	name: string;
 	mimetype: string;
-	time: number;
 	id: string;
 	thumbnail_url?: string;
 	thumbnail_image: string;
@@ -62,7 +61,7 @@ function randomString(length: number = 10): string {
 	return result;
 }
 
-interface UserInfo {
+interface UserInfo extends TimedElement {
 	id: string;
 	username: string;
 	email: string;

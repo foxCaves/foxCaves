@@ -61,7 +61,6 @@ function User.New()
     local user = {
         not_in_db = true,
         id = uuid.generate_random()(10),
-        time = ngx.time(),
     }
     setmetatable(user, UserMT)
     return user
@@ -172,7 +171,8 @@ function UserMT:Save()
     else
         database.get_shared():query_safe(
             'UPDATE users\
-                SET username = %s, email = %s, password = %s, loginkey = %s, apikey = %s, active = %s, bonusbytes = %s\
+                SET username = %s, email = %s, password = %s, loginkey = %s, apikey = %s, active = %s, bonusbytes = %s, \
+                    updatedat = now() \
                 WHERE id = %s',
             self.username, self.email, self.password, self.loginkey, self.apikey, self.active, self.bonusbytes, self.id
         )

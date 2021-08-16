@@ -1,10 +1,9 @@
 REQUIRE_LOGGED_IN = true;
 
-interface LinkInfo {
+interface LinkInfo extends TimedElement {
 	short_url: string;
 	user: number;
 	url: string;
-	time: number;
 	id: string;
 }
 

@@ -49,7 +49,6 @@ function Link.New()
     local link = {
         not_in_db = true,
         id = random.string(10),
-        time = ngx.time(),
     }
     setmetatable(link, LinkMT)
     return link
@@ -82,15 +81,15 @@ function LinkMT:Save()
     local primary_push_action
     if self.not_in_db then
         database.get_shared():query_safe(
-            'INSERT INTO links (id, "user", url, time) VALUES (%s, %s, %s, %s)',
-            self.id, self.user, self.url, self.time
+            'INSERT INTO links (id, "user", url) VALUES (%s, %s, %s)',
+            self.id, self.user, self.url
         )
         primary_push_action = 'create'
         self.not_in_db = nil
     else
         database.get_shared():query_safe(
-            'UPDATE links SET "user" = %s, url = %s, time = %s WHERE id = %s',
-            self.user, self.url, self.time, self.id
+            'UPDATE links SET "user" = %s, url = %s, updatedat = now() WHERE id = %s',
+            self.user, self.url, self.id
         )
         primary_push_action = 'refresh'
     end

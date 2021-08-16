@@ -190,7 +190,6 @@ function File.New()
     local file = {
         not_in_db = true,
         id = random.string(10),
-        time = ngx.time(),
     }
     setmetatable(file, FileMT)
     return file
@@ -276,17 +275,17 @@ function FileMT:Save()
     if self.not_in_db then
         database.get_shared():query_safe(
             'INSERT INTO files\
-                (id, name, "user", extension, type, size, time, thumbnail) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)',
-            self.id, self.name, self.user, self.extension, self.type, self.size, self.time, self.thumbnail or ""
+                (id, name, "user", extension, type, size, thumbnail) VALUES (%s, %s, %s, %s, %s, %s, %s)',
+            self.id, self.name, self.user, self.extension, self.type, self.size, self.thumbnail or ""
         )
         primary_push_action = 'create'
         self.not_in_db = nil
     else
         database.get_shared():query_safe(
             'UPDATE files\
-                SET name = %s, "user" = %s, extension = %s, type = %s, size = %s, time = %s, thumbnail = %s\
+                SET name = %s, "user" = %s, extension = %s, type = %s, size = %s, thumbnail = %s, updatedat = now() \
                 WHERE id = %s',
-            self.name, self.user, self.extension, self.type, self.size, self.time, self.thumbnail or "", self.id
+            self.name, self.user, self.extension, self.type, self.size self.thumbnail or "", self.id
         )
         primary_push_action = 'refresh'
     end

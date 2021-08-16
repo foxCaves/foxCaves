@@ -10,18 +10,18 @@ function loadDone() {
 }
 
 interface TimedElement {
-	time: number;
+	createdat: Date;
+	updatedat: Date;
 }
 function sortByTime<T extends TimedElement>(arr: Array<T>) {
 	return arr.sort((a, b) => {
-		return a.time - b.time;
+		return a.updatedat.getTime() - b.updatedat.getTime();
 	});
 }
 
 const sizePostFixes = [" B", " kB", " MB", " GB", " TB", " PB", " EB", " ZB", " YB"];
 
-function formatDate(time: number) {
-	const d = new Date(time * 1000);
+function formatDate(d: Date) {
 	return d.toISOString();
 }
 

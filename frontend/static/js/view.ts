@@ -37,7 +37,7 @@ async function loadFileInfo() {
 	const file = (await res.json()) as FileInfo;
 
 	document.getElementById('view-name')!.innerText = file.name;
-	document.getElementById('view-time')!.innerText = formatDate(file.time);
+	document.getElementById('view-time')!.innerText = formatDate(file.createdat);
 	document.getElementById('view-size')!.innerText = formatSize(file.size);
 	(document.getElementById('view-link')! as HTMLInputElement).value = file.view_url;
 	(document.getElementById('direct-link')! as HTMLInputElement).value = file.direct_url;
