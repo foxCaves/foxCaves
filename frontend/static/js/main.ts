@@ -15,7 +15,7 @@ interface TimedElement {
 }
 function sortByTime<T extends TimedElement>(arr: Array<T>) {
 	return arr.sort((a, b) => {
-		return a.updatedat.getTime() - b.updatedat.getTime();
+		return a.createdat.getTime() - b.createdat.getTime();
 	});
 }
 
