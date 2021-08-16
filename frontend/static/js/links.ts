@@ -25,7 +25,7 @@ function createLink(linkurl: string) {
 	fetch("/api/v1/links?url="+encodeURIComponent(linkurl), { method: 'POST' })
 	.then(res => res.json())
 	.then(data => {
-		LINKS[data.id] = data;
+		LINKS[data.id] = convertToDates(data);
 		addLinkRow(data.id);
 		prompt("Here is your shortened link", data.short_url);
 	});
@@ -120,7 +120,7 @@ function refreshLinks() {
 		const links = sortByTime(data as LinkInfo[]);
 		const links_rev: { [key: string]: boolean } = {};
 		for (const link of links) {
-			LINKS[link.id] = link;
+			LINKS[link.id] = convertToDates(link);
 			links_rev[link.id] = true;
 			if(!document.getElementById("link_"+link.id)) {
 				addLinkRow(link.id);
@@ -143,7 +143,7 @@ $(() => {
 	setupLinkJS($('#links_table'));
 
 	pushHandlers['link:create'] = function (data: LinkPush) {
-		LINKS[data.link.id] = data.link;
+		LINKS[data.link.id] = convertToDates(data.link);
 		addLinkRow(data.link.id);
 	};
 	pushHandlers['link:delete'] = function (data: LinkPush) {
@@ -154,6 +154,7 @@ $(() => {
 		for (const key of Object.keys(data.link)) {
 			(LINKS[data.link.id] as any)[key] = (data.link as any)[key];
 		}
+		LINKS[data.link.id] = convertToDates(LINKS[data.link.id]!);
 		refreshLinkRow(data.link.id);
 	};
 

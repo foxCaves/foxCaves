@@ -19,6 +19,12 @@ function sortByTime<T extends TimedElement>(arr: Array<T>) {
 	});
 }
 
+function convertToDates<T extends TimedElement>(data: T): T {
+	data.createdat = new Date(data.createdat);
+	data.updatedat = new Date(data.updatedat);
+	return data;
+}
+
 const sizePostFixes = [" B", " kB", " MB", " GB", " TB", " PB", " EB", " ZB", " YB"];
 
 function formatDate(d: Date) {
@@ -74,7 +80,7 @@ async function fetchCurrentUser() {
 		fetchCurrentUserDone();
 		return;
 	}
-	currentUser = await res.json();
+	currentUser = convertToDates(await res.json());
 	fetchCurrentUserDone();
 }
 

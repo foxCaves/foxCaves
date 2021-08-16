@@ -112,7 +112,7 @@ function fileUpload(name: string, fileData: ArrayBufferLike | string) {
 			if(xhr.status == 200) {
 				processNextFile();
 				const response = JSON.parse(xhr.responseText) as FileInfo;
-				FILES[response.id] = response;
+				FILES[response.id] = convertToDates(response);
 				addFileLI(response.id);
 			} else {
 				processNextFile();
@@ -210,7 +210,7 @@ function refreshFiles() {
 		const files = sortByTime(data as FileInfo[]);
 		const files_rev: { [key: string]: boolean } = {};
 		for (const file of files) {
-			FILES[file.id] = file;
+			FILES[file.id] = convertToDates(file);
 			files_rev[file.id] = true;
 			if(!document.getElementById("file_"+file.id)) {
 				addFileLI(file.id);
@@ -446,7 +446,7 @@ $(() => {
 	setupSearch();
 
 	pushHandlers['file:create'] = function (data: FilePush) {
-		FILES[data.file.id] = data.file;
+		FILES[data.file.id] = convertToDates(data.file);
 		addFileLI(data.file.id, true);
 	};
 	pushHandlers['file:delete'] = function (data: FilePush) {
@@ -457,6 +457,7 @@ $(() => {
 		for (const key of Object.keys(data.file)) {
 			(FILES[data.file.id] as any)[key] = (data.file as any)[key];
 		}
+		FILES[data.file.id] = convertToDates(FILES[data.file.id]!);
 		refreshFileLI(data.file.id);
 	};
 
