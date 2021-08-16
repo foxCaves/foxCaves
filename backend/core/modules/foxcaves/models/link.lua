@@ -19,12 +19,14 @@ local function makelinkmt(link)
     return link
 end
 
+local link_select = 'id, "user", url, ' .. database.TIME_COLUMNS
+
 function Link.GetByUser(user)
     if user.id then
         user = user.id
     end
 
-    local links = database.get_shared():query_safe('SELECT * FROM links WHERE "user" = %s', user)
+    local links = database.get_shared():query_safe('SELECT ' .. link_select .. ' FROM links WHERE "user" = %s', user)
     for k,v in next, links do
         links[k] = makelinkmt(v)
     end
@@ -36,7 +38,7 @@ function Link.GetByID(id)
 		return nil
 	end
 
-	local link = database.get_shared():query_safe_single('SELECT * FROM links WHERE id = %s', id)
+	local link = database.get_shared():query_safe_single('SELECT ' .. link_select .. ' FROM links WHERE id = %s', id)
 
 	if not link then
 		return nil
@@ -78,24 +80,28 @@ function LinkMT:SetURL(url)
 end
 
 function LinkMT:Save()
-    local primary_push_action
+    local res, primary_push_action
     if self.not_in_db then
-        database.get_shared():query_safe(
-            'INSERT INTO links (id, "user", url) VALUES (%s, %s, %s)',
+        res = database.get_shared():query_safe(
+            'INSERT INTO links (id, "user", url) VALUES (%s, %s, %s) RETURNING ' .. database.TIME_COLUMNS,
             self.id, self.user, self.url
         )
         primary_push_action = 'create'
         self.not_in_db = nil
     else
-        database.get_shared():query_safe(
+        res = database.get_shared():query_safe(
             'UPDATE links \
                 SET "user" = %s, url = %s, \
                 updatedat = (now() at time zone \'utc\') \
-                WHERE id = %s',
+                WHERE id = %s \
+                RETURNING ' .. database.TIME_COLUMNS,
             self.user, self.url, self.id
         )
         primary_push_action = 'refresh'
     end
+    self.createdat = res[1].createdat
+    self.updatedat = res[1].updatedat
+
 	events.push_raw({
 		action = "link:" .. primary_push_action,
 		link = self,

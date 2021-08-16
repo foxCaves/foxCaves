@@ -160,12 +160,14 @@ local function file_deletestorage(file)
 	file_manualdelete(file.id, true)
 end
 
+local file_select = 'id, name, "user", extension, type, size, thumbnail, ' .. database.TIME_COLUMNS
+
 function File.GetByUser(user)
     if user.id then
         user = user.id
     end
 
-    local files = database.get_shared():query_safe('SELECT * FROM files WHERE "user" = %s', user)
+    local files = database.get_shared():query_safe('SELECT ' .. file_select .. ' FROM files WHERE "user" = %s', user)
     for k,v in next, files do
         files[k] = makefilemt(v)
     end
@@ -177,7 +179,7 @@ function File.GetByID(id)
 		return nil
 	end
 
-	local file = database.get_shared():query_safe_single('SELECT * FROM files WHERE id = %s', id)
+	local file = database.get_shared():query_safe_single('SELECT ' .. file_select .. ' FROM files WHERE id = %s', id)
 
 	if not file then
 		return nil
@@ -271,25 +273,30 @@ function FileMT:MoveUploadData(src)
 end
 
 function FileMT:Save()
-    local primary_push_action
+    local res, primary_push_action
     if self.not_in_db then
-        database.get_shared():query_safe(
+        res = database.get_shared():query_safe(
             'INSERT INTO files \
-                (id, name, "user", extension, type, size, thumbnail) VALUES (%s, %s, %s, %s, %s, %s, %s)',
+                (id, name, "user", extension, type, size, thumbnail) VALUES (%s, %s, %s, %s, %s, %s, %s) \
+                RETURNING ' .. database.TIME_COLUMNS,
             self.id, self.name, self.user, self.extension, self.type, self.size, self.thumbnail or ""
         )
         primary_push_action = 'create'
         self.not_in_db = nil
     else
-        database.get_shared():query_safe(
+        res = database.get_shared():query_safe(
             'UPDATE files \
                 SET name = %s, "user" = %s, extension = %s, type = %s, size = %s, thumbnail = %s, \
                 updatedat = (now() at time zone \'utc\') \
-                WHERE id = %s',
+                WHERE id = %s \
+                RETURNING ' .. database.TIME_COLUMNS,
             self.name, self.user, self.extension, self.type, self.size, self.thumbnail or "", self.id
         )
         primary_push_action = 'refresh'
     end
+    self.createdat = res[1].createdat
+    self.updatedat = res[1].updatedat
+
 	events.push_raw({
 		action = "file:" .. primary_push_action,
 		file = self,

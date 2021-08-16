@@ -30,12 +30,14 @@ local function makeusermt(user)
     return user
 end
 
+local user_select = 'id, username, email, password, loginkey, apikey, active, bonusbytes, ' .. database.TIME_COLUMNS
+
 function User.GetByID(id)
     if not uuid.is_valid(id) then
         return nil
     end
 
-	local user = database.get_shared():query_safe_single('SELECT * FROM users WHERE id = %s', id)
+	local user = database.get_shared():query_safe_single('SELECT ' .. user_select .. ' FROM users WHERE id = %s', id)
 
 	if not user then
 		return nil
@@ -46,7 +48,7 @@ end
 
 function User.GetByUsername(username)
 	local user = database.get_shared():query_safe_single(
-        'SELECT * FROM users WHERE lower(username) = %s',
+        'SELECT ' .. user_select .. ' FROM users WHERE lower(username) = %s',
         username:lower()
     )
 
@@ -160,23 +162,28 @@ function UserMT:ComputeVirtuals()
 end
 
 function UserMT:Save()
+    local res
     if self.not_in_db then
-        database.get_shared():query_safe(
+        res = database.get_shared():query_safe(
             'INSERT INTO users \
                 (id, username, email, password, loginkey, apikey, active, bonusbytes) VALUES\
-                (%s, %s, %s, %s, %s, %s, %s, %s)',
+                (%s, %s, %s, %s, %s, %s, %s, %s) \
+                RETURNING ' .. database.TIME_COLUMNS,
             self.id, self.username, self.email, self.password, self.loginkey, self.apikey, self.active, self.bonusbytes
         )
         self.not_in_db = nil
     else
-        database.get_shared():query_safe(
+        res = database.get_shared():query_safe(
             'UPDATE users \
                 SET username = %s, email = %s, password = %s, loginkey = %s, apikey = %s, active = %s, bonusbytes = %s, \
                     updatedat = (now() at time zone \'utc\') \
-                WHERE id = %s',
+                WHERE id = %s \
+                RETURNING ' .. database.TIME_COLUMNS,
             self.username, self.email, self.password, self.loginkey, self.apikey, self.active, self.bonusbytes, self.id
         )
     end
+    self.createdat = res[1].createdat
+    self.updatedat = res[1].updatedat
 
     if self.require_email_confirmation then
         local emailid = random.string(32)
