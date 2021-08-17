@@ -4,7 +4,6 @@ local random = require("foxcaves.random")
 local url_config = require("foxcaves.config").urls
 
 local setmetatable = setmetatable
-local ngx = ngx
 local next = next
 
 local LinkMT = {}
