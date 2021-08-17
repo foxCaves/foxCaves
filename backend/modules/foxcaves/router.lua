@@ -41,8 +41,7 @@ local ROUTE_TREE = {
 }
 
 local BASE_OPTS = {
-    cookie_login = true,
-    api_login = true,
+    check_login = true,
     allow_guest = false,
 }
 function ROUTE_REG_MT.make_route_opts(opts)
@@ -58,8 +57,7 @@ function ROUTE_REG_MT.make_route_opts(opts)
     return opts
 end
 local BASE_OPTS_ANON = ROUTE_REG_MT.make_route_opts({
-    cookie_login = false,
-    api_login = false,
+    check_login = false,
     allow_guest = true,
 })
 function ROUTE_REG_MT.make_route_opts_anon()
@@ -132,7 +130,7 @@ local function scan_route_dir(dir)
     end
 end
 
-function M.execute()
+local function route_execute()
     local url = ngx.var.uri
     local method = ngx.var.request_method:upper()
     local urlsplit = explode("/", url:sub(2))
@@ -142,15 +140,13 @@ function M.execute()
     for _, seg in next, urlsplit do
         candidate = candidate.children[seg] or candidate.children['*']
         if not candidate then
-            ngx.status = 404
-            return
+            return {}, utils.api_error("Route not found", 404)
         end
     end
 
     local handler = candidate.methods[method]
     if not handler then
-        ngx.status = 405
-        return
+        return {}, utils.api_error("Invalid method for route", 404)
     end
 
     local route_vars = {}
@@ -160,27 +156,25 @@ function M.execute()
 
     ngx.header["FoxCaves-Route-ID"] = handler.id
 
-    local res, code
-
     local opts = handler.options
 
-    if opts.cookie_login then
+    if opts.check_login then
         auth.check_cookies()
-    end
-
-    if opts.api_login then
         auth.check_api_login()
     end
 
     if (not opts.allow_guest) and (not ngx.ctx.user) then
-        res, code = utils.api_error("Not logged in", 403)
+        return opts, utils.api_error("Not logged in", 403)
     end
 
+    return opts, handler.func(route_vars)
+end
+
+function M.execute()
+    local opts, res, code = route_execute()
+
     if not res then
-        res, code = handler.func(route_vars)
-        if not res then
-            return
-        end
+        return
     end
 
     if code then

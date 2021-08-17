@@ -4,8 +4,7 @@ local auth = require("foxcaves.auth")
 local auth_utils = require("foxcaves.auth_utils")
 local ngx = ngx
 
-R.register_route("/api/v1/users/self/login", "POST",
-                    R.make_route_opts({ allow_guest = true, api_login = false }), function()
+R.register_route("/api/v1/users/self/login", "POST", R.make_route_opts_anon(), function()
     local args = utils.get_post_args()
     if not args then
         return utils.api_error("No args")
