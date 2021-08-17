@@ -16,8 +16,6 @@ M.ENV_INVALID = -1
 
 -- Load paths
 local path = require("path")
-local CORE_ROOT = path.abs(debug.getinfo(1, "S").source:sub(2):match("(.*/)") .. "/../../")
-M.LUA_ROOT = path.abs(CORE_ROOT .. "/../")
-M.ROOT = path.abs(M.LUA_ROOT .. "/../")
+M.ROOT = path.abs(debug.getinfo(1, "S").source:sub(2):match("(.*/)") .. "/../../")
 
 return M
