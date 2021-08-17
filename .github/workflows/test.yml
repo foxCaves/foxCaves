@@ -1,4 +1,4 @@
-name: Lint lua code
+name: Run tests
 on: [push]
 jobs:
   lint:
