@@ -1,10 +1,19 @@
 name: Lint lua code
 on: [push]
-- uses: nebularg/actions-luacheck@v1
-  with:
-    path: backend
-    annotate: error
-- uses: nebularg/actions-luacheck@v1
-  with:
-    path: frontend/luahtml
-    annotate: error
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      checks: write
+    steps:
+      - name: Lint backend
+        uses: nebularg/actions-luacheck@v1
+        with:
+          path: backend
+          annotate: error
+      - name: Lint frontend/luahtml
+        uses: nebularg/actions-luacheck@v1
+        with:
+          path: frontend/luahtml
+          annotate: error
