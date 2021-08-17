@@ -7,6 +7,8 @@ jobs:
       contents: read
       checks: write
     steps:
+      - name: Check out the repo
+        uses: actions/checkout@v2
       - name: Lint backend
         uses: nebularg/actions-luacheck@v1
         with:
