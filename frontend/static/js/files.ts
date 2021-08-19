@@ -296,7 +296,7 @@ function setupFileJS(parent: JQuery | HTMLElement) {
 
 	parent.find(".file_rename").click(async function(e) {
 		preventDefault(e);
-		const id = getFileIDFromID((this.parentNode! as HTMLElement).id);
+		const id = getFileIDFromID((this.parentNode!.parentNode!.parentNode!.parentNode!.parentNode!.parentNode! as HTMLElement).id);
 		const newName = prompt("Enter new name", FILES[id]!.name);
 		if (newName) {
 			const res = await fetch(`/api/v1/files/${id}`, {
