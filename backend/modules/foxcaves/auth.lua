@@ -30,7 +30,7 @@ function M.login(username_or_id, credential, options)
 	local nosession = options.nosession
 	local login_with_id = options.login_with_id
 
-	if (not username_or_id) or (not credential) then
+	if (not username_or_id) or (username_or_id == ngx.null) or (not credential) then
 		return consts.LOGIN_BAD_CREDENTIALS
 	end
 
