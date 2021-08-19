@@ -11,16 +11,16 @@ R.register_route("/api/v1/files/{id}", "PATCH", R.make_route_opts(), function(ro
 		return utils.api_error("Not your file", 403)
 	end
 
-    local newname = ngx.unescape_uri(ngx.var.arg_name)
+    local args = utils.get_post_args()
 
-    ngx.log(ngx.ERR, "newname: " .. newname)
-    ngx.log(ngx.ERR, "extension: " .. file.extension)
-
-    if newname:sub((newname:len() + 1) - file.extension:len()) ~= file.extension then
-        return utils.api_error("Extension mismatch")
+    if args.name then
+        local newname = args.name
+        if newname:sub((newname:len() + 1) - file.extension:len()) ~= file.extension then
+            return utils.api_error("Extension mismatch")
+        end
+        file.name = newname
     end
 
-    file.name = newname
     file:Save()
     return file
 end)
