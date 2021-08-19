@@ -18,7 +18,7 @@ R.register_route("/api/v1/users/emails/code", "POST", R.make_route_opts_anon(), 
     local codekey = "emailkeys:" .. ngx.unescape_uri(args.code)
     local res = redis_inst:hmget(codekey, "user", "action")
     redis_inst:del(codekey)
-    if (not res) or res == ngx.null then
+    if (not res) or (res == ngx.null) or (not res[1]) or (res[1] == ngx.null) then
         return utils.api_error("code invalid")
     end
 
