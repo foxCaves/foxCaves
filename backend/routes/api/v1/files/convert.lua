@@ -4,6 +4,7 @@ local File = require("foxcaves.models.file")
 local exec = require("foxcaves.exec")
 local ngx = ngx
 local io = io
+local os = os
 
 R.register_route("/api/v1/files/{id}/convert", "POST", R.make_route_opts(), function(route_vars)
 	local file = File.GetByID(route_vars.id)
