@@ -6,6 +6,10 @@ local User = require("foxcaves.models.user")
 local main_url = require("foxcaves.config").urls.main
 local ngx = ngx
 
+local function invalid_code()
+    return utils.api_error("code invalid")
+end
+
 R.register_route("/api/v1/users/emails/code", "POST", R.make_route_opts_anon(), function()
     local args = utils.get_post_args()
 
@@ -18,16 +22,24 @@ R.register_route("/api/v1/users/emails/code", "POST", R.make_route_opts_anon(), 
     local codekey = "emailkeys:" .. ngx.unescape_uri(args.code)
     local res = redis_inst:hmget(codekey, "user", "action")
     redis_inst:del(codekey)
-    if (not res) or (res == ngx.null) or (not res[1]) or (res[1] == ngx.null) then
-        return utils.api_error("code invalid")
+    if (not res) or (res == ngx.null) then
+        return invalid_code()
     end
 
-    local user = User.GetByID(res[1])
-    if not user then
-        return utils.api_error("Bad user")
+    local userid = res[1]
+    if (not userid) or (userid == ngx.null) then
+        return invalid_code()
     end
 
     local action = res[2]
+    if (not action) or (action == ngx.null) then
+        return invalid_code()
+    end
+
+    local user = User.GetByID(userid)
+    if not user then
+        return utils.api_error("Bad user")
+    end
 
     if action == "activation" then
         user.active = 1

@@ -6,7 +6,6 @@ local consts = require("foxcaves.consts")
 local User = require("foxcaves.models.user")
 
 local ngx = ngx
-local tostring = tostring
 
 local M = {}
 require("foxcaves.module_helper").setmodenv()
@@ -24,13 +23,12 @@ function M.LOGIN_METHOD_LOGINKEY(userdata, loginkey)
 end
 
 function M.login(username_or_id, credential, options)
-	if ngx.ctx.user then return consts.LOGIN_SUCCESS end
-
 	options = options or {}
 	local nosession = options.nosession
 	local login_with_id = options.login_with_id
 
-	if (not username_or_id) or (username_or_id == ngx.null) or (not credential) then
+	if (not username_or_id) or (username_or_id == ngx.null) or
+	   (not credential) or (credential == ngx.null) then
 		return consts.LOGIN_BAD_CREDENTIALS
 	end
 
@@ -89,11 +87,7 @@ function M.check_cookies()
 			local redis_inst = redis.get_shared()
 			sessionid = sessionid[2]
 			local sessionKey = "sessions:" .. sessionid
-			ngx.log(ngx.ERR, "pre")
 			local result = redis_inst:hmget(sessionKey, "id", "loginkey")
-			ngx.log(ngx.ERR, "post: " .. tostring(result))
-			ngx.log(ngx.ERR, "p1: " .. tostring(result[1]))
-			ngx.log(ngx.ERR, "p2: " .. tostring(result[2]))
 			if result and result ~= ngx.null and M.login(result[1], result[2], {
 									nosession = true, login_with_id = true, login_method = M.LOGIN_METHOD_LOGINKEY
 								}) == consts.LOGIN_SUCCESS then
