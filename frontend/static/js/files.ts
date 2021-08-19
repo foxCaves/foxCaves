@@ -237,12 +237,12 @@ function getFileLI(id: string) {
 	}
 	const escapedName = htmlEscape(file.name);
 	const addDropdown = (file.type == FILE_TYPE_IMAGE) ? `<li class="dropdown-submenu">
-		<a>Convert to</a>
+		<a class="pointer">Convert to</a>
 		<ul class="file_convert dropdown-menu">
-			<li><a>jpg</a></li>
-			<li><a>png</a></li>
-			<li><a>gif</a></li>
-			<li><a>bmp</a></li>
+			<li><a class="pointer">jpg</a></li>
+			<li><a class="pointer">png</a></li>
+			<li><a class="pointer">gif</a></li>
+			<li><a class="pointer">bmp</a></li>
 		</ul>
 	</li>` : '';
 	const fileLI = `<li draggable="true" id="file_${file.id}" class="image_manage_main" style="background-image:url('${file.thumbnail_image}')">
@@ -255,7 +255,7 @@ function getFileLI(id: string) {
 				<div class="dropdown">
 					<a title="Options" class="dropdown-toggle" data-toggle="dropdown" href=""><i class="icon-wrench icon-white"></i> </a>
 					<ul class="dropdown-menu">
-						<li><a class="file_rename">Rename</a></li>
+						<li><a class="pointer file_rename">Rename</a></li>
 						<li><a href="/live?id=${file.id}">Edit</a></li>
 						${addDropdown}
 					</ul>
