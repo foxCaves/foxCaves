@@ -13,6 +13,9 @@ R.register_route("/api/v1/files/{id}", "PATCH", R.make_route_opts(), function(ro
 
     local newname = ngx.unescape_uri(ngx.var.arg_name)
 
+    ngx.log(ngx.ERR, "newname: " .. newname)
+    ngx.log(ngx.ERR, "extension: " .. file.extension)
+
     if newname:sub((newname:len() + 1) - file.extension:len()) ~= file.extension then
         return utils.api_error("Extension mismatch")
     end
