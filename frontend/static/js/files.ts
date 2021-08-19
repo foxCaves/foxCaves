@@ -309,7 +309,7 @@ function setupFileJS(parent: JQuery | HTMLElement) {
 				alert("Error renaming file: " + data.error);
 				return;
 			}
-			FILES[id] = data;
+			FILES[id] = convertToDates(data);
 			refreshFileLI(id);
 		}
 	});
@@ -327,7 +327,7 @@ function setupFileJS(parent: JQuery | HTMLElement) {
 			alert("Error converting file: " + data.error);
 			return;
 		}
-		FILES[id] = data;
+		FILES[id] = convertToDates(data);
 		refreshFileLI(id);
 	});
 
