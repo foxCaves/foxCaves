@@ -20,13 +20,6 @@ function M.make(close_on_shutdown)
 		error("Error connecting to DB: " .. err)
 	end
 
-	if database:get_reused_times() == 0 and config.password then
-		ok, err = database:auth(config.password)
-		if not ok then
-			error("Error connecting to DB: " .. err)
-		end
-	end
-
 	if close_on_shutdown then
 		utils.register_shutdown(function()
 			database:close()
