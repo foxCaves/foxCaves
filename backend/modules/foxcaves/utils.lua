@@ -57,4 +57,8 @@ function M.explode(div,str) -- credit: http://richard.warburton.it
 	return arr
 end
 
+function M.is_falsy_or_null(v)
+	return (not v) or v == ngx.null
+end
+
 return M

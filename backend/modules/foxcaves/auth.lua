@@ -27,8 +27,7 @@ function M.login(username_or_id, credential, options)
 	local nosession = options.nosession
 	local login_with_id = options.login_with_id
 
-	if (not username_or_id) or (username_or_id == ngx.null) or
-	   (not credential) or (credential == ngx.null) then
+	if utils.is_falsy_or_null(username_or_id) or utils.is_falsy_or_null(credential) then
 		return consts.LOGIN_BAD_CREDENTIALS
 	end
 
@@ -88,9 +87,10 @@ function M.check_cookies()
 			sessionid = sessionid[2]
 			local sessionKey = "sessions:" .. sessionid
 			local result = redis_inst:hmget(sessionKey, "id", "loginkey")
-			if result and result ~= ngx.null and M.login(result[1], result[2], {
-									nosession = true, login_with_id = true, login_method = M.LOGIN_METHOD_LOGINKEY
-								}) == consts.LOGIN_SUCCESS then
+			if (not utils.is_falsy_or_null(result)) and
+					M.login(result[1], result[2], {
+						nosession = true, login_with_id = true, login_method = M.LOGIN_METHOD_LOGINKEY
+					}) == consts.LOGIN_SUCCESS then
 				ngx.ctx.sessionid = sessionid
 				ngx.header['Set-Cookie'] = {"sessionid=" .. sessionid .. "; HttpOnly; Path=/; Secure;"}
 				redis_inst:expire(sessionKey, SESSION_EXPIRE_DELAY)

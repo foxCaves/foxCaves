@@ -22,17 +22,13 @@ R.register_route("/api/v1/users/emails/code", "POST", R.make_route_opts_anon(), 
     local codekey = "emailkeys:" .. ngx.unescape_uri(args.code)
     local res = redis_inst:hmget(codekey, "user", "action")
     redis_inst:del(codekey)
-    if (not res) or (res == ngx.null) then
+    if utils.is_falsy_or_null(res) then
         return invalid_code()
     end
 
     local userid = res[1]
-    if (not userid) or (userid == ngx.null) then
-        return invalid_code()
-    end
-
     local action = res[2]
-    if (not action) or (action == ngx.null) then
+    if utils.is_falsy_or_null(userid) or utils.is_falsy_or_null(action) then
         return invalid_code()
     end
 
