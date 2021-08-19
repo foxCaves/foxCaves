@@ -1,7 +1,6 @@
 local resty_redis = require("resty.redis")
 local utils = require("foxcaves.utils")
 local config = require("foxcaves.config").redis
-local next = next
 local error = error
 local ngx = ngx
 
@@ -26,39 +25,6 @@ function M.make(close_on_shutdown)
 		if not ok then
 			error("Error connecting to DB: " .. err)
 		end
-	end
-
-	database.hgetall_real = database.hgetall
-	function database:hgetall(key)
-		local res = self:hgetall_real(key)
-		if (not res) or (res == ngx.null) then
-			return res
-		end
-		local ret = {}
-		local k = nil
-		for _,v in next, res do
-			if not k then
-				k = v
-			else
-				ret[k] = v
-				k = nil
-			end
-		end
-		return ret
-	end
-
-	database.hmget_real = database.hmget
-	function database:hmget(key, ...)
-		local res = self:hmget_real(key, ...)
-		if (not res) or (res == ngx.null) then
-			return res
-		end
-		local ret = {}
-		local tbl = {...}
-		for i,v in next, tbl do
-			ret[v] = res[i]
-		end
-		return ret
 	end
 
 	if close_on_shutdown then

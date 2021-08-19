@@ -88,8 +88,8 @@ function M.check_cookies()
 			local redis_inst = redis.get_shared()
 			sessionid = sessionid[2]
 			local sessionKey = "sessions:" .. sessionid
-			local result = redis_inst:hgetall(sessionKey)
-			if result and M.login(result.id, result.loginkey, {
+			local result = redis_inst:hmget(sessionKey, "id", "loginkey")
+			if result and result ~= ngx.null and M.login(result[1], result[2], {
 									nosession = true, login_with_id = true, login_method = M.LOGIN_METHOD_LOGINKEY
 								}) == consts.LOGIN_SUCCESS then
 				ngx.ctx.sessionid = sessionid

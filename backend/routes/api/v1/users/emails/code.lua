@@ -16,21 +16,23 @@ R.register_route("/api/v1/users/emails/code", "POST", R.make_route_opts_anon(), 
 
     local redis_inst = redis.get_shared()
     local codekey = "emailkeys:" .. ngx.unescape_uri(args.code)
-    local res = redis_inst:hgetall(codekey)
+    local res = redis_inst:hmget(codekey, "user", "action")
     redis_inst:del(codekey)
-    if not (res and res.user and res ~= ngx.null) then
+    if (not res) or res == ngx.null then
         return utils.api_error("code invalid")
     end
 
-    local user = User.GetByID(res.user)
+    local user = User.GetByID(res[1])
     if not user then
         return utils.api_error("Bad user")
     end
 
-    if res.action == "activation" then
+    local action = res[2]
+
+    if action == "activation" then
         user.active = 1
         user:Save()
-    elseif res.action == "forgotpwd" then
+    elseif action == "forgotpwd" then
         local newPassword = random.string(16)
 
         user:SetPassword(newPassword)
@@ -43,5 +45,5 @@ R.register_route("/api/v1/users/emails/code", "POST", R.make_route_opts_anon(), 
         mail.send(user.email, "foxCaves - New password", email, "noreply@foxcav.es", "foxCaves")
     end
 
-    return { action = res.action }
+    return { action = action }
 end)
