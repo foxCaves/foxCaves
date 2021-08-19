@@ -88,7 +88,11 @@ function M.check_cookies()
 			local redis_inst = redis.get_shared()
 			sessionid = sessionid[2]
 			local sessionKey = "sessions:" .. sessionid
+			ngx.log(ngx.ERR, "pre")
 			local result = redis_inst:hmget(sessionKey, "id", "loginkey")
+			ngx.log(ngx.ERR, "post: " .. tostring(result))
+			ngx.log(ngx.ERR, "p1: " .. tostring(result[1]))
+			ngx.log(ngx.ERR, "p2: " .. tostring(result[2]))
 			if result and result ~= ngx.null and M.login(result[1], result[2], {
 									nosession = true, login_with_id = true, login_method = M.LOGIN_METHOD_LOGINKEY
 								}) == consts.LOGIN_SUCCESS then
