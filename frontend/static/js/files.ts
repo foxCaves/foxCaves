@@ -238,8 +238,8 @@ function getFileLI(id: string) {
 	const escapedName = htmlEscape(file.name);
 	const addDropdown = (file.type == FILE_TYPE_IMAGE) ? `<li class="dropdown-submenu">
 		<a>Convert to</a>
-		<ul class="dropdown-menu">
-			<li><a>jpeg</a></li>
+		<ul class="file_convert" class="dropdown-menu">
+			<li><a>jpg</a></li>
 			<li><a>png</a></li>
 			<li><a>gif</a></li>
 			<li><a>bmp</a></li>
@@ -255,7 +255,7 @@ function getFileLI(id: string) {
 				<div class="dropdown">
 					<a title="Options" class="dropdown-toggle" data-toggle="dropdown" href=""><i class="icon-wrench icon-white"></i> </a>
 					<ul class="dropdown-menu">
-						<li><a class="rename">Rename</a></li>
+						<li><a class="file_rename">Rename</a></li>
 						<li><a href="/live?id=${file.id}">Edit</a></li>
 						${addDropdown}
 					</ul>
@@ -293,6 +293,25 @@ function setupFileJS(parent: JQuery | HTMLElement) {
 	if (!('find' in parent)) {
 		parent = $(parent);
 	}
+
+	parent.find(".file_rename").click(async function(e) {
+		preventDefault(e);
+		const id = getFileIDFromID((this.parentNode!.parentNode!.parentNode! as HTMLElement).id);
+		const newName = prompt("Enter new name", FILES[id]!.name);
+		if (newName) {
+			const res = await fetch(`/api/v1/files/${id}`, {
+				method: "PATCH",
+				body: new URLSearchParams({ name: newName }),
+			});
+
+			const data = await res.json();
+			if (res.status !== 200) {
+				alert("Error renaming file: " + data.error);
+				return;
+			}
+			FILES[id] = data;
+		}
+	});
 
 	parent.find(".image_manage_bottom > span > a[title=Delete]").click(function(e) {
 		preventDefault(e);
