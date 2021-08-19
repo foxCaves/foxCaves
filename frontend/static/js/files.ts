@@ -310,7 +310,25 @@ function setupFileJS(parent: JQuery | HTMLElement) {
 				return;
 			}
 			FILES[id] = data;
+			refreshFileLI(id);
 		}
+	});
+
+	parent.find(".file_convert > li > a").click(async function(e) {
+		preventDefault(e);
+		const id = getFileIDFromID((this.parentNode!.parentNode!.parentNode!.parentNode!.parentNode!.parentNode!.parentNode!.parentNode! as HTMLElement).id);
+		const newExtension = this.innerText;
+		const res = await fetch(`/api/v1/files/${id}/convert`, {
+			method: "POST",
+			body: new URLSearchParams({ extension: newExtension }),
+		});
+		const data = await res.json();
+		if (res.status !== 200) {
+			alert("Error converting file: " + data.error);
+			return;
+		}
+		FILES[id] = data;
+		refreshFileLI(id);
 	});
 
 	parent.find(".image_manage_bottom > span > a[title=Delete]").click(function(e) {

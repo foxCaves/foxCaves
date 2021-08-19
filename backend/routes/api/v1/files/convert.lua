@@ -14,9 +14,15 @@ R.register_route("/api/v1/files/{id}/convert", "POST", R.make_route_opts(), func
 		return utils.api_error("Not your file", 403)
 	end
 
-	local newextension = ngx.var.arg_newtype:lower()
+	if file.type ~= File.Type.Image then
+		return utils.api_error("Not an image", 400)
+	end
+
+	local args = utils.get_post_args()
+
+	local newextension = args.extension:lower()
 	if newextension ~= "jpg" and newextension ~= "png" and newextension ~= "gif" and newextension ~= "bmp" then
-		return utils.api_error("Bad newtype for convert")
+		return utils.api_error("Bad extension for convert")
 	end
 	newextension = "." .. newextension
 
@@ -42,4 +48,5 @@ R.register_route("/api/v1/files/{id}/convert", "POST", R.make_route_opts(), func
 	file:SetName(newfilename)
 	file:MoveUploadData(tmpfile)
 	file:Save()
+	return file
 end)
