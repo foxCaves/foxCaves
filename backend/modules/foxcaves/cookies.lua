@@ -16,12 +16,15 @@ function M.get_instance()
 		return
 	end
 
-    function cookies:set_normal(cookie)
-        cookie.path = "/"
-        cookie.secure = true
-        cookie.httponly = true
-        self:set(cookie)
-    end
+	if not cookies.set_raw then
+		cookies.set_raw = cookies.set
+		function cookies:set(cookie)
+			cookie.path = "/"
+			cookie.secure = true
+			cookie.httponly = true
+			self:set_raw(cookie)
+		end
+	end
 
 	ngx.ctx.__cookies = cookies
 	return cookies
