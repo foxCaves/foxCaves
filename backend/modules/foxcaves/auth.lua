@@ -82,7 +82,7 @@ function M.logout()
 	cookie:delete({
 		key = "sessionid",
 	})
-	cookie:set({
+	cookie:delete({
 		key = "loginkey",
 	})
 	if ngx.ctx.sessionid then
@@ -117,13 +117,9 @@ function M.check_cookies()
 
 	local loginkey = cookie:get("loginkey")
 	if loginkey then
-		ngx.log(ngx.ERR, "lk: " .. tostring(loginkey))
 		if not ngx.ctx.user then
 			local loginkey_match = ngx.re.match(loginkey, "^([0-9a-f-]+)\\.([a-zA-Z0-9_-]+)$", "o")
 			if loginkey_match then
-				ngx.log(ngx.ERR, "lkm1: " .. tostring(loginkey_match[1]))
-				ngx.log(ngx.ERR, "lkm2: " .. tostring(loginkey_match[2]))
-				ngx.log(ngx.ERR, "lkm3: " .. tostring(loginkey_match[3]))
 				M.login(loginkey_match[1], loginkey_match[2], {
 					login_with_id = true, login_method = M.LOGIN_METHOD_LOGINKEY
 				})
