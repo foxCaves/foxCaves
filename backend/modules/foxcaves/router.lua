@@ -160,8 +160,10 @@ local function route_execute()
     local opts = handler.options
 
     if opts.check_login then
-        auth.check_cookies()
-        auth.check_api_login()
+        local res, code = auth.check()
+        if res then
+            return opts, res, code
+        end
     end
 
     if (not opts.allow_guest) and (not ngx.ctx.user) then

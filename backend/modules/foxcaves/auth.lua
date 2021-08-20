@@ -90,7 +90,36 @@ function M.logout()
 	ngx.ctx.user = nil
 end
 
-function M.check_cookies()
+local function parse_authorization_header(auth)
+	if not auth then
+		return
+	end
+	if auth:sub(1, 6):lower() ~= "basic " then
+		return
+	end
+	auth = ngx.decode_base64(auth:sub(7))
+	if not auth or auth == "" then
+		return
+	end
+	local colonPos = auth:find(":", 1, true)
+	if not colonPos then
+		return
+	end
+	return auth:sub(1, colonPos - 1), auth:sub(colonPos + 1)
+end
+
+function M.check()
+	local user, apikey = parse_authorization_header(ngx.var.http_authorization)
+	if user and apikey then
+		local success = (M.login(user, apikey, {
+							nosession = true, login_method = M.LOGIN_METHOD_APIKEY
+						}) == consts.LOGIN_SUCCESS)
+		if not success then
+			return utils.api_error("Invalid username or API key", 401)
+		end
+		return
+	end
+
 	local cookie = cookies.get_instance()
 	if not cookie then
 		return
@@ -133,37 +162,6 @@ function M.check_cookies()
 
 	if (sessionid or loginkey) and not ngx.ctx.user then
 		M.logout()
-	end
-end
-
-local function parse_authorization_header(auth)
-	if not auth then
-		return
-	end
-	if auth:sub(1, 6):lower() ~= "basic " then
-		return
-	end
-	auth = ngx.decode_base64(auth:sub(7))
-	if not auth or auth == "" then
-		return
-	end
-	local colonPos = auth:find(":", 1, true)
-	if not colonPos then
-		return
-	end
-	return auth:sub(1, colonPos - 1), auth:sub(colonPos + 1)
-end
-
-function M.check_api_login()
-	local user, apikey = parse_authorization_header(ngx.var.http_authorization)
-	if user and apikey then
-		local success = (M.login(user, apikey, {
-							nosession = true, login_method = M.LOGIN_METHOD_APIKEY
-						}) == consts.LOGIN_SUCCESS)
-		if not success then
-			utils.api_error("Invalid username or API key", 401)
-			return true
-		end
 	end
 end
 
