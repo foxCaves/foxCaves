@@ -14,7 +14,7 @@ setmetatable(_G, {
 -- Load module path
 local path = require("path")
 local root = path.abs(debug.getinfo(1, "S").source:sub(2):match("(.*/)"))
-package.path = package.path .. ";" .. path.abs(root .. "/modules") .. "/?.lua"
+package.path = package.path .. ";" .. path.abs(root .. "/modules"):gsub("//+", "/") .. "/?.lua"
 
 -- Load environment vars
 rawset(_G, 'OSENV', {

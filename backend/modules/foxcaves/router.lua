@@ -105,6 +105,7 @@ function ROUTE_REG_MT.register_route(url, method, options, func)
 end
 
 local function scan_route_file(file)
+    file = file:gsub("//+", "/")
     local fh = io.open(file)
     local data = fh:read("*all")
     fh:close()
