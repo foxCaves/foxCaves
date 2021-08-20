@@ -1,5 +1,6 @@
 local utils = require("foxcaves.utils")
 local auth_utils = require("foxcaves.auth_utils")
+local cookies = require("foxcaves.cookies")
 local redis = require("foxcaves.redis")
 local random = require("foxcaves.random")
 local consts = require("foxcaves.consts")
@@ -55,7 +56,11 @@ function M.login(username_or_id, credential, options)
 
 	if not nosession then
 		local sessionid = random.string(32)
-		ngx.header['Set-Cookie'] = {"sessionid=" .. sessionid .. "; HttpOnly; Path=/; Secure;"}
+		local cookie = cookies.get_instance()
+		cookie:set({
+			key = "sessionid",
+			value = sessionid,
+		})
 		ngx.ctx.sessionid = sessionid
 
 		sessionid = "sessions:" .. sessionid
@@ -71,7 +76,19 @@ function M.login(username_or_id, credential, options)
 end
 
 function M.logout()
-	ngx.header['Set-Cookie'] = {"sessionid=NULL; HttpOnly; Path=/; Secure;", "loginkey=NULL; HttpOnly; Path=/; Secure;"}
+	local cookie = cookies.get_instance()
+	cookie:set({
+		key = "sessionid",
+		value = "NULL",
+		max_age = 0,
+		expires = "",
+	})
+	cookie:set({
+		key = "loginkey",
+		value = "NULL",
+		max_age = 0,
+		expires = "",
+	})
 	if ngx.ctx.sessionid then
 		redis.get_shared():del("sessions:" .. ngx.ctx.sessionid)
 	end
@@ -79,31 +96,38 @@ function M.logout()
 end
 
 function M.check_cookies()
-	local cookies = ngx.var.http_Cookie
-	if cookies then
-		local sessionid = ngx.re.match(cookies, "^(.*; *)?sessionid=([a-zA-Z0-9]+)( *;.*)?$", "o")
-		if sessionid then
-			local redis_inst = redis.get_shared()
-			sessionid = sessionid[2]
-			local sessionKey = "sessions:" .. sessionid
-			local result = redis_inst:hmget(sessionKey, "id", "loginkey")
-			if (not utils.is_falsy_or_null(result)) and
-					M.login(result[1], result[2], {
-						nosession = true, login_with_id = true, login_method = M.LOGIN_METHOD_LOGINKEY
-					}) == consts.LOGIN_SUCCESS then
-				ngx.ctx.sessionid = sessionid
-				ngx.header['Set-Cookie'] = {"sessionid=" .. sessionid .. "; HttpOnly; Path=/; Secure;"}
-				redis_inst:expire(sessionKey, SESSION_EXPIRE_DELAY)
-			end
-		end
+	local cookie = cookies.get_instance()
+	if not cookie then
+		return
+	end
 
-		local loginkey = ngx.re.match(cookies, "^(.*; *)?loginkey=([0-9a-f-]+)\\.([a-zA-Z0-9+/=]+)( *;.*)?$", "o")
-		if loginkey then
+	local sessionid = cookie:get("sessionid")
+	if sessionid then
+		local redis_inst = redis.get_shared()
+		local sessionKey = "sessions:" .. sessionid
+		local result = redis_inst:hmget(sessionKey, "id", "loginkey")
+		if (not utils.is_falsy_or_null(result)) and
+				M.login(result[1], result[2], {
+					nosession = true, login_with_id = true, login_method = M.LOGIN_METHOD_LOGINKEY
+				}) == consts.LOGIN_SUCCESS then
+			ngx.ctx.sessionid = sessionid
+			cookie:set({
+				key = "sessionid",
+				value = sessionid,
+			})
+			redis_inst:expire(sessionKey, SESSION_EXPIRE_DELAY)
+		end
+	end
+
+	local loginkey = cookie:get("loginkey")
+	if loginkey then
+		local loginkey_match = ngx.re.match(cookies, "^([0-9a-f-]+)\\.([a-zA-Z0-9+/=]+)$", "o")
+		if loginkey_match then
 			if ngx.ctx.user then
 				ngx.ctx.remember_me = true
 				auth_utils.send_login_key()
 			else
-				if M.login(loginkey[2], loginkey[3], {
+				if M.login(loginkey_match[1], loginkey_match[2], {
 								login_with_id = true, login_method = M.LOGIN_METHOD_LOGINKEY
 							}) == consts.LOGIN_SUCCESS then
 					ngx.ctx.remember_me = true
@@ -111,10 +135,10 @@ function M.check_cookies()
 				end
 			end
 		end
+	end
 
-		if (sessionid or loginkey) and not ngx.ctx.user then
-			M.logout()
-		end
+	if (sessionid or loginkey) and not ngx.ctx.user then
+		M.logout()
 	end
 end
 

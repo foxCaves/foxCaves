@@ -1,9 +1,11 @@
+local cookies = require("foxcaves.cookies")
+
 local ngx = ngx
-local table = table
-local type = type
 
 local M = {}
 require("foxcaves.module_helper").setmodenv()
+
+local LOGIN_KEY_MAX_AGE = 30 * 24 * 60 * 60
 
 function M.hash_login_key(loginkey)
 	return ngx.hmac_sha1(loginkey or ngx.ctx.user.loginkey, ngx.var.http_user_agent or ngx.var.remote_addr)
@@ -14,17 +16,14 @@ function M.send_login_key()
 		return
 	end
 
-	local expires = "; Expires=" .. ngx.cookie_time(ngx.time() + (30 * 24 * 60 * 60))
-	local hdr = ngx.header['Set-Cookie']
-	expires = "loginkey=" .. ngx.ctx.user.id .. "." .. ngx.encode_base64(M.hash_login_key()) ..
-				expires .. "; HttpOnly; Path=/; Secure;"
-	if type(hdr) == "table" then
-		table.insert(hdr, expires)
-	elseif hdr then
-		ngx.header['Set-Cookie'] = {hdr, expires}
-	else
-		ngx.header['Set-Cookie'] = {expires}
-	end
+	local cookie = cookies:get_instance()
+	local expires = ngx.cookie_time(ngx.time() + LOGIN_KEY_MAX_AGE)
+	cookie:set({
+		key = "loginkey",
+		value = ngx.encode_base64(M.hash_login_key()),
+		expires = expires,
+		max_age = LOGIN_KEY_MAX_AGE,
+	})
 end
 
 return M

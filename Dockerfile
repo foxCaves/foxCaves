@@ -24,7 +24,8 @@ RUN /usr/local/openresty/luajit/bin/luarocks install pgmoon
 RUN /usr/local/openresty/luajit/bin/luarocks install lua-resty-uuid
 RUN /usr/local/openresty/luajit/bin/luarocks install lpath
 RUN git clone https://github.com/foxCaves/raven-lua.git /tmp/raven-lua && mv /tmp/raven-lua/raven /usr/local/share/lua/5.1/ && rm -rf /tmp/raven-lua
-RUN adduser --disabled-password www-data
+RUN git clone https://github.com/foxCaves/lua-resty-cookie.git /tmp/lua-resty-cookie && cp -r /tmp/lua-resty-cookie/lib/* /usr/local/share/lua/5.1/ && rm -rf /tmp/lua-resty-cookie
+RUN adduser -u 1337 --disabled-password foxcaves
 
 ENV ENVIRONMENT=development
 
