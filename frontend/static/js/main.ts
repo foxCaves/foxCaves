@@ -179,7 +179,7 @@ $(async () => {
 		currentSocket = socket;
 
 		function reconnectInner() {
-			reconnectSocket(socket);
+			setTimeout(() => reconnectSocket(socket), 5000);
 		}
 		socket.onmessage = messageReceived;
 		socket.onclose = reconnectInner;
