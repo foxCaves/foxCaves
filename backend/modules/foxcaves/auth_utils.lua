@@ -13,14 +13,14 @@ function M.hash_login_key(loginkey)
 end
 
 function M.send_login_key()
-	if not ngx.ctx.remember_me then
+	if (not ngx.ctx.user) or (not ngx.ctx.remember_me) then
 		return
 	end
 
 	local cookie = cookies:get_instance()
 	cookie:set({
 		key = "loginkey",
-		value = b64.encode_base64url(M.hash_login_key()),
+		value = ngx.ctx.user.id .. "." .. b64.encode_base64url(M.hash_login_key()),
 		max_age = LOGIN_KEY_MAX_AGE,
 	})
 end
