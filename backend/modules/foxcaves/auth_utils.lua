@@ -18,11 +18,9 @@ function M.send_login_key()
 	end
 
 	local cookie = cookies:get_instance()
-	local expires = ngx.cookie_time(ngx.time() + LOGIN_KEY_MAX_AGE)
 	cookie:set({
 		key = "loginkey",
 		value = b64.encode_base64url(M.hash_login_key()),
-		expires = expires,
 		max_age = LOGIN_KEY_MAX_AGE,
 	})
 end

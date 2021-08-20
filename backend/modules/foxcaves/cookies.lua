@@ -10,21 +10,11 @@ function M.get_instance()
 		return ngx.ctx.__cookies
 	end
 
-	local cookies, err = resty_cookie:new()
-	if not cookies then
-		ngx.log(ngx.ERR, "Failed to parse cookies: " .. err)
-		return
-	end
-
-	if not cookies.set_raw then
-		cookies.set_raw = cookies.set
-		function cookies:set(cookie)
-			cookie.path = "/"
-			cookie.secure = true
-			cookie.httponly = true
-			self:set_raw(cookie)
-		end
-	end
+	local cookies = resty_cookie:new({
+		path = "/",
+		httponly = true,
+		secure = true,
+	})
 
 	ngx.ctx.__cookies = cookies
 	return cookies

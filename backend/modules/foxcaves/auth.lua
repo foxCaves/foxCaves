@@ -78,17 +78,11 @@ end
 
 function M.logout()
 	local cookie = cookies.get_instance()
-	cookie:set({
+	cookie:delete({
 		key = "sessionid",
-		value = "",
-		max_age = -1,
-		expires = "Thu, 01 Jan 1970 00:00:00 GMT",
 	})
 	cookie:set({
 		key = "loginkey",
-		value = "",
-		max_age = -1,
-		expires = "Thu, 01 Jan 1970 00:00:00 GMT",
 	})
 	if ngx.ctx.sessionid then
 		redis.get_shared():del("sessions:" .. ngx.ctx.sessionid)
