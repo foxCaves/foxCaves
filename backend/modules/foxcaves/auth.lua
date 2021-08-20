@@ -1,3 +1,4 @@
+local b64 = require("ngx.base64")
 local utils = require("foxcaves.utils")
 local auth_utils = require("foxcaves.auth_utils")
 local cookies = require("foxcaves.cookies")
@@ -20,7 +21,7 @@ function M.LOGIN_METHOD_APIKEY(userdata, apikey)
 	return userdata.apikey == apikey
 end
 function M.LOGIN_METHOD_LOGINKEY(userdata, loginkey)
-	return auth_utils.hash_login_key(userdata.loginkey) == ngx.decode_base64(loginkey)
+	return auth_utils.hash_login_key(userdata.loginkey) == b64.decode_base64url(loginkey)
 end
 
 function M.login(username_or_id, credential, options)
@@ -66,7 +67,7 @@ function M.login(username_or_id, credential, options)
 		sessionid = "sessions:" .. sessionid
 
 		local redis_inst = redis.get_shared()
-		redis_inst:hmset(sessionid, "id", user.id, "loginkey", ngx.encode_base64(auth_utils.hash_login_key(user.loginkey)))
+		redis_inst:hmset(sessionid, "id", user.id, "loginkey", b64.encode_base64url(auth_utils.hash_login_key(user.loginkey)))
 		redis_inst:expire(sessionid, SESSION_EXPIRE_DELAY)
 	end
 

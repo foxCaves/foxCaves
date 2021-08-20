@@ -1,3 +1,4 @@
+local b64 = require("ngx.base64")
 local cookies = require("foxcaves.cookies")
 
 local ngx = ngx
@@ -20,7 +21,7 @@ function M.send_login_key()
 	local expires = ngx.cookie_time(ngx.time() + LOGIN_KEY_MAX_AGE)
 	cookie:set({
 		key = "loginkey",
-		value = ngx.encode_base64(M.hash_login_key()),
+		value = b64.encode_base64url(M.hash_login_key()),
 		expires = expires,
 		max_age = LOGIN_KEY_MAX_AGE,
 	})
