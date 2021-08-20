@@ -8,7 +8,6 @@ local consts = require("foxcaves.consts")
 local User = require("foxcaves.models.user")
 
 local ngx = ngx
-local tostring = tostring
 
 local M = {}
 require("foxcaves.module_helper").setmodenv()
