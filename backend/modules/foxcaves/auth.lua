@@ -116,18 +116,16 @@ function M.check_cookies()
 
 	local loginkey = cookie:get("loginkey")
 	if loginkey then
-		local loginkey_match = ngx.re.match(cookies, "^([0-9a-f-]+)\\.([a-zA-Z0-9+/=]+)$", "o")
-		if loginkey_match then
-			if ngx.ctx.user then
+		if ngx.ctx.user then
+			ngx.ctx.remember_me = true
+			auth_utils.send_login_key()
+		else
+			local loginkey_match = ngx.re.match(cookies, "^([0-9a-f-]+)\\.([a-zA-Z0-9+/=]+)$", "o")
+			if loginkey_match and M.login(loginkey_match[1], loginkey_match[2], {
+										login_with_id = true, login_method = M.LOGIN_METHOD_LOGINKEY
+									}) == consts.LOGIN_SUCCESS then
 				ngx.ctx.remember_me = true
 				auth_utils.send_login_key()
-			else
-				if M.login(loginkey_match[1], loginkey_match[2], {
-								login_with_id = true, login_method = M.LOGIN_METHOD_LOGINKEY
-							}) == consts.LOGIN_SUCCESS then
-					ngx.ctx.remember_me = true
-					auth_utils.send_login_key()
-				end
 			end
 		end
 	end
