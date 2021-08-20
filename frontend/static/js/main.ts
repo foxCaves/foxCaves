@@ -178,12 +178,10 @@ $(async () => {
 		const socket = new WebSocket((useSSL ? "wss:" : "ws:") + window.location.hostname + "/api/v1/ws/events");
 		currentSocket = socket;
 
-		function reconnectInner() {
-			setTimeout(() => reconnectSocket(socket), 5000);
-		}
 		socket.onmessage = messageReceived;
-		socket.onclose = reconnectInner;
-		socket.onerror = reconnectInner;
+		socket.onclose = () => {
+			setTimeout(() => reconnectSocket(socket), 5000);
+		};
 	};
 
 	reconnectSocket();

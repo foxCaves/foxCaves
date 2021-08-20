@@ -755,7 +755,10 @@ const networking = {
 	sendBrushPacket(brushName: string, key: string, val: string) {
 		this.sendRaw(PaintEvent.CUSTOM + brushName + "|" + key + "|" + val);
 	},
-	connect() {
+	connect(oldSocket?: WebSocket) {
+		if (oldSocket && oldSocket !== this.socket) {
+			return;
+		}
 		this.shouldConnect = true;
 		fetch(`/api/v1/files/${encodeURIComponent(LIVEDRAW_FILEID)}/livedraw?session=${encodeURIComponent(LIVEDRAW_SID!)}`)
 		.then(async (res) => {
@@ -766,10 +769,11 @@ const networking = {
 				networking.recvRaw(event.data);
 			};
 
-			webSocket.onclose = webSocket.onerror = () => {//Unwanted disconnect
-				if(!networking.shouldConnect)
+			webSocket.onclose = () => { //Unwanted disconnect
+				if (!networking.shouldConnect) {
 					return;
-				window.setTimeout(() => networking.connect(), 200);
+				}
+				window.setTimeout(() => networking.connect(webSocket), 1000);
 				webSocket.close();
 			}
 
