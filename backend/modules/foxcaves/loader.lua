@@ -26,32 +26,14 @@ if sentry_config.dsn then
 		sender = raven_sender.new({
 			dsn = sentry_config.dsn,
 		}),
-		tags = {
-			environment = env.name,
-			release = revision.hash,
-		},
+		environment = env.name,
+		release = revision.hash,
 	})
 
-	local capture_error_handler = rvn:gen_capture_err()
-
-	-- https://github.com/cloudflare/raven-lua/blob/master/raven/init.lua#L352
-	local function rvn_call_ext(conf, f)
-		-- When used with ngx_lua, connecting a tcp socket in xpcall error handler
-		-- will cause a "yield across C-call boundary" error. To avoid this, we
-		-- move all the network operations outside of the xpcall error handler.
-		local res = { xpcall(f, capture_error_handler) }
-		if not res[1] then
-			rvn:send_report(res[2], conf)
-			res[2] = res[2].message -- turn the error object back to its initial form
-		end
-
-		return unpack(res)
-	end
-
 	function M.run()
-		local isok, err = rvn_call_ext({
+		local isok, err = rvn:call_ext({
+			user = ngx.ctx.user and ngx.ctx.user:GetPublic(),
 			tags = {
-				userid = ngx.ctx.user and ngx.ctx.user.id or "N/A",
 				ip = ngx.var.remote_addr,
 				url = ngx.var.request_uri,
 			},
