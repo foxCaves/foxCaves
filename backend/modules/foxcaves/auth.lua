@@ -116,9 +116,8 @@ function M.check_cookies()
 
 	local loginkey = cookie:get("loginkey")
 	if loginkey then
-		ngx.log(ngx.ERR, "lk: " .. tostring(loginkey))
 		if not ngx.ctx.user then
-			local loginkey_match = ngx.re.match(cookies, "^([0-9a-f-]+)\\.([a-zA-Z0-9+/=]+)$", "o")
+			local loginkey_match = ngx.re.match(loginkey, "^([0-9a-f-]+)\\.([a-zA-Z0-9+/=]+)$", "o")
 			if loginkey_match then
 				ngx.log(ngx.ERR, "lkm1: " .. tostring(loginkey_match[1]))
 				ngx.log(ngx.ERR, "lkm2: " .. tostring(loginkey_match[2]))
