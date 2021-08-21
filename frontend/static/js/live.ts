@@ -686,7 +686,6 @@ const networking = {
 		this.sendDrawEvent(eventype, x + "|" + y);
 	},
 	recvDrawEvent(eventype: PaintEvent, payload: string[]) {
-
 		const from = paintUsers[payload[0]!]!;
 		switch(eventype) {
 			case PaintEvent.MOUSE_CURSOR:
@@ -755,13 +754,14 @@ const networking = {
 	sendBrushPacket(brushName: string, key: string, val: string) {
 		this.sendRaw(PaintEvent.CUSTOM + brushName + "|" + key + "|" + val);
 	},
-	connect(oldSocket?: WebSocket) {
+	async connect(oldSocket?: WebSocket) {
 		if (oldSocket && oldSocket !== this.socket) {
 			return;
 		}
 		this.shouldConnect = true;
-		fetch(`/api/v1/files/${encodeURIComponent(LIVEDRAW_FILEID)}/livedraw?session=${encodeURIComponent(LIVEDRAW_SID!)}`)
-		.then(async (res) => {
+		
+		try {
+			const res = await fetch(`/api/v1/files/${encodeURIComponent(LIVEDRAW_FILEID)}/livedraw?session=${encodeURIComponent(LIVEDRAW_SID!)}`);
 			const data = await res.json();
 			const webSocket = new WebSocket(data.url);
 
@@ -783,8 +783,9 @@ const networking = {
 				localUser.brushData.setBrush("brush");
 			};
 			this.socket = webSocket;
-		})
-		.catch((e) => console.error(e));
+		} catch (e) {
+			console.error(e);
+		}
 	},
 	close() {
 		this.shouldConnect = false;
