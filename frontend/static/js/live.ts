@@ -526,8 +526,9 @@ const liveDrawInput = {
 	cursorY: 0,
 	isDrawing: false,
 	mouseDown(event: MouseEvent) {
-		if(event.button != 0)
+		if(event.button !== 0) {
 			return;
+		}
 		preventDefault(event);
 
 		this.isDrawing = true;
@@ -541,19 +542,20 @@ const liveDrawInput = {
 		networking.sendBrushEvent(PaintEvent.MOUSE_DOWN, sendX, sendY);
 	},
 	mouseUp(event: MouseEvent, backgroundCanvasCTX: CanvasRenderingContext2D) {
-		if(event.button != 0)
+		if (event.button !== 0) {
 			return;
+		}
 		preventDefault(event);
 
-		if(!this.isDrawing)
+		if (!this.isDrawing) {
 			return
+		}
 		this.isDrawing = false;
 
 		const [offsetX, offsetY] = calcOffsets(event);
 		
 		const sendX = offsetX / scaleFactor;
 		const sendY = offsetY / scaleFactor;
-
 
 		localUser.brushData.brush.up(offsetX, offsetY, localUser, backgroundCanvasCTX);
 		networking.sendBrushEvent(PaintEvent.MOUSE_UP, sendX, sendY);
@@ -577,19 +579,20 @@ const liveDrawInput = {
 			return;
 		}
 
-		if(!localUser.brushData.brush.move(offsetX, offsetY, localUser, backgroundCanvasCTX))
+		if(!localUser.brushData.brush.move(offsetX, offsetY, localUser, backgroundCanvasCTX)) {
 			networking.sendBrushEvent(PaintEvent.MOUSE_MOVE, sendX, sendY);
-		else
+		} else {
 			networking.sendBrushEvent(PaintEvent.MOUSE_CURSOR, sendX, sendY);
+		}
 	},
 	mouseScroll(event: WheelEvent) {
+		preventDefault(event);
 		const delta = sign(-event.deltaY) * 2;
 
 		localUser.brushData.setWidth(clamp(localUser.brushData.width + delta, 1, MAX_BRUSH_WIDTH))
-		event.preventDefault();
-		//return false;
 	},
 	doubleClick(event: MouseEvent) {
+		preventDefault(event);
 		const [offsetX, offsetY] = calcOffsets(event);
 		if(localUser.brushData.brush.doubleClick)
 			localUser.brushData.brush.doubleClick(offsetX, offsetY, localUser, backgroundCanvasCTX);
@@ -600,7 +603,6 @@ const liveDrawInput = {
 		const sendX = offsetX / scaleFactor;
 		const sendY = offsetY / scaleFactor;
 
-		event.preventDefault();
 		networking.sendBrushEvent(PaintEvent.MOUSE_DOUBLE_CLICK, sendX, sendY);
 	}
 }
@@ -664,9 +666,9 @@ const networking = {
 				delete paintUsers[commands[0]!];
 				break;
 			case PaintEvent.IMGBURST:
-				if(commands[0] == "r")
-					this.sendDrawEvent(PaintEvent.IMGBURST, commands[1] + "|" + finalCanvas.toDataURL("image/png").replace(/[\r\n]/g,"") + "|");
-				else if(commands[1] == "a") {
+				if (commands[1] == "r") {
+					this.sendDrawEvent(PaintEvent.IMGBURST, commands[2] + "|" + finalCanvas.toDataURL("image/png").replace(/[\r\n]/g,"") + "|");
+				} else if(commands[1] == "a") {
 					const toSet = new Image();
 					toSet.onload = () => {
 						backgroundCanvasCTX.drawImage(toSet, 0, 0, finalCanvas.width, finalCanvas.height);
@@ -707,7 +709,7 @@ const networking = {
 			case PaintEvent.CUSTOM:
 				const { customData } = from.brushData;
 				const [brush, key, value] = payload;
-				if(!customData[brush!]) {
+				if (!customData[brush!]) {
 					customData[brush!] = {};
 				}
 				from.brushData.customData[brush!]![key!] = value!;
@@ -791,20 +793,16 @@ const networking = {
 		this.shouldConnect = false;
 		try {
 			this.socket!.close();
-		} catch(e) {
-
-		}
+		} catch(e) { }
 	},
 	sendRaw(msg: string) {
 		msg = msg.trim();
-		if(msg.length == 0) {
+		if (msg.length == 0) {
 			return;
 		}
 		try {
 			this.socket!.send(msg);
-		} catch(e) {
-
-		}
+		} catch(e) { }
 	}
 }
 
@@ -812,8 +810,9 @@ let defaultFont = "24px Verdana";
 
 function paintCanvas() {
 	requestAnimationFrame(paintCanvas);
-	if(!localUser.brushData.brush)
+	if (!localUser.brushData.brush) {
 		return;
+	}
 
 	foregroundCanvasCTX.clearRect(0, 0, foregroundCanvas.width, foregroundCanvas.height);
 
@@ -852,10 +851,11 @@ function loadImage() {
 
 		const maxWidth = $('#livedraw-wrapper').width()!;
 
-		if(baseImage.width > maxWidth)
+		if (baseImage.width > maxWidth) {
 			scaleFactor = maxWidth / baseImage.width;
-		else
+		} else {
 			scaleFactor = 1.00;
+		}
 
 		defaultFont = (12 / scaleFactor) + "px Verdana";
 
@@ -874,8 +874,6 @@ function loadImage() {
 		imagePattern = backgroundCanvasCTX.createPattern(baseImage, "no-repeat")!;
 
 		requestAnimationFrame(paintCanvas);
-
-		//window.setInterval(, 1/40);
 	};
 	baseImage.src = LIVEDRAW_FILE!.direct_url;
 }
@@ -895,7 +893,6 @@ function setupCanvas() {
 
 	finalCanvas.addEventListener("wheel", event => liveDrawInput.mouseScroll(event), false);
 	finalCanvas.addEventListener('dblclick', event => liveDrawInput.doubleClick(event), false);
-
 }
 
 function setupColorSelector() {
@@ -930,8 +927,9 @@ function setupColorSelector() {
 	hlSelector.addEventListener("mousedown", event => { if(event.button == 0) { hlSelectorDown = true; hlSelectorMouseMoveListener.call(hlSelector, event); } });
 	hlSelector.addEventListener("mouseup", event => { if(event.button == 0) hlSelectorDown = false; });
 	hlSelector.addEventListener("mousemove", hlSelectorMouseMoveListener = event => {
-		if(!hlSelectorDown)
+		if (!hlSelectorDown) {
 			return;
+		}
 
 		hue = (event.offsetX / hlSelector.offsetWidth) * 360;
 		lightness = (event.offsetY / hlSelector.offsetHeight) * 100;
@@ -949,8 +947,9 @@ function setupColorSelector() {
 	sSelector.addEventListener("mousedown", event => { if(event.button == 0) { sSelectorDown = true; sSelectorMouseMoveListener.call(sSelector, event); }});
 	sSelector.addEventListener("mouseup", event => { if(event.button == 0) sSelectorDown = false; });
 	sSelector.addEventListener("mousemove", sSelectorMouseMoveListener = event => {
-		if(!sSelectorDown)
+		if(!sSelectorDown) {
 			return;
+		}
 
 		saturisation = (1 - event.offsetY / sSelector.offsetHeight) * 100;
 
@@ -966,8 +965,9 @@ function setupColorSelector() {
 	oSelector.addEventListener("mousedown", event => { if(event.button == 0) { oSelectorDown = true; oSelectorMouseMoveListener.call(oSelector, event); }});
 	oSelector.addEventListener("mouseup", event => { if(event.button == 0) oSelectorDown = false; });
 	oSelector.addEventListener("mousemove", oSelectorMouseMoveListener = event => {
-		if(!oSelectorDown)
+		if(!oSelectorDown) {
 			return;
+		}
 
 		opacity = (1 - event.offsetY / oSelector.offsetHeight);
 
@@ -985,8 +985,9 @@ function setupBrushes() {
 				...pBrush.defaultCustomData
 			};
 		}
-		if(pBrush.setup)
+		if (pBrush.setup) {
 			pBrush.setup(localUser);
+		}
 	}
 }
 
