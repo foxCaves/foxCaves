@@ -6,21 +6,21 @@ local url_config = require("foxcaves.config").urls
 local setmetatable = setmetatable
 local next = next
 
-local LinkMT = {}
-local Link = {}
+local link_mt = {}
+local link_model = {}
 
 require("foxcaves.module_helper").setmodenv()
 
 local function makelinkmt(link)
     link.not_in_db = nil
-    setmetatable(link, LinkMT)
-    link:ComputeVirtuals()
+    setmetatable(link, link_mt)
+    link:compute_virtuals()
     return link
 end
 
 local link_select = 'id, "user", url, ' .. database.TIME_COLUMNS
 
-function Link.GetByUser(user)
+function link_model.get_by_user(user)
     if user.id then
         user = user.id
     end
@@ -32,7 +32,7 @@ function Link.GetByUser(user)
     return links
 end
 
-function Link.GetByID(id)
+function link_model.get_by_id(id)
 	if not id then
 		return nil
 	end
@@ -46,20 +46,20 @@ function Link.GetByID(id)
 	return makelinkmt(link)
 end
 
-function Link.New()
+function link_model.new()
     local link = {
         not_in_db = true,
         id = random.string(10),
     }
-    setmetatable(link, LinkMT)
+    setmetatable(link, link_mt)
     return link
 end
 
-function LinkMT:ComputeVirtuals()
+function link_mt:compute_virtuals()
     self.short_url = url_config.short .. "/g" .. self.id
 end
 
-function LinkMT:Delete()
+function link_mt:delete()
     database.get_shared():query_safe('DELETE FROM links WHERE id = %s', self.id)
 
 	events.push_raw({
@@ -68,17 +68,17 @@ function LinkMT:Delete()
     }, self.user)
 end
 
-function LinkMT:SetOwner(user)
+function link_mt:set_owner(user)
     self.user = user.id or user
 end
 
-function LinkMT:SetURL(url)
+function link_mt:set_url(url)
     self.url = url
-    self:ComputeVirtuals()
+    self:compute_virtuals()
     return true
 end
 
-function LinkMT:Save()
+function link_mt:save()
     local res, primary_push_action
     if self.not_in_db then
         res = database.get_shared():query_safe_single(
@@ -107,6 +107,6 @@ function LinkMT:Save()
 	}, self.user)
 end
 
-LinkMT.__index = LinkMT
+link_mt.__index = link_mt
 
-return Link
+return link_model

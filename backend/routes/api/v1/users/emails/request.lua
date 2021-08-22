@@ -2,7 +2,7 @@ local utils = require("foxcaves.utils")
 local redis = require("foxcaves.redis")
 local mail = require("foxcaves.mail")
 local random = require("foxcaves.random")
-local User = require("foxcaves.models.user")
+local user_model = require("foxcaves.models.user")
 local main_url = require("foxcaves.config").urls.main
 
 R.register_route("/api/v1/users/emails/request", "POST", R.make_route_opts_anon(), function()
@@ -23,9 +23,9 @@ R.register_route("/api/v1/users/emails/request", "POST", R.make_route_opts_anon(
         return utils.api_error("email required")
     end
 
-    local user = User.GetByUsername(username)
+    local user = user_model.get_by_username(username)
     if (not user) or (user.email:lower() ~= email:lower()) then
-        return utils.api_error("User not found", 404)
+        return utils.api_error("user_model not found", 404)
     end
 
     local emailid = random.string(32)

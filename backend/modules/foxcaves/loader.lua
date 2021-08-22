@@ -31,7 +31,7 @@ if sentry_config.dsn then
 
 	function M.run()
 		local isok, err = rvn:call_ext({
-			user = ngx.ctx.user and ngx.ctx.user:GetPublic(),
+			user = ngx.ctx.user and ngx.ctx.user:get_public(),
 			tags = {
 				ip = ngx.var.remote_addr,
 				url = ngx.var.request_uri,
@@ -204,9 +204,9 @@ else
 		local out = {
 			dbg_trace_hdr,
 			err,
-			"</h1><div class='accordion'><h3 class='autoclick'><a href='#'>UserInfo</a></h3><div>",
+			"</h1><div class='accordion'><h3 class='autoclick'><a href='#'>user_modelInfo</a></h3><div>",
 			string.format(
-				"<table><tr><th>UserID</th><td>%s</td></tr><tr><th>IP</th><td>%s</td></tr><tr><th>URL</th><td>%s</td></tr><tbody>",
+				"<table><tr><th>user_modelID</th><td>%s</td></tr><tr><th>IP</th><td>%s</td></tr><tr><th>URL</th><td>%s</td></tr><tbody>",
 				ngx.ctx.user and ngx.ctx.user.id or "N/A",
 				ngx.var.remote_addr,
 				ngx.var.request_uri

@@ -34,5 +34,5 @@ R.register_route("/api/v1/users/self/login", "POST", R.make_route_opts_anon(), f
         end
     end
 
-    return ngx.ctx.user:GetPrivate()
+    return ngx.ctx.user:get_private()
 end)

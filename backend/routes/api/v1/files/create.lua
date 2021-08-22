@@ -1,6 +1,6 @@
 local lfs = require("lfs")
 local utils = require("foxcaves.utils")
-local File = require("foxcaves.models.file")
+local file_model = require("foxcaves.models.file")
 local ngx = ngx
 local io = io
 
@@ -13,9 +13,9 @@ R.register_route("/api/v1/files", "POST", R.make_route_opts(), function()
 
 	name = ngx.unescape_uri(name)
 
-	local file = File.New()
-	file:SetOwner(ngx.ctx.user)
-	if not file:SetName(name) then
+	local file = file_model.new()
+	file:set_owner(ngx.ctx.user)
+	if not file:set_name(name) then
 		return utils.api_error("Invalid name")
 	end
 
@@ -31,19 +31,19 @@ R.register_route("/api/v1/files", "POST", R.make_route_opts(), function()
 		return utils.api_error("Empty body")
 	end
 
-	if ngx.ctx.user:CalculateUsedBytes() + filesize > ngx.ctx.user.totalbytes then
+	if ngx.ctx.user:calculate_used_bytes() + filesize > ngx.ctx.user.totalbytes then
 		return utils.api_error("Over quota", 402)
 	end
 
 	if not filetmp then
-		filetmp =  File.Paths.Temp .. "file_" .. file.id .. file.extension
+		filetmp =  file_model.paths.temp .. "file_" .. file.id .. file.extension
 		local f = io.open(filetmp, "wb")
 		f:write(filedata)
 		f:close()
 	end
-	file:MoveUploadData(filetmp)
+	file:move_upload_data(filetmp)
 
-	file:Save()
+	file:save()
 
 	return file
 end)

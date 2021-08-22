@@ -6,7 +6,7 @@ R.register_route("/api/v1/users/self", "PATCH", R.make_route_opts(), function()
     local args = utils.get_post_args()
     local user = ngx.ctx.user
 
-    if not user:CheckPassword(args.current_password) then
+    if not user:check_password(args.current_password) then
         return utils.api_error("current_password invalid", 403)
     end
 
@@ -16,7 +16,7 @@ R.register_route("/api/v1/users/self", "PATCH", R.make_route_opts(), function()
     }
 
     if args.email then
-        local emailcheck = user:SetEMail(args.email)
+        local emailcheck = user:set_email(args.email)
         if emailcheck == consts.VALIDATION_STATE_INVALID then
             return utils.api_error("email invalid")
         elseif emailcheck == consts.VALIDATION_STATE_TAKEN then
@@ -27,21 +27,21 @@ R.register_route("/api/v1/users/self", "PATCH", R.make_route_opts(), function()
     end
 
     if args.password then
-        user:SetPassword(args.password)
+        user:set_password(args.password)
         obj.password = "CHANGED"
         args.loginkey = "CHANGE"
     end
 
     if args.apikey then
-        user:MakeNewAPIKey()
+        user:make_new_api_key()
     end
 
     if args.loginkey then
-        user:MakeNewLoginKey()
+        user:make_new_login_key()
         obj.loginkey = "CHANGED"
     end
 
-    user:Save()
+    user:save()
 
     obj.updated_at = user.updated_at
     obj.created_at = user.created_at

@@ -2,7 +2,7 @@ local utils = require("foxcaves.utils")
 local redis = require("foxcaves.redis")
 local mail = require("foxcaves.mail")
 local random = require("foxcaves.random")
-local User = require("foxcaves.models.user")
+local user_model = require("foxcaves.models.user")
 local main_url = require("foxcaves.config").urls.main
 local ngx = ngx
 
@@ -32,20 +32,20 @@ R.register_route("/api/v1/users/emails/code", "POST", R.make_route_opts_anon(), 
         return invalid_code()
     end
 
-    local user = User.GetByID(userid)
+    local user = user_model.get_by_id(userid)
     if not user then
         return utils.api_error("Bad user")
     end
 
     if action == "activation" then
         user.active = 1
-        user:Save()
+        user:save()
     elseif action == "forgotpwd" then
         local newPassword = random.string(16)
 
-        user:SetPassword(newPassword)
-        user:MakeNewLoginKey()
-        user:Save()
+        user:set_password(newPassword)
+        user:make_new_login_key()
+        user:save()
 
         local email = "Hello, " .. user.username .. "!\n\nHere is your new password:\n" .. newPassword ..
                         "\nPlease log in at " .. main_url .. "/login and change it as soon as possible." ..

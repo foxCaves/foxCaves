@@ -1,12 +1,12 @@
 local lfs = require("lfs")
 local utils = require("foxcaves.utils")
-local File = require("foxcaves.models.file")
+local file_model = require("foxcaves.models.file")
 local exec = require("foxcaves.exec")
 local ngx = ngx
 local os = os
 
 R.register_route("/api/v1/files/{id}/convert", "POST", R.make_route_opts(), function(route_vars)
-	local file = File.GetByID(route_vars.id)
+	local file = file_model.get_by_id(route_vars.id)
 	if not file then
 		return utils.api_error("Not found", 404)
 	end
@@ -14,7 +14,7 @@ R.register_route("/api/v1/files/{id}/convert", "POST", R.make_route_opts(), func
 		return utils.api_error("Not your file", 403)
 	end
 
-	if file.type ~= File.Type.Image then
+	if file.type ~= file_model.type.image then
 		return utils.api_error("Not an image", 400)
 	end
 
@@ -26,12 +26,12 @@ R.register_route("/api/v1/files/{id}/convert", "POST", R.make_route_opts(), func
 	end
 	newextension = "." .. newextension
 
-	local srcfile = file:MakeLocalPath()
+	local srcfile = file:make_local_path()
 
 	local newfilename = file.name
 	newfilename = newfilename:sub(1, newfilename:len() - file.extension:len()) .. newextension
 
-	local tmpfile =  File.Paths.Temp .. "file_new_" .. file.id .. newextension
+	local tmpfile =  file_model.paths.temp .. "file_new_" .. file.id .. newextension
 
 	exec.cmd("convert", srcfile, "-format", newextension:sub(2), tmpfile)
 	os.remove(srcfile)
@@ -41,8 +41,8 @@ R.register_route("/api/v1/files/{id}/convert", "POST", R.make_route_opts(), func
 		return utils.api_error("Internal error", 500)
 	end
 
-	file:SetName(newfilename)
-	file:MoveUploadData(tmpfile)
-	file:Save()
+	file:set_name(newfilename)
+	file:move_upload_data(tmpfile)
+	file:save()
 	return file
 end)

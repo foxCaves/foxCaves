@@ -12,8 +12,8 @@ local main_url = require("foxcaves.config").urls.main
 local setmetatable = setmetatable
 local ngx = ngx
 
-local UserMT = {}
-local User = {}
+local user_mt = {}
+local user_model = {}
 
 require("foxcaves.module_helper").setmodenv()
 
@@ -25,14 +25,14 @@ local STORAGE_BASE = 1 * GIGABYTE
 
 local function makeusermt(user)
     user.not_in_db = nil
-    setmetatable(user, UserMT)
-    user:ComputeVirtuals()
+    setmetatable(user, user_mt)
+    user:compute_virtuals()
     return user
 end
 
 local user_select = 'id, username, email, password, loginkey, apikey, active, bonusbytes, ' .. database.TIME_COLUMNS
 
-function User.GetByID(id)
+function user_model.get_by_id(id)
     if not uuid.is_valid(id) then
         return nil
     end
@@ -46,7 +46,7 @@ function User.GetByID(id)
 	return makeusermt(user)
 end
 
-function User.GetByUsername(username)
+function user_model.get_by_username(username)
 	local user = database.get_shared():query_safe_single(
         'SELECT ' .. user_select .. ' FROM users WHERE lower(username) = %s',
         username:lower()
@@ -59,16 +59,16 @@ function User.GetByUsername(username)
 	return makeusermt(user)
 end
 
-function User.New()
+function user_model.new()
     local user = {
         not_in_db = true,
         id = uuid.generate_random()(10),
     }
-    setmetatable(user, UserMT)
+    setmetatable(user, user_mt)
     return user
 end
 
-function User.CalculateUsedBytes(user)
+function user_model.calculate_used_bytes(user)
     if user.id then
         user = user.id
     end
@@ -76,7 +76,7 @@ function User.CalculateUsedBytes(user)
 	return res[1].usedbytes or 0
 end
 
-function UserMT:SetEMail(email)
+function user_mt:set_email(email)
 	if not ngx.re.match(email, "^[a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\\.[a-zA-Z]{2,}$", "o") then
 		return consts.VALIDATION_STATE_INVALID
 	end
@@ -94,7 +94,7 @@ function UserMT:SetEMail(email)
     return consts.VALIDATION_STATE_OK
 end
 
-function UserMT:SetUsername(username)
+function user_mt:set_username(username)
 	if not ngx.re.match(username, "^[a-zA-Z0-9 .,;_-]+$", "o") then
 		return consts.VALIDATION_STATE_INVALID
 	end
@@ -109,13 +109,13 @@ function UserMT:SetUsername(username)
     return consts.VALIDATION_STATE_OK
 end
 
-function UserMT:SetPassword(password)
+function user_mt:set_password(password)
     self.password = argon2.hash_encoded(password, random.string(32))
 end
 
-function UserMT:CheckPassword(password)
-	local authOk
-	local authNeedsUpdate = false
+function user_mt:check_password(password)
+	local auth_ok
+	local auth_needs_update = false
 	if self.password:sub(1, 13) == "$fcvhmacsha1$" then
 		local pw = self.password:sub(14)
 		local saltIdx = pw:find("$", 1, true)
@@ -125,41 +125,41 @@ function UserMT:CheckPassword(password)
 		pw = ngx.decode_base64(pw)
 		salt = ngx.decode_base64(salt)
 
-		authOk = ngx.hmac_sha1(salt, password) == pw
-		authNeedsUpdate = true
+		auth_ok = ngx.hmac_sha1(salt, password) == pw
+		auth_needs_update = true
 	else
-		authOk = argon2.verify(self.password, password)
+		auth_ok = argon2.verify(self.password, password)
 	end
-	if authOk and authNeedsUpdate then
-        self:SetPassword(password)
-        self:Save()
+	if auth_ok and auth_needs_update then
+        self:set_password(password)
+        self:save()
 	end
-	return authOk
+	return auth_ok
 end
 
-function UserMT:CalculateUsedBytes()
-    return User.CalculateUsedBytes(self)
+function user_mt:calculate_used_bytes()
+    return user_model.calculate_used_bytes(self)
 end
 
-function UserMT:GetPrivate()
+function user_mt:get_private()
     self.password = nil
     self.loginkey = nil
-    self.usedbytes = self:CalculateUsedBytes()
+    self.usedbytes = self:calculate_used_bytes()
     return self
 end
 
-function UserMT:GetPublic()
+function user_mt:get_public()
     return {
         id = self.id,
         username = self.username,
     }
 end
 
-function UserMT:ComputeVirtuals()
+function user_mt:compute_virtuals()
 	self.totalbytes = STORAGE_BASE + self.bonusbytes
 end
 
-function UserMT:Save()
+function user_mt:save()
     local res
     if self.not_in_db then
         res = database.get_shared():query_safe_single(
@@ -211,7 +211,7 @@ function UserMT:Save()
     end
 end
 
-function UserMT:MakeNewLoginKey()
+function user_mt:make_new_login_key()
     self.loginkey = random.string(64)
     self.kick_user = true
     if ngx.ctx.user and self.id == ngx.ctx.user.id then
@@ -220,10 +220,10 @@ function UserMT:MakeNewLoginKey()
     end
 end
 
-function UserMT:MakeNewAPIKey()
+function user_mt:make_new_api_key()
     self.apikey = random.string(64)
 end
 
-UserMT.__index = UserMT
+user_mt.__index = user_mt
 
-return User
+return user_model

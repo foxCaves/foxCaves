@@ -1,12 +1,12 @@
 local utils = require("foxcaves.utils")
-local File = require("foxcaves.models.file")
+local file_model = require("foxcaves.models.file")
 local ngx = ngx
 
 local function send_file(disposition_type, route_vars)
-	local file = File.GetByID(route_vars.id)
+	local file = file_model.get_by_id(route_vars.id)
 
 	if (not file) or file.extension:sub(2):lower() ~= route_vars.extension:lower() then
-		return utils.api_error("File not found", 404)
+		return utils.api_error("file_model not found", 404)
 	end
 
 	ngx.header["Content-Dispotition"] = disposition_type .. "; filename=" .. file.name

@@ -1,6 +1,6 @@
 local utils = require("foxcaves.utils")
 local consts = require("foxcaves.consts")
-local User = require("foxcaves.models.user")
+local user_model = require("foxcaves.models.user")
 
 R.register_route("/api/v1/users", "POST", R.make_route_opts_anon(), function()
     local args = utils.get_post_args()
@@ -22,31 +22,31 @@ R.register_route("/api/v1/users", "POST", R.make_route_opts_anon(), function()
         return utils.api_error("password required")
     end
 
-    local user = User.New()
+    local user = user_model.new()
     user.active = 0
     user.bonusbytes = 0
 
-    local usernamecheck = user:SetUsername(username)
+    local usernamecheck = user:set_username(username)
     if usernamecheck == consts.VALIDATION_STATE_INVALID then
         return utils.api_error("username invalid")
     elseif usernamecheck == consts.VALIDATION_STATE_TAKEN then
         return utils.api_error("username taken")
     end
 
-    local emailcheck = user:SetEMail(email)
+    local emailcheck = user:set_email(email)
     if emailcheck == consts.VALIDATION_STATE_INVALID then
         return utils.api_error("email invalid")
     elseif emailcheck == consts.VALIDATION_STATE_TAKEN then
         return utils.api_error("email taken")
     end
 
-    user:SetPassword(password)
-    user:MakeNewAPIKey()
-    user:MakeNewLoginKey()
+    user:set_password(password)
+    user:make_new_api_key()
+    user:make_new_login_key()
 
-    user:Save()
+    user:save()
 
-    user:ComputeVirtuals()
+    user:compute_virtuals()
 
-    return user:GetPrivate()
+    return user:get_private()
 end)

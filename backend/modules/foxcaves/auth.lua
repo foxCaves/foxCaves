@@ -5,7 +5,7 @@ local cookies = require("foxcaves.cookies")
 local redis = require("foxcaves.redis")
 local random = require("foxcaves.random")
 local consts = require("foxcaves.consts")
-local User = require("foxcaves.models.user")
+local user_model = require("foxcaves.models.user")
 
 local ngx = ngx
 
@@ -15,7 +15,7 @@ require("foxcaves.module_helper").setmodenv()
 local SESSION_EXPIRE_DELAY = 7200
 
 function M.LOGIN_METHOD_PASSWORD(userdata, password)
-	return userdata:CheckPassword(password)
+	return userdata:check_password(password)
 end
 function M.LOGIN_METHOD_APIKEY(userdata, apikey)
 	return userdata.apikey == apikey
@@ -35,9 +35,9 @@ function M.login(username_or_id, credential, options)
 
 	local user
 	if login_with_id then
-		user = User.GetByID(username_or_id)
+		user = user_model.get_by_id(username_or_id)
 	else
-		user = User.GetByUsername(username_or_id)
+		user = user_model.get_by_username(username_or_id)
 	end
 
 	if not user then

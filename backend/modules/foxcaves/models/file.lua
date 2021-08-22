@@ -4,7 +4,7 @@ local utils = require("foxcaves.utils")
 local database = require("foxcaves.database")
 local events = require("foxcaves.events")
 local random = require("foxcaves.random")
-local User = require("foxcaves.models.user")
+local user_model = require("foxcaves.models.user")
 local url_config = require("foxcaves.config").urls
 local ROOT = require("foxcaves.consts").ROOT
 local exec = require("foxcaves.exec")
@@ -15,20 +15,20 @@ local ngx = ngx
 local next = next
 local setmetatable = setmetatable
 
-local FileMT = {}
+local file_mt = {}
 
-local File = {
-    Type = {
-        Other = 0,
-        Image = 1,
-        Text = 2,
-        Video = 3,
-        Audio = 4,
-        Iframe = 5,
+local file_model = {
+    type = {
+        other = 0,
+        image = 1,
+        text = 2,
+        video = 3,
+        audio = 4,
+        iframe = 5,
     },
-    Paths = {
-        Storage = path.abs(ROOT .. "/storage/"),
-        Temp = path.abs(ROOT .. "/tmp/"),
+    paths = {
+        storage = path.abs(ROOT .. "/storage/"),
+        temp = path.abs(ROOT .. "/tmp/"),
     }
 }
 
@@ -84,9 +84,9 @@ local mimeHandlers = {
             "+repage", "-format", "png", thumbnail
         )
         if not lfs.attributes(thumbnail, "size") then
-            return File.Type.Image, nil
+            return file_model.type.image, nil
         end
-        return File.Type.Image, thumbext
+        return file_model.type.image, thumbext
     end,
 
     text = function(src, dest)
@@ -106,22 +106,22 @@ local mimeHandlers = {
         fh:write(content)
         fh:close()
 
-        return File.Type.Text, ".txt"
+        return file_model.type.text, ".txt"
     end,
 
     video = function()
-        return File.Type.Video, nil
+        return file_model.type.video, nil
     end,
 
     audio = function()
-        return File.Type.Audio, nil
+        return file_model.type.audio, nil
     end,
 
     application = function(_, _, suffix)
         if suffix == "pdf" then
-            return File.Type.Iframe, nil
+            return file_model.type.iframe, nil
         end
-        return File.Type.Other, nil
+        return file_model.type.other, nil
     end
 }
 
@@ -129,18 +129,18 @@ local function file_move(src, dst)
     exec.cmd("mv", src, dst)
 end
 
-local function makefilemt(file)
+local function makefile_mt(file)
     file.not_in_db = nil
-    setmetatable(file, FileMT)
-    file:ComputeVirtuals()
+    setmetatable(file, file_mt)
+    file:compute_virtuals()
     return file
 end
 
 local function file_manualdelete(file, isdir)
 	if isdir then
-		lfs.rmdir(File.Paths.Storage .. file)
+		lfs.rmdir(file_model.paths.storage .. file)
 	else
-		os.remove(File.Paths.Storage .. file)
+		os.remove(file_model.paths.storage .. file)
 	end
 end
 
@@ -154,19 +154,19 @@ end
 
 local file_select = 'id, name, "user", extension, type, size, thumbnail, ' .. database.TIME_COLUMNS
 
-function File.GetByUser(user)
+function file_model.get_by_user(user)
     if user.id then
         user = user.id
     end
 
     local files = database.get_shared():query_safe('SELECT ' .. file_select .. ' FROM files WHERE "user" = %s', user)
     for k,v in next, files do
-        files[k] = makefilemt(v)
+        files[k] = makefile_mt(v)
     end
     return files
 end
 
-function File.GetByID(id)
+function file_model.get_by_id(id)
 	if not id then
 		return nil
 	end
@@ -177,23 +177,23 @@ function File.GetByID(id)
 		return nil
 	end
 
-	return makefilemt(file)
+	return makefile_mt(file)
 end
 
-function File.New()
+function file_model.new()
     local file = {
         not_in_db = true,
         id = random.string(10),
     }
-    setmetatable(file, FileMT)
+    setmetatable(file, file_mt)
     return file
 end
 
-function FileMT:ComputeVirtuals()
+function file_mt:compute_virtuals()
     if self.thumbnail and self.thumbnail ~= "" then
 		self.thumbnail_url = url_config.short .. "/thumbs/" .. self.id .. self.thumbnail
 	end
-	if self.type == File.Type.Image and self.thumbnail_url then
+	if self.type == file_model.type.image and self.thumbnail_url then
 		self.thumbnail_image = self.thumbnail_url
 	else
 		self.thumbnail_image = url_config.main .. "/static/img/thumbs/ext_" .. self.extension .. ".png"
@@ -205,7 +205,7 @@ function FileMT:ComputeVirtuals()
 	self.mimetype = mimetypes[self.extension] or "application/octet-stream"
 end
 
-function FileMT:Delete()
+function file_mt:delete()
     file_deletestorage(self)
 
 	database.get_shared():query_safe('DELETE FROM files WHERE id = %s', self.id)
@@ -216,15 +216,15 @@ function FileMT:Delete()
     }, self.user)
 end
 
-function FileMT:MakeLocalPath()
-    return File.Paths.Storage .. self.id .. "/file" .. self.extension
+function file_mt:make_local_path()
+    return file_model.paths.storage .. self.id .. "/file" .. self.extension
 end
 
-function FileMT:SetOwner(user)
+function file_mt:set_owner(user)
     self.user = user.id or user
 end
 
-function FileMT:SetName(name)
+function file_mt:set_name(name)
 	local nameregex = ngx.re.match(name, "^([^<>\r\n\t]*?)(\\.[a-zA-Z0-9]+)?$", "o")
 
     if (not nameregex) or (not nameregex[1]) then
@@ -240,31 +240,31 @@ function FileMT:SetName(name)
     self.name = name
     self.extension = newextension
 
-    self:ComputeVirtuals()
+    self:compute_virtuals()
 
     return true
 end
 
-function FileMT:MoveUploadData(src)
+function file_mt:move_upload_data(src)
     self.size = lfs.attributes(src, "size")
 
-    local thumbDest = File.Paths.Temp .. "thumb_" .. self.id
+    local thumbDest = file_model.paths.temp .. "thumb_" .. self.id
 
 	local prefix, suffix = self.mimetype:match("([a-z]+)/([a-z]+)")
 	self.type, self.thumbnail = mimeHandlers[prefix](src, thumbDest, suffix)
 
-	lfs.mkdir(File.Paths.Storage .. self.id)
+	lfs.mkdir(file_model.paths.storage .. self.id)
 
-	file_move(src, File.Paths.Storage .. self.id .. "/file" .. self.extension)
+	file_move(src, file_model.paths.storage .. self.id .. "/file" .. self.extension)
 
 	if self.thumbnail and self.thumbnail ~= "" then
-		file_move(thumbDest .. self.thumbnail, File.Paths.Storage .. self.id .. "/thumb" .. self.thumbnail)
+		file_move(thumbDest .. self.thumbnail, file_model.paths.storage .. self.id .. "/thumb" .. self.thumbnail)
 	end
 
-    self:ComputeVirtuals()
+    self:compute_virtuals()
 end
 
-function FileMT:Save()
+function file_mt:save()
     local res, primary_push_action
     if self.not_in_db then
         res = database.get_shared():query_safe_single(
@@ -295,10 +295,10 @@ function FileMT:Save()
 	}, self.user)
 	events.push_raw({
 		action = "usedbytes",
-		usedbytes = User.CalculateUsedBytes(self.user),
+		usedbytes = user_model.calculate_used_bytes(self.user),
 	}, self.user)
 end
 
-FileMT.__index = FileMT
+file_mt.__index = file_mt
 
-return File
+return file_model
