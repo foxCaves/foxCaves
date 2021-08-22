@@ -25,7 +25,7 @@ R.register_route("/api/v1/users/emails/request", "POST", R.make_route_opts_anon(
 
     local user = user_model.get_by_username(username)
     if (not user) or (user.email:lower() ~= email:lower()) then
-        return utils.api_error("user_model not found", 404)
+        return utils.api_error("User not found", 404)
     end
 
     local emailid = random.string(32)

@@ -8,7 +8,7 @@ R.register_route("/cdn/link/{id}", "GET", R.make_route_opts_anon(), function(rou
     ngx.header["Content-Type"] = "text/plain"
 
     if not link then
-        return utils.api_error("link_model not found", 404)
+        return utils.api_error("Link not found", 404)
     end
 
     ngx.status = 302
