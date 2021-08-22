@@ -33,6 +33,16 @@ local file_model = {
     thumbnails = {},
 }
 
+local function scan_thumbnails()
+    local dir = path.abs(ROOT .. "/html/static/img/thumbs/")
+    for file in lfs.dir(dir) do
+        if file:sub(1, 4) == "ext_" then
+            file_model.thumbnails[file:sub(5, file:len() - 4)] = file
+        end
+    end
+end
+scan_thumbnails()
+
 require("foxcaves.module_helper").setmodenv()
 
 local mimetypes = {
