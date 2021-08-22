@@ -18,7 +18,6 @@ R.register_route("/cdn/sendfile/{action}/{id}/{extension}", "GET", R.make_route_
 	if route_vars.action == "f" then
 		send_file("inline", route_vars)
 	else
-		ngx.header["Content-Type"] = "application/octet-stream"
 		send_file("attachment", route_vars)
 	end
 end)
