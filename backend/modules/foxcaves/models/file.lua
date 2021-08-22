@@ -216,7 +216,7 @@ function FileMT:Delete()
     }, self.user)
 end
 
-function FileMT:Download()
+function FileMT:MakeLocalPath()
     return File.Paths.Storage .. self.id .. "/file" .. self.extension
 end
 
