@@ -16,7 +16,7 @@ RUN npm run build
 
 FROM openresty/openresty:alpine-fat
 
-RUN apk update && apk add redis s6 imagemagick git argon2-libs argon2-dev argon2 postgresql runuser libuuid
+RUN apk update && apk add redis s6 imagemagick git argon2-libs argon2-dev argon2 postgresql runuser libuuid rsync
 RUN mkdir -p /usr/local/share/lua/5.1
 RUN /usr/local/openresty/bin/opm get openresty/lua-resty-redis openresty/lua-resty-websocket thibaultcha/lua-argon2-ffi
 RUN /usr/local/openresty/luajit/bin/luarocks install luafilesystem
@@ -34,7 +34,13 @@ COPY etc/nginx /etc/nginx/
 COPY etc/nginx/main.conf /usr/local/openresty/nginx/conf/custom.conf
 COPY etc/s6 /etc/s6
 
-COPY backend /var/www/foxcaves/lua
+COPY backend /var/www/foxcaves/lua_src
+RUN mkdir /var/www/foxcaves/lua
+
+WORKDIR /var/www/foxcaves/lua_src
+RUN rsync -r --exclude=*.lua . /var/www/foxcaves/lua/
+RUN find . -type f -name '*.lua' -print -exec luajit -b '{}' '../lua/{}' \;
+WORKDIR /
 
 COPY --from=builder /opt/stage/dist /var/www/foxcaves/html
 COPY --from=builder /opt/stage/.revision /var/www/foxcaves/.revision
