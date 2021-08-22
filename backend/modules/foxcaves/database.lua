@@ -5,6 +5,7 @@ local next = next
 local error = error
 local ngx = ngx
 local unpack = unpack
+local setmetatable = setmetatable
 
 local M = {}
 require("foxcaves.module_helper").setmodenv()
