@@ -1,8 +1,22 @@
 local io = io
 local table = table
+local next = next
+local unpack = unpack
 
 local M = {}
 require("foxcaves.module_helper").setmodenv()
+
+function M.chars(len)
+	local randomstream = io.open("/dev/urandom", "rb")
+	local ret = randomstream:read(len)
+	randomstream:close()
+	return ret
+end
+
+function M.bytes(len)
+	local str = M.chars(len)
+	return unpack(str:byte(1, len))
+end
 
 local chars = {
 	"A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z",
@@ -11,20 +25,11 @@ local chars = {
 }
 local charcount = #chars
 function M.string(len)
-	local randomstream = io.open("/dev/urandom", "rb")
-	local ret = {}
-	for _ = 1, len do
-		table.insert(ret, chars[(randomstream:read(1):byte() % charcount) + 1])
+	local ret = M.bytes(len)
+	for k, v in next, ret do
+		ret[k] = chars[(v % charcount) + 1]
 	end
-	randomstream:close()
 	return table.concat(ret)
-end
-
-function M.bytes(len)
-	local randomstream = io.open("/dev/urandom", "rb")
-	local ret = randomstream:read(len)
-	randomstream:close()
-	return ret
 end
 
 return M

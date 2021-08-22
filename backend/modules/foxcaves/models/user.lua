@@ -110,7 +110,7 @@ function user_mt:set_username(username)
 end
 
 function user_mt:set_password(password)
-    self.password = argon2.hash_encoded(password, random.bytes(32))
+    self.password = argon2.hash_encoded(password, random.chars(32))
 end
 
 function user_mt:check_password(password)
