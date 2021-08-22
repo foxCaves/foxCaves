@@ -4,7 +4,7 @@ local user_model = require("foxcaves.models.user")
 local ngx = ngx
 
 R.register_route("/api/v1/users/{id}", "PATCH", R.make_route_opts(), function(route_vars)
-    local user = user_model.get_by_id(utils.convert_user_id(route_vars.id))
+    local user = user_model.get_by_id(route_vars.id)
     if not user then
         return utils.api_error("User not found", 404)
     end
