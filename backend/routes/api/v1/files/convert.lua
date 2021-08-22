@@ -3,7 +3,6 @@ local utils = require("foxcaves.utils")
 local File = require("foxcaves.models.file")
 local exec = require("foxcaves.exec")
 local ngx = ngx
-local io = io
 local os = os
 
 R.register_route("/api/v1/files/{id}/convert", "POST", R.make_route_opts(), function(route_vars)
@@ -27,19 +26,15 @@ R.register_route("/api/v1/files/{id}/convert", "POST", R.make_route_opts(), func
 	end
 	newextension = "." .. newextension
 
-	local data = file:Download()
+	local srcfile = file:Download()
 
 	local newfilename = file.name
 	newfilename = newfilename:sub(1, newfilename:len() - file.extension:len()) .. newextension
 
-	local tmptmpfile = File.Paths.Temp .. "file_original_" .. file.id .. file.extension
 	local tmpfile =  File.Paths.Temp .. "file_new_" .. file.id .. newextension
 
-	local fh = io.open(tmptmpfile, "w")
-	fh:write(data)
-	fh:close()
-	exec.cmd("convert", tmptmpfile, "-format", newextension:sub(2), tmpfile)
-	os.remove(tmptmpfile)
+	exec.cmd("convert", srcfile, "-format", newextension:sub(2), tmpfile)
+	os.remove(srcfile)
 
 	local newsize = lfs.attributes(tmpfile, "size")
 	if not newsize then

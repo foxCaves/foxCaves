@@ -125,14 +125,6 @@ local mimeHandlers = {
     end
 }
 
-local function file_fullread(filename)
-	local fh = io.open(filename, "r")
-	if not fh then return "" end
-	local cont = fh:read("*all")
-	fh:close()
-	return cont
-end
-
 local function file_move(src, dst)
     exec.cmd("mv", src, dst)
 end
@@ -225,7 +217,7 @@ function FileMT:Delete()
 end
 
 function FileMT:Download()
-    return file_fullread(File.Paths.Storage .. self.id .. "/file" .. self.extension)
+    return File.Paths.Storage .. self.id .. "/file" .. self.extension
 end
 
 function FileMT:SetOwner(user)
