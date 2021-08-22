@@ -19,12 +19,12 @@ RUN npm run build
 FROM openresty/openresty:alpine-fat AS backend_builder
 RUN apk update && apk add rsync
 
-COPY backend /var/www/foxcaves/lua_src
-RUN mkdir -p /var/www/foxcaves/lua
+COPY backend /opt/stage/src
+RUN mkdir -p /opt/stage/dist
 
-WORKDIR /var/www/foxcaves/lua_src
-RUN rsync -r --exclude=*.lua . /var/www/foxcaves/lua/
-RUN find . -type f -name '*.lua' -print -exec luajit -b '{}' '../lua/{}' \;
+WORKDIR /opt/stage/src
+RUN rsync -r --exclude=*.lua . /opt/stage/dist
+RUN find . -type f -name '*.lua' -print -exec luajit -b '{}' '../dist/{}' \;
 
 
 
@@ -48,7 +48,7 @@ COPY etc/nginx /etc/nginx/
 COPY etc/nginx/main.conf /usr/local/openresty/nginx/conf/custom.conf
 COPY etc/s6 /etc/s6
 
-COPY --from=backend_builder /var/www/foxcaves/lua /var/www/foxcaves/lua
+COPY --from=backend_builder /opt/stage/dist /var/www/foxcaves/lua
 COPY --from=frontend_builder /opt/stage/dist /var/www/foxcaves/html
 COPY --from=frontend_builder /opt/stage/.revision /var/www/foxcaves/.revision
 
