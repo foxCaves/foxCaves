@@ -34,9 +34,7 @@ function db_meta:query_single(query, ...)
 	return res[1]
 end
 
-local db_mt = {
-	__index = db_meta,
-}
+db_meta.__index = db_meta
 
 function M.make()
 	local database = pgmoon.new(config)
@@ -49,7 +47,7 @@ function M.make()
 		database:keepalive(config.keepalive_timeout or 10000, config.keepalive_count or 10)
 	end)
 
-	return setmetatable({ db = database }, db_mt)
+	return setmetatable({ db = database }, db_meta)
 end
 
 function M.get_shared()
