@@ -105,7 +105,7 @@ function fetchCurrentUserDone() {
 }
 
 async function doLogout() {
-	await fetch('/api/v1/users/self/logout', { method: 'POST' });
+	await fetch('/api/v1/users/sessions/logout', { method: 'POST' });
 	document.location.href = '/';
 }
 

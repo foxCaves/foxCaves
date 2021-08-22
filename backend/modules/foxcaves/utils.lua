@@ -61,4 +61,11 @@ function M.is_falsy_or_null(v)
 	return (not v) or v == ngx.null
 end
 
+function M.convert_user_id(id)
+	if id == "self" then
+		return ngx.ctx.user and ngx.ctx.user.id
+	end
+	return id
+end
+
 return M
