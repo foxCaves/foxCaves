@@ -22,15 +22,18 @@ function db_meta:query(query, ...)
 		args[i] = self.db:escape_literal(v)
 	end
 	query = query:format(unpack(args))
-	local res, qerr = self.db:query(query)
-	if not res then
-		error(qerr)
+	local res, err = self.db:query(query)
+	if err then
+		error("Postgres query error: " .. err)
 	end
 	return res
 end
 
 function db_meta:query_single(query, ...)
 	local res = self:query(query, ...)
+	if not res then
+		return nil
+	end
 	return res[1]
 end
 
@@ -38,9 +41,9 @@ db_meta.__index = db_meta
 
 function M.make()
 	local database = pgmoon.new(config)
-	local isok, err = database:connect()
-	if not isok then
-		error(err)
+	local _, err = database:connect()
+	if err then
+		error("Error connecting to Postgres: " .. err)
 	end
 
 	utils.register_shutdown(function()
