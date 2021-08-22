@@ -15,7 +15,7 @@ end
 
 function M.bytes(len)
 	local str = M.chars(len)
-	return unpack(str:byte(1, len))
+	return {str:byte(1, len)}
 end
 
 local chars = {
