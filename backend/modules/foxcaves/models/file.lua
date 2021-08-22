@@ -29,7 +29,8 @@ local file_model = {
     paths = {
         storage = path.abs(ROOT .. "/storage/"),
         temp = path.abs(ROOT .. "/tmp/"),
-    }
+    },
+    thumbnails = {},
 }
 
 require("foxcaves.module_helper").setmodenv()
