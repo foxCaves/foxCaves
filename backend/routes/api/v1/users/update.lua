@@ -14,7 +14,7 @@ R.register_route("/api/v1/users/{id}", "PATCH", R.make_route_opts(), function(ro
 
     local args = utils.get_post_args()
 
-    if not user:check_password(args.current_password) then
+    if not ngx.ctx.user:check_password(args.current_password) then
         return utils.api_error("current_password invalid", 403)
     end
 
