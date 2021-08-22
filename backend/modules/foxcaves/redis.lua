@@ -8,29 +8,29 @@ local M = {}
 require("foxcaves.module_helper").setmodenv()
 
 function M.make(close_on_shutdown)
-	local database, err = resty_redis:new()
-	if not database then
-		error("Error initializing DB: " .. err)
+	local redis, err = resty_redis:new()
+	if not redis then
+		error("Error initializing Redis: " .. err)
 	end
-	database:set_timeout(60000)
+	redis:set_timeout(60000)
 
 	local ok
-	ok, err = database:connect(config.host, config.port)
+	ok, err = redis:connect(config.host, config.port)
 	if not ok then
-		error("Error connecting to DB: " .. err)
+		error("Error connecting to Redis: " .. err)
 	end
 
 	if close_on_shutdown then
 		utils.register_shutdown(function()
-			database:close()
+			redis:close()
 		end)
 	else
 		utils.register_shutdown(function()
-			database:set_keepalive(config.keepalive_timeout or 10000, config.keepalive_count or 10)
+			redis:set_keepalive(config.keepalive_timeout or 10000, config.keepalive_count or 10)
 		end)
 	end
 
-	return database
+	return redis
 end
 
 function M.get_shared()
