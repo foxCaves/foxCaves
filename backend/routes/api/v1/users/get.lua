@@ -1,5 +1,6 @@
 local utils = require("foxcaves.utils")
 local user_model = require("foxcaves.models.user")
+local ngx = ngx
 
 R.register_route("/api/v1/users/{id}", "GET", R.make_route_opts({ allow_guest = true }), function(route_vars)
     local user = user_model.get_by_id(utils.convert_user_id(route_vars.id))
