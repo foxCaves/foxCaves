@@ -1,0 +1,2 @@
+Contact: mailto:security@foxcav.es
+Preferred-Languages: en, de
