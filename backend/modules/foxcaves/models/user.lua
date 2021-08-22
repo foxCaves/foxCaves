@@ -70,7 +70,7 @@ end
 function user_model.new()
     local user = {
         not_in_db = true,
-        id = uuid.generate_random()(10),
+        id = uuid.generate_random(),
     }
     setmetatable(user, user_mt)
     return user
