@@ -14,6 +14,25 @@ config.socket_type = "nginx"
 M.TIME_COLUMNS = 'to_json(updated_at at time zone \'utc\') as updated_at, ' ..
                  'to_json(created_at at time zone \'utc\') as created_at'
 
+local db_meta = {}
+function db_meta:query(query, ...)
+	local args = {...}
+	for i,v in next, args do
+		args[i] = self.db:escape_literal(v)
+	end
+	query = query:format(unpack(args))
+	local res, qerr = self.db:query(query)
+	if not res then
+		error(qerr)
+	end
+	return res
+end
+
+function db_meta:query_single(query, ...)
+	local res = self:query(query, ...)
+	return res[1]
+end
+
 function M.make()
 	local database = pgmoon.new(config)
 	local isok, err = database:connect()
@@ -21,29 +40,11 @@ function M.make()
 		error(err)
 	end
 
-	function database:query_safe(query, ...)
-		local args = {...}
-		for i,v in next, args do
-			args[i] = database:escape_literal(v)
-		end
-		query = query:format(unpack(args))
-		local res, qerr = self:query(query)
-		if not res then
-			error(qerr)
-		end
-		return res
-	end
-
-	function database:query_safe_single(query, ...)
-		local res = self:query_safe(query, ...)
-		return res[1]
-	end
-
 	utils.register_shutdown(function()
 		database:keepalive(config.keepalive_timeout or 10000, config.keepalive_count or 10)
 	end)
 
-	return database
+	return setmetatable({ db = database }, db_meta)
 end
 
 function M.get_shared()

@@ -25,7 +25,7 @@ function link_model.get_by_user(user)
         user = user.id
     end
 
-    local links = database.get_shared():query_safe('SELECT ' .. link_select .. ' FROM links WHERE "user" = %s', user)
+    local links = database.get_shared():query('SELECT ' .. link_select .. ' FROM links WHERE "user" = %s', user)
     for k,v in next, links do
         links[k] = makelinkmt(v)
     end
@@ -37,7 +37,7 @@ function link_model.get_by_id(id)
 		return nil
 	end
 
-	local link = database.get_shared():query_safe_single('SELECT ' .. link_select .. ' FROM links WHERE id = %s', id)
+	local link = database.get_shared():query_single('SELECT ' .. link_select .. ' FROM links WHERE id = %s', id)
 
 	if not link then
 		return nil
@@ -60,7 +60,7 @@ function link_mt:compute_virtuals()
 end
 
 function link_mt:delete()
-    database.get_shared():query_safe('DELETE FROM links WHERE id = %s', self.id)
+    database.get_shared():query('DELETE FROM links WHERE id = %s', self.id)
 
 	events.push_raw({
         action = 'link:delete',
@@ -81,14 +81,14 @@ end
 function link_mt:save()
     local res, primary_push_action
     if self.not_in_db then
-        res = database.get_shared():query_safe_single(
+        res = database.get_shared():query_single(
             'INSERT INTO links (id, "user", url) VALUES (%s, %s, %s) RETURNING ' .. database.TIME_COLUMNS,
             self.id, self.user, self.url
         )
         primary_push_action = 'create'
         self.not_in_db = nil
     else
-        res = database.get_shared():query_safe_single(
+        res = database.get_shared():query_single(
             'UPDATE links \
                 SET "user" = %s, url = %s, \
                 updated_at = (now() at time zone \'utc\') \

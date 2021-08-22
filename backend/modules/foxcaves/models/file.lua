@@ -170,7 +170,7 @@ function file_model.get_by_user(user)
         user = user.id
     end
 
-    local files = database.get_shared():query_safe('SELECT ' .. file_select .. ' FROM files WHERE "user" = %s', user)
+    local files = database.get_shared():query('SELECT ' .. file_select .. ' FROM files WHERE "user" = %s', user)
     for k,v in next, files do
         files[k] = makefile_mt(v)
     end
@@ -182,7 +182,7 @@ function file_model.get_by_id(id)
 		return nil
 	end
 
-	local file = database.get_shared():query_safe_single('SELECT ' .. file_select .. ' FROM files WHERE id = %s', id)
+	local file = database.get_shared():query_single('SELECT ' .. file_select .. ' FROM files WHERE id = %s', id)
 
 	if not file then
 		return nil
@@ -227,7 +227,7 @@ end
 function file_mt:delete()
     file_deletestorage(self)
 
-	database.get_shared():query_safe('DELETE FROM files WHERE id = %s', self.id)
+	database.get_shared():query('DELETE FROM files WHERE id = %s', self.id)
 
 	events.push_raw({
         action = 'file:delete',
@@ -287,7 +287,7 @@ end
 function file_mt:save()
     local res, primary_push_action
     if self.not_in_db then
-        res = database.get_shared():query_safe_single(
+        res = database.get_shared():query_single(
             'INSERT INTO files \
                 (id, name, "user", extension, type, size, thumbnail_extension) VALUES (%s, %s, %s, %s, %s, %s, %s) \
                 RETURNING ' .. database.TIME_COLUMNS,
@@ -296,7 +296,7 @@ function file_mt:save()
         primary_push_action = 'create'
         self.not_in_db = nil
     else
-        res = database.get_shared():query_safe_single(
+        res = database.get_shared():query_single(
             'UPDATE files \
                 SET name = %s, "user" = %s, extension = %s, type = %s, size = %s, thumbnail_extension = %s, \
                 updated_at = (now() at time zone \'utc\') \

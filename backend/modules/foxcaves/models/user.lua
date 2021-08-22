@@ -37,7 +37,7 @@ function user_model.get_by_id(id)
         return nil
     end
 
-	local user = database.get_shared():query_safe_single('SELECT ' .. user_select .. ' FROM users WHERE id = %s', id)
+	local user = database.get_shared():query_single('SELECT ' .. user_select .. ' FROM users WHERE id = %s', id)
 
 	if not user then
 		return nil
@@ -47,7 +47,7 @@ function user_model.get_by_id(id)
 end
 
 function user_model.get_by_username(username)
-	local user = database.get_shared():query_safe_single(
+	local user = database.get_shared():query_single(
         'SELECT ' .. user_select .. ' FROM users WHERE lower(username) = %s',
         username:lower()
     )
@@ -72,7 +72,7 @@ function user_model.calculate_used_bytes(user)
     if user.id then
         user = user.id
     end
-    local res = database.get_shared():query_safe('SELECT SUM(size) AS usedbytes FROM files WHERE "user" = %s', user)
+    local res = database.get_shared():query('SELECT SUM(size) AS usedbytes FROM files WHERE "user" = %s', user)
 	return res[1].usedbytes or 0
 end
 
@@ -82,7 +82,7 @@ function user_mt:set_email(email)
 	end
 
     if (not self.email) or email:lower() ~= self.email:lower() then
-        local res = database.get_shared():query_safe('SELECT id FROM users WHERE lower(email) = %s', email:lower())
+        local res = database.get_shared():query('SELECT id FROM users WHERE lower(email) = %s', email:lower())
         if res[1] then
             return consts.VALIDATION_STATE_TAKEN
         end
@@ -99,7 +99,7 @@ function user_mt:set_username(username)
 		return consts.VALIDATION_STATE_INVALID
 	end
 
-	local res = database.get_shared():query_safe('SELECT id FROM users WHERE lower(username) = %s', username:lower())
+	local res = database.get_shared():query('SELECT id FROM users WHERE lower(username) = %s', username:lower())
 	if res[1] then
 		return consts.VALIDATION_STATE_TAKEN
 	end
@@ -162,7 +162,7 @@ end
 function user_mt:save()
     local res
     if self.not_in_db then
-        res = database.get_shared():query_safe_single(
+        res = database.get_shared():query_single(
             'INSERT INTO users \
                 (id, username, email, password, loginkey, apikey, active, bonusbytes) VALUES\
                 (%s, %s, %s, %s, %s, %s, %s, %s) \
@@ -171,7 +171,7 @@ function user_mt:save()
         )
         self.not_in_db = nil
     else
-        res = database.get_shared():query_safe_single(
+        res = database.get_shared():query_single(
             'UPDATE users \
                 SET username = %s, email = %s, password = %s, loginkey = %s, apikey = %s, active = %s, bonusbytes = %s, \
                     updated_at = (now() at time zone \'utc\') \
