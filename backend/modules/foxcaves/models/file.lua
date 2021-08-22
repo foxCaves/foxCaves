@@ -277,7 +277,7 @@ function file_mt:move_upload_data(src)
 	file_move(src, file_model.paths.storage .. self.id .. "/file." .. self.extension)
 
 	if self.thumbnail_extension and self.thumbnail_extension ~= "" then
-		file_move(thumbDest .. self.thumbnail_extension,
+		file_move(thumbDest .. "." .. self.thumbnail_extension,
                     file_model.paths.storage .. self.id .. "/thumb." .. self.thumbnail_extension)
 	end
 
