@@ -1,4 +1,4 @@
-FROM node:current AS builder
+FROM node:current AS frontend_builder
 
 RUN apt update && apt -y install luajit luarocks
 RUN luarocks install luafilesystem
@@ -14,9 +14,23 @@ RUN echo $GIT_REVISION > /opt/stage/.revision
 
 RUN npm run build
 
+
+
+FROM openresty/openresty:alpine-fat AS backend_builder
+RUN apk update && apk add rsync
+
+COPY backend /var/www/foxcaves/lua_src
+RUN mkdir -p /var/www/foxcaves/lua
+
+WORKDIR /var/www/foxcaves/lua_src
+RUN rsync -r --exclude=*.lua . /var/www/foxcaves/lua/
+RUN find . -type f -name '*.lua' -print -exec luajit -b '{}' '../lua/{}' \;
+
+
+
 FROM openresty/openresty:alpine-fat
 
-RUN apk update && apk add redis s6 imagemagick git argon2-libs argon2-dev argon2 postgresql runuser libuuid rsync
+RUN apk update && apk add redis s6 imagemagick git argon2-libs argon2-dev argon2 postgresql runuser libuuid
 RUN mkdir -p /usr/local/share/lua/5.1
 RUN /usr/local/openresty/bin/opm get openresty/lua-resty-redis openresty/lua-resty-websocket thibaultcha/lua-argon2-ffi
 RUN /usr/local/openresty/luajit/bin/luarocks install luafilesystem
@@ -34,17 +48,9 @@ COPY etc/nginx /etc/nginx/
 COPY etc/nginx/main.conf /usr/local/openresty/nginx/conf/custom.conf
 COPY etc/s6 /etc/s6
 
-COPY backend /var/www/foxcaves/lua_src
-RUN mkdir /var/www/foxcaves/lua
-
-WORKDIR /var/www/foxcaves/lua_src
-RUN rsync -r --exclude=*.lua . /var/www/foxcaves/lua/
-RUN find . -type f -name '*.lua' -print -exec luajit -b '{}' '../lua/{}' \;
-WORKDIR /
-RUN rm -rf /var/www/foxcaves/lua_src
-
-COPY --from=builder /opt/stage/dist /var/www/foxcaves/html
-COPY --from=builder /opt/stage/.revision /var/www/foxcaves/.revision
+COPY --from=backend_builder /var/www/foxcaves/lua /var/www/foxcaves/lua
+COPY --from=frontend_builder /opt/stage/dist /var/www/foxcaves/html
+COPY --from=frontend_builder /opt/stage/.revision /var/www/foxcaves/.revision
 
 RUN /etc/nginx/cfips.sh
 
