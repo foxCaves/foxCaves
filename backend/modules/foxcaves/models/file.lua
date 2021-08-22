@@ -148,11 +148,12 @@ local function makefile_mt(file)
 end
 
 local function file_deletestorage(file)
-	os.remove(file_model.paths.storage .. file.id .. "/file." .. file.extension)
+    local base = file_model.paths.storage .. file.id
+	os.remove(base .. "/file." .. file.extension)
 	if file.thumbnail_extension and file.thumbnail_extension ~= "" then
-		os.remove(file_model.paths.storage .. file.id .. "/thumb." .. file.thumbnail_extension)
+		os.remove(base .. "/thumb." .. file.thumbnail_extension)
 	end
-	lfs.rmdir(file_model.paths.storage .. file.id)
+	lfs.rmdir(base)
 end
 
 local file_select = 'id, name, "user", extension, type, size, thumbnail_extension, ' .. database.TIME_COLUMNS
