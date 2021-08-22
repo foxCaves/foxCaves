@@ -33,12 +33,12 @@ end
 local user_select = 'id, username, email, password, loginkey, apikey, active, bonusbytes, ' .. database.TIME_COLUMNS
 
 function user_model.get_by_id(id)
-    if ngx.ctx.user and ngx.ctx.user.id == id then
-        return ngx.ctx.user
+    if (not id) or (not uuid.is_valid(id)) then
+        return nil
     end
 
-    if not uuid.is_valid(id) then
-        return nil
+    if ngx.ctx.user and ngx.ctx.user.id == id then
+        return ngx.ctx.user
     end
 
 	local user = database.get_shared():query_single('SELECT ' .. user_select .. ' FROM users WHERE id = %s', id)
