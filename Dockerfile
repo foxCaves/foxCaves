@@ -41,6 +41,7 @@ WORKDIR /var/www/foxcaves/lua_src
 RUN rsync -r --exclude=*.lua . /var/www/foxcaves/lua/
 RUN find . -type f -name '*.lua' -print -exec luajit -b '{}' '../lua/{}' \;
 WORKDIR /
+RUN rm -rf /var/www/foxcaves/lua_src
 
 COPY --from=builder /opt/stage/dist /var/www/foxcaves/html
 COPY --from=builder /opt/stage/.revision /var/www/foxcaves/.revision
