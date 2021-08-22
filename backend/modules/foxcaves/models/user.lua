@@ -232,6 +232,10 @@ function user_mt:make_new_api_key()
     self.apikey = random.string(64)
 end
 
+function user_mt:delete()
+    database.get_shared():query('DELETE FROM users WHERE id = %s', self.id)
+end
+
 user_mt.__index = user_mt
 
 return user_model
