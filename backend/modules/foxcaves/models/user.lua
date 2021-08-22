@@ -51,6 +51,10 @@ function user_model.get_by_id(id)
 end
 
 function user_model.get_by_username(username)
+    if not username then
+        return nil
+    end
+
     if ngx.ctx.user and ngx.ctx.user.username == username then
         return ngx.ctx.user
     end
