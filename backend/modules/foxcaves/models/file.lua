@@ -157,8 +157,8 @@ end
 
 local function file_deletestorage(file)
 	file_manualdelete(file.id .. "/file." .. file.extension)
-	if file.thumbnail and file.thumbnail ~= "" then
-		file_manualdelete(file.id .. "/thumb." .. file.thumbnail)
+	if file.thumbnail_extension and file.thumbnail_extension ~= "" then
+		file_manualdelete(file.id .. "/thumb." .. file.thumbnail_extension)
 	end
 	file_manualdelete(file.id, true)
 end
@@ -209,8 +209,8 @@ function file_model.get_extension_thumbnail(extension)
 end
 
 function file_mt:compute_virtuals()
-    if self.thumbnail and self.thumbnail ~= "" then
-		self.thumbnail_url = url_config.short .. "/thumbs/" .. self.id .. self.thumbnail
+    if self.thumbnail_extension and self.thumbnail_extension ~= "" then
+		self.thumbnail_url = url_config.short .. "/thumbs/" .. self.id .. "." .. self.thumbnail_extension
 	end
 	if self.type == file_model.type.image and self.thumbnail_url then
 		self.thumbnail_image = self.thumbnail_url
@@ -270,14 +270,15 @@ function file_mt:move_upload_data(src)
     local thumbDest = file_model.paths.temp .. "thumb_" .. self.id
 
 	local prefix, suffix = self.mimetype:match("([a-z]+)/([a-z]+)")
-	self.type, self.thumbnail = mimeHandlers[prefix](src, thumbDest, suffix)
+	self.type, self.thumbnail_extension = mimeHandlers[prefix](src, thumbDest, suffix)
 
 	lfs.mkdir(file_model.paths.storage .. self.id)
 
 	file_move(src, file_model.paths.storage .. self.id .. "/file." .. self.extension)
 
-	if self.thumbnail and self.thumbnail ~= "" then
-		file_move(thumbDest .. self.thumbnail, file_model.paths.storage .. self.id .. "/thumb." .. self.thumbnail)
+	if self.thumbnail_extension and self.thumbnail_extension ~= "" then
+		file_move(thumbDest .. self.thumbnail_extension,
+                    file_model.paths.storage .. self.id .. "/thumb." .. self.thumbnail_extension)
 	end
 
     self:compute_virtuals()
@@ -288,20 +289,20 @@ function file_mt:save()
     if self.not_in_db then
         res = database.get_shared():query_safe_single(
             'INSERT INTO files \
-                (id, name, "user", extension, type, size, thumbnail) VALUES (%s, %s, %s, %s, %s, %s, %s) \
+                (id, name, "user", extension, type, size, thumbnail_extension) VALUES (%s, %s, %s, %s, %s, %s, %s) \
                 RETURNING ' .. database.TIME_COLUMNS,
-            self.id, self.name, self.user, self.extension, self.type, self.size, self.thumbnail or ""
+            self.id, self.name, self.user, self.extension, self.type, self.size, self.thumbnail_extension or ""
         )
         primary_push_action = 'create'
         self.not_in_db = nil
     else
         res = database.get_shared():query_safe_single(
             'UPDATE files \
-                SET name = %s, "user" = %s, extension = %s, type = %s, size = %s, thumbnail = %s, \
+                SET name = %s, "user" = %s, extension = %s, type = %s, size = %s, thumbnail_extension = %s, \
                 updated_at = (now() at time zone \'utc\') \
                 WHERE id = %s \
                 RETURNING ' .. database.TIME_COLUMNS,
-            self.name, self.user, self.extension, self.type, self.size, self.thumbnail or "", self.id
+            self.name, self.user, self.extension, self.type, self.size, self.thumbnail_extension or "", self.id
         )
         primary_push_action = 'refresh'
     end

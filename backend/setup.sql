@@ -27,7 +27,7 @@ CREATE TABLE files (
     extension VARCHAR(255),
     type INT,
     size BIGINT,
-    thumbnail VARCHAR(255),
+    thumbnail_extension VARCHAR(255),
     created_at timestamp without time zone DEFAULT (now() at time zone 'utc'),
     updated_at timestamp without time zone DEFAULT (now() at time zone 'utc')
 );
