@@ -1,7 +1,6 @@
 local io = io
 local table = table
 local next = next
-local unpack = unpack
 
 local M = {}
 require("foxcaves.module_helper").setmodenv()
