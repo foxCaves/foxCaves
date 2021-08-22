@@ -23,7 +23,7 @@ function db_meta:query(query, ...)
 	end
 	query = query:format(unpack(args))
 	local res, err = self.db:query(query)
-	if err then
+	if not res then
 		error("Postgres query error: " .. err)
 	end
 	return res
@@ -31,9 +31,6 @@ end
 
 function db_meta:query_single(query, ...)
 	local res = self:query(query, ...)
-	if not res then
-		return nil
-	end
 	return res[1]
 end
 
