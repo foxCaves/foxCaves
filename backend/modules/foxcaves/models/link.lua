@@ -21,6 +21,10 @@ end
 local link_select = 'id, "user", url, ' .. database.TIME_COLUMNS
 
 function link_model.get_by_user(user)
+    if not user then
+        return {}
+    end
+
     if user.id then
         user = user.id
     end

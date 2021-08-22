@@ -166,6 +166,10 @@ end
 local file_select = 'id, name, "user", extension, type, size, thumbnail_extension, ' .. database.TIME_COLUMNS
 
 function file_model.get_by_user(user)
+    if not user then
+        return {}
+    end
+
     if user.id then
         user = user.id
     end
