@@ -163,7 +163,7 @@ local function file_deletestorage(file)
 	file_manualdelete(file.id, true)
 end
 
-local file_select = 'id, name, "user", extension, type, size, thumbnail, ' .. database.TIME_COLUMNS
+local file_select = 'id, name, "user", extension, type, size, thumbnail_extension, ' .. database.TIME_COLUMNS
 
 function file_model.get_by_user(user)
     if user.id then
