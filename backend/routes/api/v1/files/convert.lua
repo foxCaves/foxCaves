@@ -24,16 +24,15 @@ R.register_route("/api/v1/files/{id}/convert", "POST", R.make_route_opts(), func
 	if newextension ~= "jpg" and newextension ~= "png" and newextension ~= "gif" and newextension ~= "bmp" then
 		return utils.api_error("Bad extension for convert")
 	end
-	newextension = "." .. newextension
 
 	local srcfile = file:make_local_path()
 
 	local newfilename = file.name
-	newfilename = newfilename:sub(1, newfilename:len() - file.extension:len()) .. newextension
+	newfilename = newfilename:sub(1, newfilename:len() - file.extension:len()) .. "." .. newextension
 
-	local tmpfile =  file_model.paths.temp .. "file_new_" .. file.id .. newextension
+	local tmpfile =  file_model.paths.temp .. "file_new_" .. file.id .. "." .. newextension
 
-	exec.cmd("convert", srcfile, "-format", newextension:sub(2), tmpfile)
+	exec.cmd("convert", srcfile, "-format", newextension, tmpfile)
 	os.remove(srcfile)
 
 	local newsize = lfs.attributes(tmpfile, "size")

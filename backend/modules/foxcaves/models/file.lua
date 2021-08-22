@@ -35,48 +35,48 @@ local file_model = {
 require("foxcaves.module_helper").setmodenv()
 
 local mimetypes = {
-	[".bmp"] = "image/bmp",
-	[".c"] = "text/plain",
-	[".cpp"] = "text/plain",
-	[".cs"] = "text/plain",
-	[".css"] = "text/css",
-	[".flac"] = "audio/flac",
-	[".gif"] = "image/gif",
-	[".h"] = "text/plain",
-	[".htaccess"] = "text/plain",
-	[".htm"] = "text/html",
-	[".html"] = "text/html",
-	[".java"] = "text/plain",
-	[".jpeg"] = "image/jpeg",
-	[".jpg"] = "image/jpeg",
-	[".js"] = "text/javascript",
-	[".lua"] = "text/plain",
-	[".mp3"] = "audio/mpeg",
-	[".mp4"] = "video/mp4",
-	[".ogg"] = "audio/ogg",
-	[".pdf"] = "application/pdf",
-	[".php"] = "text/plain",
-	[".php3"] = "text/plain",
-	[".php4"] = "text/plain",
-	[".php5"] = "text/plain",
-	[".php6"] = "text/plain",
-	[".phtm"] = "text/plain",
-	[".phtml"] = "text/plain",
-	[".pl"] = "text/plain",
-	[".png"] = "image/png",
-	[".py"] = "text/plain",
-	[".shtm"] = "text/html",
-	[".shtml"] = "text/html",
-	[".txt"] = "text/plain",
-	[".vb"] = "text/plain",
-	[".wav"] = "audio/wav",
-	[".webm"] = "video/webm",
+	["bmp"] = "image/bmp",
+	["c"] = "text/plain",
+	["cpp"] = "text/plain",
+	["cs"] = "text/plain",
+	["css"] = "text/css",
+	["flac"] = "audio/flac",
+	["gif"] = "image/gif",
+	["h"] = "text/plain",
+	["htaccess"] = "text/plain",
+	["htm"] = "text/html",
+	["html"] = "text/html",
+	["java"] = "text/plain",
+	["jpeg"] = "image/jpeg",
+	["jpg"] = "image/jpeg",
+	["js"] = "text/javascript",
+	["lua"] = "text/plain",
+	["mp3"] = "audio/mpeg",
+	["mp4"] = "video/mp4",
+	["ogg"] = "audio/ogg",
+	["pdf"] = "application/pdf",
+	["php"] = "text/plain",
+	["php3"] = "text/plain",
+	["php4"] = "text/plain",
+	["php5"] = "text/plain",
+	["php6"] = "text/plain",
+	["phtm"] = "text/plain",
+	["phtml"] = "text/plain",
+	["pl"] = "text/plain",
+	["png"] = "image/png",
+	["py"] = "text/plain",
+	["shtm"] = "text/html",
+	["shtml"] = "text/html",
+	["txt"] = "text/plain",
+	["vb"] = "text/plain",
+	["wav"] = "audio/wav",
+	["webm"] = "video/webm",
 }
 
 local mimeHandlers = {
     image = function(src, dest)
-        local thumbext = ".png"
-        local thumbnail = dest .. thumbext
+        local thumbext = "png"
+        local thumbnail = dest .. "." .. thumbext
         exec.cmd(
             "convert", src,
             "-thumbnail", "x300", "-resize", "300x<",
@@ -106,7 +106,7 @@ local mimeHandlers = {
         fh:write(content)
         fh:close()
 
-        return file_model.type.text, ".txt"
+        return file_model.type.text, "txt"
     end,
 
     video = function()
@@ -145,9 +145,9 @@ local function file_manualdelete(file, isdir)
 end
 
 local function file_deletestorage(file)
-	file_manualdelete(file.id .. "/file" .. file.extension)
+	file_manualdelete(file.id .. "/file." .. file.extension)
 	if file.thumbnail and file.thumbnail ~= "" then
-		file_manualdelete(file.id .. "/thumb" .. file.thumbnail)
+		file_manualdelete(file.id .. "/thumb." .. file.thumbnail)
 	end
 	file_manualdelete(file.id, true)
 end
@@ -189,19 +189,27 @@ function file_model.new()
     return file
 end
 
+function file_model.get_extension_thumbnail(extension)
+    local thumbnail = file_model.thumbnails[extension]
+    if not thumbnail then
+        thumbnail = "nothumb.png"
+    end
+    return url_config.main .. "/static/img/thumbs/" .. thumbnail
+end
+
 function file_mt:compute_virtuals()
     if self.thumbnail and self.thumbnail ~= "" then
 		self.thumbnail_url = url_config.short .. "/thumbs/" .. self.id .. self.thumbnail
 	end
 	if self.type == file_model.type.image and self.thumbnail_url then
 		self.thumbnail_image = self.thumbnail_url
-	else
-		self.thumbnail_image = url_config.main .. "/static/img/thumbs/ext_" .. self.extension .. ".png"
+    else
+        self.thumbnail_image = file_model.get_extension_thumbnail(self.extension)
 	end
 
 	self.view_url = url_config.short .. "/v" .. self.id
-	self.direct_url = url_config.short .. "/f" .. self.id .. self.extension
-	self.download_url = url_config.short .. "/d" .. self.id .. self.extension
+	self.direct_url = url_config.short .. "/f" .. self.id .. "." .. self.extension
+	self.download_url = url_config.short .. "/d" .. self.id .. "." .. self.extension
 	self.mimetype = mimetypes[self.extension] or "application/octet-stream"
 end
 
@@ -217,7 +225,7 @@ function file_mt:delete()
 end
 
 function file_mt:make_local_path()
-    return file_model.paths.storage .. self.id .. "/file" .. self.extension
+    return file_model.paths.storage .. self.id .. "/file." .. self.extension
 end
 
 function file_mt:set_owner(user)
@@ -225,13 +233,13 @@ function file_mt:set_owner(user)
 end
 
 function file_mt:set_name(name)
-	local nameregex = ngx.re.match(name, "^([^<>\r\n\t]*?)(\\.[a-zA-Z0-9]+)?$", "o")
+	local nameregex = ngx.re.match(name, "^([^<>\r\n\t]*?)\\.([a-zA-Z0-9]+)?$", "o")
 
     if (not nameregex) or (not nameregex[1]) then
         return false
     end
 
-    local newextension = (nameregex[2] or ".bin"):lower()
+    local newextension = (nameregex[2] or "bin"):lower()
 
     if self.extension and self.extension ~= newextension then
         file_deletestorage(self)
@@ -255,10 +263,10 @@ function file_mt:move_upload_data(src)
 
 	lfs.mkdir(file_model.paths.storage .. self.id)
 
-	file_move(src, file_model.paths.storage .. self.id .. "/file" .. self.extension)
+	file_move(src, file_model.paths.storage .. self.id .. "/file." .. self.extension)
 
 	if self.thumbnail and self.thumbnail ~= "" then
-		file_move(thumbDest .. self.thumbnail, file_model.paths.storage .. self.id .. "/thumb" .. self.thumbnail)
+		file_move(thumbDest .. self.thumbnail, file_model.paths.storage .. self.id .. "/thumb." .. self.thumbnail)
 	end
 
     self:compute_virtuals()

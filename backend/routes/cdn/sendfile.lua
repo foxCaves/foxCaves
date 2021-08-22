@@ -5,13 +5,13 @@ local ngx = ngx
 local function send_file(disposition_type, route_vars)
 	local file = file_model.get_by_id(route_vars.id)
 
-	if (not file) or file.extension:sub(2):lower() ~= route_vars.extension:lower() then
-		return utils.api_error("file_model not found", 404)
+	if (not file) or file.extension:lower() ~= route_vars.extension:lower() then
+		return utils.api_error("File not found", 404)
 	end
 
 	ngx.header["Content-Dispotition"] = disposition_type .. "; filename=" .. file.name
 
-	ngx.req.set_uri("/rawget/" .. file.id .. "/file" .. file.extension, true)
+	ngx.req.set_uri("/rawget/" .. file.id .. "/file." .. file.extension, true)
 end
 
 R.register_route("/cdn/sendfile/{action}/{id}/{extension}", "GET", R.make_route_opts_anon(), function(route_vars)
