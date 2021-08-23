@@ -1,6 +1,6 @@
-local preprocessTemplate
+local preprocess_template
 
-local function getRevision()
+local function get_revision()
 	local fh = io.open("../.revision", "r")
 	if not fh then
 		error("Missing .revision file!")
@@ -9,9 +9,9 @@ local function getRevision()
 	fh:close()
 	return ret:gsub("%s+", "")
 end
-local revision = getRevision()
+local revision = get_revision()
 
-local function loadTemplateFile(name, insideother)
+local function load_template_file(name, insideother)
 	local file = io.open("templates/" .. name, "r")
 	if not file then
 		error("Could not open template: " .. name)
@@ -19,12 +19,12 @@ local function loadTemplateFile(name, insideother)
 	local code = file:read("*all")
 	file:close()
 
-	code = preprocessTemplate(code, insideother)
+	code = preprocess_template(code, insideother)
 
 	return code
 end
 
-function preprocessTemplate(code, insideother)
+function preprocess_template(code, insideother)
 	local startPos
 	local endPos = 0
 	local match
@@ -52,7 +52,7 @@ function preprocessTemplate(code, insideother)
 			if marker == "=" then
 				table.insert(concatTbl, "table.insert(retTbl, "..match..")")
 			elseif marker == "+" then
-				table.insert(concatTbl, loadTemplateFile(match, true))
+				table.insert(concatTbl, load_template_file(match, true))
 			elseif marker == "#" then
 				table.insert(concatTbl, match)
 			end
@@ -73,8 +73,8 @@ function preprocessTemplate(code, insideother)
 	return table.concat(concatTbl, "\n")
 end
 
-local function loadTemplate(name)
-	local code = loadTemplateFile(name, false)
+local function load_template(name)
+	local code = load_template_file(name, false)
 	local func, err = load(code, "TEMPLATE:"..name)
 	if not func then
 		error(
@@ -88,8 +88,8 @@ local function loadTemplate(name)
 	return func
 end
 
-local function evalTemplate(name)
-	local tpl = loadTemplate(name)()
+local function eval_template(name)
+	local tpl = load_template(name)()
 	if type(tpl) == "string" then
 		return tpl
 	end
@@ -102,4 +102,4 @@ local function evalTemplate(name)
 	return setfenv(tpl, params)()
 end
 
-return evalTemplate
+return eval_template

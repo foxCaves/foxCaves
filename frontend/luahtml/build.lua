@@ -1,5 +1,5 @@
 local lfs = require("lfs")
-local evalTemplate = dofile("template.lua")
+local eval_template = dofile("template.lua")
 
 print("Building...")
 
@@ -7,8 +7,8 @@ dofile("template.lua")
 
 local DISTDIR = arg[1]
 
-local function storeTemplate(name)
-    local template = evalTemplate(name)
+local function store_template(name)
+    local template = eval_template(name)
 
     if template:sub(1, 1) == " " then
         template = template:sub(2)
@@ -25,7 +25,7 @@ end
 
 os.execute("mkdir -p '" .. DISTDIR .. "'")
 
-local function scanTemplateDirInt(dir, basedirlen)
+local function scan_template_dir_int(dir, basedirlen)
     for file in lfs.dir(dir) do
         local first = file:sub(1, 1)
         if first ~= "." and first ~= "_" then
@@ -33,17 +33,17 @@ local function scanTemplateDirInt(dir, basedirlen)
             local attributes = lfs.attributes(absfile)
             local relfile = absfile:sub(basedirlen)
             if attributes.mode == "file" then
-                storeTemplate(relfile)
+                store_template(relfile)
             elseif attributes.mode == "directory" then
                 os.execute("mkdir '" .. DISTDIR .. "/" .. relfile .. "'")
-                scanTemplateDirInt(absfile, basedirlen)
+                scan_template_dir_int(absfile, basedirlen)
             end
         end
     end
 end
-local function scanTemplateDir(dir)
-    scanTemplateDirInt(dir, dir:len() + 2)
+local function scan_template_dir(dir)
+    scan_template_dir_int(dir, dir:len() + 2)
 end
-scanTemplateDir("templates")
+scan_template_dir("templates")
 
 print("Done!")
