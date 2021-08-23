@@ -482,6 +482,10 @@ function renderUsedSpace() {
 	$('#used_bytes_bar').css('width', Math.ceil((currentUser.usedbytes / currentUser.totalbytes) * 100.0) + '%');
 }
 
+document.addEventListener('fetchCurrentUserDone', () => {
+	renderUsedSpace();
+});
+
 $(() => {
 	//setupOptionMenu();
 
@@ -491,8 +495,6 @@ $(() => {
 	setupPasting();
 
 	setupSearch();
-
-	renderUsedSpace();
 
 	pushHandlers.usedbytes = function(data) {
 		currentUser!.usedbytes = data.usedbytes;
