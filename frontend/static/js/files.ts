@@ -473,6 +473,15 @@ function setupSearch() {
 	});
 }
 
+function renderUsedSpace() {
+	if (!currentUser) {
+		return;
+	}
+	$('#used_bytes_text').text(formatSize(currentUser.usedbytes));
+	$('#total_bytes_text').text(formatSize(currentUser.totalbytes));
+	$('#used_bytes_bar').css('width', Math.ceil((currentUser.usedbytes / currentUser.totalbytes) * 100.0) + '%');
+}
+
 $(() => {
 	//setupOptionMenu();
 
@@ -482,6 +491,14 @@ $(() => {
 	setupPasting();
 
 	setupSearch();
+
+	renderUsedSpace();
+
+	pushHandlers.usedbytes = function(data) {
+		currentUser!.usedbytes = data.usedbytes;
+		renderUsedSpace();
+		return true;
+	};
 
 	pushHandlers['file:create'] = function (data: FilePush) {
 		FILES[data.file.id] = convertToDates(data.file);

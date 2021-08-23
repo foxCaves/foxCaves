@@ -1,5 +1,15 @@
 <%# MAINTITLE = "Files" %>
 <%+ _includes/head.html %>
+	<div class="progress" style="top: 10px; margin-right: 10px;">
+		<div class="bar bar-success" style="width: 100%;"></div>
+		<div class="bar bar-danger" id="used_bytes_bar" style="width: 0%;"></div>
+		<div style="float: left; position: relative; width: 100%; text-align: center; color: white;">
+			<span id="used_bytes_text">?</span> / <span id="total_bytes_text">?</span>
+		</div>
+	</div>
+
+	<br />
+
 	<div id="uploader"></div>
 
 	<br />

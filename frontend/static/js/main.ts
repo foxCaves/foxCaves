@@ -109,15 +109,6 @@ async function doLogout() {
 	document.location.href = '/';
 }
 
-function renderUsedSpace() {
-	if (!currentUser) {
-		return;
-	}
-	$('#used_bytes_text').text(formatSize(currentUser.usedbytes));
-	$('#total_bytes_text').text(formatSize(currentUser.totalbytes));
-	$('#used_bytes_bar').css('width', Math.ceil((currentUser.usedbytes / currentUser.totalbytes) * 100.0) + '%');
-}
-
 async function submitForm(url: string, method: string, data: BodyInit) {
     const res = await fetch(url, {
         method,
@@ -149,14 +140,6 @@ $(async () => {
 	}
 
 	$('#username_text').text(currentUser.username);
-
-	renderUsedSpace();
-
-	pushHandlers.usedbytes = function(data) {
-		currentUser!.usedbytes = data.usedbytes;
-		renderUsedSpace();
-		return true;
-	};
 
 	function messageReceived(e: MessageEvent) {
 		const cmd = JSON.parse(e.data);
