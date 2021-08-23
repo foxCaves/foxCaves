@@ -206,7 +206,8 @@ else
             err,
             "</h1><div class='accordion'><h3 class='autoclick'><a href='#'>UserInfo</a></h3><div>",
             string.format(
-                "<table><tr><th>UserID</th><td>%s</td></tr><tr><th>IP</th><td>%s</td></tr><tr><th>URL</th><td>%s</td></tr><tbody>",
+                "<table><tr><th>UserID</th><td>%s</td></tr><tr><th>IP</th>" ..
+                    "<td>%s</td></tr><tr><th>URL</th><td>%s</td></tr><tbody>",
                 ngx.ctx.user and ngx.ctx.user.id or "N/A",
                 ngx.var.remote_addr,
                 ngx.var.request_uri
@@ -229,14 +230,17 @@ else
                 table.insert(out, "<h3 class='autoclick'><a href='#'>Level " .. tostring(level) ..
                                     "</a></h3><div><div class='accordion'>")
             else
-                table.insert(out, "<h3><a href='#'>Level " .. tostring(level) .. "</a></h3><div><div class='accordion'>")
+                table.insert(out, "<h3><a href='#'>Level " ..
+                                    tostring(level) .. "</a></h3><div><div class='accordion'>")
             end
-            table.insert(out, "<h3 class='autoclick'><a href='#'>Base</a></h3><div><ul><li>Where: " .. src_file .. "</li>")
-            if(cur.currentline ~= -1) then
+            table.insert(out, "<h3 class='autoclick'><a href='#'>Base</a></h3><div><ul><li>Where: " ..
+                                src_file .. "</li>")
+            if cur.currentline ~= -1 then
                 table.insert(out, "<li>Line: " .. cur.currentline .. "</li>")
             end
             table.insert(out, "<li>What: " ..
-                                (cur.name and "In function '" .. cur.name .. "'" or "In main chunk") .. "</li></ul></div>")
+                                (cur.name and "In function '" .. cur.name .. "'" or "In main chunk") ..
+                                "</li></ul></div>")
 
             table.insert(out, getLocals(level))
             table.insert(out, getUpValues(cur.func))

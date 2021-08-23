@@ -67,7 +67,8 @@ function M.login(username_or_id, credential, options)
         sessionid = "sessions:" .. sessionid
 
         local redis_inst = redis.get_shared()
-        redis_inst:hmset(sessionid, "id", user.id, "loginkey", b64.encode_base64url(auth_utils.hash_login_key(user.loginkey)))
+        redis_inst:hmset(sessionid, "id", user.id, "loginkey",
+                            b64.encode_base64url(auth_utils.hash_login_key(user.loginkey)))
         redis_inst:expire(sessionid, SESSION_EXPIRE_DELAY)
     end
 
