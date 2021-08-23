@@ -188,7 +188,7 @@ function M.execute()
         ngx.header["Content-Type"] = "text/plain"
         ngx.print(res)
     else
-	    ngx.header["Content-Type"] = "application/json"
+        ngx.header["Content-Type"] = "application/json"
         if opts.empty_is_array and not next(res) then
             ngx.print('[]')
         else

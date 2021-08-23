@@ -2,7 +2,6 @@ local lfs = require("lfs")
 local path = require("path")
 local utils = require("foxcaves.utils")
 local database = require("foxcaves.database")
-local events = require("foxcaves.events")
 local random = require("foxcaves.random")
 local user_model = require("foxcaves.models.user")
 local url_config = require("foxcaves.config").urls
@@ -46,42 +45,42 @@ scan_thumbnails()
 require("foxcaves.module_helper").setmodenv()
 
 local mimetypes = {
-	["bmp"] = "image/bmp",
-	["c"] = "text/plain",
-	["cpp"] = "text/plain",
-	["cs"] = "text/plain",
-	["css"] = "text/css",
-	["flac"] = "audio/flac",
-	["gif"] = "image/gif",
-	["h"] = "text/plain",
-	["htaccess"] = "text/plain",
-	["htm"] = "text/html",
-	["html"] = "text/html",
-	["java"] = "text/plain",
-	["jpeg"] = "image/jpeg",
-	["jpg"] = "image/jpeg",
-	["js"] = "text/javascript",
-	["lua"] = "text/plain",
-	["mp3"] = "audio/mpeg",
-	["mp4"] = "video/mp4",
-	["ogg"] = "audio/ogg",
-	["pdf"] = "application/pdf",
-	["php"] = "text/plain",
-	["php3"] = "text/plain",
-	["php4"] = "text/plain",
-	["php5"] = "text/plain",
-	["php6"] = "text/plain",
-	["phtm"] = "text/plain",
-	["phtml"] = "text/plain",
-	["pl"] = "text/plain",
-	["png"] = "image/png",
-	["py"] = "text/plain",
-	["shtm"] = "text/html",
-	["shtml"] = "text/html",
-	["txt"] = "text/plain",
-	["vb"] = "text/plain",
-	["wav"] = "audio/wav",
-	["webm"] = "video/webm",
+    ["bmp"] = "image/bmp",
+    ["c"] = "text/plain",
+    ["cpp"] = "text/plain",
+    ["cs"] = "text/plain",
+    ["css"] = "text/css",
+    ["flac"] = "audio/flac",
+    ["gif"] = "image/gif",
+    ["h"] = "text/plain",
+    ["htaccess"] = "text/plain",
+    ["htm"] = "text/html",
+    ["html"] = "text/html",
+    ["java"] = "text/plain",
+    ["jpeg"] = "image/jpeg",
+    ["jpg"] = "image/jpeg",
+    ["js"] = "text/javascript",
+    ["lua"] = "text/plain",
+    ["mp3"] = "audio/mpeg",
+    ["mp4"] = "video/mp4",
+    ["ogg"] = "audio/ogg",
+    ["pdf"] = "application/pdf",
+    ["php"] = "text/plain",
+    ["php3"] = "text/plain",
+    ["php4"] = "text/plain",
+    ["php5"] = "text/plain",
+    ["php6"] = "text/plain",
+    ["phtm"] = "text/plain",
+    ["phtml"] = "text/plain",
+    ["pl"] = "text/plain",
+    ["png"] = "image/png",
+    ["py"] = "text/plain",
+    ["shtm"] = "text/html",
+    ["shtml"] = "text/html",
+    ["txt"] = "text/plain",
+    ["vb"] = "text/plain",
+    ["wav"] = "audio/wav",
+    ["webm"] = "video/webm",
 }
 
 local mimeHandlers = {
@@ -149,11 +148,11 @@ end
 
 local function file_deletestorage(file)
     local base = file_model.paths.storage .. file.id
-	os.remove(base .. "/file." .. file.extension)
-	if file.thumbnail_extension and file.thumbnail_extension ~= "" then
-		os.remove(base .. "/thumb." .. file.thumbnail_extension)
-	end
-	lfs.rmdir(base)
+    os.remove(base .. "/file." .. file.extension)
+    if file.thumbnail_extension and file.thumbnail_extension ~= "" then
+        os.remove(base .. "/thumb." .. file.thumbnail_extension)
+    end
+    lfs.rmdir(base)
 end
 
 local file_select = 'id, name, "user", extension, type, size, thumbnail_extension, ' .. database.TIME_COLUMNS
@@ -175,17 +174,17 @@ function file_model.get_by_user(user)
 end
 
 function file_model.get_by_id(id)
-	if not id then
-		return nil
-	end
+    if not id then
+        return nil
+    end
 
-	local file = database.get_shared():query_single('SELECT ' .. file_select .. ' FROM files WHERE id = %s', id)
+    local file = database.get_shared():query_single('SELECT ' .. file_select .. ' FROM files WHERE id = %s', id)
 
-	if not file then
-		return nil
-	end
+    if not file then
+        return nil
+    end
 
-	return makefile_mt(file)
+    return makefile_mt(file)
 end
 
 function file_model.new()
@@ -207,29 +206,29 @@ end
 
 function file_mt:compute_virtuals()
     if self.thumbnail_extension and self.thumbnail_extension ~= "" then
-		self.thumbnail_url = url_config.short .. "/thumbs/" .. self.id .. "." .. self.thumbnail_extension
-	end
-	if self.type == file_model.type.image and self.thumbnail_url then
-		self.thumbnail_image = self.thumbnail_url
+        self.thumbnail_url = url_config.short .. "/thumbs/" .. self.id .. "." .. self.thumbnail_extension
+    end
+    if self.type == file_model.type.image and self.thumbnail_url then
+        self.thumbnail_image = self.thumbnail_url
     else
         self.thumbnail_image = file_model.get_extension_thumbnail(self.extension)
-	end
+    end
 
-	self.view_url = url_config.short .. "/v" .. self.id
-	self.direct_url = url_config.short .. "/f" .. self.id .. "." .. self.extension
-	self.download_url = url_config.short .. "/d" .. self.id .. "." .. self.extension
-	self.mimetype = mimetypes[self.extension] or "application/octet-stream"
+    self.view_url = url_config.short .. "/v" .. self.id
+    self.direct_url = url_config.short .. "/f" .. self.id .. "." .. self.extension
+    self.download_url = url_config.short .. "/d" .. self.id .. "." .. self.extension
+    self.mimetype = mimetypes[self.extension] or "application/octet-stream"
 end
 
 function file_mt:delete()
     file_deletestorage(self)
 
-	database.get_shared():query('DELETE FROM files WHERE id = %s', self.id)
+    database.get_shared():query('DELETE FROM files WHERE id = %s', self.id)
 
-	events.push_raw({
-        action = 'file:delete',
-        file = self
-    }, self.user)
+    user_model.send_event(self.user, {
+        action = "file:delete",
+        file = self,
+    })
 end
 
 function file_mt:make_local_path()
@@ -241,7 +240,7 @@ function file_mt:set_owner(user)
 end
 
 function file_mt:set_name(name)
-	local nameregex = ngx.re.match(name, "^([^<>\r\n\t]*?)\\.([a-zA-Z0-9]+)?$", "o")
+    local nameregex = ngx.re.match(name, "^([^<>\r\n\t]*?)\\.([a-zA-Z0-9]+)?$", "o")
 
     if (not nameregex) or (not nameregex[1]) then
         return false
@@ -266,17 +265,17 @@ function file_mt:move_upload_data(src)
 
     local thumbDest = file_model.paths.temp .. "thumb_" .. self.id
 
-	local prefix, suffix = self.mimetype:match("([a-z]+)/([a-z]+)")
-	self.type, self.thumbnail_extension = mimeHandlers[prefix](src, thumbDest, suffix)
+    local prefix, suffix = self.mimetype:match("([a-z]+)/([a-z]+)")
+    self.type, self.thumbnail_extension = mimeHandlers[prefix](src, thumbDest, suffix)
 
-	lfs.mkdir(file_model.paths.storage .. self.id)
+    lfs.mkdir(file_model.paths.storage .. self.id)
 
-	file_move(src, file_model.paths.storage .. self.id .. "/file." .. self.extension)
+    file_move(src, file_model.paths.storage .. self.id .. "/file." .. self.extension)
 
-	if self.thumbnail_extension and self.thumbnail_extension ~= "" then
-		file_move(thumbDest .. "." .. self.thumbnail_extension,
+    if self.thumbnail_extension and self.thumbnail_extension ~= "" then
+        file_move(thumbDest .. "." .. self.thumbnail_extension,
                     file_model.paths.storage .. self.id .. "/thumb." .. self.thumbnail_extension)
-	end
+    end
 
     self:compute_virtuals()
 end
@@ -306,14 +305,14 @@ function file_mt:save()
     self.created_at = res.created_at
     self.updated_at = res.updated_at
 
-	events.push_raw({
-		action = "file:" .. primary_push_action,
-		file = self,
-	}, self.user)
-	events.push_raw({
-		action = "usedbytes",
-		usedbytes = user_model.calculate_used_bytes(self.user),
-	}, self.user)
+    user_model.send_event(self.user, {
+        action = "file:" .. primary_push_action,
+        file = self,
+    })
+    user_model.send_event(self.user, {
+        action = "usedbytes",
+        usedbytes = user_model.calculate_used_bytes(self.user),
+    })
 end
 
 file_mt.__index = file_mt

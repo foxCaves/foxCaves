@@ -1,7 +1,7 @@
 local database = require("foxcaves.database")
-local events = require("foxcaves.events")
 local random = require("foxcaves.random")
 local url_config = require("foxcaves.config").urls
+local user_model = require("foxcaves.models.user")
 
 local setmetatable = setmetatable
 local next = next
@@ -37,17 +37,17 @@ function link_model.get_by_user(user)
 end
 
 function link_model.get_by_id(id)
-	if not id then
-		return nil
-	end
+    if not id then
+        return nil
+    end
 
-	local link = database.get_shared():query_single('SELECT ' .. link_select .. ' FROM links WHERE id = %s', id)
+    local link = database.get_shared():query_single('SELECT ' .. link_select .. ' FROM links WHERE id = %s', id)
 
-	if not link then
-		return nil
-	end
+    if not link then
+        return nil
+    end
 
-	return makelinkmt(link)
+    return makelinkmt(link)
 end
 
 function link_model.new()
@@ -66,10 +66,10 @@ end
 function link_mt:delete()
     database.get_shared():query('DELETE FROM links WHERE id = %s', self.id)
 
-	events.push_raw({
+    user_model.send_event(self.user, {
         action = 'link:delete',
         link = self
-    }, self.user)
+    })
 end
 
 function link_mt:set_owner(user)
@@ -105,10 +105,10 @@ function link_mt:save()
     self.created_at = res.created_at
     self.updated_at = res.updated_at
 
-	events.push_raw({
-		action = "link:" .. primary_push_action,
-		link = self,
-	}, self.user)
+    user_model.send_event(self.user, {
+        action = "link:" .. primary_push_action,
+        link = self,
+    })
 end
 
 link_mt.__index = link_mt

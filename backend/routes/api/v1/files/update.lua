@@ -7,9 +7,9 @@ R.register_route("/api/v1/files/{id}", "PATCH", R.make_route_opts(), function(ro
     if not file then
         return utils.api_error("File not found", 404)
     end
-	if file.user ~= ngx.ctx.user.id then
-		return utils.api_error("Not your file", 403)
-	end
+    if file.user ~= ngx.ctx.user.id then
+        return utils.api_error("Not your file", 403)
+    end
 
     local args = utils.get_post_args()
 

@@ -41,13 +41,13 @@ function user_model.get_by_id(id)
         return ngx.ctx.user
     end
 
-	local user = database.get_shared():query_single('SELECT ' .. user_select .. ' FROM users WHERE id = %s', id)
+    local user = database.get_shared():query_single('SELECT ' .. user_select .. ' FROM users WHERE id = %s', id)
 
-	if not user then
-		return nil
-	end
+    if not user then
+        return nil
+    end
 
-	return makeusermt(user)
+    return makeusermt(user)
 end
 
 function user_model.get_by_username(username)
@@ -59,16 +59,16 @@ function user_model.get_by_username(username)
         return ngx.ctx.user
     end
 
-	local user = database.get_shared():query_single(
+    local user = database.get_shared():query_single(
         'SELECT ' .. user_select .. ' FROM users WHERE lower(username) = %s',
         username:lower()
     )
 
-	if not user then
-		return nil
-	end
+    if not user then
+        return nil
+    end
 
-	return makeusermt(user)
+    return makeusermt(user)
 end
 
 function user_model.new()
@@ -85,13 +85,17 @@ function user_model.calculate_used_bytes(user)
         user = user.id
     end
     local res = database.get_shared():query('SELECT SUM(size) AS usedbytes FROM files WHERE "user" = %s', user)
-	return res[1].usedbytes or 0
+    return res[1].usedbytes or 0
+end
+
+function user_model.send_event(user, event)
+    events.push_raw(event, user)
 end
 
 function user_mt:set_email(email)
-	if not ngx.re.match(email, "^[a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\\.[a-zA-Z]{2,}$", "o") then
-		return consts.VALIDATION_STATE_INVALID
-	end
+    if not ngx.re.match(email, "^[a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\\.[a-zA-Z]{2,}$", "o") then
+        return consts.VALIDATION_STATE_INVALID
+    end
 
     if (not self.email) or email:lower() ~= self.email:lower() then
         local res = database.get_shared():query('SELECT id FROM users WHERE lower(email) = %s', email:lower())
@@ -107,14 +111,14 @@ function user_mt:set_email(email)
 end
 
 function user_mt:set_username(username)
-	if not ngx.re.match(username, "^[a-zA-Z0-9 .,;_-]+$", "o") then
-		return consts.VALIDATION_STATE_INVALID
-	end
+    if not ngx.re.match(username, "^[a-zA-Z0-9 .,;_-]+$", "o") then
+        return consts.VALIDATION_STATE_INVALID
+    end
 
-	local res = database.get_shared():query('SELECT id FROM users WHERE lower(username) = %s', username:lower())
-	if res[1] then
-		return consts.VALIDATION_STATE_TAKEN
-	end
+    local res = database.get_shared():query('SELECT id FROM users WHERE lower(username) = %s', username:lower())
+    if res[1] then
+        return consts.VALIDATION_STATE_TAKEN
+    end
 
     self.username = username
 
@@ -126,32 +130,31 @@ function user_mt:set_password(password)
 end
 
 function user_mt:check_password(password)
-	local auth_ok
-	local auth_needs_update = false
-	if self.password:sub(1, 13) == "$fcvhmacsha1$" then
-		local pw = self.password:sub(14)
-		local saltIdx = pw:find("$", 1, true)
-		local salt = pw:sub(1, saltIdx - 1)
-		pw = pw:sub(saltIdx + 1)
+    local auth_ok
+    local auth_needs_update = false
+    if self.password:sub(1, 13) == "$fcvhmacsha1$" then
+        local pw = self.password:sub(14)
+        local saltIdx = pw:find("$", 1, true)
+        local salt = pw:sub(1, saltIdx - 1)
+        pw = pw:sub(saltIdx + 1)
 
-		pw = ngx.decode_base64(pw)
-		salt = ngx.decode_base64(salt)
+        pw = ngx.decode_base64(pw)
+        salt = ngx.decode_base64(salt)
 
-		auth_ok = ngx.hmac_sha1(salt, password) == pw
-		auth_needs_update = true
-	else
-		auth_ok = argon2.verify(self.password, password)
-	end
-	if auth_ok and auth_needs_update then
+        auth_ok = ngx.hmac_sha1(salt, password) == pw
+        auth_needs_update = true
+    else
+        auth_ok = argon2.verify(self.password, password)
+    end
+    if auth_ok and auth_needs_update then
         self:set_password(password)
         self:save()
-	end
-	return auth_ok
+    end
+    return auth_ok
 end
 
-function user_mt:calculate_used_bytes()
-    return user_model.calculate_used_bytes(self)
-end
+user_mt.calculate_used_bytes = user_model.calculate_used_bytes
+user_mt.send_event = user_model.send_event
 
 function user_mt:get_private()
     self.password = nil
@@ -168,7 +171,7 @@ function user_mt:get_public()
 end
 
 function user_mt:compute_virtuals()
-	self.totalbytes = STORAGE_BASE + self.bonusbytes
+    self.totalbytes = STORAGE_BASE + self.bonusbytes
 end
 
 function user_mt:save()
@@ -215,9 +218,9 @@ function user_mt:save()
     end
 
     if self.kick_user then
-        events.push_raw({
+        self:send_event({
             action = "kick",
-        }, self)
+        })
 
         self.kick_user = nil
     end

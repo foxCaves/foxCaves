@@ -3,10 +3,10 @@ local user_model = require("foxcaves.models.user")
 local ngx = ngx
 
 local function convert_user_id(id)
-	if id == "self" then
-		return ngx.ctx.user and ngx.ctx.user.id
-	end
-	return id
+    if id == "self" then
+        return ngx.ctx.user and ngx.ctx.user.id
+    end
+    return id
 end
 
 R.register_route("/api/v1/users/{id}", "GET", R.make_route_opts({ allow_guest = true }), function(route_vars)
