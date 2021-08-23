@@ -14,6 +14,7 @@ async function submitAccountFormSimple(data: { [key: string]: string }, method: 
 
 document.addEventListener('fetchCurrentUserDone', () => {
     const form = getAccountForm();
+    form.username.value = currentUser!.username;
     form.newemail.value = currentUser!.email;
     form.apikey.value = currentUser!.apikey;
 }, false);
