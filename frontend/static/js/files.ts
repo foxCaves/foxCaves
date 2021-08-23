@@ -499,9 +499,7 @@ $(() => {
 	pushHandlers.usedbytes = function(data) {
 		currentUser!.usedbytes = data.usedbytes;
 		renderUsedSpace();
-		return true;
 	};
-
 	pushHandlers['file:create'] = function (data: FilePush) {
 		FILES[data.file.id] = convertToDates(data.file);
 		addFileLI(data.file.id, true);
