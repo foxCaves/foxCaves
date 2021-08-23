@@ -6,27 +6,27 @@
 		<div class="control-group">
 			<label class="control-label">Current password (Required for all actions)</label>
 			<div class="controls">
-				<input class="input-xxlarge" type="password" name="current_password" placeholder="Current password" value="" />
+				<input type="password" name="current_password" placeholder="Current password" value="" />
 			</div>
 		</div>
 		<legend>Username</legend>
 		<div class="control-group">
 			<label class="control-label" for="newpass">Username</label>
 			<div class="controls">
-				<input class="input-xxlarge uneditable-input" type="text" name="username" id="username" placeholder="Username" value="" />
+				<input class="uneditable-input" type="text" name="username" id="username" placeholder="Username" value="" />
 			</div>
 		</div>
 		<legend>Change password</legend>
 		<div class="control-group">
 			<label class="control-label" for="newpass">New password</label>
 			<div class="controls">
-				<input class="input-xxlarge" type="password" name="password" id="newpass" pattern=".{5,}" placeholder="New password" value="" />
+				<input type="password" name="password" id="newpass" pattern=".{5,}" placeholder="New password" value="" />
 			</div>
 		</div>
 		<div class="control-group">
 			<label class="control-label" for="newpassconf">Confirm new password</label>
 			<div class="controls">
-				<input class="input-xxlarge" type="password" name="password_confirm" id="newpassconf" pattern=".{5,}" placeholder="New password confirm" value="" />
+				<input type="password" name="password_confirm" id="newpassconf" pattern=".{5,}" placeholder="New password confirm" value="" />
 			</div>
 		</div>
 		<div class="control-group">
@@ -38,7 +38,7 @@
 		<div class="control-group">
 			<label class="control-label" for="newemail">New E-Mail</label>
 			<div class="controls">
-				<input class="input-xxlarge" type="email" name="email" id="newemail" placeholder="New email" value="Loading..." />
+				<input type="email" name="email" id="newemail" placeholder="New email" value="Loading..." />
 			</div>
 		</div>
 		<div class="control-group">
@@ -49,7 +49,7 @@
 		<legend>API key</legend>
 		<div class="control-group">
 			<div class="controls">
-				<input class="input-xxlarge" type="text" name="apikey" readonly id="apikey" value="Loading..." />
+				<input type="text" name="apikey" readonly id="apikey" value="Loading..." onclick="this.select();" />
 			</div>
 		</div>
 		<div class="control-group">
