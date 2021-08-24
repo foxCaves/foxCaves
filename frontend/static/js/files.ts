@@ -508,7 +508,7 @@ $(() => {
 		delete FILES[data.file.id];
 		removeFileLI(data.file.id);
 	};
-	pushHandlers['file:refresh'] = function (data: FilePush) {
+	pushHandlers['file:update'] = function (data: FilePush) {
 		for (const key of Object.keys(data.file)) {
 			(FILES[data.file.id] as any)[key] = (data.file as any)[key];
 		}

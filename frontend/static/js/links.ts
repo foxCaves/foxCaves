@@ -151,7 +151,7 @@ $(() => {
 		delete LINKS[data.link.id];
 		removeLinkRow(data.link.id);
 	};
-	pushHandlers['link:refresh'] = function (data: LinkPush) {
+	pushHandlers['link:update'] = function (data: LinkPush) {
 		for (const key of Object.keys(data.link)) {
 			(LINKS[data.link.id] as any)[key] = (data.link as any)[key];
 		}

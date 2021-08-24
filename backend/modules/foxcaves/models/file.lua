@@ -300,7 +300,7 @@ function file_mt:save()
                 RETURNING ' .. database.TIME_COLUMNS,
             self.name, self.user, self.extension, self.type, self.size, self.thumbnail_extension or "", self.id
         )
-        primary_push_action = 'refresh'
+        primary_push_action = 'update'
     end
     self.created_at = res.created_at
     self.updated_at = res.updated_at
