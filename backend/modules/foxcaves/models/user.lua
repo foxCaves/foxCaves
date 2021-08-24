@@ -36,6 +36,8 @@ function user_model.get_by_id(id)
         return nil
     end
 
+    id = id:lower()
+
     if ngx.ctx.user and ngx.ctx.user.id == id then
         return ngx.ctx.user
     end
