@@ -45,5 +45,5 @@ R.register_route("/api/v1/files", "POST", R.make_route_opts(), function()
 
     file:save()
 
-    return file
+    return file:get_private()
 end)

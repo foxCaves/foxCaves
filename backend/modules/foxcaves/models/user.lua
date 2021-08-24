@@ -26,7 +26,6 @@ local STORAGE_BASE = 1 * GIGABYTE
 local function makeusermt(user)
     user.not_in_db = nil
     setmetatable(user, user_mt)
-    user:compute_virtuals()
     return user
 end
 
@@ -169,7 +168,7 @@ function user_mt:get_private()
         active = self.active,
         bonusbytes = self.bonusbytes,
         usedbytes = self:calculate_used_bytes(),
-        totalbytes = self.totalbytes,
+        totalbytes = STORAGE_BASE + self.bonusbytes,
     }
 end
 
@@ -178,10 +177,6 @@ function user_mt:get_public()
         id = self.id,
         username = self.username,
     }
-end
-
-function user_mt:compute_virtuals()
-    self.totalbytes = STORAGE_BASE + self.bonusbytes
 end
 
 function user_mt:save()

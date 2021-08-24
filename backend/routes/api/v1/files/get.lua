@@ -6,5 +6,5 @@ R.register_route("/api/v1/files/{id}", "GET", R.make_route_opts_anon(), function
     if not file then
         return utils.api_error("File not found", 404)
     end
-    return file
+    return file:get_public()
 end)

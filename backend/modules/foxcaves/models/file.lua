@@ -142,7 +142,6 @@ end
 local function makefilemt(file)
     file.not_in_db = nil
     setmetatable(file, file_mt)
-    file:compute_virtuals()
     return file
 end
 
@@ -204,29 +203,13 @@ function file_model.get_extension_thumbnail(extension)
     return url_config.main .. "/static/img/thumbs/" .. thumbnail
 end
 
-function file_mt:compute_virtuals()
-    if self.thumbnail_extension and self.thumbnail_extension ~= "" then
-        self.thumbnail_url = url_config.short .. "/thumbs/" .. self.id .. "." .. self.thumbnail_extension
-    end
-    if self.type == file_model.type.image and self.thumbnail_url then
-        self.thumbnail_image = self.thumbnail_url
-    else
-        self.thumbnail_image = file_model.get_extension_thumbnail(self.extension)
-    end
-
-    self.view_url = url_config.short .. "/v" .. self.id
-    self.direct_url = url_config.short .. "/f" .. self.id .. "." .. self.extension
-    self.download_url = url_config.short .. "/d" .. self.id .. "." .. self.extension
-    self.mimetype = mimetypes[self.extension] or "application/octet-stream"
-end
-
 function file_mt:delete()
     file_deletestorage(self)
 
     database.get_shared():query('DELETE FROM files WHERE id = %s', self.id)
 
     local user = user_model.get_by_id(self.user)
-    user:send_event('delete', 'file', self)
+    user:send_event('delete', 'file', self:get_private())
     user:send_self_event()
 end
 
@@ -254,8 +237,6 @@ function file_mt:set_name(name)
     self.name = name
     self.extension = newextension
 
-    self:compute_virtuals()
-
     return true
 end
 
@@ -275,8 +256,6 @@ function file_mt:move_upload_data(src)
         file_move(thumbDest .. "." .. self.thumbnail_extension,
                     file_model.paths.storage .. self.id .. "/thumb." .. self.thumbnail_extension)
     end
-
-    self:compute_virtuals()
 end
 
 function file_mt:save()
@@ -305,9 +284,36 @@ function file_mt:save()
     self.updated_at = res.updated_at
 
     local user = user_model.get_by_id(self.user)
-    user:send_event(primary_push_action, 'file', self)
+    user:send_event(primary_push_action, 'file', self:get_private())
     user:send_self_event()
 end
+
+function file_mt:get_public()
+    local res = {
+        id = self.id,
+        name = self.name,
+        user = self.user,
+        extension = self.extension,
+        type = self.type,
+        size = self.size,
+        thumbnail_extension = self.thumbnail_extension,
+
+        view_url = url_config.short .. "/v" .. self.id,
+        direct_url = url_config.short .. "/f" .. self.id .. "." .. self.extension,
+        download_url = url_config.short .. "/d" .. self.id .. "." .. self.extension,
+        mimetype = mimetypes[self.extension] or "application/octet-stream",
+    }
+    if res.thumbnail_extension and res.thumbnail_extension ~= "" then
+        res.thumbnail_url = url_config.short .. "/thumbs/" .. res.id .. "." .. res.thumbnail_extension
+    end
+    if res.type == file_model.type.image and res.thumbnail_url then
+        res.thumbnail_image = res.thumbnail_url
+    else
+        res.thumbnail_image = file_model.get_extension_thumbnail(res.extension)
+    end
+    return res
+end
+file_mt.get_private = file_mt.get_public
 
 file_mt.__index = file_mt
 

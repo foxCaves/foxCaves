@@ -14,7 +14,6 @@ require("foxcaves.module_helper").setmodenv()
 local function makelinkmt(link)
     link.not_in_db = nil
     setmetatable(link, link_mt)
-    link:compute_virtuals()
     return link
 end
 
@@ -59,15 +58,11 @@ function link_model.new()
     return link
 end
 
-function link_mt:compute_virtuals()
-    self.short_url = url_config.short .. "/g" .. self.id
-end
-
 function link_mt:delete()
     database.get_shared():query('DELETE FROM links WHERE id = %s', self.id)
 
     local user = user_model.get_by_id(self.user)
-    user:send_event('delete', 'link', self)
+    user:send_event('delete', 'link', self:get_private())
 end
 
 function link_mt:set_owner(user)
@@ -76,7 +71,6 @@ end
 
 function link_mt:set_url(url)
     self.url = url
-    self:compute_virtuals()
     return true
 end
 
@@ -104,8 +98,18 @@ function link_mt:save()
     self.updated_at = res.updated_at
 
     local user = user_model.get_by_id(self.user)
-    user:send_event(primary_push_action, 'link', self)
+    user:send_event(primary_push_action, 'link', self:get_private())
 end
+
+function link_mt:get_public()
+    return {
+        id = self.id,
+        url = self.url,
+        user = self.user,
+        short_url = url_config.short .. "/g" .. self.id,
+    }
+end
+link_mt.get_private = link_mt.get_public
 
 link_mt.__index = link_mt
 

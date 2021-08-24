@@ -43,5 +43,5 @@ R.register_route("/api/v1/files/{id}/convert", "POST", R.make_route_opts(), func
     file:set_name(newfilename)
     file:move_upload_data(tmpfile)
     file:save()
-    return file
+    return file:get_private()
 end)

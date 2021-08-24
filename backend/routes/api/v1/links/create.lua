@@ -12,5 +12,5 @@ R.register_route("/api/v1/links", "POST", R.make_route_opts(), function()
 
     link:save()
 
-    return link
+    return link:get_private()
 end)

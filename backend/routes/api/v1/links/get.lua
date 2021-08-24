@@ -6,5 +6,5 @@ R.register_route("/api/v1/links/{id}", "GET", R.make_route_opts_anon(), function
     if not link then
         return utils.api_error("Link not found", 404)
     end
-    return link
+    return link:get_public()
 end)

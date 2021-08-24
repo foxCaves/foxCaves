@@ -11,5 +11,5 @@ R.register_route("/api/v1/links/{id}", "DELETE", R.make_route_opts(), function(r
         return utils.api_error("Not your link", 403)
     end
     link:delete()
-    return link
+    return link:get_private()
 end)

@@ -11,5 +11,5 @@ R.register_route("/api/v1/files/{id}", "DELETE", R.make_route_opts(), function(r
         return utils.api_error("Not your file", 403)
     end
     file:delete()
-    return file
+    return file:get_private()
 end)

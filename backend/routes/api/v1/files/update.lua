@@ -23,5 +23,5 @@ R.register_route("/api/v1/files/{id}", "PATCH", R.make_route_opts(), function(ro
     end
 
     file:save()
-    return file
+    return file:get_private()
 end)
