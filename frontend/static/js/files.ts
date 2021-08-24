@@ -474,7 +474,7 @@ function renderUsedSpace() {
 		return;
 	}
 	const isUnlimited = currentUser.storage_quota < 0;
-	let quotaText = isUnlimited ? '&infin;' : formatSize(currentUser.storage_quota);
+	let quotaText = isUnlimited ? '\u221E' : formatSize(currentUser.storage_quota);
 	let percentUsed = isUnlimited ? 0 : Math.ceil((currentUser.storage_used / currentUser.storage_quota) * 100.0);
 	$('#storage_used_text').text(formatSize(currentUser.storage_used));
 	$('#storage_quota_text').text(quotaText);
