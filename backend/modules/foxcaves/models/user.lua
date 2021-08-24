@@ -150,8 +150,13 @@ function user_mt:calculate_used_bytes()
     return res and res.usedbytes or 0
 end
 
+function user_mt:send_event_raw(data)
+    events.push_raw('user:' .. self.id, data)
+end
+
 function user_mt:send_event(action, model, data)
-    events.push_raw('user:' .. self.id, {
+    self:send_event_raw({
+        type = 'liveloading',
         action = action,
         model = model,
         data = data,
@@ -233,8 +238,8 @@ function user_mt:save()
     end
 
     if self.kick_user then
-        self:send_event({
-            action = "kick",
+        self:send_event_raw({
+            type = "kick",
         })
 
         self.kick_user = nil

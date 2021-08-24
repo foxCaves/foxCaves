@@ -162,6 +162,10 @@ $(async () => {
 	function messageReceived(e: MessageEvent) {
 		const cmd = JSON.parse(e.data);
 
+		if (cmd.type !== 'liveloading') {
+			return;
+		}
+
 		const handlerSet = pushHandlers[cmd.model];
 		if (!handlerSet) {
 			console.info(`EventPush: Unhandled model ${cmd.model}`);

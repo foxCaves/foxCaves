@@ -53,7 +53,7 @@ R.register_route("/api/v1/ws/events", "GET", R.make_route_opts(), function()
                 res = res[3]
                 ws:send_text(res)
                 local decode = cjson.decode(res)
-                if decode and decode.action == "kick" then
+                if decode and decode.type == "kick" then
                     return kick()
                 end
             end
