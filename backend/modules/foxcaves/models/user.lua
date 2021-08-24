@@ -101,6 +101,7 @@ function user_model.send_used_bytes(user)
         user = user.id
     end
     user_model.send_event(user, 'update', 'user', {
+        id = user,
         usedbytes = user_model.calculate_used_bytes(user),
     })
 end
