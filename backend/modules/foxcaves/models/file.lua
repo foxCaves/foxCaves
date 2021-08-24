@@ -297,6 +297,8 @@ function file_mt:get_public()
         type = self.type,
         size = self.size,
         thumbnail_extension = self.thumbnail_extension,
+        created_at = self.created_at,
+        updated_at = self.updated_at,
 
         view_url = url_config.short .. "/v" .. self.id,
         direct_url = url_config.short .. "/f" .. self.id .. "." .. self.extension,

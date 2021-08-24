@@ -169,6 +169,8 @@ function user_mt:get_private()
         bonusbytes = self.bonusbytes,
         usedbytes = self:calculate_used_bytes(),
         totalbytes = STORAGE_BASE + self.bonusbytes,
+        created_at = self.created_at,
+        updated_at = self.updated_at,
     }
 end
 
@@ -176,6 +178,8 @@ function user_mt:get_public()
     return {
         id = self.id,
         username = self.username,
+        created_at = self.created_at,
+        updated_at = self.updated_at,
     }
 end
 

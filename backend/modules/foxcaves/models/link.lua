@@ -107,6 +107,8 @@ function link_mt:get_public()
         url = self.url,
         user = self.user,
         short_url = url_config.short .. "/g" .. self.id,
+        created_at = self.created_at,
+        updated_at = self.updated_at,
     }
 end
 link_mt.get_private = link_mt.get_public
