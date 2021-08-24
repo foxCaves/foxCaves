@@ -248,7 +248,7 @@ function user_mt:save()
         self.kick_user = nil
     end
 
-    self:send_event(primary_push_action, 'user', self)
+    self:send_event(primary_push_action, 'user', self:get_private())
 end
 
 function user_mt:make_new_login_key()
@@ -266,6 +266,7 @@ end
 
 function user_mt:delete()
     database.get_shared():query('DELETE FROM users WHERE id = %s', self.id)
+    self:send_event('delete', 'user', self:get_private())
 end
 
 user_mt.__index = user_mt
