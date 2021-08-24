@@ -139,7 +139,7 @@ local function file_move(src, dst)
     exec.cmd("mv", src, dst)
 end
 
-local function makefile_mt(file)
+local function makefilemt(file)
     file.not_in_db = nil
     setmetatable(file, file_mt)
     file:compute_virtuals()
@@ -168,7 +168,7 @@ function file_model.get_by_user(user)
 
     local files = database.get_shared():query('SELECT ' .. file_select .. ' FROM files WHERE "user" = %s', user)
     for k,v in next, files do
-        files[k] = makefile_mt(v)
+        files[k] = makefilemt(v)
     end
     return files
 end
@@ -184,7 +184,7 @@ function file_model.get_by_id(id)
         return nil
     end
 
-    return makefile_mt(file)
+    return makefilemt(file)
 end
 
 function file_model.new()
