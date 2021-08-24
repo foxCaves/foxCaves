@@ -96,6 +96,7 @@ local function eval_template(name)
 
     local params = {
         REVISION = revision,
+        STATIC_QUERY = "?r=" .. revision,
         table = table,
     }
 
