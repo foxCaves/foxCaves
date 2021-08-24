@@ -178,6 +178,7 @@ function user_mt:get_private()
         apikey = self.apikey,
         active = self.active,
         storage_used = self:calculate_storage_used(),
+        storage_quota = self.storage_quota,
         created_at = self.created_at,
         updated_at = self.updated_at,
     }
