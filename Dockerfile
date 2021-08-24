@@ -24,7 +24,7 @@ RUN mkdir -p /opt/stage/dist
 
 WORKDIR /opt/stage/src
 RUN rsync -r --exclude=*.lua . /opt/stage/dist
-RUN find . -type f -name '*.lua' -print -exec luajit -g -b '{}' '../dist/{}' \;
+RUN find . -type f -name '*.lua' -print -exec luajit -b -g '{}' '../dist/{}' \;
 
 
 
