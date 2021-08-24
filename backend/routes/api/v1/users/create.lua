@@ -23,8 +23,6 @@ R.register_route("/api/v1/users", "POST", R.make_route_opts_anon(), function()
     end
 
     local user = user_model.new()
-    user.active = 0
-    user.bonusbytes = 0
 
     local usernamecheck = user:set_username(username)
     if usernamecheck == consts.VALIDATION_STATE_INVALID then

@@ -11,10 +11,12 @@ R.register_route("/api/v1/files", "POST", R.make_route_opts(), function()
         return utils.api_error("No name")
     end
 
+    local user = ngx.ctx.user
+
     name = ngx.unescape_uri(name)
 
     local file = file_model.new()
-    file:set_owner(ngx.ctx.user)
+    file:set_owner(user)
     if not file:set_name(name) then
         return utils.api_error("Invalid name")
     end
@@ -31,8 +33,8 @@ R.register_route("/api/v1/files", "POST", R.make_route_opts(), function()
         return utils.api_error("Empty body")
     end
 
-    local user_private = ngx.ctx.user:get_private()
-    if user_private.usedbytes + filesize > user_private.totalbytes then
+    local storage_used = user:calculate_storage_used()
+    if storage_used + filesize > user.storage_quota then
         return utils.api_error("Over quota", 402)
     end
 

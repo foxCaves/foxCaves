@@ -29,7 +29,7 @@ local function makeusermt(user)
     return user
 end
 
-local user_select = 'id, username, email, password, loginkey, apikey, active, bonusbytes, ' .. database.TIME_COLUMNS
+local user_select = 'id, username, email, password, loginkey, apikey, active, storage_quota, ' .. database.TIME_COLUMNS
 
 function user_model.get_by_id(id)
     if (not id) or (not uuid.is_valid(id)) then
@@ -78,6 +78,8 @@ function user_model.new()
     local user = {
         not_in_db = true,
         id = uuid.generate_random(),
+        storage_quota = STORAGE_BASE,
+        active = 0,
     }
     setmetatable(user, user_mt)
     return user
@@ -144,10 +146,10 @@ function user_mt:check_password(password)
     return auth_ok
 end
 
-function user_mt:calculate_used_bytes()
+function user_mt:calculate_storage_used()
     local db = database.get_shared()
-    local res = db:query_single('SELECT SUM(size) AS usedbytes FROM files WHERE "user" = %s', self.id)
-    return res and res.usedbytes or 0
+    local res = db:query_single('SELECT SUM(size) AS storage_used FROM files WHERE "user" = %s', self.id)
+    return res and res.storage_used or 0
 end
 
 function user_mt:send_event_raw(data)
@@ -175,9 +177,7 @@ function user_mt:get_private()
         email = self.email,
         apikey = self.apikey,
         active = self.active,
-        bonusbytes = self.bonusbytes,
-        usedbytes = self:calculate_used_bytes(),
-        totalbytes = STORAGE_BASE + self.bonusbytes,
+        storage_used = self:calculate_storage_used(),
         created_at = self.created_at,
         updated_at = self.updated_at,
     }
@@ -197,21 +197,23 @@ function user_mt:save()
     if self.not_in_db then
         res = database.get_shared():query_single(
             'INSERT INTO users \
-                (id, username, email, password, loginkey, apikey, active, bonusbytes) VALUES \
+                (id, username, email, password, loginkey, apikey, active, storage_quota) VALUES \
                 (%s, %s, %s, %s, %s, %s, %s, %s) \
                 RETURNING ' .. database.TIME_COLUMNS,
-            self.id, self.username, self.email, self.password, self.loginkey, self.apikey, self.active, self.bonusbytes
+            self.id, self.username, self.email, self.password, self.loginkey, self.apikey, self.active,
+            self.storage_quota
         )
         primary_push_action = 'create'
         self.not_in_db = nil
     else
         res = database.get_shared():query_single(
             'UPDATE users \
-                SET username = %s, email = %s, password = %s, loginkey = %s, apikey = %s, active = %s, bonusbytes = %s, \
+                SET username = %s, email = %s, password = %s, loginkey = %s, apikey = %s, active = %s, storage_quota = %s, \
                     updated_at = (now() at time zone \'utc\') \
                 WHERE id = %s \
                 RETURNING ' .. database.TIME_COLUMNS,
-            self.username, self.email, self.password, self.loginkey, self.apikey, self.active, self.bonusbytes, self.id
+            self.username, self.email, self.password, self.loginkey, self.apikey, self.active, self.storage_quota,
+            self.id
         )
         primary_push_action = 'update'
     end

@@ -473,9 +473,9 @@ function renderUsedSpace() {
 	if (!currentUser) {
 		return;
 	}
-	$('#used_bytes_text').text(formatSize(currentUser.usedbytes));
-	$('#total_bytes_text').text(formatSize(currentUser.totalbytes));
-	$('#used_bytes_bar').css('width', Math.ceil((currentUser.usedbytes / currentUser.totalbytes) * 100.0) + '%');
+	$('#used_bytes_text').text(formatSize(currentUser.storage_used));
+	$('#total_bytes_text').text(formatSize(currentUser.storage_quota));
+	$('#used_bytes_bar').css('width', Math.ceil((currentUser.storage_used / currentUser.storage_quota) * 100.0) + '%');
 }
 
 document.addEventListener('fetchCurrentUserDone', () => {

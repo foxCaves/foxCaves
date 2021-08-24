@@ -68,8 +68,8 @@ interface UserInfo extends TimedElement {
 	username: string;
 	email: string;
 	apikey: string;
-	usedbytes: number;
-	totalbytes: number;
+	storage_used: number;
+	storage_quota: number;
 }
 let currentUser: UserInfo | undefined = undefined;
 
