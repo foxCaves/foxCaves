@@ -84,12 +84,25 @@ function user_model.calculate_used_bytes(user)
     if user.id then
         user = user.id
     end
-    local res = database.get_shared():query('SELECT SUM(size) AS usedbytes FROM files WHERE "user" = %s', user)
-    return res[1].usedbytes or 0
+    local res = database.get_shared():query_single('SELECT SUM(size) AS usedbytes FROM files WHERE "user" = %s', user)
+    return res and res.usedbytes or 0
 end
 
-function user_model.send_event(user, event)
-    events.push_raw(event, user)
+function user_model.send_event(user, action, model, data)
+    events.push_raw({
+        action = action,
+        model = model,
+        data = data,
+    }, user)
+end
+
+function user_model.send_used_bytes(user)
+    if user.id then
+        user = user.id
+    end
+    user_model.send_event(user, 'update', 'user', {
+        usedbytes = user_model.calculate_used_bytes(user),
+    })
 end
 
 function user_mt:set_email(email)
@@ -155,12 +168,18 @@ end
 
 user_mt.calculate_used_bytes = user_model.calculate_used_bytes
 user_mt.send_event = user_model.send_event
+user_mt.send_used_bytes = user_model.send_used_bytes
 
 function user_mt:get_private()
-    self.password = nil
-    self.loginkey = nil
-    self.usedbytes = self:calculate_used_bytes()
-    return self
+    return {
+        id = self.id,
+        username = self.username,
+        email = self.email,
+        apikey = self.apikey,
+        active = self.active,
+        bonusbytes = self.bonusbytes,
+        usedbytes = self:calculate_used_bytes(),
+    }
 end
 
 function user_mt:get_public()
@@ -175,15 +194,16 @@ function user_mt:compute_virtuals()
 end
 
 function user_mt:save()
-    local res
+    local res, primary_push_action
     if self.not_in_db then
         res = database.get_shared():query_single(
             'INSERT INTO users \
-                (id, username, email, password, loginkey, apikey, active, bonusbytes) VALUES\
+                (id, username, email, password, loginkey, apikey, active, bonusbytes) VALUES \
                 (%s, %s, %s, %s, %s, %s, %s, %s) \
                 RETURNING ' .. database.TIME_COLUMNS,
             self.id, self.username, self.email, self.password, self.loginkey, self.apikey, self.active, self.bonusbytes
         )
+        primary_push_action = 'create'
         self.not_in_db = nil
     else
         res = database.get_shared():query_single(
@@ -194,6 +214,7 @@ function user_mt:save()
                 RETURNING ' .. database.TIME_COLUMNS,
             self.username, self.email, self.password, self.loginkey, self.apikey, self.active, self.bonusbytes, self.id
         )
+        primary_push_action = 'update'
     end
     self.created_at = res.created_at
     self.updated_at = res.updated_at
@@ -224,6 +245,8 @@ function user_mt:save()
 
         self.kick_user = nil
     end
+
+    self:send_event(primary_push_action, 'user', self)
 end
 
 function user_mt:make_new_login_key()

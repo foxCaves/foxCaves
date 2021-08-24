@@ -7,10 +7,6 @@ interface LinkInfo extends TimedElement {
 	id: string;
 }
 
-interface LinkPush {
-	link: LinkInfo;
-}
-
 const LINKS: { [key: string]: LinkInfo } = {};
 
 function newLink() {
@@ -143,20 +139,22 @@ function refreshLinks() {
 $(() => {
 	setupLinkJS($('#links_table'));
 
-	pushHandlers['link:create'] = function (data: LinkPush) {
-		LINKS[data.link.id] = convertToDates(data.link);
-		addLinkRow(data.link.id);
-	};
-	pushHandlers['link:delete'] = function (data: LinkPush) {
-		delete LINKS[data.link.id];
-		removeLinkRow(data.link.id);
-	};
-	pushHandlers['link:update'] = function (data: LinkPush) {
-		for (const key of Object.keys(data.link)) {
-			(LINKS[data.link.id] as any)[key] = (data.link as any)[key];
-		}
-		LINKS[data.link.id] = convertToDates(LINKS[data.link.id]!);
-		refreshLinkRow(data.link.id);
+	pushHandlers.link = {
+		create(data: LinkInfo) {
+			LINKS[data.id] = convertToDates(data);
+			addLinkRow(data.id);
+		},
+		delete(data: LinkInfo) {
+			delete LINKS[data.id];
+			removeLinkRow(data.id);
+		},
+		update(data: LinkInfo) {
+			for (const key of Object.keys(data)) {
+				(LINKS[data.id] as any)[key] = (data as any)[key];
+			}
+			LINKS[data.id] = convertToDates(LINKS[data.id]!);
+			refreshLinkRow(data.id);
+		},
 	};
 
 	refreshLinks();

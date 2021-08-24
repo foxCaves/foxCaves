@@ -130,6 +130,13 @@ async function submitFormSimple(url: string, method: string, data: { [key: strin
 	return false;
 }
 
+document.addEventListener('fetchCurrentUserDone', () => {
+	if (!currentUser) {
+		return;
+	}
+	$('#username_text').text(currentUser.username);
+});
+
 $(async () => {
 	docReady();
 
@@ -139,16 +146,33 @@ $(async () => {
 		return;
 	}
 
-	$('#username_text').text(currentUser.username);
+	pushHandlers.user = {
+		update(data: UserInfo) {
+			if (!currentUser || currentUser.id !== data.id) {
+				return;
+			}
+			for (const key of Object.keys(data)) {
+				(currentUser as any)[key] = (data as any)[key];
+			}
+			const evt = new Event('fetchCurrentUserDone');
+			document.dispatchEvent(evt);
+		},
+	};
 
 	function messageReceived(e: MessageEvent) {
 		const cmd = JSON.parse(e.data);
 
-		const handler = pushHandlers[cmd.action];
-		if (!handler) {
+		const handlerSet = pushHandlers[cmd.model];
+		if (!handlerSet) {
+			console.info(`EventPush: Unhandled model ${cmd.model}`);
 			return;
 		}
-		handler(cmd);
+		const handler = handlerSet[cmd.action];
+		if (!handler) {
+			console.info(`EventPush: Unhandled action ${cmd.action} on model ${cmd.model}`);
+			return;
+		}
+		handler(cmd.data);
 	};
 
 	let currentSocket: WebSocket;

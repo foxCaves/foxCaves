@@ -15,7 +15,9 @@ if(CONFIG.sentry_dsn && (window as any).Sentry) {
 }
 
 const pushHandlers: {
-	[key: string]: (data: any) => boolean | void;
+	[key: string]: {
+		[key: string]: (data: any) => void;
+	}
 } = {};
 
 interface FileInfo extends TimedElement {

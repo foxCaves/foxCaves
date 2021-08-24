@@ -1,9 +1,5 @@
 REQUIRE_LOGGED_IN = true;
 
-interface FilePush {
-	file: FileInfo;
-}
-
 const FILES: { [key: string]: FileInfo } = {};
 
 let dropZoneDefaultInnerHTML = "";
@@ -496,24 +492,22 @@ $(() => {
 
 	setupSearch();
 
-	pushHandlers.usedbytes = function(data) {
-		currentUser!.usedbytes = data.usedbytes;
-		renderUsedSpace();
-	};
-	pushHandlers['file:create'] = function (data: FilePush) {
-		FILES[data.file.id] = convertToDates(data.file);
-		addFileLI(data.file.id, true);
-	};
-	pushHandlers['file:delete'] = function (data: FilePush) {
-		delete FILES[data.file.id];
-		removeFileLI(data.file.id);
-	};
-	pushHandlers['file:update'] = function (data: FilePush) {
-		for (const key of Object.keys(data.file)) {
-			(FILES[data.file.id] as any)[key] = (data.file as any)[key];
-		}
-		FILES[data.file.id] = convertToDates(FILES[data.file.id]!);
-		refreshFileLI(data.file.id);
+	pushHandlers.file = {
+		create(data: FileInfo) {
+			FILES[data.id] = convertToDates(data);
+			addFileLI(data.id, true);
+		},
+		delete(data: FileInfo) {
+			delete FILES[data.id];
+			removeFileLI(data.id);
+		},
+		update(data: FileInfo) {
+			for (const key of Object.keys(data)) {
+				(FILES[data.id] as any)[key] = (data as any)[key];
+			}
+			FILES[data.id] = convertToDates(FILES[data.id]!);
+			refreshFileLI(data.id);
+		},
 	};
 
 	refreshFiles();
