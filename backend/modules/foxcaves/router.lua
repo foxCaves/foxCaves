@@ -8,9 +8,8 @@ local module_helper = require("foxcaves.module_helper")
 local explode = utils.explode
 local type = type
 local next = next
-local io = io
 local ngx = ngx
-local lua_load = load
+local loadfile = loadfile
 local setfenv = setfenv
 local setmetatable = setmetatable
 local error = error
@@ -106,11 +105,8 @@ end
 
 local function scan_route_file(file)
     file = file:gsub("//+", "/")
-    local fh = io.open(file)
-    local data = fh:read("*all")
-    fh:close()
 
-    local func, err = lua_load(data, file)
+    local func, err = loadfile(file)
     if not func then
         error("Error loading route: " .. err)
     end
