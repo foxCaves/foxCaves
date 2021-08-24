@@ -179,6 +179,7 @@ function user_mt:get_private()
         active = self.active,
         bonusbytes = self.bonusbytes,
         usedbytes = self:calculate_used_bytes(),
+        totalbytes = self.totalbytes,
     }
 end
 
