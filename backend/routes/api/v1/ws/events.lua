@@ -22,7 +22,7 @@ R.register_route("/api/v1/ws/events", "GET", R.make_route_opts(), function()
         should_run = false
     end
 
-    local _, rerr = redis_inst:subscribe("push:" ..  ngx.ctx.user.id)
+    local _, rerr = redis_inst:subscribe("push:user:" ..  ngx.ctx.user.id)
     if rerr then
         kick()
         return

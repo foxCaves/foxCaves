@@ -80,32 +80,6 @@ function user_model.new()
     return user
 end
 
-function user_model.calculate_used_bytes(user)
-    if user.id then
-        user = user.id
-    end
-    local res = database.get_shared():query_single('SELECT SUM(size) AS usedbytes FROM files WHERE "user" = %s', user)
-    return res and res.usedbytes or 0
-end
-
-function user_model.send_event(user, action, model, data)
-    events.push_raw({
-        action = action,
-        model = model,
-        data = data,
-    }, user)
-end
-
-function user_model.send_used_bytes(user)
-    if user.id then
-        user = user.id
-    end
-    user_model.send_event(user, 'update', 'user', {
-        id = user,
-        usedbytes = user_model.calculate_used_bytes(user),
-    })
-end
-
 function user_mt:set_email(email)
     if not ngx.re.match(email, "^[a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\\.[a-zA-Z]{2,}$", "o") then
         return consts.VALIDATION_STATE_INVALID
@@ -167,9 +141,24 @@ function user_mt:check_password(password)
     return auth_ok
 end
 
-user_mt.calculate_used_bytes = user_model.calculate_used_bytes
-user_mt.send_event = user_model.send_event
-user_mt.send_used_bytes = user_model.send_used_bytes
+function user_mt:calculate_used_bytes()
+    local db = database.get_shared()
+    local res = db:query_single('SELECT SUM(size) AS usedbytes FROM files WHERE "user" = %s', self.id)
+    return res and res.usedbytes or 0
+end
+
+function user_mt:send_event(action, model, data)
+    events.push_raw('user:' .. self.id, {
+        action = action,
+        model = model,
+        data = data,
+    })
+end
+
+function user_mt:send_self_event(action)
+    action = action or 'update'
+    self:send_event(action, 'user', self:get_private())
+end
 
 function user_mt:get_private()
     return {
@@ -248,7 +237,7 @@ function user_mt:save()
         self.kick_user = nil
     end
 
-    self:send_event(primary_push_action, 'user', self:get_private())
+    self:send_self_event(primary_push_action)
 end
 
 function user_mt:make_new_login_key()
@@ -266,7 +255,7 @@ end
 
 function user_mt:delete()
     database.get_shared():query('DELETE FROM users WHERE id = %s', self.id)
-    self:send_event('delete', 'user', self:get_private())
+    self:send_self_event('delete')
 end
 
 user_mt.__index = user_mt

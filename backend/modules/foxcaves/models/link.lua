@@ -66,7 +66,8 @@ end
 function link_mt:delete()
     database.get_shared():query('DELETE FROM links WHERE id = %s', self.id)
 
-    user_model.send_event(self.user, 'delete', 'link', self)
+    local user = user_model.get_by_id(self.user)
+    user:send_event('delete', 'link', self)
 end
 
 function link_mt:set_owner(user)
@@ -102,7 +103,8 @@ function link_mt:save()
     self.created_at = res.created_at
     self.updated_at = res.updated_at
 
-    user_model.send_event(self.user, primary_push_action, 'link', self)
+    local user = user_model.get_by_id(self.user)
+    user:send_event(primary_push_action, 'link', self)
 end
 
 link_mt.__index = link_mt

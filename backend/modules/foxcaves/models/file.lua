@@ -225,8 +225,9 @@ function file_mt:delete()
 
     database.get_shared():query('DELETE FROM files WHERE id = %s', self.id)
 
-    user_model.send_event(self.user, 'delete', 'file', self)
-    user_model.send_used_bytes(self.user)
+    local user = user_model.get_by_id(self.user)
+    user:send_event('delete', 'file', self)
+    user:send_self_event()
 end
 
 function file_mt:make_local_path()
@@ -303,8 +304,9 @@ function file_mt:save()
     self.created_at = res.created_at
     self.updated_at = res.updated_at
 
-    user_model.send_event(self.user, primary_push_action, 'file', self)
-    user_model.send_used_bytes(self.user)
+    local user = user_model.get_by_id(self.user)
+    user:send_event(primary_push_action, 'file', self)
+    user:send_self_event()
 end
 
 file_mt.__index = file_mt
