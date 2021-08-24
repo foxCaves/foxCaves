@@ -152,6 +152,13 @@ function user_mt:calculate_storage_used()
     return res and res.storage_used or 0
 end
 
+function user_mt:has_free_storage_for(size)
+    if self.storage_quota < 0 then
+        return true
+    end
+    return self.storage_quota >= (self:calculate_storage_used() + size)
+end
+
 function user_mt:send_event_raw(data)
     events.push_raw('user:' .. self.id, data)
 end

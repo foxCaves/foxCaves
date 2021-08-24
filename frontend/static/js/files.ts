@@ -473,9 +473,12 @@ function renderUsedSpace() {
 	if (!currentUser) {
 		return;
 	}
-	$('#used_bytes_text').text(formatSize(currentUser.storage_used));
-	$('#total_bytes_text').text(formatSize(currentUser.storage_quota));
-	$('#used_bytes_bar').css('width', Math.ceil((currentUser.storage_used / currentUser.storage_quota) * 100.0) + '%');
+	const isUnlimited = currentUser.storage_quota < 0;
+	let quotaText = isUnlimited ? '&infin;' : formatSize(currentUser.storage_quota);
+	let percentUsed = isUnlimited ? 0 : Math.ceil((currentUser.storage_used / currentUser.storage_quota) * 100.0);
+	$('#storage_used_text').text(formatSize(currentUser.storage_used));
+	$('#storage_quota_text').text(quotaText);
+	$('#storage_used_bar').css('width', percentUsed + '%');
 }
 
 document.addEventListener('fetchCurrentUserDone', () => {

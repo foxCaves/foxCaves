@@ -34,11 +34,12 @@ function formatDate(d: Date) {
 function formatSize(size: number) {
 	let sinc = 0;
 
-	while(size > 1024) {
+	while (size > 1024) {
 		sinc = sinc + 1;
 		size = size / 1024;
-		if(sinc == 8)
+		if(sinc === 8) {
 			break;
+		}
 	}
 
 	size = Math.ceil(size * 100.0) / 100.0;

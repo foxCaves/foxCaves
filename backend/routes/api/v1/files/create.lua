@@ -33,8 +33,7 @@ R.register_route("/api/v1/files", "POST", R.make_route_opts(), function()
         return utils.api_error("Empty body")
     end
 
-    local storage_used = user:calculate_storage_used()
-    if storage_used + filesize > user.storage_quota then
+    if not user:has_free_storage_for(filesize) then
         return utils.api_error("Over quota", 402)
     end
 
