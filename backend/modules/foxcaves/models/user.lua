@@ -89,8 +89,8 @@ function user_mt:set_email(email)
     end
 
     if (not self.email) or email:lower() ~= self.email:lower() then
-        local res = database.get_shared():query('SELECT id FROM users WHERE lower(email) = %s', email:lower())
-        if res[1] then
+        local res = database.get_shared():query_single('SELECT id FROM users WHERE lower(email) = %s', email:lower())
+        if res then
             return consts.VALIDATION_STATE_TAKEN
         end
         self.active = 0
@@ -106,8 +106,8 @@ function user_mt:set_username(username)
         return consts.VALIDATION_STATE_INVALID
     end
 
-    local res = database.get_shared():query('SELECT id FROM users WHERE lower(username) = %s', username:lower())
-    if res[1] then
+    local res = database.get_shared():query_single('SELECT id FROM users WHERE lower(username) = %s', username:lower())
+    if res then
         return consts.VALIDATION_STATE_TAKEN
     end
 
