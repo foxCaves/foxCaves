@@ -226,6 +226,7 @@ function file_mt:delete()
     database.get_shared():query('DELETE FROM files WHERE id = %s', self.id)
 
     user_model.send_event(self.user, 'delete', 'file', self)
+    user_model.send_used_bytes(self.user)
 end
 
 function file_mt:make_local_path()
