@@ -31,7 +31,8 @@ R.register_route("/api/v1/files", "POST", R.make_route_opts(), function()
         return utils.api_error("Empty body")
     end
 
-    if ngx.ctx.user:calculate_used_bytes() + filesize > ngx.ctx.user.totalbytes then
+    local user_private = ngx.ctx.user:get_private()
+    if user_private.usedbytes + filesize > user_private.totalbytes then
         return utils.api_error("Over quota", 402)
     end
 
