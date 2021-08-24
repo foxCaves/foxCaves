@@ -195,14 +195,6 @@ function file_model.new()
     return file
 end
 
-function file_model.get_extension_thumbnail(extension)
-    local thumbnail = file_model.thumbnails[extension]
-    if not thumbnail then
-        thumbnail = "nothumb.png"
-    end
-    return url_config.main .. "/static/img/thumbs/" .. thumbnail
-end
-
 function file_mt:delete()
     file_deletestorage(self)
 
@@ -315,7 +307,11 @@ function file_mt:get_public()
     if res.type == file_model.type.image and res.thumbnail_url then
         res.thumbnail_image = res.thumbnail_url
     else
-        res.thumbnail_image = file_model.get_extension_thumbnail(res.extension)
+        local thumbnail = file_model.thumbnails[self.extension]
+        if not thumbnail then
+            thumbnail = "nothumb.png"
+        end
+        res.thumbnail_image = url_config.main .. "/static/img/thumbs/" .. thumbnail
     end
     return res
 end
