@@ -240,12 +240,16 @@ function file_mt:set_name(name)
     return true
 end
 
+function file_mt:get_mimetype()
+    return mimetypes[self.extension] or "application/octet-stream"
+end
+
 function file_mt:move_upload_data(src)
     self.size = lfs.attributes(src, "size")
 
     local thumbDest = file_model.paths.temp .. "thumb_" .. self.id
 
-    local prefix, suffix = self.mimetype:match("([a-z]+)/([a-z]+)")
+    local prefix, suffix = self:get_mimetype():match("([a-z]+)/([a-z]+)")
     self.type, self.thumbnail_extension = mimeHandlers[prefix](src, thumbDest, suffix)
 
     lfs.mkdir(file_model.paths.storage .. self.id)
@@ -303,7 +307,7 @@ function file_mt:get_public()
         view_url = url_config.short .. "/v" .. self.id,
         direct_url = url_config.short .. "/f" .. self.id .. "." .. self.extension,
         download_url = url_config.short .. "/d" .. self.id .. "." .. self.extension,
-        mimetype = mimetypes[self.extension] or "application/octet-stream",
+        mimetype = self:get_mimetype(),
     }
     if res.thumbnail_extension and res.thumbnail_extension ~= "" then
         res.thumbnail_url = url_config.short .. "/thumbs/" .. res.id .. "." .. res.thumbnail_extension
