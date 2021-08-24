@@ -24,7 +24,7 @@ RUN npm run build
 
 #WORKDIR /opt/stage/src
 #RUN rsync -r --exclude=*.lua . /opt/stage/dist
-#RUN find . -type f -name '*.lua' -print -exec luajit -b -g '{}' '../dist/{}' \;
+#RUN find . -type f -name '*.lua' -print -exec luajit -b '{}' '../dist/{}' \;
 
 
 
@@ -49,6 +49,7 @@ COPY etc/nginx/main.conf /usr/local/openresty/nginx/conf/custom.conf
 COPY etc/s6 /etc/s6
 
 COPY backend /var/www/foxcaves/lua
+#COPY --from=backend_builder /opt/stage/dist /var/www/foxcaves/lua
 COPY --from=frontend_builder /opt/stage/dist /var/www/foxcaves/html
 COPY --from=frontend_builder /opt/stage/.revision /var/www/foxcaves/.revision
 
