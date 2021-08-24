@@ -54,13 +54,15 @@ function user_model.get_by_username(username)
         return nil
     end
 
-    if ngx.ctx.user and ngx.ctx.user.username == username then
+    username = username:lower()
+
+    if ngx.ctx.user and ngx.ctx.user.username:lower() == username then
         return ngx.ctx.user
     end
 
     local user = database.get_shared():query_single(
         'SELECT ' .. user_select .. ' FROM users WHERE lower(username) = %s',
-        username:lower()
+        username
     )
 
     if not user then
