@@ -7,7 +7,7 @@ require("foxcaves.module_helper").setmodenv()
 function M.send(user, subject, content)
     local ok, err = resty_mail:send({
         from = config.from,
-        to = user.email,
+        to = { user.email },
         subject = subject,
         text = content,
     })
