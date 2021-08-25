@@ -195,7 +195,7 @@ function file_model.new()
     return file
 end
 
-function file_model.extract_id_and_extension(name)
+function file_model.extract_name_and_extension(name)
     local res = ngx.re.match(name, "^([^<>\r\n\t]*?)\\.([a-zA-Z0-9]+)?$", "o")
     if not res then
         return nil, nil
