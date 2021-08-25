@@ -167,6 +167,7 @@ local function route_execute()
         route_vars[mapping] = urlsplit[i]
     end
     if wildcard_i > 0 and #urlsplit > wildcard_i then
+        ngx.header["FoxCaves-Route-WC"] = "HIT"
         local wildcard_map = handler.mappings[wildcard_i]
         local res = {}
         for i = wildcard_i, #urlsplit do
