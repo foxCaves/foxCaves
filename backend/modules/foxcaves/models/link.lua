@@ -52,7 +52,7 @@ end
 function link_model.new()
     local link = {
         not_in_db = true,
-        id = random.string(10),
+        id = "g" .. random.string(10),
     }
     setmetatable(link, link_mt)
     return link
