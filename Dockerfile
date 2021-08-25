@@ -14,6 +14,12 @@ RUN echo $GIT_REVISION > /opt/stage/.revision
 
 RUN npm run build
 
+RUN mv /opt/stage/dist/static /opt/stage/dist/static-tmp && \
+    mkdir -p /opt/stage/dist/static/$GIT_REVISION && \
+    mv /opt/stage/dist/static-tmp/* /opt/stage/dist/static/$GIT_REVISION/ && \
+    rmdir /opt/stage/dist/static-tmp && \
+    ln -s /opt/stage/dist/static/$GIT_REVISION /opt/stage/dist/static/_head
+
 
 
 #FROM openresty/openresty:alpine-fat AS backend_builder
@@ -52,13 +58,6 @@ COPY backend /var/www/foxcaves/lua
 #COPY --from=backend_builder /opt/stage/dist /var/www/foxcaves/lua
 COPY --from=frontend_builder /opt/stage/dist /var/www/foxcaves/html
 COPY --from=frontend_builder /opt/stage/.revision /var/www/foxcaves/.revision
-
-ARG GIT_REVISION=UNKNOWN
-RUN mv /var/www/foxcaves/html/static /var/www/foxcaves/html/static-tmp && \
-    mkdir -p /var/www/foxcaves/html/static/$GIT_REVISION && \
-    mv /var/www/foxcaves/html/static-tmp/* /var/www/foxcaves/html/static/$GIT_REVISION/ && \
-    rmdir /var/www/foxcaves/html/static-tmp && \
-    ln -s /var/www/foxcaves/html/static/$GIT_REVISION /var/www/foxcaves/html/static/_head
 
 RUN /etc/nginx/cfips.sh
 
