@@ -52,8 +52,11 @@ COPY backend /var/www/foxcaves/lua
 #COPY --from=backend_builder /opt/stage/dist /var/www/foxcaves/lua
 COPY --from=frontend_builder /opt/stage/dist /var/www/foxcaves/html
 COPY --from=frontend_builder /opt/stage/.revision /var/www/foxcaves/.revision
-RUN mkdir -p /var/www/foxcaves/html/static/$GIT_REVISION && \
-    mv /var/www/foxcaves/html/static/* /var/www/foxcaves/html/static/$GIT_REVISION && \
+
+ARG GIT_REVISION=UNKNOWN
+RUN mv /var/www/foxcaves/html/static /var/www/foxcaves/html/static-tmp && \
+    mkdir -p /var/www/foxcaves/html/static/$GIT_REVISION && \
+    mv /var/www/foxcaves/html/static-tmp/* /var/www/foxcaves/html/static/$GIT_REVISION/ && \
     ln -s /var/www/foxcaves/html/static/$GIT_REVISION /var/www/foxcaves/html/static/_head
 
 RUN /etc/nginx/cfips.sh
