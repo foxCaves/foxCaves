@@ -34,15 +34,14 @@ R.register_route("/api/v1/users/emails/request", "POST", R.make_route_opts_anon(
     local subject
     if action == "activation" then
         emailstr = emailstr .. " have your activation E-Mail resent. To activate your user account"
-        subject = "foxCaves - Activate your account"
+        subject = "Activate your account"
     elseif action == "forgotpwd" then
         emailstr = emailstr .. " reset your password. To have a random password sent to you E-Mail"
-        subject = "foxCaves - Reset your password"
+        subject = "Reset your password"
     else
         return utils.api_error("action invalid")
     end
-    emailstr = emailstr .. " just click on the following link:\n" .. main_url .."/email/code?code=" .. emailid ..
-                            "\n\nKind regards,\nfoxCaves Support"
+    emailstr = emailstr .. " just click on the following link:\n" .. main_url .."/email/code?code=" .. emailid
 
     local redis_inst = redis.get_shared()
     local emailkey = "emailkeys:" .. emailid

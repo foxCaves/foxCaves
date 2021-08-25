@@ -8,8 +8,8 @@ function M.send(user, subject, content)
     local ok, err = resty_mail:send({
         from = config.from,
         to = { user.email },
-        subject = subject,
-        text = content,
+        subject = "foxCaves - " .. subject,
+        text = "Greetings, " .. user.username .. "!\n\n" .. content .. "\n\nKind regards,\nfoxCaves Support",
     })
 
     if not ok then

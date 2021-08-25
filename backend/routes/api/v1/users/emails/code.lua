@@ -48,9 +48,8 @@ R.register_route("/api/v1/users/emails/code", "POST", R.make_route_opts_anon(), 
         user:save()
 
         local email = "Hello, " .. user.username .. "!\n\nHere is your new password:\n" .. newPassword ..
-                        "\nPlease log in at " .. main_url .. "/login and change it as soon as possible." ..
-                        "\n\nKind regards,\nfoxCaves Support"
-        mail.send(user, "foxCaves - New password", email)
+                        "\nPlease log in at " .. main_url .. "/login and change it as soon as possible."
+        mail.send(user, "New password", email)
     end
 
     return { action = action }
