@@ -13,6 +13,7 @@ local loadfile = loadfile
 local setfenv = setfenv
 local setmetatable = setmetatable
 local error = error
+local table = table
 
 local G = _G
 
@@ -63,7 +64,7 @@ function ROUTE_REG_MT.make_route_opts_anon()
     return BASE_OPTS_ANON
 end
 
-local c_open, c_close = ('{}'):byte(1,2)
+local c_open, c_close, c_star = ('{}*'):byte(1,3)
 
 function ROUTE_REG_MT.register_route(url, method, options, func)
     method = method:upper()
@@ -77,8 +78,15 @@ function ROUTE_REG_MT.register_route(url, method, options, func)
         local rawseg_len = rawseg:len()
         local seg = rawseg
         if rawseg:byte(1) == c_open and rawseg:byte(rawseg_len) == c_close then
-            seg = '*'
-            mappings[i] = rawseg:sub(2, rawseg_len - 1)
+            local rawseg_off
+            if rawseg:byte(2) == c_star then
+                seg = '**'
+                rawseg_off = 3
+            else
+                seg = '*'
+                rawseg_off = 2
+            end
+            mappings[i] = rawseg:sub(rawseg_off, rawseg_len - 1)
         end
         local newroute = route.children[seg]
         if not newroute then
@@ -134,9 +142,17 @@ local function route_execute()
 
     local candidate = ROUTE_TREE
 
-    for _, seg in next, urlsplit do
-        candidate = candidate.children[seg] or candidate.children['*']
+    local wildcard_i = 0
+
+    for i, seg in next, urlsplit do
+        local old_candidate = candidate
+        candidate = old_candidate.children[seg] or old_candidate.children['*']
         if not candidate then
+            candidate = old_candidate.children['**']
+            if candidate then
+                wildcard_i = i
+                break
+            end
             return {}, utils.api_error("Route not found", 404)
         end
     end
@@ -149,6 +165,14 @@ local function route_execute()
     local route_vars = {}
     for i, mapping in next, handler.mappings do
         route_vars[mapping] = urlsplit[i]
+    end
+    if wildcard_i > 0 and #urlsplit > wildcard_i then
+        local wildcard_map = handler.mappings[wildcard_i]
+        local res = {}
+        for i = wildcard_i, #urlsplit do
+            table.insert(res, urlsplit[i])
+        end
+        route_vars[wildcard_map] = table.concat(res, "/")
     end
 
     ngx.header["FoxCaves-Route-ID"] = handler.id
