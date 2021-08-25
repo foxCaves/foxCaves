@@ -33,10 +33,10 @@ R.register_route("/api/v1/users/emails/request", "POST", R.make_route_opts_anon(
     local emailstr = "You have recently requested to "
     local subject
     if action == "activation" then
-        emailstr = emailstr .. " have your activation E-Mail resent. To activate your user account"
+        emailstr = emailstr .. "have your activation E-Mail resent. To activate your user account"
         subject = "Activate your account"
     elseif action == "forgotpwd" then
-        emailstr = emailstr .. " reset your password. To have a random password sent to you E-Mail"
+        emailstr = emailstr .. "reset your password. To have a random password sent to you E-Mail"
         subject = "Reset your password"
     else
         return utils.api_error("action invalid")
