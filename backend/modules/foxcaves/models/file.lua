@@ -33,7 +33,7 @@ local file_model = {
 }
 
 local function scan_thumbnails()
-    local dir = path.abs(ROOT .. "/html/static/img/thumbs/")
+    local dir = path.abs(ROOT .. "/html/static/_head/img/thumbs/")
     for file in lfs.dir(dir) do
         if file:sub(1, 4) == "ext_" then
             file_model.thumbnails[file:sub(5, file:len() - 4)] = file
@@ -311,7 +311,7 @@ function file_mt:get_public()
         if not thumbnail then
             thumbnail = "nothumb.png"
         end
-        res.thumbnail_image = url_config.main .. "/static/img/thumbs/" .. thumbnail
+        res.thumbnail_image = url_config.main .. "/static/_head/img/thumbs/" .. thumbnail
     end
     return res
 end
