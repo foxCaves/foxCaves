@@ -49,5 +49,5 @@ R.register_route("/api/v1/users/emails/request", "POST", R.make_route_opts_anon(
     redis_inst:hmset(emailkey, "user", user.id, "action", action)
     redis_inst:expire(emailkey, 172800) --48 hours
 
-    mail.send(user.email, subject, emailstr, "noreply@foxcav.es", "foxCaves")
+    mail.send(user, subject, emailstr)
 end)

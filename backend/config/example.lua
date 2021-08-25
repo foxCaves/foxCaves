@@ -9,7 +9,8 @@ return {
     email = {
         host = "localhost",
         port = 25,
-        -- user = "user",
+        from = "foxcaves@localhost",
+        -- username = "user",
         -- password = "pass",
         -- ssl = true,
     },

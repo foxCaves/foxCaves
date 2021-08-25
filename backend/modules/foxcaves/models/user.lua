@@ -242,7 +242,7 @@ function user_mt:save()
         redis_inst:hmset(emailkey, "user", self.id, "action", "activation")
         redis_inst:expire(emailkey, 172800) --48 hours
 
-        mail.send(self.email, "foxCaves - Activation E-Mail", email_text, "noreply@foxcav.es", "foxCaves")
+        mail.send(self, "foxCaves - Activation E-Mail", email_text)
 
         self.require_email_confirmation = nil
     end
