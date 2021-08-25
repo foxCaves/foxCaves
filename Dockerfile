@@ -57,6 +57,7 @@ ARG GIT_REVISION=UNKNOWN
 RUN mv /var/www/foxcaves/html/static /var/www/foxcaves/html/static-tmp && \
     mkdir -p /var/www/foxcaves/html/static/$GIT_REVISION && \
     mv /var/www/foxcaves/html/static-tmp/* /var/www/foxcaves/html/static/$GIT_REVISION/ && \
+    rmdir /var/www/foxcaves/html/static-tmp && \
     ln -s /var/www/foxcaves/html/static/$GIT_REVISION /var/www/foxcaves/html/static/_head
 
 RUN /etc/nginx/cfips.sh
