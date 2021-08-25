@@ -306,8 +306,8 @@ function file_mt:get_public()
         created_at = self.created_at,
         updated_at = self.updated_at,
 
-        view_url = url_config.main .. "/view?id=" .. self.id,
-        direct_url = short_url,
+        view_url = short_url,
+        direct_url = short_url .. "?raw=1",
         download_url = short_url .. "?dl=1",
         mimetype = self:get_mimetype(),
     }

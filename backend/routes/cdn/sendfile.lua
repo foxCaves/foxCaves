@@ -1,5 +1,6 @@
 local utils = require("foxcaves.utils")
 local file_model = require("foxcaves.models.file")
+local main_url = require("foxcaves.config").urls.main
 local ngx = ngx
 
 R.register_route("/cdn/sendfile/f/{file}", "GET", R.make_route_opts_anon(), function(route_vars)
@@ -11,9 +12,17 @@ R.register_route("/cdn/sendfile/f/{file}", "GET", R.make_route_opts_anon(), func
         return utils.api_error("File not found", 404)
     end
 
-    local disposition_type = "inline"
-    if ngx.var.arg_dl then
+    local disposition_type
+    if ngx.var.arg_raw then
+        disposition_type = "inline"
+    elseif ngx.var.arg_dl then
         disposition_type = "attachment"
+    end
+
+    if not disposition_type then
+        ngx.status = 302
+        ngx.redirect(main_url .. "/view?id=" .. file.id)
+        return
     end
 
     ngx.header["Content-Disposition"] = disposition_type .. "; filename=\"" .. file.name .. "\""
