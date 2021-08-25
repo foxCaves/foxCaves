@@ -195,6 +195,14 @@ function file_model.new()
     return file
 end
 
+function file_model.extract_id_and_extension(name)
+    local res = ngx.re.match(name, "^([^<>\r\n\t]*?)\\.([a-zA-Z0-9]+)?$", "o")
+    if not res then
+        return nil, nil
+    end
+    return res[1], res[2]
+end
+
 function file_mt:delete()
     file_deletestorage(self)
 
@@ -214,13 +222,13 @@ function file_mt:set_owner(user)
 end
 
 function file_mt:set_name(name)
-    local nameregex = ngx.re.match(name, "^([^<>\r\n\t]*?)\\.([a-zA-Z0-9]+)?$", "o")
+    local n, newextension = file_model.extract_name_and_extension(name)
 
-    if (not nameregex) or (not nameregex[1]) then
+    if not n then
         return false
     end
 
-    local newextension = (nameregex[2] or "bin"):lower()
+    newextension = (newextension or "bin"):lower()
 
     if self.extension and self.extension ~= newextension then
         file_deletestorage(self)
@@ -285,6 +293,8 @@ function file_mt:save()
 end
 
 function file_mt:get_public()
+    local short_url = url_config.short .. "/f/" .. self.id .. "." .. self.extension
+
     local res = {
         id = self.id,
         name = self.name,
@@ -296,9 +306,9 @@ function file_mt:get_public()
         created_at = self.created_at,
         updated_at = self.updated_at,
 
-        view_url = url_config.short .. "/v" .. self.id,
-        direct_url = url_config.short .. "/f" .. self.id .. "." .. self.extension,
-        download_url = url_config.short .. "/d" .. self.id .. "." .. self.extension,
+        view_url = url_config.main .. "/view?id=" .. self.id,
+        direct_url = short_url,
+        download_url = short_url .. "?dl=1",
         mimetype = self:get_mimetype(),
     }
     if res.thumbnail_extension and res.thumbnail_extension ~= "" then
