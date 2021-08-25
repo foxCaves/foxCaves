@@ -30,7 +30,7 @@ R.register_route("/api/v1/users/emails/request", "POST", R.make_route_opts_anon(
 
     local emailid = random.string(32)
 
-    local emailstr = "Hello, " .. user.username .. "!\n\nYou have recently requested to "
+    local emailstr = "You have recently requested to "
     local subject
     if action == "activation" then
         emailstr = emailstr .. " have your activation E-Mail resent. To activate your user account"

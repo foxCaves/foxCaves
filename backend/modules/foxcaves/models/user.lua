@@ -231,10 +231,9 @@ function user_mt:save()
     if self.require_email_confirmation then
         local emailid = random.string(32)
 
-        local email_text = "Hello, " .. self.username .. "!" ..
-            "\n\nYou have recently registered or changed your E-Mail on foxCaves." ..
-            "\nPlease click the following link to activate your E-Mail:\n"
-        email_text = email_text .. main_url .. "/email/code?code=" .. emailid
+        local email_text ="You have recently registered or changed your E-Mail on foxCaves." ..
+                          "\nPlease click the following link to activate your E-Mail:\n" ..
+                          main_url .. "/email/code?code=" .. emailid
 
         local redis_inst = redis.get_shared()
         local emailkey = "emailkeys:" .. emailid

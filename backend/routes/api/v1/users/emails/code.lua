@@ -47,8 +47,8 @@ R.register_route("/api/v1/users/emails/code", "POST", R.make_route_opts_anon(), 
         user:make_new_login_key()
         user:save()
 
-        local email = "Hello, " .. user.username .. "!\n\nHere is your new password:\n" .. newPassword ..
-                        "\nPlease log in at " .. main_url .. "/login and change it as soon as possible."
+        local email = "Here is your new password:\n" .. newPassword ..
+                      "\nPlease log in at " .. main_url .. "/login and change it as soon as possible."
         mail.send(user, "New password", email)
     end
 
