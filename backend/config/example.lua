@@ -7,9 +7,11 @@ return {
         -- pgmoon options
     },
     email = {
-        host = "email-smtp.us-east-1.amazonaws.com",
-        user = "",
-        password = "",
+        host = "localhost",
+        port = 25,
+        -- user = "user",
+        -- password = "pass",
+        -- ssl = true,
     },
     urls = {
         short = "http://short.foxcaves",

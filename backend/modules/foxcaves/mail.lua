@@ -33,14 +33,16 @@ end
 function M.send(to_addr, subject, content, from_addr, from_name, headers)
     local sock = ngx.socket.tcp()
 
-    local ok, err = sock:connect(config.host, 465)
+    local ok, err = sock:connect(config.host, config.port)
     if not ok then
         error("Failed to connect to SMTP: " .. err)
     end
 
-    ok, err = sock:sslhandshake()
-    if not ok then
-        error("Failed to handshake SSL to SMTP: " .. err)
+    if config.ssl then
+        ok, err = sock:sslhandshake()
+        if not ok then
+            error("Failed to handshake SSL to SMTP: " .. err)
+        end
     end
 
     smtp_recv_line(sock)
