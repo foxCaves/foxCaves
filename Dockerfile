@@ -18,7 +18,7 @@ RUN mv /opt/stage/dist/static /opt/stage/dist/static-tmp && \
     mkdir -p /opt/stage/dist/static/$GIT_REVISION && \
     mv /opt/stage/dist/static-tmp/* /opt/stage/dist/static/$GIT_REVISION/ && \
     rmdir /opt/stage/dist/static-tmp && \
-    ln -s /opt/stage/dist/static/$GIT_REVISION /opt/stage/dist/static/_head
+    ln -s ../$GIT_REVISION /opt/stage/dist/static/_head
 
 
 
