@@ -7,7 +7,7 @@ import { AlertClass, AppContext, AppContextClass } from '../utils/context';
 interface LoginPageState {
     username: string;
     password: string;
-    remember: boolean;
+    remember: string;
 }
 
 export class LoginPage extends React.Component<{}, LoginPageState> {
@@ -19,7 +19,7 @@ export class LoginPage extends React.Component<{}, LoginPageState> {
         this.state = {
             username: '',
             password: '',
-            remember: false,
+            remember: '',
         };
 
         this.handleChange = this.handleChange.bind(this);
@@ -36,8 +36,12 @@ export class LoginPage extends React.Component<{}, LoginPageState> {
     }
 
     handleChange(event: ChangeEvent<HTMLInputElement>) {
+        let value = event.target.value;
+        if (event.target.type === 'checkbox' && !event.target.checked) {
+            value = '';
+        }
         this.setState({
-            [event.target.name]: event.target.value,
+            [event.target.name]: value,
         } as unknown as LoginPageState);
     }
 
@@ -53,11 +57,7 @@ export class LoginPage extends React.Component<{}, LoginPageState> {
         try {
             await fetchAPI('/api/v1/users/sessions/login', {
                 method: 'POST',
-                body: new URLSearchParams({
-                    username: this.state.username,
-                    password: this.state.password,
-                    remember: this.state.remember ? 'true': 'false',
-                }),
+                body: new URLSearchParams(this.state),
             });
         } catch (err) {
             this.showLoginAlert({
@@ -76,16 +76,16 @@ export class LoginPage extends React.Component<{}, LoginPageState> {
             <div>
                 <h1>Login</h1>
                 <Form onSubmit={this.handleSubmit}>
-                    <Form.Group className="mb-3">
-                        <Form.Label>Username</Form.Label>
+                    <Form.Group className="mb-3 form-floating">
                         <Form.Control name="username" type="text" placeholder="Username" value={this.state.username} onChange={this.handleChange} />
+                        <Form.Label>Username</Form.Label>
                     </Form.Group>
-                    <Form.Group className="mb-3">
-                        <Form.Label>Password</Form.Label>
+                    <Form.Group className="mb-3 form-floating">
                         <Form.Control name="password" type="password" placeholder="Password" value={this.state.password} onChange={this.handleChange} />
+                        <Form.Label>Password</Form.Label>
                     </Form.Group>
                     <Form.Group className="mb-3">
-                        <Form.Check type="checkbox" name="remember" label="Remember me" checked={this.state.remember} onChange={this.handleChange} />
+                        <Form.Check type="checkbox" name="remember" label="Remember me" value="true" checked={this.state.remember === 'true'} onChange={this.handleChange} />
                     </Form.Group>
                     <Button variant="primary" type="submit">
                         Login
