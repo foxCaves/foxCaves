@@ -48,6 +48,7 @@ export class LoginPage extends React.Component<{}, LoginPageState> {
     }
 
     async handleSubmit(event: FormEvent<HTMLFormElement>) {
+        this.closeLoginAlert();
         event.preventDefault();
         try {
             await fetchAPI('/api/v1/users/sessions/login', {
