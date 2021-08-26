@@ -1,23 +1,24 @@
-import { User } from "../models/user";
 import React, { ReactNode } from 'react';
 import { Redirect } from "react-router-dom";
+import { AppContext, AppContextClass } from "../context";
 
-export interface BasePageProps {
-    user?: User;
-    showAlert(message: string, variant: string): void;
-    refreshUser(): Promise<void>;
-}
-
-export abstract class BasePage<T> extends React.Component<BasePageProps, T> {
+export abstract class BasePage<R, T> extends React.Component<R, T> {
     abstract renderSub(): ReactNode;
     render() {
         return this.renderSub();
     }
 }
 
-export abstract class BaseLoggedInPage<T> extends BasePage<T> {
+export abstract class BaseLoggedInPage<R, T> extends BasePage<R, T> {
+    static contextType = AppContext;
+    context!: AppContextClass;
+
     render() {
-        if (this.props.user) {
+        if (!this.context.userLoaded) {
+            return null;
+        }
+
+        if (this.context.user) {
             return super.render();
         }
         return (
@@ -26,9 +27,12 @@ export abstract class BaseLoggedInPage<T> extends BasePage<T> {
     }
 }
 
-export abstract class BaseGuestOnlyPage<T> extends BasePage<T> {
+export abstract class BaseGuestOnlyPage<R, T> extends BasePage<R, T> {
+    static contextType = AppContext;
+    context!: AppContextClass;
+
     render() {
-        if (!this.props.user) {
+        if (!this.context.user) {
             return super.render();
         }
         return (

@@ -1,6 +1,6 @@
 import { BasePage } from './base';
 
-export class Home extends BasePage<{}> {
+export class HomePage extends BasePage<{}, {}> {
     renderSub() {
         return (
             <div>

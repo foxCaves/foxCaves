@@ -1,14 +1,18 @@
 import { ChangeEvent, FormEvent } from 'react';
-import { BaseGuestOnlyPage, BasePageProps } from './base';
+import { BaseGuestOnlyPage } from './base';
 import { fetchAPI } from '../utils/api';
+import { AppContext, AppContextClass } from '../context';
 
 interface LoginPageState {
     username: string;
     password: string;
 }
 
-export class Login extends BaseGuestOnlyPage<LoginPageState> {
-    constructor(props: BasePageProps) {
+export class LoginPage extends BaseGuestOnlyPage<{}, LoginPageState> {
+    static contextType = AppContext;
+    context!: AppContextClass;
+
+    constructor(props: {}) {
         super(props);
         this.state = {
             username: '',
@@ -33,11 +37,11 @@ export class Login extends BaseGuestOnlyPage<LoginPageState> {
                 body: new URLSearchParams(this.state),
             });
         } catch (err) {
-            this.props.showAlert(err.message, 'danger');
+            this.context.showAlert(err.message, 'danger');
             return;
         }
-        this.props.showAlert('Logged in, redirecting...', 'success');
-        await this.props.refreshUser();
+        this.context.showAlert('Logged in, redirecting...', 'success');
+        await this.context.refreshUser();
     }
 
     renderSub() {
