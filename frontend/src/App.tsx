@@ -85,7 +85,6 @@ export class App extends React.Component<{}, AppState> {
                                         <CustomNavLink to="/" exact>Home</CustomNavLink>
                                         <CustomNavLink login={LoginState.LoggedIn} to="/files">Files</CustomNavLink>
                                         <CustomNavLink login={LoginState.LoggedIn} to="/links">Links</CustomNavLink>
-                                        <CustomNavLink login={LoginState.LoggedIn} to="/account">Account</CustomNavLink>
                                         <CustomNavLink login={LoginState.LoggedOut} to="/login">Login</CustomNavLink>
                                         <CustomNavLink login={LoginState.LoggedOut} to="/register">Register</CustomNavLink>
                                     </Nav>
