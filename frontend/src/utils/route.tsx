@@ -6,8 +6,8 @@ import Nav from 'react-bootstrap/Nav';
 import Dropdown from 'react-bootstrap/Dropdown';
 
 export enum LoginState {
-    LoggedIn,
-    LoggedOut,
+    LoggedIn = 1,
+    LoggedOut = 2,
 }
 
 interface CustomRouteOptions {
@@ -38,6 +38,9 @@ export const CustomRoute: React.FC<CustomRouteOptions> = ({ path, login, childre
 }
 
 function shouldRender(login: LoginState | undefined, ctx: AppContextClass) {
+    if (!login) {
+        return true;
+    }
     if (!ctx.userLoaded) {
         return false;
     }
