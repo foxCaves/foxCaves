@@ -1,23 +1,36 @@
 {
   "compilerOptions": {
-    /* Visit https://aka.ms/tsconfig.json to read more about this file */
-
-    /* Basic Options */
-    "target": "ES2020",                                /* Specify ECMAScript target version: 'ES3' (default), 'ES5', 'ES2015', 'ES2016', 'ES2017', 'ES2018', 'ES2019', 'ES2020', 'ES2021', or 'ESNEXT'. */
-    "module": "None",                           /* Specify module code generation: 'none', 'commonjs', 'amd', 'system', 'umd', 'es2015', 'es2020', or 'ESNext'. */
-    "lib": ["DOM", "ES2020"],                                   /* Specify library files to be included in the compilation. */
-    "declaration": false,                         /* Generates corresponding '.d.ts' file. */
-    "declarationMap": false,                      /* Generates a sourcemap for each corresponding '.d.ts' file. */
-    "sourceMap": true,                           /* Generates corresponding '.map' file. */
+    "target": "ES2020",
+    "module": "esnext",
+    "lib": [
+      "DOM",
+      "ES2020"
+    ],
+    "declaration": false,
+    "declarationMap": false,
+    "sourceMap": true,
     "inlineSources": true,
-    "outDir": "./.tmp/js",                              /* Redirect output structure to the directory. */
-    "removeComments": true,                      /* Do not emit comments to output. */
-    "strict": true,                                 /* Enable all strict type-checking options. */
+    "outDir": "./dist/",
+    "removeComments": true,
+    "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noUncheckedIndexedAccess": true,
-    "allowJs": true,
-    "types": ["jquery"]
+    "allowJs": false,
+    "esModuleInterop": true,
+    "jsx": "react-jsx",
+    "types": [],
+    "skipLibCheck": true,
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
+    "noFallthroughCasesInSwitch": true,
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true
   },
-  "include": ["./static/js"]
+  "include": [
+    "./src/*.ts",
+    "./src/*.tsx"
+  ]
 }
