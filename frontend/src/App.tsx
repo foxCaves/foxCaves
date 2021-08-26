@@ -12,24 +12,20 @@ import { LinksPage } from './pages/links';
 import { AccountPage } from './pages/account';
 import React from 'react';
 import { User } from './models/user';
-import { AppContext, AppContextClass } from './utils/context';
+import { AlertClass, AppContext, AppContextClass } from './utils/context';
 import { LoginState, CustomRoute, CustomNavLink, CustomDropDownItem } from './utils/route';
 
 interface AppState {
     user?: User;
     userLoaded: boolean;
-    showAlert: boolean;
-    alertMessage: string;
-    alertVariant: string;
+    alerts: AlertClass[];
 }
 
 export class App extends React.Component<{}, AppState> {
     constructor(props: {}) {
         super(props);
         this.state = {
-            showAlert: false,
-            alertMessage: '',
-            alertVariant: '',
+            alerts: [],
             userLoaded: false,
         };
         this.closeAlert = this.closeAlert.bind(this);
@@ -49,18 +45,29 @@ export class App extends React.Component<{}, AppState> {
         });
     }
 
-    showAlert(message: string, variant: string) {
-        this.setState({
-            showAlert: true,
-            alertMessage: message,
-            alertVariant: variant,
-        });
+    showAlert(alert: AlertClass) {
+        this.closeAlert(alert);
+        const alerts = this.state.alerts;
+        alerts.push(alert);
+        if (alert.timeout > 0) {
+            alert.__timeout = setTimeout(() => {
+                this.closeAlert(alert);
+            }, alert.timeout);
+        }
+        this.setState({ alerts });
     }
 
-    closeAlert() {
-        this.setState({
-            showAlert: false
-        });
+    closeAlert(alert: AlertClass) {
+        let alerts = this.state.alerts;
+        const oldAlert = alerts.find(a => a.id === alert.id);
+        if (oldAlert) {
+            alerts = alerts.filter(a => a.id !== alert.id);
+            if (oldAlert.__timeout) {
+                clearTimeout(oldAlert.__timeout);
+                oldAlert.__timeout = undefined;
+            }
+        }
+        this.setState({ alerts });
     }
 
     render() {
@@ -103,9 +110,11 @@ export class App extends React.Component<{}, AppState> {
                             </Container>
                         </Navbar>
                         <br />
-                        <Alert show={this.state.showAlert} variant={this.state.alertVariant} onClose={this.closeAlert} dismissible>
-                            {this.state.alertMessage}
-                        </Alert>
+                        {this.state.alerts.map(a => (
+                            <Alert key={a.id} show variant={a.variant} onClose={() => this.closeAlert(a)} dismissible>
+                                {a.contents}
+                            </Alert>
+                        ))}
                         <Switch>
                             <CustomRoute path="/login" login={LoginState.LoggedOut}>
                                 <LoginPage />

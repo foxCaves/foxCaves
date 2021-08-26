@@ -1,11 +1,19 @@
-import React from 'react';
+import React, { ReactNode } from 'react';
 import { User } from '../models/user';
+
+export interface AlertClass {
+    id: string;
+    contents: ReactNode;
+    variant: string;
+    timeout: number;
+    __timeout?: NodeJS.Timeout;
+}
 
 export interface AppContextClass {
     user?: User;
     userLoaded: boolean;
-    showAlert(message: string, variant: string): void;
-    closeAlert(): void;
+    showAlert(alert: AlertClass): void;
+    closeAlert(alert: AlertClass): void;
     refreshUser(): Promise<void>;
 }
 

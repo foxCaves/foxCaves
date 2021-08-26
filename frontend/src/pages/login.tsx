@@ -2,12 +2,13 @@ import React, { ChangeEvent, FormEvent } from 'react';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import { fetchAPI } from '../utils/api';
-import { AppContext, AppContextClass } from '../utils/context';
+import { AlertClass, AppContext, AppContextClass } from '../utils/context';
 
 interface LoginPageState {
     username: string;
     password: string;
     remember: boolean;
+    loginAlert?: AlertClass;
 }
 
 export class LoginPage extends React.Component<{}, LoginPageState> {
@@ -26,6 +27,23 @@ export class LoginPage extends React.Component<{}, LoginPageState> {
         this.handleSubmit = this.handleSubmit.bind(this);
     }
 
+    closeLoginAlert() {
+        if (this.state.loginAlert) {
+            this.context.closeAlert(this.state.loginAlert);
+            this.setState({
+                loginAlert: undefined
+            });
+        }
+    }
+
+    showLoginAlert(alert: AlertClass) {
+        this.closeLoginAlert();
+        this.setState({
+            loginAlert: alert
+        });
+        this.context.showAlert(alert);
+    }
+
     handleChange(event: ChangeEvent<HTMLInputElement>) {
         this.setState({
             [event.target.name]: event.target.value,
@@ -39,7 +57,6 @@ export class LoginPage extends React.Component<{}, LoginPageState> {
     }
 
     async handleSubmit(event: FormEvent<HTMLFormElement>) {
-        this.context.closeAlert();
         event.preventDefault();
         try {
             await fetchAPI('/api/v1/users/sessions/login', {
@@ -51,7 +68,12 @@ export class LoginPage extends React.Component<{}, LoginPageState> {
                 }),
             });
         } catch (err) {
-            this.context.showAlert(err.message, 'danger');
+            this.showLoginAlert({
+                id: 'login',
+                contents: err.message,
+                variant: 'danger',
+                timeout: 10000,
+            });
             return;
         }
         await this.context.refreshUser();
