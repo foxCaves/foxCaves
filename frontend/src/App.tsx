@@ -46,22 +46,22 @@ export class App extends React.Component<{}, AppState> {
     }
 
     showAlert(alert: AlertClass) {
-        this.closeAlert(alert);
+        this.closeAlert(alert.id);
         const alerts = this.state.alerts;
         alerts.push(alert);
         if (alert.timeout > 0) {
             alert.__timeout = setTimeout(() => {
-                this.closeAlert(alert);
+                this.closeAlert(alert.id);
             }, alert.timeout);
         }
         this.setState({ alerts });
     }
 
-    closeAlert(alert: AlertClass) {
+    closeAlert(id: string) {
         let alerts = this.state.alerts;
-        const oldAlert = alerts.find(a => a.id === alert.id);
+        const oldAlert = alerts.find(a => a.id === id);
         if (oldAlert) {
-            alerts = alerts.filter(a => a.id !== alert.id);
+            alerts = alerts.filter(a => a.id !== id);
             if (oldAlert.__timeout) {
                 clearTimeout(oldAlert.__timeout);
                 oldAlert.__timeout = undefined;
@@ -111,7 +111,7 @@ export class App extends React.Component<{}, AppState> {
                         </Navbar>
                         <br />
                         {this.state.alerts.map(a => (
-                            <Alert key={a.id} show variant={a.variant} onClose={() => this.closeAlert(a)} dismissible>
+                            <Alert key={a.id} show variant={a.variant} onClose={() => this.closeAlert(a.id)} dismissible>
                                 {a.contents}
                             </Alert>
                         ))}

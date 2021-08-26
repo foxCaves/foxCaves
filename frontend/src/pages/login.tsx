@@ -8,7 +8,6 @@ interface LoginPageState {
     username: string;
     password: string;
     remember: boolean;
-    loginAlert?: AlertClass;
 }
 
 export class LoginPage extends React.Component<{}, LoginPageState> {
@@ -28,19 +27,11 @@ export class LoginPage extends React.Component<{}, LoginPageState> {
     }
 
     closeLoginAlert() {
-        if (this.state.loginAlert) {
-            this.context.closeAlert(this.state.loginAlert);
-            this.setState({
-                loginAlert: undefined
-            });
-        }
+        this.context.closeAlert('login');
     }
 
     showLoginAlert(alert: AlertClass) {
         this.closeLoginAlert();
-        this.setState({
-            loginAlert: alert
-        });
         this.context.showAlert(alert);
     }
 

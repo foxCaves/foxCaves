@@ -13,7 +13,7 @@ export interface AppContextClass {
     user?: User;
     userLoaded: boolean;
     showAlert(alert: AlertClass): void;
-    closeAlert(alert: AlertClass): void;
+    closeAlert(id: string): void;
     refreshUser(): Promise<void>;
 }
 
