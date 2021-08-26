@@ -98,7 +98,7 @@ export class App extends React.Component<{}, AppState> {
             <AppContext.Provider value={context}>
                 <Router>
                     <Container>
-                        <Navbar bg="light">
+                        <Navbar variant="dark" bg="dark">
                             <Container>
                                 <Navbar.Brand>foxCaves</Navbar.Brand>
                                 <Navbar.Toggle aria-controls="basic-navbar-nav" />
