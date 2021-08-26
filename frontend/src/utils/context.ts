@@ -5,6 +5,7 @@ export interface AppContextClass {
     user?: User;
     userLoaded: boolean;
     showAlert(message: string, variant: string): void;
+    closeAlert(): void;
     refreshUser(): Promise<void>;
 }
 

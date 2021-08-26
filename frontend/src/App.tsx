@@ -85,6 +85,7 @@ export class App extends React.Component<{}, AppState> {
             userLoaded: this.state.userLoaded,
             showAlert: this.showAlert,
             refreshUser: this.refreshUser,
+            closeAlert: this.closeAlert,
         };
 
         return (
