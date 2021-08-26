@@ -1,8 +1,8 @@
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
-import { LinkContainer } from 'react-router-bootstrap';
 import Container from 'react-bootstrap/Container';
 import Navbar from 'react-bootstrap/Navbar';
 import Nav from 'react-bootstrap/Nav';
+import Dropdown from 'react-bootstrap/Dropdown';
 import Alert from 'react-bootstrap/Alert';
 import { HomePage } from './pages/home';
 import { LoginPage } from './pages/login';
@@ -13,7 +13,7 @@ import { AccountPage } from './pages/account';
 import React from 'react';
 import { User } from './models/user';
 import { AppContext, AppContextClass } from './utils/context';
-import { LoginState, CustomRoute } from './utils/route';
+import { LoginState, CustomRoute, CustomNavLink, CustomDropDownItem } from './utils/route';
 
 interface AppState {
     user?: User;
@@ -64,28 +64,6 @@ export class App extends React.Component<{}, AppState> {
     }
 
     render() {
-        let nav = undefined;
-        if (this.state.userLoaded) {
-            if (this.state.user) {
-                nav = (<>
-                    <LinkContainer to="/" exact><Nav.Link>Home</Nav.Link></LinkContainer>
-                    <LinkContainer to="/files"><Nav.Link>Files</Nav.Link></LinkContainer>
-                    <LinkContainer to="/links"><Nav.Link>Links</Nav.Link></LinkContainer>
-                    <LinkContainer to="/account"><Nav.Link>Account</Nav.Link></LinkContainer>
-                </>);
-            } else {
-                nav = (<>
-                    <LinkContainer to="/" exact><Nav.Link>Home</Nav.Link></LinkContainer>
-                    <LinkContainer to="/login"><Nav.Link>Login</Nav.Link></LinkContainer>
-                    <LinkContainer to="/register"><Nav.Link>Login</Nav.Link></LinkContainer>
-                </>);
-            }
-        } else {
-            nav = (<>
-                <LinkContainer to="/" exact><Nav.Link>Home</Nav.Link></LinkContainer>
-            </>);
-        }
-
         const context: AppContextClass = {
             user: this.state.user,
             userLoaded: this.state.userLoaded,
@@ -101,10 +79,26 @@ export class App extends React.Component<{}, AppState> {
                         <Navbar variant="dark" bg="dark">
                             <Container>
                                 <Navbar.Brand>foxCaves</Navbar.Brand>
-                                <Navbar.Toggle aria-controls="basic-navbar-nav" />
-                                <Navbar.Collapse id="basic-navbar-nav">
+                                <Navbar.Toggle aria-controls="navbar-nav" />
+                                <Navbar.Collapse id="navbar-nav">
                                     <Nav className="me-auto">
-                                        {nav}
+                                        <CustomNavLink to="/" exact>Home</CustomNavLink>
+                                        <CustomNavLink login={LoginState.LoggedIn} to="/files">Files</CustomNavLink>
+                                        <CustomNavLink login={LoginState.LoggedIn} to="/links">Links</CustomNavLink>
+                                        <CustomNavLink login={LoginState.LoggedIn} to="/account">Account</CustomNavLink>
+                                        <CustomNavLink login={LoginState.LoggedOut} to="/login">Login</CustomNavLink>
+                                        <CustomNavLink login={LoginState.LoggedOut} to="/register">Register</CustomNavLink>
+                                    </Nav>
+                                    <Nav>
+                                        <Dropdown as={Nav.Item}>
+                                            <Dropdown.Toggle as={Nav.Link}>Welcome, {this.state.user ? this.state.user.username : 'Guest'}!</Dropdown.Toggle>
+                                            <Dropdown.Menu>
+                                                <CustomDropDownItem login={LoginState.LoggedIn} to="/account">Account</CustomDropDownItem>
+                                                <CustomDropDownItem login={LoginState.LoggedIn} to="/logout">Log out</CustomDropDownItem>
+                                                <CustomDropDownItem login={LoginState.LoggedOut} to="/login">Login</CustomDropDownItem>
+                                                <CustomDropDownItem login={LoginState.LoggedOut} to="/register">Register</CustomDropDownItem>
+                                            </Dropdown.Menu>
+                                        </Dropdown>
                                     </Nav>
                                 </Navbar.Collapse>
                             </Container>
