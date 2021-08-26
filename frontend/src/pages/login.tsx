@@ -1,7 +1,6 @@
 import { ChangeEvent, FormEvent } from 'react';
 import { BaseGuestOnlyPage } from './base';
 import { fetchAPI } from '../utils/api';
-import { AppContext, AppContextClass } from '../context';
 
 interface LoginPageState {
     username: string;
@@ -9,9 +8,6 @@ interface LoginPageState {
 }
 
 export class LoginPage extends BaseGuestOnlyPage<{}, LoginPageState> {
-    static contextType = AppContext;
-    context!: AppContextClass;
-
     constructor(props: {}) {
         super(props);
         this.state = {
