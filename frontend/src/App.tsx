@@ -93,7 +93,7 @@ export class App extends React.Component<{}, AppState> {
                                             <Dropdown.Toggle as={Nav.Link}>Welcome, {this.state.user ? this.state.user.username : 'Guest'}!</Dropdown.Toggle>
                                             <Dropdown.Menu>
                                                 <CustomDropDownItem login={LoginState.LoggedIn} to="/account">Account</CustomDropDownItem>
-                                                <CustomDropDownItem login={LoginState.LoggedIn} to="/logout">Log out</CustomDropDownItem>
+                                                <CustomDropDownItem login={LoginState.LoggedIn} to="/logout">Logout</CustomDropDownItem>
                                                 <CustomDropDownItem login={LoginState.LoggedOut} to="/login">Login</CustomDropDownItem>
                                                 <CustomDropDownItem login={LoginState.LoggedOut} to="/register">Register</CustomDropDownItem>
                                             </Dropdown.Menu>
