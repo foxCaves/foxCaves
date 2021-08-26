@@ -1,5 +1,5 @@
-import { ChangeEvent, FormEvent } from 'react';
-import { BaseGuestOnlyPage } from './base';
+import React, { ChangeEvent, FormEvent } from 'react';
+import Form from 'react-bootstrap/Form';
 import { fetchAPI } from '../utils/api';
 
 interface LoginPageState {
@@ -7,7 +7,7 @@ interface LoginPageState {
     password: string;
 }
 
-export class LoginPage extends BaseGuestOnlyPage<{}, LoginPageState> {
+export class LoginPage extends React.Component<{}, LoginPageState> {
     constructor(props: {}) {
         super(props);
         this.state = {
@@ -39,23 +39,21 @@ export class LoginPage extends BaseGuestOnlyPage<{}, LoginPageState> {
         await this.context.refreshUser();
     }
 
-    renderSub() {
+    render() {
         return (
             <div>
                 <h1>Login</h1>
-                <form onSubmit={this.handleSubmit}>
-                    <label>
-                        Username:
-                        <input type="text" name="username" value={this.state.username} onChange={this.handleChange} />
-                    </label>
-                    <br />
-                    <label>
-                        Password:
-                        <input type="password" name="password" value={this.state.password} onChange={this.handleChange} />
-                    </label>
-                    <br />
+                <Form onSubmit={this.handleSubmit}>
+                    <Form.Group>
+                        <Form.Label>Username</Form.Label>
+                        <Form.Control name="username" type="text" placeholder="Username" value={this.state.username} onChange={this.handleChange} />
+                    </Form.Group>
+                    <Form.Group>
+                        <Form.Label>Password</Form.Label>
+                        <Form.Control name="password" type="text" placeholder="Password" value={this.state.password} onChange={this.handleChange} />
+                    </Form.Group>
                     <input type="submit" value="Login" />
-                </form>
+                </Form>
             </div>
         );
     }

@@ -1,7 +1,7 @@
-import { BasePage } from './base';
+import React from 'react';
 
-export class HomePage extends BasePage<{}, {}> {
-    renderSub() {
+export class HomePage extends React.Component<{}, {}> {
+    render() {
         return (
             <div>
                 <h1>Home</h1>

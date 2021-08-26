@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Switch } from 'react-router-dom';
 import { LinkContainer } from 'react-router-bootstrap';
 import Container from 'react-bootstrap/Container';
 import Navbar from 'react-bootstrap/Navbar';
@@ -9,7 +9,8 @@ import { LoginPage } from './pages/login';
 import { FilesPage } from './pages/files';
 import React from 'react';
 import { User } from './models/user';
-import { AppContext, AppContextClass } from './context';
+import { AppContext, AppContextClass } from './utils/context';
+import { LoginState, CustomRoute } from './utils/route';
 
 interface AppState {
     user?: User;
@@ -106,15 +107,15 @@ export class App extends React.Component<{}, AppState> {
                             {this.state.alertMessage}
                         </Alert>
                         <Switch>
-                            <Route path="/login">
+                            <CustomRoute path="/login" login={LoginState.LoggedOut}>
                                 <LoginPage />
-                            </Route>
-                            <Route path="/files">
+                            </CustomRoute>
+                            <CustomRoute path="/files" login={LoginState.LoggedIn}>
                                 <FilesPage />
-                            </Route>
-                            <Route path="/">
+                            </CustomRoute>
+                            <CustomRoute path="/">
                                 <HomePage />
-                            </Route>
+                            </CustomRoute>
                         </Switch>
                     </Container>
                 </Router>
@@ -122,3 +123,4 @@ export class App extends React.Component<{}, AppState> {
         );
     }
 }
+
