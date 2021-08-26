@@ -36,7 +36,6 @@ export class LoginPage extends BaseGuestOnlyPage<{}, LoginPageState> {
             this.context.showAlert(err.message, 'danger');
             return;
         }
-        this.context.showAlert('Logged in, redirecting...', 'success');
         await this.context.refreshUser();
     }
 
