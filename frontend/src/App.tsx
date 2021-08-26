@@ -82,34 +82,33 @@ export class App extends React.Component<{}, AppState> {
         return (
             <AppContext.Provider value={context}>
                 <Router>
+                    <Navbar variant="dark" bg="primary" fixed="top">
+                        <Container>
+                            <Navbar.Brand>foxCaves</Navbar.Brand>
+                            <Navbar.Toggle aria-controls="navbar-nav" />
+                            <Navbar.Collapse id="navbar-nav">
+                                <Nav className="me-auto">
+                                    <CustomNavLink to="/" exact>Home</CustomNavLink>
+                                    <CustomNavLink login={LoginState.LoggedIn} to="/files">Files</CustomNavLink>
+                                    <CustomNavLink login={LoginState.LoggedIn} to="/links">Links</CustomNavLink>
+                                    <CustomNavLink login={LoginState.LoggedOut} to="/login">Login</CustomNavLink>
+                                    <CustomNavLink login={LoginState.LoggedOut} to="/register">Register</CustomNavLink>
+                                </Nav>
+                                <Nav>
+                                    <Dropdown as={Nav.Item}>
+                                        <Dropdown.Toggle as={Nav.Link}>Welcome, {this.state.user ? this.state.user.username : 'Guest'}!</Dropdown.Toggle>
+                                        <Dropdown.Menu>
+                                            <CustomDropDownItem login={LoginState.LoggedIn} to="/account">Account</CustomDropDownItem>
+                                            <CustomDropDownItem login={LoginState.LoggedIn} to="/logout">Logout</CustomDropDownItem>
+                                            <CustomDropDownItem login={LoginState.LoggedOut} to="/login">Login</CustomDropDownItem>
+                                            <CustomDropDownItem login={LoginState.LoggedOut} to="/register">Register</CustomDropDownItem>
+                                        </Dropdown.Menu>
+                                    </Dropdown>
+                                </Nav>
+                            </Navbar.Collapse>
+                        </Container>
+                    </Navbar>
                     <Container>
-                        <Navbar variant="dark" bg="dark">
-                            <Container>
-                                <Navbar.Brand>foxCaves</Navbar.Brand>
-                                <Navbar.Toggle aria-controls="navbar-nav" />
-                                <Navbar.Collapse id="navbar-nav">
-                                    <Nav className="me-auto">
-                                        <CustomNavLink to="/" exact>Home</CustomNavLink>
-                                        <CustomNavLink login={LoginState.LoggedIn} to="/files">Files</CustomNavLink>
-                                        <CustomNavLink login={LoginState.LoggedIn} to="/links">Links</CustomNavLink>
-                                        <CustomNavLink login={LoginState.LoggedOut} to="/login">Login</CustomNavLink>
-                                        <CustomNavLink login={LoginState.LoggedOut} to="/register">Register</CustomNavLink>
-                                    </Nav>
-                                    <Nav>
-                                        <Dropdown as={Nav.Item}>
-                                            <Dropdown.Toggle as={Nav.Link}>Welcome, {this.state.user ? this.state.user.username : 'Guest'}!</Dropdown.Toggle>
-                                            <Dropdown.Menu>
-                                                <CustomDropDownItem login={LoginState.LoggedIn} to="/account">Account</CustomDropDownItem>
-                                                <CustomDropDownItem login={LoginState.LoggedIn} to="/logout">Logout</CustomDropDownItem>
-                                                <CustomDropDownItem login={LoginState.LoggedOut} to="/login">Login</CustomDropDownItem>
-                                                <CustomDropDownItem login={LoginState.LoggedOut} to="/register">Register</CustomDropDownItem>
-                                            </Dropdown.Menu>
-                                        </Dropdown>
-                                    </Nav>
-                                </Navbar.Collapse>
-                            </Container>
-                        </Navbar>
-                        <br />
                         {this.state.alerts.map(a => (
                             <Alert key={a.id} show variant={a.variant} onClose={() => this.closeAlert(a.id)} dismissible>
                                 {a.contents}
