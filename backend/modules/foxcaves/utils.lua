@@ -55,7 +55,7 @@ function M.get_body_data()
 end
 
 function M.get_post_args()
-    local ctype = ngx.ngx.var.http_content_type
+    local ctype = ngx.var.http_content_type
 
     if ctype and ctype:lower() == "application/json" then
         local data = M.get_body_data()
