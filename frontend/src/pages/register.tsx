@@ -144,6 +144,7 @@ export class RegistrationPage extends FormBasePage<{}, RegistrationPageState> {
             <Form.Check
               type="checkbox"
               name="agreetos"
+              id="agreetos"
               label="I agree to the Terms of Service and Privacy Policy"
               value="true"
               checked={this.state.agreetos === "true"}

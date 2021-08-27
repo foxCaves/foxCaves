@@ -88,6 +88,7 @@ export class LoginPage extends FormBasePage<{}, LoginPageState> {
               type="checkbox"
               name="remember"
               label="Remember me"
+              id="remember"
               value="true"
               checked={this.state.remember === "true"}
               onChange={this.handleChange}
