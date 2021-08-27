@@ -1,7 +1,5 @@
 FROM node:current AS frontend_builder
 
-RUN apt update && apt -y install luajit luarocks
-RUN luarocks install luafilesystem
 RUN mkdir /opt/stage
 WORKDIR /opt/stage
 COPY frontend/package.json /opt/stage/
@@ -13,24 +11,6 @@ ARG GIT_REVISION=UNKNOWN
 RUN echo $GIT_REVISION > /opt/stage/.revision
 
 RUN npm run build
-
-RUN mv /opt/stage/dist/static /opt/stage/dist/static-tmp && \
-    mkdir -p /opt/stage/dist/static/$GIT_REVISION && \
-    mv /opt/stage/dist/static-tmp/* /opt/stage/dist/static/$GIT_REVISION/ && \
-    rmdir /opt/stage/dist/static-tmp && \
-    ln -s $GIT_REVISION /opt/stage/dist/static/_head
-
-
-
-#FROM openresty/openresty:alpine-fat AS backend_builder
-#RUN apk update && apk add rsync
-
-#COPY backend /opt/stage/src
-#RUN mkdir -p /opt/stage/dist
-
-#WORKDIR /opt/stage/src
-#RUN rsync -r --exclude=*.lua . /opt/stage/dist
-#RUN find . -type f -name '*.lua' -print -exec luajit -b '{}' '../dist/{}' \;
 
 
 
@@ -55,8 +35,7 @@ COPY etc/nginx/main.conf /usr/local/openresty/nginx/conf/custom.conf
 COPY etc/s6 /etc/s6
 
 COPY backend /var/www/foxcaves/lua
-#COPY --from=backend_builder /opt/stage/dist /var/www/foxcaves/lua
-COPY --from=frontend_builder /opt/stage/dist /var/www/foxcaves/html
+COPY --from=frontend_builder /opt/stage/build /var/www/foxcaves/html
 COPY --from=frontend_builder /opt/stage/.revision /var/www/foxcaves/.revision
 
 RUN /etc/nginx/cfips.sh
