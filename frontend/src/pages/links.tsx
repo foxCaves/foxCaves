@@ -5,6 +5,7 @@ export class LinksPage extends React.Component<{}, {}> {
         return (
             <div>
                 <h1>Manage links</h1>
+                <br />
                 <p>TODO</p>
             </div>
         );

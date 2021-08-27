@@ -14,6 +14,7 @@ import React from 'react';
 import { User } from './models/user';
 import { AlertClass, AppContext, AppContextClass } from './utils/context';
 import { LoginState, CustomRoute, CustomNavLink, CustomDropDownItem } from './utils/route';
+import { LinkContainer } from 'react-router-bootstrap';
 
 interface AppState {
     user?: User;
@@ -84,11 +85,10 @@ export class App extends React.Component<{}, AppState> {
                 <Router>
                     <Navbar variant="dark" bg="primary" fixed="top">
                         <Container>
-                            <Navbar.Brand>foxCaves</Navbar.Brand>
+                            <LinkContainer to="/" exact><Navbar.Brand>foxCaves</Navbar.Brand></LinkContainer>
                             <Navbar.Toggle aria-controls="navbar-nav" />
                             <Navbar.Collapse id="navbar-nav">
                                 <Nav className="me-auto">
-                                    <CustomNavLink to="/" exact>Home</CustomNavLink>
                                     <CustomNavLink login={LoginState.LoggedIn} to="/files">Files</CustomNavLink>
                                     <CustomNavLink login={LoginState.LoggedIn} to="/links">Links</CustomNavLink>
                                     <CustomNavLink login={LoginState.LoggedOut} to="/login">Login</CustomNavLink>

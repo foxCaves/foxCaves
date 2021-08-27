@@ -1,6 +1,7 @@
-import React, { ChangeEvent, FormEvent } from 'react';
+import { FormEvent } from 'react';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
+import { FormBasePage } from './base';
 import { fetchAPI } from '../utils/api';
 import { AlertClass, AppContext, AppContextClass } from '../utils/context';
 
@@ -10,7 +11,7 @@ interface LoginPageState {
     remember: string;
 }
 
-export class LoginPage extends React.Component<{}, LoginPageState> {
+export class LoginPage extends FormBasePage<{}, LoginPageState> {
     static contextType = AppContext;
     context!: AppContextClass;
 
@@ -22,7 +23,6 @@ export class LoginPage extends React.Component<{}, LoginPageState> {
             remember: '',
         };
 
-        this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
     }
 
@@ -33,22 +33,6 @@ export class LoginPage extends React.Component<{}, LoginPageState> {
     showLoginAlert(alert: AlertClass) {
         this.closeLoginAlert();
         this.context.showAlert(alert);
-    }
-
-    handleChange(event: ChangeEvent<HTMLInputElement>) {
-        let value = event.target.value;
-        if (event.target.type === 'checkbox' && !event.target.checked) {
-            value = '';
-        }
-        this.setState({
-            [event.target.name]: value,
-        } as unknown as LoginPageState);
-    }
-
-    handleChecked(event: ChangeEvent<HTMLInputElement>) {
-        this.setState({
-            [event.target.name]: event.target.checked,
-        } as unknown as LoginPageState);
     }
 
     async handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -72,26 +56,25 @@ export class LoginPage extends React.Component<{}, LoginPageState> {
     }
 
     render() {
-        return (
-            <div>
-                <h1>Login</h1>
-                <Form onSubmit={this.handleSubmit}>
-                    <Form.Group className="mb-3 form-floating">
-                        <Form.Control name="username" type="text" placeholder="Username" value={this.state.username} onChange={this.handleChange} />
-                        <Form.Label>Username</Form.Label>
-                    </Form.Group>
-                    <Form.Group className="mb-3 form-floating">
-                        <Form.Control name="password" type="password" placeholder="Password" value={this.state.password} onChange={this.handleChange} />
-                        <Form.Label>Password</Form.Label>
-                    </Form.Group>
-                    <Form.Group className="mb-3">
-                        <Form.Check type="checkbox" name="remember" label="Remember me" value="true" checked={this.state.remember === 'true'} onChange={this.handleChange} />
-                    </Form.Group>
-                    <Button variant="primary" type="submit">
-                        Login
-                    </Button>
-                </Form>
-            </div>
-        );
+        return (<>
+            <h1>Login</h1>
+            <br />
+            <Form onSubmit={this.handleSubmit}>
+                <Form.Group className="mb-3 form-floating">
+                    <Form.Control name="username" type="text" placeholder="Username" required value={this.state.username} onChange={this.handleChange} />
+                    <Form.Label>Username</Form.Label>
+                </Form.Group>
+                <Form.Group className="mb-3 form-floating">
+                    <Form.Control name="password" type="password" placeholder="Password" required value={this.state.password} onChange={this.handleChange} />
+                    <Form.Label>Password</Form.Label>
+                </Form.Group>
+                <Form.Group className="mb-3">
+                    <Form.Check type="checkbox" name="remember" label="Remember me" value="true" checked={this.state.remember === 'true'} onChange={this.handleChange} />
+                </Form.Group>
+                <Button variant="primary" type="submit">
+                    Login
+                </Button>
+            </Form>
+        </>);
     }
 }
