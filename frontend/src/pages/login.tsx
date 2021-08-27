@@ -53,6 +53,12 @@ export class LoginPage extends FormBasePage<{}, LoginPageState> {
             return;
         }
         await this.context.refreshUser();
+        this.showLoginAlert({
+            id: 'login',
+            contents: 'Logged in!',
+            variant: 'success',
+            timeout: 2000,
+        });
     }
 
     render() {

@@ -1,5 +1,5 @@
 import React from 'react';
-import { fetchAPI } from '../utils/api';
+import { fetchAPIRaw } from '../utils/api';
 import { AppContext, AppContextClass } from '../utils/context';
 import { Redirect } from 'react-router-dom';
 
@@ -24,6 +24,7 @@ export class LogoutPage extends React.Component<{}, LogoutState> {
         }
 
         await this.doLogout();
+        await this.context.refreshUser();
 
         this.setState({
             logoutDone: true,
@@ -32,7 +33,7 @@ export class LogoutPage extends React.Component<{}, LogoutState> {
 
     async doLogout() {
         try {
-            await fetchAPI('/api/v1/users/sessions/logout', {
+            await fetchAPIRaw('/api/v1/users/sessions/logout', {
                 method: 'POST',
             });
         } catch (err) {
@@ -47,7 +48,7 @@ export class LogoutPage extends React.Component<{}, LogoutState> {
 
         this.context.showAlert({
             id: 'logout',
-            contents: 'Logged out',
+            contents: 'Logged out!',
             variant: 'success',
             timeout: 5000,
         });

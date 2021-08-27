@@ -4,7 +4,7 @@ export class HttpError extends Error {
     }
 }
 
-export async function fetchAPI(input: RequestInfo, init?: RequestInit) {
+export async function fetchAPIRaw(input: RequestInfo, init?: RequestInit) {
     const res = await fetch(input, init);
     if (res.status < 200 || res.status > 299) {
         let desc = res.statusText;
@@ -14,5 +14,10 @@ export async function fetchAPI(input: RequestInfo, init?: RequestInit) {
         } catch {}
         throw new HttpError(res.status, desc);
     }
+    return res;
+}
+
+export async function fetchAPI(input: RequestInfo, init?: RequestInit) {
+    const res = await fetchAPIRaw(input, init);
     return await res.json();
 }
