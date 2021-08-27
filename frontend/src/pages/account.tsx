@@ -34,7 +34,14 @@ export class AccountPage extends FormBasePage<{}, AccountPageState> {
     }
 
     componentDidMount() {
+        this.updateStateDefaults();
+    }
+
+    updateStateDefaults() {
         this.setState({
+            current_password: '',
+            new_password: '',
+            new_password_confirm: '',
             email: this.context.user!.email!,
         });
     }
@@ -105,7 +112,7 @@ export class AccountPage extends FormBasePage<{}, AccountPageState> {
                 variant: 'danger',
                 timeout: 5000,
             });
-            return;
+            return false;
         }
         await this.context.refreshUser();
         this.showAlert({
@@ -114,6 +121,8 @@ export class AccountPage extends FormBasePage<{}, AccountPageState> {
             variant: 'success',
             timeout: 2000,
         });
+        this.updateStateDefaults();
+        return true;
     }
 
     render() {
