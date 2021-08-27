@@ -14,8 +14,17 @@ jobs:
         with:
           path: backend
           annotate: error
-      - name: Lint frontend/luahtml
-        uses: nebularg/actions-luacheck@v1
+      - name: Set up Node.js
+        uses: actions/setup-node@v1
         with:
-          path: frontend/luahtml
-          annotate: error
+          node-version: 14
+      - name: Install Node.js dependencies
+        run: npm ci
+        with:
+          path: frontend
+      - name: Run linters
+        uses: wearerequired/lint-action@v1
+        with:
+          path: frontend
+          eslint: true
+          prettier: true

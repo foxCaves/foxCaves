@@ -1,5 +1,3 @@
 /backend/config
-/frontend/dist
 /frontend/build
-/frontend/.tmp
 node_modules
