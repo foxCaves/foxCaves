@@ -2,7 +2,7 @@ import { FormEvent } from 'react';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import { FormBasePage } from './base';
-import { fetchAPI } from '../utils/api';
+import { fetchAPIRaw } from '../utils/api';
 import { AlertClass, AppContext, AppContextClass } from '../utils/context';
 
 interface LoginPageState {
@@ -39,7 +39,7 @@ export class LoginPage extends FormBasePage<{}, LoginPageState> {
         this.closeLoginAlert();
         event.preventDefault();
         try {
-            await fetchAPI('/api/v1/users/sessions/login', {
+            await fetchAPIRaw('/api/v1/users/sessions/login', {
                 method: 'POST',
                 body: new URLSearchParams(this.state),
             });
