@@ -72,7 +72,5 @@ export const CustomDropDownItem: React.FC<CustomNavLinkOptions> = ({ to, exact, 
     if (!shouldRender(login, ctx)) {
         return null;
     }
-    return (
-        <LinkContainer to={to} exact={exact}><Dropdown.Item>{children}</Dropdown.Item></LinkContainer>
-    );
+    return <LinkContainer to={to} exact={exact}><Dropdown.Item>{children}</Dropdown.Item></LinkContainer>;
 }
