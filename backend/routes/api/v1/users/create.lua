@@ -44,7 +44,5 @@ R.register_route("/api/v1/users", "POST", R.make_route_opts_anon(), function()
 
     user:save()
 
-    user:compute_virtuals()
-
     return user:get_private()
 end)
