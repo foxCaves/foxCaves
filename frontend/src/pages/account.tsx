@@ -5,6 +5,7 @@ import { FormBasePage } from './base';
 import { fetchAPIRaw } from '../utils/api';
 import { AlertClass, AppContext, AppContextClass } from '../utils/context';
 import FloatingLabel from 'react-bootstrap/FloatingLabel';
+import Modal from 'react-bootstrap/Modal';
 import { Col, Row } from 'react-bootstrap';
 
 interface AccountPageState {
@@ -12,6 +13,7 @@ interface AccountPageState {
     new_password: string;
     new_password_confirm: string;
     email: string;
+    showDeleteAccountModal: boolean;
 }
 
 export class AccountPage extends FormBasePage<{}, AccountPageState> {
@@ -25,12 +27,15 @@ export class AccountPage extends FormBasePage<{}, AccountPageState> {
             new_password: '',
             new_password_confirm: '',
             email: '',
+            showDeleteAccountModal: false,
         };
 
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleAPIKeyRegen = this.handleAPIKeyRegen.bind(this);
         this.handleKillSessions = this.handleKillSessions.bind(this);
         this.handleDeleteAccount = this.handleDeleteAccount.bind(this);
+        this.closeDeleteAccountModal = this.closeDeleteAccountModal.bind(this);
+        this.showDeleteAccountModal = this.showDeleteAccountModal.bind(this);
     }
 
     componentDidMount() {
@@ -43,6 +48,7 @@ export class AccountPage extends FormBasePage<{}, AccountPageState> {
             new_password: '',
             new_password_confirm: '',
             email: this.context.user!.email!,
+            showDeleteAccountModal: false,
         });
     }
 
@@ -62,9 +68,18 @@ export class AccountPage extends FormBasePage<{}, AccountPageState> {
         });
     }
 
+    closeDeleteAccountModal() {
+        this.setState({ showDeleteAccountModal: false });
+    }
+
+    showDeleteAccountModal() {
+        this.setState({ showDeleteAccountModal: true });
+    }
+
     async handleDeleteAccount(event: FormEvent) {
         event.preventDefault();
         await this.sendUserChange({}, 'DELETE');
+        this.closeDeleteAccountModal();
     }
 
     async handleKillSessions(event: FormEvent) {
@@ -128,6 +143,33 @@ export class AccountPage extends FormBasePage<{}, AccountPageState> {
     render() {
         return (
             <>
+                <Modal
+                    show={this.state.showDeleteAccountModal}
+                    onHide={this.closeDeleteAccountModal}
+                >
+                    <Modal.Header closeButton>
+                        <Modal.Title>Delete account</Modal.Title>
+                    </Modal.Header>
+
+                    <Modal.Body>
+                        <p>Are you sure to delete your account?</p>
+                    </Modal.Body>
+
+                    <Modal.Footer>
+                        <Button
+                            variant="secondary"
+                            onClick={this.closeDeleteAccountModal}
+                        >
+                            No
+                        </Button>
+                        <Button
+                            variant="danger"
+                            onClick={this.handleDeleteAccount}
+                        >
+                            Yes, delete all my data
+                        </Button>
+                    </Modal.Footer>
+                </Modal>
                 <h1>Manage account</h1>
                 <br />
                 <Form onSubmit={this.handleSubmit}>
@@ -226,7 +268,7 @@ export class AccountPage extends FormBasePage<{}, AccountPageState> {
                                 variant="danger"
                                 type="button"
                                 size="lg"
-                                onClick={this.handleDeleteAccount}
+                                onClick={this.showDeleteAccountModal}
                             >
                                 Delete account
                             </Button>
