@@ -48,7 +48,7 @@ export class LoginPage extends FormBasePage<{}, LoginPageState> {
                 id: 'login',
                 contents: err.message,
                 variant: 'danger',
-                timeout: 10000,
+                timeout: 5000,
             });
             return;
         }

@@ -4,12 +4,14 @@ import Button from 'react-bootstrap/Button';
 import { FormBasePage } from './base';
 import { fetchAPI } from '../utils/api';
 import { AlertClass, AppContext, AppContextClass } from '../utils/context';
+import { Redirect } from 'react-router-dom';
 
 interface RegistrationPageState {
     username: string;
     password: string;
     confirm_password: string;
     email: string;
+    registration_done: boolean;
 }
 
 export class RegistrationPage extends FormBasePage<{}, RegistrationPageState> {
@@ -23,41 +25,68 @@ export class RegistrationPage extends FormBasePage<{}, RegistrationPageState> {
             password: '',
             confirm_password: '',
             email: '',
+            registration_done: false,
         };
 
         this.handleSubmit = this.handleSubmit.bind(this);
     }
 
-    closeLoginAlert() {
-        this.context.closeAlert('login');
+    closeRegistrationAlert() {
+        this.context.closeAlert('register');
     }
 
-    showLoginAlert(alert: AlertClass) {
-        this.closeLoginAlert();
+    showRegistrationAlert(alert: AlertClass) {
+        this.closeRegistrationAlert();
         this.context.showAlert(alert);
     }
 
     async handleSubmit(event: FormEvent<HTMLFormElement>) {
-        this.closeLoginAlert();
+        this.closeRegistrationAlert();
         event.preventDefault();
-        try {
-            await fetchAPI('/api/v1/users', {
-                method: 'POST',
-                body: new URLSearchParams(this.state),
-            });
-        } catch (err) {
-            this.showLoginAlert({
-                id: 'login',
-                contents: err.message,
+
+        if (this.state.password !== this.state.confirm_password) {
+            this.showRegistrationAlert({
+                id: 'register',
+                contents: 'Passwords do not match',
                 variant: 'danger',
-                timeout: 10000,
+                timeout: 5000,
             });
             return;
         }
-        await this.context.refreshUser();
+
+        try {
+            await fetchAPI('/api/v1/users', {
+                method: 'POST',
+                body: new URLSearchParams({
+                    username: this.state.username,
+                    password: this.state.password,
+                    email: this.state.email,
+                }),
+            });
+        } catch (err) {
+            this.showRegistrationAlert({
+                id: 'register',
+                contents: err.message,
+                variant: 'danger',
+                timeout: 5000,
+            });
+            return;
+        }
+        this.showRegistrationAlert({
+            id: 'register',
+            contents: 'Registration successful! Please check your E-Mail for activation instructions!',
+            variant: 'success',
+            timeout: 30000,
+        });
+        this.setState({
+            registration_done: true,
+        });
     }
 
     render() {
+        if (this.state.registration_done) {
+            return <Redirect to="/" />;
+        }
         return (<>
             <h1>Register</h1>
             <br />
