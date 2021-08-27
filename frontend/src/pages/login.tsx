@@ -4,6 +4,7 @@ import Button from 'react-bootstrap/Button';
 import { FormBasePage } from './base';
 import { fetchAPIRaw } from '../utils/api';
 import { AlertClass, AppContext, AppContextClass } from '../utils/context';
+import FloatingLabel from 'react-bootstrap/FloatingLabel';
 
 interface LoginPageState {
     username: string;
@@ -26,17 +27,17 @@ export class LoginPage extends FormBasePage<{}, LoginPageState> {
         this.handleSubmit = this.handleSubmit.bind(this);
     }
 
-    closeLoginAlert() {
+    closeAlert() {
         this.context.closeAlert('login');
     }
 
-    showLoginAlert(alert: AlertClass) {
-        this.closeLoginAlert();
+    showAlert(alert: AlertClass) {
+        this.closeAlert();
         this.context.showAlert(alert);
     }
 
     async handleSubmit(event: FormEvent<HTMLFormElement>) {
-        this.closeLoginAlert();
+        this.closeAlert();
         event.preventDefault();
         try {
             await fetchAPIRaw('/api/v1/users/sessions/login', {
@@ -44,7 +45,7 @@ export class LoginPage extends FormBasePage<{}, LoginPageState> {
                 body: new URLSearchParams(this.state),
             });
         } catch (err) {
-            this.showLoginAlert({
+            this.showAlert({
                 id: 'login',
                 contents: err.message,
                 variant: 'danger',
@@ -53,7 +54,7 @@ export class LoginPage extends FormBasePage<{}, LoginPageState> {
             return;
         }
         await this.context.refreshUser();
-        this.showLoginAlert({
+        this.showAlert({
             id: 'login',
             contents: 'Logged in!',
             variant: 'success',
@@ -67,28 +68,26 @@ export class LoginPage extends FormBasePage<{}, LoginPageState> {
                 <h1>Login</h1>
                 <br />
                 <Form onSubmit={this.handleSubmit}>
-                    <Form.Group className="mb-3 form-floating">
+                    <FloatingLabel className="mb-3" label="Username">
                         <Form.Control
                             name="username"
                             type="text"
-                            placeholder="Username"
+                            placeholder="testuser"
                             required
                             value={this.state.username}
                             onChange={this.handleChange}
                         />
-                        <Form.Label>Username</Form.Label>
-                    </Form.Group>
-                    <Form.Group className="mb-3 form-floating">
+                    </FloatingLabel>
+                    <FloatingLabel className="mb-3" label="Password">
                         <Form.Control
                             name="password"
                             type="password"
-                            placeholder="Password"
+                            placeholder="password"
                             required
                             value={this.state.password}
                             onChange={this.handleChange}
                         />
-                        <Form.Label>Password</Form.Label>
-                    </Form.Group>
+                    </FloatingLabel>
                     <Form.Group className="mb-3">
                         <Form.Check
                             type="checkbox"
@@ -100,7 +99,7 @@ export class LoginPage extends FormBasePage<{}, LoginPageState> {
                             onChange={this.handleChange}
                         />
                     </Form.Group>
-                    <Button variant="primary" type="submit">
+                    <Button variant="primary" type="submit" size="lg">
                         Login
                     </Button>
                 </Form>

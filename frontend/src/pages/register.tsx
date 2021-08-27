@@ -5,6 +5,7 @@ import { FormBasePage } from './base';
 import { fetchAPI } from '../utils/api';
 import { AlertClass, AppContext, AppContextClass } from '../utils/context';
 import { Redirect } from 'react-router-dom';
+import FloatingLabel from 'react-bootstrap/FloatingLabel';
 
 interface RegistrationPageState {
     username: string;
@@ -33,21 +34,21 @@ export class RegistrationPage extends FormBasePage<{}, RegistrationPageState> {
         this.handleSubmit = this.handleSubmit.bind(this);
     }
 
-    closeRegistrationAlert() {
+    closeAlert() {
         this.context.closeAlert('register');
     }
 
-    showRegistrationAlert(alert: AlertClass) {
-        this.closeRegistrationAlert();
+    showAlert(alert: AlertClass) {
+        this.closeAlert();
         this.context.showAlert(alert);
     }
 
     async handleSubmit(event: FormEvent<HTMLFormElement>) {
-        this.closeRegistrationAlert();
+        this.closeAlert();
         event.preventDefault();
 
         if (this.state.password !== this.state.confirm_password) {
-            this.showRegistrationAlert({
+            this.showAlert({
                 id: 'register',
                 contents: 'Passwords do not match',
                 variant: 'danger',
@@ -67,7 +68,7 @@ export class RegistrationPage extends FormBasePage<{}, RegistrationPageState> {
                 }),
             });
         } catch (err) {
-            this.showRegistrationAlert({
+            this.showAlert({
                 id: 'register',
                 contents: err.message,
                 variant: 'danger',
@@ -75,7 +76,7 @@ export class RegistrationPage extends FormBasePage<{}, RegistrationPageState> {
             });
             return;
         }
-        this.showRegistrationAlert({
+        this.showAlert({
             id: 'register',
             contents:
                 'Registration successful! Please check your E-Mail for activation instructions!',
@@ -96,50 +97,46 @@ export class RegistrationPage extends FormBasePage<{}, RegistrationPageState> {
                 <h1>Register</h1>
                 <br />
                 <Form onSubmit={this.handleSubmit}>
-                    <Form.Group className="mb-3 form-floating">
+                    <FloatingLabel className="mb-3" label="Username">
                         <Form.Control
                             name="username"
                             type="text"
-                            placeholder="Username"
+                            placeholder="testuser"
                             required
                             value={this.state.username}
                             onChange={this.handleChange}
                         />
-                        <Form.Label>Username</Form.Label>
-                    </Form.Group>
-                    <Form.Group className="mb-3 form-floating">
+                    </FloatingLabel>
+                    <FloatingLabel className="mb-3" label="Password">
                         <Form.Control
                             name="password"
                             type="password"
-                            placeholder="Password"
+                            placeholder="password"
                             required
                             value={this.state.password}
                             onChange={this.handleChange}
                         />
-                        <Form.Label>Password</Form.Label>
-                    </Form.Group>
-                    <Form.Group className="mb-3 form-floating">
+                    </FloatingLabel>
+                    <FloatingLabel className="mb-3" label="Confirm password">
                         <Form.Control
                             name="confirm_password"
                             type="password"
-                            placeholder="Password"
+                            placeholder="password"
                             required
                             value={this.state.confirm_password}
                             onChange={this.handleChange}
                         />
-                        <Form.Label>Confirm password</Form.Label>
-                    </Form.Group>
-                    <Form.Group className="mb-3 form-floating">
+                    </FloatingLabel>
+                    <FloatingLabel className="mb-3" label="E-Mail">
                         <Form.Control
                             name="email"
                             type="email"
-                            placeholder="E-Mail"
+                            placeholder="test@example.com"
                             required
                             value={this.state.email}
                             onChange={this.handleChange}
                         />
-                        <Form.Label>E-Mail</Form.Label>
-                    </Form.Group>
+                    </FloatingLabel>
                     <Form.Group className="mb-3">
                         <Form.Check
                             type="checkbox"
@@ -151,7 +148,7 @@ export class RegistrationPage extends FormBasePage<{}, RegistrationPageState> {
                             onChange={this.handleChange}
                         />
                     </Form.Group>
-                    <Button variant="primary" type="submit">
+                    <Button variant="primary" type="submit" size="lg">
                         Register
                     </Button>
                 </Form>

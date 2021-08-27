@@ -3,6 +3,8 @@ import { fetchAPI, HttpError } from '../utils/api';
 export class User {
     public id: string;
     public username: string;
+    public email?: string;
+    public apikey?: string;
 
     constructor(id: string, username: string) {
         this.id = id;

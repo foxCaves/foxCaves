@@ -22,6 +22,8 @@ import {
 } from './utils/route';
 import { LinkContainer } from 'react-router-bootstrap';
 
+import './app.css';
+
 interface AppState {
     user?: User;
     userLoaded: boolean;
