@@ -26,6 +26,6 @@ jobs:
         with:
           eslint: true
           eslint_dir: frontend/src
-          eslint_extensions: ts,tsx
+          eslint_extensions: js,jsx,ts,tsx
           prettier: true
           prettier_dir: frontend/src
