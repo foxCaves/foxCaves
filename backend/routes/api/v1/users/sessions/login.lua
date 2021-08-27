@@ -20,18 +20,18 @@ R.register_route("/api/v1/users/sessions/login", "POST", R.make_route_opts_anon(
 
     local result = auth.login(args.username, args.password)
     if result == consts.USER_INACTIVE then
-        return utils.api_error("Account inactive")
+        return utils.api_error("Account inactive", 403)
     elseif result == consts.LOGIN_USER_BANNED then
-        return utils.api_error("Account banned")
+        return utils.api_error("Account banned", 403)
     elseif result == consts.LOGIN_BAD_CREDENTIALS then
-        return utils.api_error("Invalid username/password")
+        return utils.api_error("Invalid username/password", 401)
     elseif result ~= consts.LOGIN_SUCCESS then
-        return utils.api_error("Unknown login error")
-    else
-        if args.remember == "true" then
-            ngx.ctx.remember_me = true
-            auth_utils.send_login_key()
-        end
+        return utils.api_error("Unknown login error", 500)
+    end
+
+    if args.remember == "true" then
+        ngx.ctx.remember_me = true
+        auth_utils.send_login_key()
     end
 
     return ngx.ctx.user:get_private()

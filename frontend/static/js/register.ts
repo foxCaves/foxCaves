@@ -18,7 +18,7 @@ async function submitRegisterFormSimple() {
         username: form.username.value,
         email: form.email.value,
         password: form.password.value,
-        agreetos: form.agreetos.checked ? 'yes' : 'no',
+        agreetos: form.agreetos.checked ? 'true' : 'false',
     })) {
         alert(`Successfully registered user! Please click activation link!`);
     }
