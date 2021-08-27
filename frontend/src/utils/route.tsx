@@ -54,10 +54,6 @@ function shouldRender(login: LoginState | undefined, ctx: AppContextClass) {
     }
 }
 
-function makeNavLinkContainer(to: string, exact: boolean | undefined, children: ReactNode) {
-    return <LinkContainer to={to} exact={exact}><Nav.Link active={false}>{children}</Nav.Link></LinkContainer>;
-}
-
 interface CustomNavLinkOptions {
     to: string;
     exact?: boolean;
@@ -68,7 +64,7 @@ export const CustomNavLink: React.FC<CustomNavLinkOptions> = ({ to, exact, login
     if (!shouldRender(login, ctx)) {
         return null;
     }
-    return makeNavLinkContainer(to, exact, children);
+    return <LinkContainer to={to} exact={exact}><Nav.Link active={false}>{children}</Nav.Link></LinkContainer>;
 }
 
 export const CustomDropDownItem: React.FC<CustomNavLinkOptions> = ({ to, exact, login, children }) => {
@@ -77,6 +73,6 @@ export const CustomDropDownItem: React.FC<CustomNavLinkOptions> = ({ to, exact, 
         return null;
     }
     return (
-        <Dropdown.Item>{makeNavLinkContainer(to, exact, children)}</Dropdown.Item>
+        <LinkContainer to={to} exact={exact}><Dropdown.Item>{children}</Dropdown.Item></LinkContainer>
     );
 }
