@@ -11,6 +11,7 @@ interface RegistrationPageState {
     password: string;
     confirm_password: string;
     email: string;
+    agreetos: string;
     registration_done: boolean;
 }
 
@@ -25,6 +26,7 @@ export class RegistrationPage extends FormBasePage<{}, RegistrationPageState> {
             password: '',
             confirm_password: '',
             email: '',
+            agreetos: '',
             registration_done: false,
         };
 
@@ -61,6 +63,7 @@ export class RegistrationPage extends FormBasePage<{}, RegistrationPageState> {
                     username: this.state.username,
                     password: this.state.password,
                     email: this.state.email,
+                    agreetos: this.state.agreetos,
                 }),
             });
         } catch (err) {
@@ -106,6 +109,9 @@ export class RegistrationPage extends FormBasePage<{}, RegistrationPageState> {
                 <Form.Group className="mb-3 form-floating">
                     <Form.Control name="email" type="email" placeholder="E-Mail" required value={this.state.email} onChange={this.handleChange} />
                     <Form.Label>E-Mail</Form.Label>
+                </Form.Group>
+                <Form.Group className="mb-3">
+                    <Form.Check type="checkbox" name="agreetos" label="I agree to the Terms of Service and Privacy Policy" value="true" checked={this.state.agreetos === 'true'} onChange={this.handleChange} />
                 </Form.Group>
                 <Button variant="primary" type="submit">
                     Register
