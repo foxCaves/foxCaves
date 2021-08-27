@@ -16,6 +16,11 @@ local path = require("path")
 local root = path.abs(debug.getinfo(1, "S").source:sub(2):match("(.*/)"))
 package.path = package.path .. ";" .. path.abs(root .. "/modules"):gsub("//+", "/") .. "/?.lua"
 
+-- Secure cjson
+local cjson = require("cjson")
+cjson.decode_max_depth(10)
+cjson.decode_invalid_numbers(false)
+
 -- Load environment vars
 rawset(_G, 'OSENV', {
     ENVIRONMENT = true
