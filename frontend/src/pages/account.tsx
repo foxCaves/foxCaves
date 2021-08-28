@@ -1,100 +1,53 @@
-import { FormEvent } from 'react';
+import React, { FormEvent, useContext, useState } from 'react';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
-import { FormBasePage } from './base';
 import { fetchAPIRaw } from '../utils/api';
-import { AlertClass, AppContext, AppContextClass } from '../utils/context';
+import { AppContext } from '../utils/context';
 import FloatingLabel from 'react-bootstrap/FloatingLabel';
 import Modal from 'react-bootstrap/Modal';
 import { Col, Row } from 'react-bootstrap';
+import { useEffect } from 'react';
 
-interface AccountPageState {
-    currentPassword: string;
-    newPassword: string;
-    newPasswordConfirm: string;
-    email: string;
-    showDeleteAccountModal: boolean;
-}
+export const AccountPage: React.FC = () => {
+    const { user, showAlert, closeAlert, refreshUser } = useContext(AppContext);
+    const userEmail = user!.email!;
 
-export class AccountPage extends FormBasePage<{}, AccountPageState> {
-    static contextType = AppContext;
-    context!: AppContextClass;
+    const [showDeleteAccountModal, setShowDeleteAccountModal] = useState(false);
+    const [currentPassword, setCurrentPassword] = useState('');
+    const [newPassword, setNewPassword] = useState('');
+    const [newPasswordConfirm, setNewPasswordConfirm] = useState('');
+    const [email, setEmail] = useState(userEmail);
 
-    constructor(props: {}) {
-        super(props);
-        this.state = {
-            currentPassword: '',
-            newPassword: '',
-            newPasswordConfirm: '',
-            email: '',
-            showDeleteAccountModal: false,
-        };
+    useEffect(() => {
+        setEmail(userEmail!);
+    }, [userEmail]);
 
-        this.handleSubmit = this.handleSubmit.bind(this);
-        this.handleAPIKeyRegen = this.handleAPIKeyRegen.bind(this);
-        this.handleKillSessions = this.handleKillSessions.bind(this);
-        this.handleDeleteAccount = this.handleDeleteAccount.bind(this);
-        this.closeDeleteAccountModal = this.closeDeleteAccountModal.bind(this);
-        this.showDeleteAccountModal = this.showDeleteAccountModal.bind(this);
-    }
-
-    componentDidMount() {
-        this.updateStateDefaults();
-    }
-
-    updateStateDefaults() {
-        this.setState({
-            currentPassword: '',
-            newPassword: '',
-            newPasswordConfirm: '',
-            email: this.context.user!.email!,
-            showDeleteAccountModal: false,
-        });
-    }
-
-    closeAlert() {
-        this.context.closeAlert('account');
-    }
-
-    showAlert(alert: AlertClass) {
-        this.closeAlert();
-        this.context.showAlert(alert);
-    }
-
-    async handleAPIKeyRegen(event: FormEvent) {
+    async function handleAPIKeyRegen(event: FormEvent) {
         event.preventDefault();
-        await this.sendUserChange({
+        await sendUserChange({
             apikey: 'CHANGE',
         });
     }
 
-    closeDeleteAccountModal() {
-        this.setState({ showDeleteAccountModal: false });
-    }
-
-    showDeleteAccountModal() {
-        this.setState({ showDeleteAccountModal: true });
-    }
-
-    async handleDeleteAccount(event: FormEvent) {
+    async function handleDeleteAccount(event: FormEvent) {
         event.preventDefault();
-        await this.sendUserChange({}, 'DELETE');
-        this.closeDeleteAccountModal();
+        await sendUserChange({}, 'DELETE');
+        setShowDeleteAccountModal(false);
     }
 
-    async handleKillSessions(event: FormEvent) {
+    async function handleKillSessions(event: FormEvent) {
         event.preventDefault();
-        await this.sendUserChange({
+        await sendUserChange({
             loginkey: 'CHANGE',
         });
     }
 
-    async handleSubmit(event: FormEvent<HTMLFormElement>) {
+    async function handleSubmit(event: FormEvent<HTMLFormElement>) {
         event.preventDefault();
-        this.closeAlert();
+        closeAlert('account');
 
-        if (this.state.newPassword !== this.state.newPasswordConfirm) {
-            this.showAlert({
+        if (newPassword !== newPasswordConfirm) {
+            showAlert({
                 id: 'account',
                 contents: 'New passwords do not match',
                 variant: 'danger',
@@ -103,26 +56,25 @@ export class AccountPage extends FormBasePage<{}, AccountPageState> {
             return;
         }
 
-        await this.sendUserChange({
-            current_password: this.state.currentPassword,
-            password: this.state.newPassword,
-            email: this.state.email,
+        await sendUserChange({
+            password: newPassword,
+            email: email,
         });
     }
 
-    async sendUserChange(
+    async function sendUserChange(
         body: { [key: string]: string },
         method: string = 'PATCH',
     ) {
-        this.closeAlert();
-        body.current_password = this.state.currentPassword;
+        closeAlert('account');
+        body.current_password = currentPassword;
         try {
-            await fetchAPIRaw(`/api/v1/users/${this.context.user!.id}`, {
+            await fetchAPIRaw(`/api/v1/users/${user!.id}`, {
                 method,
                 body,
             });
         } catch (err) {
-            this.showAlert({
+            showAlert({
                 id: 'account',
                 contents: err.message,
                 variant: 'danger',
@@ -130,153 +82,144 @@ export class AccountPage extends FormBasePage<{}, AccountPageState> {
             });
             return false;
         }
-        await this.context.refreshUser();
-        this.showAlert({
+        await refreshUser();
+        showAlert({
             id: 'account',
             contents: 'Account change successful!',
             variant: 'success',
             timeout: 2000,
         });
-        this.updateStateDefaults();
         return true;
     }
 
-    render() {
-        return (
-            <>
-                <Modal
-                    show={this.state.showDeleteAccountModal}
-                    onHide={this.closeDeleteAccountModal}
-                >
-                    <Modal.Header closeButton>
-                        <Modal.Title>Delete account</Modal.Title>
-                    </Modal.Header>
+    return (
+        <>
+            <Modal
+                show={showDeleteAccountModal}
+                onHide={() => setShowDeleteAccountModal(false)}
+            >
+                <Modal.Header closeButton>
+                    <Modal.Title>Delete account</Modal.Title>
+                </Modal.Header>
 
-                    <Modal.Body>
-                        <p>Are you sure to delete your account?</p>
-                    </Modal.Body>
+                <Modal.Body>
+                    <p>Are you sure to delete your account?</p>
+                </Modal.Body>
 
-                    <Modal.Footer>
+                <Modal.Footer>
+                    <Button
+                        variant="secondary"
+                        onClick={() => setShowDeleteAccountModal(false)}
+                    >
+                        No
+                    </Button>
+                    <Button variant="danger" onClick={handleDeleteAccount}>
+                        Yes, delete all my data
+                    </Button>
+                </Modal.Footer>
+            </Modal>
+            <h1>Manage account</h1>
+            <br />
+            <Form onSubmit={handleSubmit}>
+                <FloatingLabel className="mb-3" label="Current password">
+                    <Form.Control
+                        name="currentPassword"
+                        type="password"
+                        placeholder="password"
+                        required
+                        value={currentPassword}
+                        onChange={(e) => setCurrentPassword(e.target.value)}
+                    />
+                </FloatingLabel>
+                <FloatingLabel className="mb-3" label="Username">
+                    <Form.Control
+                        readOnly
+                        name="username"
+                        type="text"
+                        placeholder="testuser"
+                        value={user!.username}
+                    />
+                </FloatingLabel>
+                <FloatingLabel className="mb-3" label="New password">
+                    <Form.Control
+                        name="newPassword"
+                        type="password"
+                        placeholder="password"
+                        value={newPassword}
+                        onChange={(e) => setNewPassword(e.target.value)}
+                    />
+                </FloatingLabel>
+                <FloatingLabel className="mb-3" label="Confirm new password">
+                    <Form.Control
+                        name="newPasswordConfirm"
+                        type="password"
+                        placeholder="password"
+                        value={newPasswordConfirm}
+                        onChange={(e) => setNewPasswordConfirm(e.target.value)}
+                    />
+                </FloatingLabel>
+                <FloatingLabel className="mb-3" label="E-Mail">
+                    <Form.Control
+                        name="email"
+                        type="email"
+                        placeholder="test@example.com"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                    />
+                    <Form.Label>E-Mail</Form.Label>
+                </FloatingLabel>
+                <Row>
+                    <Col>
+                        <FloatingLabel className="mb-3" label="API key">
+                            <Form.Control
+                                readOnly
+                                name="apikey"
+                                type="text"
+                                placeholder="ABCDefgh"
+                                value={user!.apikey!}
+                            />
+                            <Form.Label>API key</Form.Label>
+                        </FloatingLabel>
+                    </Col>
+                    <Col xs="auto">
                         <Button
-                            variant="secondary"
-                            onClick={this.closeDeleteAccountModal}
+                            variant="primary"
+                            type="button"
+                            size="lg"
+                            onClick={handleAPIKeyRegen}
                         >
-                            No
+                            Regenerate
                         </Button>
+                    </Col>
+                </Row>
+                <Row>
+                    <Col>
+                        <Button variant="primary" type="submit" size="lg">
+                            Change password / E-Mail
+                        </Button>
+                    </Col>
+                    <Col>
+                        <Button
+                            variant="warning"
+                            type="button"
+                            size="lg"
+                            onClick={handleKillSessions}
+                        >
+                            Kill all sessions
+                        </Button>
+                    </Col>
+                    <Col>
                         <Button
                             variant="danger"
-                            onClick={this.handleDeleteAccount}
+                            type="button"
+                            size="lg"
+                            onClick={() => setShowDeleteAccountModal(true)}
                         >
-                            Yes, delete all my data
+                            Delete account
                         </Button>
-                    </Modal.Footer>
-                </Modal>
-                <h1>Manage account</h1>
-                <br />
-                <Form onSubmit={this.handleSubmit}>
-                    <FloatingLabel className="mb-3" label="Current password">
-                        <Form.Control
-                            name="currentPassword"
-                            type="password"
-                            placeholder="password"
-                            required
-                            value={this.state.currentPassword}
-                            onChange={this.handleChange}
-                        />
-                    </FloatingLabel>
-                    <FloatingLabel className="mb-3" label="Username">
-                        <Form.Control
-                            readOnly
-                            name="username"
-                            type="text"
-                            placeholder="testuser"
-                            value={this.context.user!.username}
-                        />
-                    </FloatingLabel>
-                    <FloatingLabel className="mb-3" label="New password">
-                        <Form.Control
-                            name="newPassword"
-                            type="password"
-                            placeholder="password"
-                            value={this.state.newPassword}
-                            onChange={this.handleChange}
-                        />
-                    </FloatingLabel>
-                    <FloatingLabel
-                        className="mb-3"
-                        label="Confirm new password"
-                    >
-                        <Form.Control
-                            name="newPasswordConfirm"
-                            type="password"
-                            placeholder="password"
-                            value={this.state.newPasswordConfirm}
-                            onChange={this.handleChange}
-                        />
-                    </FloatingLabel>
-                    <FloatingLabel className="mb-3" label="E-Mail">
-                        <Form.Control
-                            name="email"
-                            type="email"
-                            placeholder="test@example.com"
-                            value={this.state.email}
-                            onChange={this.handleChange}
-                        />
-                        <Form.Label>E-Mail</Form.Label>
-                    </FloatingLabel>
-                    <Row>
-                        <Col>
-                            <FloatingLabel className="mb-3" label="API key">
-                                <Form.Control
-                                    readOnly
-                                    name="apikey"
-                                    type="text"
-                                    placeholder="ABCDefgh"
-                                    value={this.context.user!.apikey!}
-                                />
-                                <Form.Label>API key</Form.Label>
-                            </FloatingLabel>
-                        </Col>
-                        <Col xs="auto">
-                            <Button
-                                variant="primary"
-                                type="button"
-                                size="lg"
-                                onClick={this.handleAPIKeyRegen}
-                            >
-                                Regenerate
-                            </Button>
-                        </Col>
-                    </Row>
-                    <Row>
-                        <Col>
-                            <Button variant="primary" type="submit" size="lg">
-                                Change password / E-Mail
-                            </Button>
-                        </Col>
-                        <Col>
-                            <Button
-                                variant="warning"
-                                type="button"
-                                size="lg"
-                                onClick={this.handleKillSessions}
-                            >
-                                Kill all sessions
-                            </Button>
-                        </Col>
-                        <Col>
-                            <Button
-                                variant="danger"
-                                type="button"
-                                size="lg"
-                                onClick={this.showDeleteAccountModal}
-                            >
-                                Delete account
-                            </Button>
-                        </Col>
-                    </Row>
-                </Form>
-            </>
-        );
-    }
-}
+                    </Col>
+                </Row>
+            </Form>
+        </>
+    );
+};
