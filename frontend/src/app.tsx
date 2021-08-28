@@ -86,10 +86,12 @@ export const App: React.FC<{}> = () => {
     };
 
     useEffect(() => {
-        if (!userLoadStarted) {
-            setUserLoadStarted(true);
-            refreshUser();
+        if (userLoadStarted || userLoaded) {
+            return;
         }
+        setUserLoadStarted(true);
+        refreshUser();
+        setUserLoadStarted(false);
     });
 
     return (
