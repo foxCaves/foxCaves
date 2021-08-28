@@ -32,8 +32,8 @@ export class LinksPage extends React.Component<{}, LinksState> {
         return this.state.links.map(link => {
             return (
                 <tr key={link.id}>
-                    <td><a target="_blank" href={link.short_url}>{link.short_url}</a></td>
-                    <td><a target="_blank" href={link.url}>{link.url}</a></td>
+                    <td><a rel="noreferrer" target="_blank" href={link.short_url}>{link.short_url}</a></td>
+                    <td><a rel="noreferrer" target="_blank" href={link.url}>{link.url}</a></td>
                     <td></td>
                 </tr>
             );
