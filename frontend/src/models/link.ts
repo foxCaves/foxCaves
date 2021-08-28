@@ -1,5 +1,4 @@
 import { fetchAPI, HttpError } from '../utils/api';
-import { formatSize } from '../utils/formatting';
 import { DatedModel } from './base';
 
 export class LinkModel extends DatedModel {
