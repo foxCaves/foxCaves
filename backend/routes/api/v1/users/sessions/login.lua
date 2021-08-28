@@ -29,7 +29,7 @@ R.register_route("/api/v1/users/sessions/login", "POST", R.make_route_opts_anon(
         return utils.api_error("Unknown login error", 500)
     end
 
-    if args.remember == "true" then
+    if args.remember == "true" or args.remember == true then
         ngx.ctx.remember_me = true
         auth_utils.send_login_key()
     end
