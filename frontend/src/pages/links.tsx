@@ -1,59 +1,39 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { LinkModel } from '../models/link';
 import { Table } from 'react-bootstrap';
+import { useEffect } from 'react';
 
-interface LinksState {
-    links: LinkModel[];
-    linksLoaded: boolean;
-}
+export const LinksPage: React.FC<{}> = () => {
+    const [links, setLinks] = useState<LinkModel[] | undefined>(undefined);
+    const [loading, setLoading] = useState(false);
 
-export class LinksPage extends React.Component<{}, LinksState> {
-    constructor(props: {}) {
-        super(props);
-        this.state = {
-            links: [],
-            linksLoaded: false,
-        };
-    }
-
-    async componentDidMount() {
-        await this.refreshFiles();
-    }
-
-    async refreshFiles() {
+    async function refresh() {
         const links = await LinkModel.getAll();
-        this.setState({
-            links,
-            linksLoaded: true,
-        });
+        setLinks(links);
     }
 
-    renderLinksA() {
-        return this.state.links.map((link) => {
-            return (
-                <tr key={link.id}>
-                    <td>
-                        <a
-                            rel="noreferrer"
-                            target="_blank"
-                            href={link.short_url}
-                        >
-                            {link.short_url}
-                        </a>
-                    </td>
-                    <td>
-                        <a rel="noreferrer" target="_blank" href={link.url}>
-                            {link.url}
-                        </a>
-                    </td>
-                    <td></td>
-                </tr>
-            );
-        });
-    }
+    useEffect(() => {
+        if (loading || links) {
+            return;
+        }
+        setLoading(true);
+        refresh().then(() => setLoading(false));
+    }, [loading, links]);
 
-    renderLinks() {
+    if (loading || !links) {
         return (
+            <div>
+                <h1>Manage links</h1>
+                <br />
+                <h3>Loading...</h3>
+            </div>
+        );
+    }
+
+    return (
+        <div>
+            <h1>Manage links</h1>
+            <br />
             <Table striped bordered>
                 <thead>
                     <tr>
@@ -62,24 +42,32 @@ export class LinksPage extends React.Component<{}, LinksState> {
                         <th>Actions</th>
                     </tr>
                 </thead>
-                <tbody>{this.renderLinksA()}</tbody>
+                <tbody>
+                    {links.map((link) => (
+                        <tr key={link.id}>
+                            <td>
+                                <a
+                                    rel="noreferrer"
+                                    target="_blank"
+                                    href={link.short_url}
+                                >
+                                    {link.short_url}
+                                </a>
+                            </td>
+                            <td>
+                                <a
+                                    rel="noreferrer"
+                                    target="_blank"
+                                    href={link.url}
+                                >
+                                    {link.url}
+                                </a>
+                            </td>
+                            <td></td>
+                        </tr>
+                    ))}
+                </tbody>
             </Table>
-        );
-    }
-
-    renderLoading() {
-        return <p>Loading...</p>;
-    }
-
-    render() {
-        return (
-            <div>
-                <h1>Manage links</h1>
-                <br />
-                {this.state.linksLoaded
-                    ? this.renderLinks()
-                    : this.renderLoading()}
-            </div>
-        );
-    }
-}
+        </div>
+    );
+};
