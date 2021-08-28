@@ -60,12 +60,12 @@ export class RegistrationPage extends FormBasePage<{}, RegistrationPageState> {
         try {
             await fetchAPI('/api/v1/users', {
                 method: 'POST',
-                body: new URLSearchParams({
+                body: {
                     username: this.state.username,
                     password: this.state.password,
                     email: this.state.email,
                     agreetos: this.state.agreetos,
-                }),
+                },
             });
         } catch (err) {
             this.showAlert({

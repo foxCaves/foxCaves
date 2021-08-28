@@ -42,7 +42,11 @@ export class LoginPage extends FormBasePage<{}, LoginPageState> {
         try {
             await fetchAPIRaw('/api/v1/users/sessions/login', {
                 method: 'POST',
-                body: new URLSearchParams(this.state),
+                body: {
+                    username: this.state.username,
+                    password: this.state.password,
+                    remember: this.state.remember,
+                },
             });
         } catch (err) {
             this.showAlert({

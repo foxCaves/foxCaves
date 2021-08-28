@@ -110,15 +110,15 @@ export class AccountPage extends FormBasePage<{}, AccountPageState> {
     }
 
     async sendUserChange(
-        data: { [key: string]: string },
+        body: { [key: string]: string },
         method: string = 'PATCH',
     ) {
         this.closeAlert();
-        data.current_password = this.state.current_password;
+        body.current_password = this.state.current_password;
         try {
             await fetchAPIRaw(`/api/v1/users/${this.context.user!.id}`, {
                 method,
-                body: new URLSearchParams(data),
+                body,
             });
         } catch (err) {
             this.showAlert({
