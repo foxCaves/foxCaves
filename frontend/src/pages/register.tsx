@@ -1,54 +1,27 @@
-import { FormEvent } from 'react';
+import React, { FormEvent, useState, useContext } from 'react';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
-import { FormBasePage } from './base';
 import { fetchAPI } from '../utils/api';
-import { AlertClass, AppContext, AppContextClass } from '../utils/context';
+import { AppContext } from '../utils/context';
 import { Redirect } from 'react-router-dom';
 import FloatingLabel from 'react-bootstrap/FloatingLabel';
 
-interface RegistrationPageState {
-    username: string;
-    password: string;
-    confirmPassword: string;
-    email: string;
-    agreetos: string;
-    registrationDone: boolean;
-}
+export const RegistrationPage: React.FC = () => {
+    const [username, setUsername] = useState('');
+    const [password, setPassword] = useState('');
+    const [passwordConfirm, setPasswordConfirm] = useState('');
+    const [email, setEmail] = useState('');
+    const [agreetos, setAgreetos] = useState(false);
+    const [registrationDone, setRegistrationDone] = useState(false);
 
-export class RegistrationPage extends FormBasePage<{}, RegistrationPageState> {
-    static contextType = AppContext;
-    context!: AppContextClass;
+    const { showAlert, closeAlert } = useContext(AppContext);
 
-    constructor(props: {}) {
-        super(props);
-        this.state = {
-            username: '',
-            password: '',
-            confirmPassword: '',
-            email: '',
-            agreetos: '',
-            registrationDone: false,
-        };
-
-        this.handleSubmit = this.handleSubmit.bind(this);
-    }
-
-    closeAlert() {
-        this.context.closeAlert('register');
-    }
-
-    showAlert(alert: AlertClass) {
-        this.closeAlert();
-        this.context.showAlert(alert);
-    }
-
-    async handleSubmit(event: FormEvent<HTMLFormElement>) {
-        this.closeAlert();
+    async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+        closeAlert('register');
         event.preventDefault();
 
-        if (this.state.password !== this.state.confirmPassword) {
-            this.showAlert({
+        if (password !== passwordConfirm) {
+            showAlert({
                 id: 'register',
                 contents: 'Passwords do not match',
                 variant: 'danger',
@@ -61,14 +34,14 @@ export class RegistrationPage extends FormBasePage<{}, RegistrationPageState> {
             await fetchAPI('/api/v1/users', {
                 method: 'POST',
                 body: {
-                    username: this.state.username,
-                    password: this.state.password,
-                    email: this.state.email,
-                    agreetos: this.state.agreetos,
+                    username,
+                    password,
+                    email,
+                    agreetos,
                 },
             });
         } catch (err) {
-            this.showAlert({
+            showAlert({
                 id: 'register',
                 contents: err.message,
                 variant: 'danger',
@@ -76,83 +49,79 @@ export class RegistrationPage extends FormBasePage<{}, RegistrationPageState> {
             });
             return;
         }
-        this.showAlert({
+        showAlert({
             id: 'register',
             contents:
                 'Registration successful! Please check your E-Mail for activation instructions!',
             variant: 'success',
             timeout: 30000,
         });
-        this.setState({
-            registrationDone: true,
-        });
+        setRegistrationDone(true);
     }
 
-    render() {
-        if (this.state.registrationDone) {
-            return <Redirect to="/" />;
-        }
-        return (
-            <>
-                <h1>Register</h1>
-                <br />
-                <Form onSubmit={this.handleSubmit}>
-                    <FloatingLabel className="mb-3" label="Username">
-                        <Form.Control
-                            name="username"
-                            type="text"
-                            placeholder="testuser"
-                            required
-                            value={this.state.username}
-                            onChange={this.handleChange}
-                        />
-                    </FloatingLabel>
-                    <FloatingLabel className="mb-3" label="Password">
-                        <Form.Control
-                            name="password"
-                            type="password"
-                            placeholder="password"
-                            required
-                            value={this.state.password}
-                            onChange={this.handleChange}
-                        />
-                    </FloatingLabel>
-                    <FloatingLabel className="mb-3" label="Confirm password">
-                        <Form.Control
-                            name="confirmPassword"
-                            type="password"
-                            placeholder="password"
-                            required
-                            value={this.state.confirmPassword}
-                            onChange={this.handleChange}
-                        />
-                    </FloatingLabel>
-                    <FloatingLabel className="mb-3" label="E-Mail">
-                        <Form.Control
-                            name="email"
-                            type="email"
-                            placeholder="test@example.com"
-                            required
-                            value={this.state.email}
-                            onChange={this.handleChange}
-                        />
-                    </FloatingLabel>
-                    <Form.Group className="mb-3">
-                        <Form.Check
-                            type="checkbox"
-                            name="agreetos"
-                            id="agreetos"
-                            label="I agree to the Terms of Service and Privacy Policy"
-                            value="true"
-                            checked={this.state.agreetos === 'true'}
-                            onChange={this.handleChange}
-                        />
-                    </Form.Group>
-                    <Button variant="primary" type="submit" size="lg">
-                        Register
-                    </Button>
-                </Form>
-            </>
-        );
+    if (registrationDone) {
+        return <Redirect to="/" />;
     }
-}
+    return (
+        <>
+            <h1>Register</h1>
+            <br />
+            <Form onSubmit={handleSubmit}>
+                <FloatingLabel className="mb-3" label="Username">
+                    <Form.Control
+                        name="username"
+                        type="text"
+                        placeholder="testuser"
+                        required
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
+                    />
+                </FloatingLabel>
+                <FloatingLabel className="mb-3" label="Password">
+                    <Form.Control
+                        name="password"
+                        type="password"
+                        placeholder="password"
+                        required
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                    />
+                </FloatingLabel>
+                <FloatingLabel className="mb-3" label="Confirm password">
+                    <Form.Control
+                        name="passwordConfirm"
+                        type="password"
+                        placeholder="password"
+                        required
+                        value={passwordConfirm}
+                        onChange={(e) => setPasswordConfirm(e.target.value)}
+                    />
+                </FloatingLabel>
+                <FloatingLabel className="mb-3" label="E-Mail">
+                    <Form.Control
+                        name="email"
+                        type="email"
+                        placeholder="test@example.com"
+                        required
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                    />
+                </FloatingLabel>
+                <Form.Group className="mb-3">
+                    <Form.Check
+                        type="checkbox"
+                        name="agreetos"
+                        id="agreetos"
+                        label="I agree to the Terms of Service and Privacy Policy"
+                        value="true"
+                        checked={agreetos}
+                        onChange={(e) => setAgreetos(e.target.checked)}
+                    />
+                </Form.Group>
+                <Button variant="primary" type="submit" size="lg">
+                    Register
+                </Button>
+            </Form>
+        </>
+    );
+};
