@@ -17,8 +17,10 @@ export class UserModel extends DatedModel {
         }
         try {
             const api = await fetchAPI(url);
-            const m = new UserModel();
-            return Object.assign(m, api);
+            let m = new UserModel();
+            m = Object.assign(m, api);
+            m.convertDates();
+            return m;
         } catch (e) {
             if (
                 e instanceof HttpError &&

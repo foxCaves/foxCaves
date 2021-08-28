@@ -34,8 +34,10 @@ export class FileModel extends DatedModel {
         let url = `/api/v1/files/${id}`;
         try {
             const api = await fetchAPI(url);
-            const m = new FileModel();
-            return Object.assign(m, api);
+            let m = new FileModel();
+            m = Object.assign(m, api);
+            m.convertDates();
+            return m;
         } catch (e) {
             if (
                 e instanceof HttpError &&
@@ -50,8 +52,10 @@ export class FileModel extends DatedModel {
     static async getAll() {
         const files = await fetchAPI('/api/v1/files');
         return files.map((api: any) => {
-            const m = new FileModel();
-            return Object.assign(m, api);
+            let m = new FileModel();
+            m = Object.assign(m, api);
+            m.convertDates();
+            return m;
         });
     }
 
