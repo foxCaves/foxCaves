@@ -1,12 +1,10 @@
-import React from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { fetchAPIRaw } from '../utils/api';
 import { AppContext } from '../utils/context';
 import { Redirect } from 'react-router-dom';
-import { useEffect } from 'react';
-import { useState } from 'react';
 
 export const LogoutPage: React.FC = () => {
-    const ctx = React.useContext(AppContext);
+    const ctx = useContext(AppContext);
     const [logoutDone, setLogoutDone] = useState(false);
     const [logoutStarted, setLogoutStarted] = useState(false);
 

@@ -23,24 +23,24 @@ import {
 import { LinkContainer } from 'react-router-bootstrap';
 
 import './app.css';
-import { useCallback } from 'react';
 
 const AlertView: React.FC<{ alert: AlertClass }> = ({ alert }) => {
-    const closeAlert = useContext(AppContext).closeAlert;
-    const id = alert.id;
-
-    const closeSelf = useCallback(() => {
-        closeAlert(id);
-    }, [closeAlert, id]);
+    const { closeAlert } = useContext(AppContext);
 
     return (
-        <Alert show variant={alert.variant} onClose={closeSelf} dismissible>
+        <Alert show variant={alert.variant} onClose={() => closeAlert(alert.id)} dismissible>
             {alert.contents}
         </Alert>
     );
 };
 
-export const App: React.FC<{}> = () => {
+const AlertList: React.FC<{ alerts: AlertClass[] }> = ({ alerts }) => {
+    return (<>{alerts.map((alert) => (
+        <AlertView alert={alert} key={alert.id} />
+    ))}</>);
+}
+
+export const App: React.FC = () => {
     const [user, setUser] = useState<UserModel | undefined>(undefined);
     const [userLoaded, setUserLoaded] = useState(false);
     const [userLoadStarted, setUserLoadStarted] = useState(false);
@@ -168,9 +168,7 @@ export const App: React.FC<{}> = () => {
                     </Container>
                 </Navbar>
                 <Container>
-                    {alerts.map((alert) => (
-                        <AlertView alert={alert} key={alert.id} />
-                    ))}
+                    <AlertList alerts={alerts} />
                     <Switch>
                         <CustomRoute path="/login" login={LoginState.LoggedOut}>
                             <LoginPage />
