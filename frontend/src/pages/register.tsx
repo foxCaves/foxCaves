@@ -10,10 +10,10 @@ import FloatingLabel from 'react-bootstrap/FloatingLabel';
 interface RegistrationPageState {
     username: string;
     password: string;
-    confirm_password: string;
+    confirmPassword: string;
     email: string;
     agreetos: string;
-    registration_done: boolean;
+    registrationDone: boolean;
 }
 
 export class RegistrationPage extends FormBasePage<{}, RegistrationPageState> {
@@ -25,10 +25,10 @@ export class RegistrationPage extends FormBasePage<{}, RegistrationPageState> {
         this.state = {
             username: '',
             password: '',
-            confirm_password: '',
+            confirmPassword: '',
             email: '',
             agreetos: '',
-            registration_done: false,
+            registrationDone: false,
         };
 
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -47,7 +47,7 @@ export class RegistrationPage extends FormBasePage<{}, RegistrationPageState> {
         this.closeAlert();
         event.preventDefault();
 
-        if (this.state.password !== this.state.confirm_password) {
+        if (this.state.password !== this.state.confirmPassword) {
             this.showAlert({
                 id: 'register',
                 contents: 'Passwords do not match',
@@ -84,12 +84,12 @@ export class RegistrationPage extends FormBasePage<{}, RegistrationPageState> {
             timeout: 30000,
         });
         this.setState({
-            registration_done: true,
+            registrationDone: true,
         });
     }
 
     render() {
-        if (this.state.registration_done) {
+        if (this.state.registrationDone) {
             return <Redirect to="/" />;
         }
         return (
@@ -119,11 +119,11 @@ export class RegistrationPage extends FormBasePage<{}, RegistrationPageState> {
                     </FloatingLabel>
                     <FloatingLabel className="mb-3" label="Confirm password">
                         <Form.Control
-                            name="confirm_password"
+                            name="confirmPassword"
                             type="password"
                             placeholder="password"
                             required
-                            value={this.state.confirm_password}
+                            value={this.state.confirmPassword}
                             onChange={this.handleChange}
                         />
                     </FloatingLabel>

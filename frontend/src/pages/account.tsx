@@ -9,9 +9,9 @@ import Modal from 'react-bootstrap/Modal';
 import { Col, Row } from 'react-bootstrap';
 
 interface AccountPageState {
-    current_password: string;
-    new_password: string;
-    new_password_confirm: string;
+    currentPassword: string;
+    newPassword: string;
+    newPasswordConfirm: string;
     email: string;
     showDeleteAccountModal: boolean;
 }
@@ -23,9 +23,9 @@ export class AccountPage extends FormBasePage<{}, AccountPageState> {
     constructor(props: {}) {
         super(props);
         this.state = {
-            current_password: '',
-            new_password: '',
-            new_password_confirm: '',
+            currentPassword: '',
+            newPassword: '',
+            newPasswordConfirm: '',
             email: '',
             showDeleteAccountModal: false,
         };
@@ -44,9 +44,9 @@ export class AccountPage extends FormBasePage<{}, AccountPageState> {
 
     updateStateDefaults() {
         this.setState({
-            current_password: '',
-            new_password: '',
-            new_password_confirm: '',
+            currentPassword: '',
+            newPassword: '',
+            newPasswordConfirm: '',
             email: this.context.user!.email!,
             showDeleteAccountModal: false,
         });
@@ -90,8 +90,10 @@ export class AccountPage extends FormBasePage<{}, AccountPageState> {
     }
 
     async handleSubmit(event: FormEvent<HTMLFormElement>) {
+        event.preventDefault();
         this.closeAlert();
-        if (this.state.new_password !== this.state.new_password_confirm) {
+
+        if (this.state.newPassword !== this.state.newPasswordConfirm) {
             this.showAlert({
                 id: 'account',
                 contents: 'New passwords do not match',
@@ -101,10 +103,9 @@ export class AccountPage extends FormBasePage<{}, AccountPageState> {
             return;
         }
 
-        event.preventDefault();
         await this.sendUserChange({
-            current_password: this.state.current_password,
-            password: this.state.new_password,
+            current_password: this.state.currentPassword,
+            password: this.state.newPassword,
             email: this.state.email,
         });
     }
@@ -114,7 +115,7 @@ export class AccountPage extends FormBasePage<{}, AccountPageState> {
         method: string = 'PATCH',
     ) {
         this.closeAlert();
-        body.current_password = this.state.current_password;
+        body.current_password = this.state.currentPassword;
         try {
             await fetchAPIRaw(`/api/v1/users/${this.context.user!.id}`, {
                 method,
@@ -175,11 +176,11 @@ export class AccountPage extends FormBasePage<{}, AccountPageState> {
                 <Form onSubmit={this.handleSubmit}>
                     <FloatingLabel className="mb-3" label="Current password">
                         <Form.Control
-                            name="current_password"
+                            name="currentPassword"
                             type="password"
                             placeholder="password"
                             required
-                            value={this.state.current_password}
+                            value={this.state.currentPassword}
                             onChange={this.handleChange}
                         />
                     </FloatingLabel>
@@ -194,10 +195,10 @@ export class AccountPage extends FormBasePage<{}, AccountPageState> {
                     </FloatingLabel>
                     <FloatingLabel className="mb-3" label="New password">
                         <Form.Control
-                            name="new_password"
+                            name="newPassword"
                             type="password"
                             placeholder="password"
-                            value={this.state.new_password}
+                            value={this.state.newPassword}
                             onChange={this.handleChange}
                         />
                     </FloatingLabel>
@@ -206,10 +207,10 @@ export class AccountPage extends FormBasePage<{}, AccountPageState> {
                         label="Confirm new password"
                     >
                         <Form.Control
-                            name="new_password_confirm"
+                            name="newPasswordConfirm"
                             type="password"
                             placeholder="password"
-                            value={this.state.new_password_confirm}
+                            value={this.state.newPasswordConfirm}
                             onChange={this.handleChange}
                         />
                     </FloatingLabel>
