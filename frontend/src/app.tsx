@@ -28,17 +28,26 @@ const AlertView: React.FC<{ alert: AlertClass }> = ({ alert }) => {
     const { closeAlert } = useContext(AppContext);
 
     return (
-        <Alert show variant={alert.variant} onClose={() => closeAlert(alert.id)} dismissible>
+        <Alert
+            show
+            variant={alert.variant}
+            onClose={() => closeAlert(alert.id)}
+            dismissible
+        >
             {alert.contents}
         </Alert>
     );
 };
 
 const AlertList: React.FC<{ alerts: AlertClass[] }> = ({ alerts }) => {
-    return (<>{alerts.map((alert) => (
-        <AlertView alert={alert} key={alert.id} />
-    ))}</>);
-}
+    return (
+        <>
+            {alerts.map((alert) => (
+                <AlertView alert={alert} key={alert.id} />
+            ))}
+        </>
+    );
+};
 
 export const App: React.FC = () => {
     const [user, setUser] = useState<UserModel | undefined>(undefined);

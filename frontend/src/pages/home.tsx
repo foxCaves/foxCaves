@@ -8,4 +8,4 @@ export const HomePage: React.FC = () => {
             <p>This is the home page</p>
         </>
     );
-}
+};

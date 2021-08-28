@@ -51,4 +51,4 @@ export const LogoutPage: React.FC = () => {
     }
 
     return <h1>Logging out...</h1>;
-}
+};
