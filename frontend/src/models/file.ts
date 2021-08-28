@@ -17,6 +17,7 @@ export class FileModel extends DatedModel {
     public name: string = '';
     public extension: string = '';
     public size: number = 0;
+    public user: string = '';
     public type: FileType = FileType.UNKNOWN;
     public mimetype: string = '';
 
@@ -50,8 +51,8 @@ export class FileModel extends DatedModel {
     }
     
     static async getAll() {
-        const files = await fetchAPI('/api/v1/files');
-        return files.map((api: any) => {
+        const res = await fetchAPI('/api/v1/files');
+        return res.map((api: any) => {
             let m = new FileModel();
             m = Object.assign(m, api);
             m.convertDates();
