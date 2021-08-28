@@ -12,7 +12,7 @@ import { FilesPage } from './pages/files';
 import { LinksPage } from './pages/links';
 import { AccountPage } from './pages/account';
 import React from 'react';
-import { User } from './models/user';
+import { UserModel } from './models/user';
 import { AlertClass, AppContext, AppContextClass } from './utils/context';
 import {
     LoginState,
@@ -25,7 +25,7 @@ import { LinkContainer } from 'react-router-bootstrap';
 import './app.css';
 
 interface AppState {
-    user?: User;
+    user?: UserModel;
     userLoaded: boolean;
     alerts: AlertClass[];
 }
@@ -47,7 +47,7 @@ export class App extends React.Component<{}, AppState> {
     }
 
     async refreshUser() {
-        const user = await User.getById('self', true);
+        const user = await UserModel.getById('self', true);
         this.setState({
             user,
             userLoaded: true,

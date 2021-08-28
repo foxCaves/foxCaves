@@ -1,27 +1,24 @@
 import { fetchAPI, HttpError } from '../utils/api';
+import { DatedModel } from './base';
 
-export class User {
-    public id: string;
-    public username: string;
+export class UserModel extends DatedModel {
+    public id: string = '';
+    public username: string = '';
     public email?: string;
     public apikey?: string;
-
-    constructor(id: string, username: string) {
-        this.id = id;
-        this.username = username;
-    }
 
     static async getById(
         id: string,
         withDetails: boolean,
-    ): Promise<User | undefined> {
+    ): Promise<UserModel | undefined> {
         let url = `/api/v1/users/${id}`;
         if (withDetails) {
             url += '/details';
         }
         try {
-            const user = await fetchAPI(url);
-            return user as User;
+            const api = await fetchAPI(url);
+            const m = new UserModel();
+            return Object.assign(m, api);
         } catch (e) {
             if (
                 e instanceof HttpError &&
