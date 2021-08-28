@@ -29,11 +29,23 @@ export class LinksPage extends React.Component<{}, LinksState> {
     }
 
     renderLinksA() {
-        return this.state.links.map(link => {
+        return this.state.links.map((link) => {
             return (
                 <tr key={link.id}>
-                    <td><a rel="noreferrer" target="_blank" href={link.short_url}>{link.short_url}</a></td>
-                    <td><a rel="noreferrer" target="_blank" href={link.url}>{link.url}</a></td>
+                    <td>
+                        <a
+                            rel="noreferrer"
+                            target="_blank"
+                            href={link.short_url}
+                        >
+                            {link.short_url}
+                        </a>
+                    </td>
+                    <td>
+                        <a rel="noreferrer" target="_blank" href={link.url}>
+                            {link.url}
+                        </a>
+                    </td>
                     <td></td>
                 </tr>
             );
@@ -50,9 +62,7 @@ export class LinksPage extends React.Component<{}, LinksState> {
                         <th>Actions</th>
                     </tr>
                 </thead>
-                <tbody>
-                    {this.renderLinksA()}
-                </tbody>
+                <tbody>{this.renderLinksA()}</tbody>
             </Table>
         );
     }
@@ -66,7 +76,9 @@ export class LinksPage extends React.Component<{}, LinksState> {
             <div>
                 <h1>Manage links</h1>
                 <br />
-                {this.state.linksLoaded ? this.renderLinks() : this.renderLoading()}
+                {this.state.linksLoaded
+                    ? this.renderLinks()
+                    : this.renderLoading()}
             </div>
         );
     }

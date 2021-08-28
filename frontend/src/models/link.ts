@@ -7,9 +7,7 @@ export class LinkModel extends DatedModel {
     public short_url: string = '';
     public user: string = '';
 
-    static async getById(
-        id: string,
-    ): Promise<LinkModel | undefined> {
+    static async getById(id: string): Promise<LinkModel | undefined> {
         let url = `/api/v1/links/${id}`;
         try {
             const api = await fetchAPI(url);
@@ -27,7 +25,7 @@ export class LinkModel extends DatedModel {
             throw e;
         }
     }
-    
+
     static async getAll() {
         const res = await fetchAPI('/api/v1/links');
         return res.map((api: any) => {

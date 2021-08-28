@@ -30,17 +30,18 @@ export class FilesPage extends React.Component<{}, FilesState> {
     }
 
     renderFilesA(x: number) {
-        return this.state.files.map(file => {
+        return this.state.files.map((file) => {
             return (
-                <Col key={`${x}_${file.id}`} className='col-auto mb-3'>
+                <Col key={`${x}_${file.id}`} className="col-auto mb-3">
                     <Card text="white" bg="primary" style={{ width: '10rem' }}>
                         <Card.Header>{file.name}</Card.Header>
                         <Card.Body>
-                            <Card.Img variant="top" src={file.thumbnail_image} />
+                            <Card.Img
+                                variant="top"
+                                src={file.thumbnail_image}
+                            />
                         </Card.Body>
-                        <Card.Footer>
-                            {file.getFormattedSize()}
-                        </Card.Footer>
+                        <Card.Footer>{file.getFormattedSize()}</Card.Footer>
                     </Card>
                 </Col>
             );
@@ -69,7 +70,9 @@ export class FilesPage extends React.Component<{}, FilesState> {
             <div>
                 <h1>Manage files</h1>
                 <br />
-                {this.state.filesLoaded ? this.renderFiles() : this.renderLoading()}
+                {this.state.filesLoaded
+                    ? this.renderFiles()
+                    : this.renderLoading()}
             </div>
         );
     }

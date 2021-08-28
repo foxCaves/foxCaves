@@ -116,10 +116,7 @@ export const App: React.FC<{}> = () => {
                                 <Dropdown as={Nav.Item}>
                                     <Dropdown.Toggle as={Nav.Link}>
                                         Welcome,{' '}
-                                        {user
-                                            ? user.username
-                                            : 'Guest'}
-                                        !
+                                        {user ? user.username : 'Guest'}!
                                     </Dropdown.Toggle>
                                     <Dropdown.Menu>
                                         <CustomDropDownItem
@@ -165,10 +162,7 @@ export const App: React.FC<{}> = () => {
                         </Alert>
                     ))}
                     <Switch>
-                        <CustomRoute
-                            path="/login"
-                            login={LoginState.LoggedOut}
-                        >
+                        <CustomRoute path="/login" login={LoginState.LoggedOut}>
                             <LoginPage />
                         </CustomRoute>
                         <CustomRoute
@@ -177,16 +171,10 @@ export const App: React.FC<{}> = () => {
                         >
                             <RegistrationPage />
                         </CustomRoute>
-                        <CustomRoute
-                            path="/files"
-                            login={LoginState.LoggedIn}
-                        >
+                        <CustomRoute path="/files" login={LoginState.LoggedIn}>
                             <FilesPage />
                         </CustomRoute>
-                        <CustomRoute
-                            path="/links"
-                            login={LoginState.LoggedIn}
-                        >
+                        <CustomRoute path="/links" login={LoginState.LoggedIn}>
                             <LinksPage />
                         </CustomRoute>
                         <CustomRoute
@@ -209,4 +197,4 @@ export const App: React.FC<{}> = () => {
             </Router>
         </AppContext.Provider>
     );
-}
+};

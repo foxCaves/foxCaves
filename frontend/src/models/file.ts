@@ -29,9 +29,7 @@ export class FileModel extends DatedModel {
     public direct_url: string = '';
     public view_url: string = '';
 
-    static async getById(
-        id: string,
-    ): Promise<FileModel | undefined> {
+    static async getById(id: string): Promise<FileModel | undefined> {
         let url = `/api/v1/files/${id}`;
         try {
             const api = await fetchAPI(url);
@@ -49,7 +47,7 @@ export class FileModel extends DatedModel {
             throw e;
         }
     }
-    
+
     static async getAll() {
         const res = await fetchAPI('/api/v1/files');
         return res.map((api: any) => {
