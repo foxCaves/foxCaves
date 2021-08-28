@@ -11,7 +11,7 @@ import { RegistrationPage } from './pages/register';
 import { FilesPage } from './pages/files';
 import { LinksPage } from './pages/links';
 import { AccountPage } from './pages/account';
-import React, { useState, useEffect } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { UserModel } from './models/user';
 import { AlertClass, AppContext, AppContextClass } from './utils/context';
 import {
@@ -23,6 +23,22 @@ import {
 import { LinkContainer } from 'react-router-bootstrap';
 
 import './app.css';
+import { useCallback } from 'react';
+
+const AlertView: React.FC<{ alert: AlertClass }> = ({ alert }) => {
+    const closeAlert = useContext(AppContext).closeAlert;
+    const id = alert.id;
+
+    const closeSelf = useCallback(() => {
+        closeAlert(id);
+    }, [closeAlert, id]);
+
+    return (
+        <Alert show variant={alert.variant} onClose={closeSelf} dismissible>
+            {alert.contents}
+        </Alert>
+    );
+};
 
 export const App: React.FC<{}> = () => {
     const [user, setUser] = useState<UserModel | undefined>(undefined);
@@ -150,16 +166,8 @@ export const App: React.FC<{}> = () => {
                     </Container>
                 </Navbar>
                 <Container>
-                    {alerts.map((a) => (
-                        <Alert
-                            key={a.id}
-                            show
-                            variant={a.variant}
-                            onClose={() => closeAlert(a.id)}
-                            dismissible
-                        >
-                            {a.contents}
-                        </Alert>
+                    {alerts.map((alert) => (
+                        <AlertView alert={alert} key={alert.id} />
                     ))}
                     <Switch>
                         <CustomRoute path="/login" login={LoginState.LoggedOut}>
