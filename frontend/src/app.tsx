@@ -90,9 +90,8 @@ export const App: React.FC = () => {
             return;
         }
         setUserLoadStarted(true);
-        refreshUser();
-        setUserLoadStarted(false);
-    });
+        refreshUser().then(() => setUserLoadStarted(false));
+    }, [userLoadStarted, userLoaded, user]);
 
     return (
         <AppContext.Provider value={context}>

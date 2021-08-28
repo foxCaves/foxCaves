@@ -4,7 +4,7 @@ import { AppContext } from '../utils/context';
 import { Redirect } from 'react-router-dom';
 
 export const LogoutPage: React.FC = () => {
-    const ctx = useContext(AppContext);
+    const { showAlert, refreshUser } = useContext(AppContext);
     const [logoutDone, setLogoutDone] = useState(false);
     const [logoutStarted, setLogoutStarted] = useState(false);
 
@@ -19,7 +19,7 @@ export const LogoutPage: React.FC = () => {
                     method: 'POST',
                 });
             } catch (err) {
-                ctx.showAlert({
+                showAlert({
                     id: 'logout',
                     contents: `Error logging out: ${err.message}`,
                     variant: 'danger',
@@ -28,7 +28,7 @@ export const LogoutPage: React.FC = () => {
                 return;
             }
 
-            ctx.showAlert({
+            showAlert({
                 id: 'logout',
                 contents: 'Logged out!',
                 variant: 'success',
@@ -39,12 +39,12 @@ export const LogoutPage: React.FC = () => {
         async function logout() {
             setLogoutStarted(true);
             await logoutAPI();
-            ctx.refreshUser();
+            refreshUser();
             setLogoutDone(true);
             setLogoutStarted(false);
         }
         logout();
-    });
+    }, [showAlert, refreshUser, logoutDone, logoutStarted]);
 
     if (logoutDone) {
         return <Redirect to="/" />;
