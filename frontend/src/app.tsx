@@ -17,6 +17,7 @@ import { UserDetailsModel } from './models/user';
 import { AlertClass, AppContext, AppContextClass } from './utils/context';
 import { LoginState, CustomRoute, CustomNavLink, CustomDropDownItem } from './utils/route';
 import { LinkContainer } from 'react-router-bootstrap';
+import { UserInactiveAlert } from './utils/user_inactive_alert';
 
 import './app.css';
 import { useCallback } from 'react';
@@ -149,6 +150,7 @@ export const App: React.FC = () => {
                     </Container>
                 </Navbar>
                 <Container>
+                    <UserInactiveAlert />
                     <AlertList alerts={alerts} />
                     <Switch>
                         <CustomRoute path="/login" login={LoginState.LoggedOut}>

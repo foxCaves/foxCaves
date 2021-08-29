@@ -26,6 +26,11 @@ export class UserDetailsModel extends UserModel {
     public apikey: string = '';
     public storage_quota: number = 0;
     public storage_used: number = 0;
+    public active: number = 0;
+
+    isActive() {
+        return this.active > 0;
+    }
 
     static async getById(id: string): Promise<UserDetailsModel | undefined> {
         try {

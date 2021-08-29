@@ -233,7 +233,7 @@ function user_mt:save()
 
         local email_text ="You have recently registered or changed your E-Mail on foxCaves." ..
                           "\nPlease click the following link to activate your E-Mail:\n" ..
-                          main_url .. "/email/code?code=" .. emailid
+                          main_url .. "/email/code/" .. emailid
 
         local redis_inst = redis.get_shared()
         local emailkey = "emailkeys:" .. emailid

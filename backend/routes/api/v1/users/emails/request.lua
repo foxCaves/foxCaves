@@ -41,7 +41,7 @@ R.register_route("/api/v1/users/emails/request", "POST", R.make_route_opts_anon(
     else
         return utils.api_error("action invalid")
     end
-    emailstr = emailstr .. " just click on the following link:\n" .. main_url .."/email/code?code=" .. emailid
+    emailstr = emailstr .. " just click on the following link:\n" .. main_url .."/email/code/" .. emailid
 
     local redis_inst = redis.get_shared()
     local emailkey = "emailkeys:" .. emailid
