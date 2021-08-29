@@ -67,7 +67,7 @@ export class FileModel extends DatedModel {
     async rename(name: string) {
         await fetchAPIRaw(`/api/v1/files/${this.id}`, {
             method: 'PATCH',
-            body: JSON.stringify({ name }),
+            body: { name },
         });
         this.name = name;
     }

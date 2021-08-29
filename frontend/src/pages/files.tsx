@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useContext, useState, useEffect, KeyboardEvent } from 'react';
 import { FileModel } from '../models/file';
 import { StorageUseBar } from '../utils/storage_use';
 import Card from 'react-bootstrap/Card';
@@ -8,14 +8,55 @@ import { Col, Row } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
+import Form from 'react-bootstrap/Form';
 
 export const FileView: React.FC<{
     file: FileModel;
-    showDeleteModal: (file: FileModel) => void;
-}> = ({ file, showDeleteModal }) => {
+    setDeleteFile: (file: FileModel | undefined) => void;
+    setEditFile: (file: FileModel | undefined) => void;
+    editMode: boolean;
+}> = ({ file, editMode, setDeleteFile, setEditFile }) => {
+    const { showAlert } = useContext(AppContext);
+    const [editFileName, setEditFileName] = useState(file.name);
+
+    async function onKeyDownEdit(e: KeyboardEvent) {
+        if (e.key === 'Enter') {
+            try {
+                await file.rename(editFileName);
+                showAlert({
+                    id: `file_${file.id}`,
+                    contents: `File renamed to ${file.name}`,
+                    variant: 'success',
+                    timeout: 5000,
+                });
+            } catch (err) {
+                showAlert({
+                    id: `file_${file.id}`,
+                    contents: `Error renaming file: ${err.message}`,
+                    variant: 'danger',
+                    timeout: 5000,
+                });
+            }
+            setEditFile(undefined);
+        } else if (e.key === 'Escape') {
+            setEditFile(undefined);
+        }
+    }
+
     return (
         <Card text="white" bg="primary" style={{ width: '10rem' }}>
-            <Card.Header>{file.name}</Card.Header>
+            <Card.Header>
+                {editMode ? (
+                    <Form.Control
+                        type="text"
+                        value={editFileName}
+                        onChange={(e) => setEditFileName(e.target.value)}
+                        onKeyDown={onKeyDownEdit}
+                    />
+                ) : (
+                    file.name
+                )}
+            </Card.Header>
             <Card.Body>
                 <Card.Img variant="top" src={file.thumbnail_image} />
             </Card.Body>
@@ -30,10 +71,10 @@ export const FileView: React.FC<{
                         <Dropdown.Item href={file.download_url}>
                             Download
                         </Dropdown.Item>
-                        <Dropdown.Item onClick={() => (file.name = 'meow')}>
+                        <Dropdown.Item onClick={() => setEditFile(file)}>
                             Rename
                         </Dropdown.Item>
-                        <Dropdown.Item onClick={() => showDeleteModal(file)}>
+                        <Dropdown.Item onClick={() => setDeleteFile(file)}>
                             Delete
                         </Dropdown.Item>
                     </Dropdown.Menu>
@@ -50,9 +91,11 @@ export const FilesPage: React.FC<{}> = () => {
     const [files, setFiles] = useState<FileMap | undefined>(undefined);
     const [loading, setLoading] = useState(false);
 
-    const [deleteModalFile, setDeleteModalFile] = useState<
-        FileModel | undefined
-    >(undefined);
+    const [deleteFile, setDeleteFile] = useState<FileModel | undefined>(
+        undefined,
+    );
+
+    const [editFile, setEditFile] = useState<FileModel | undefined>(undefined);
 
     async function refresh() {
         const filesArray = await FileModel.getAll();
@@ -63,17 +106,13 @@ export const FilesPage: React.FC<{}> = () => {
         setFiles(filesMap);
     }
 
-    function showDeleteModal(file: FileModel) {
-        setDeleteModalFile(file);
-    }
-
     async function handleDeleteFile() {
-        const file = deleteModalFile;
+        const file = deleteFile;
         if (file) {
             try {
                 await file.delete();
                 showAlert({
-                    id: 'file',
+                    id: `file_${file.id}`,
                     contents: `File ${file.name} deleted`,
                     variant: 'success',
                     timeout: 5000,
@@ -82,14 +121,14 @@ export const FilesPage: React.FC<{}> = () => {
                 setFiles(files);
             } catch (err) {
                 showAlert({
-                    id: 'file',
+                    id: `file_${file.id}`,
                     contents: `Error deleting file: ${err.message}`,
                     variant: 'danger',
                     timeout: 5000,
                 });
             }
         }
-        setDeleteModalFile(undefined);
+        setDeleteFile(undefined);
     }
 
     useEffect(() => {
@@ -113,17 +152,14 @@ export const FilesPage: React.FC<{}> = () => {
 
     return (
         <>
-            <Modal
-                show={deleteModalFile}
-                onHide={() => setDeleteModalFile(undefined)}
-            >
+            <Modal show={deleteFile} onHide={() => setDeleteFile(undefined)}>
                 <Modal.Header closeButton>
                     <Modal.Title>Delete file?</Modal.Title>
                 </Modal.Header>
 
                 <Modal.Body>
                     <p>
-                        Are you sure to delete the file "{deleteModalFile?.name}
+                        Are you sure to delete the file "{deleteFile?.name}
                         "?
                     </p>
                 </Modal.Body>
@@ -131,7 +167,7 @@ export const FilesPage: React.FC<{}> = () => {
                 <Modal.Footer>
                     <Button
                         variant="secondary"
-                        onClick={() => setDeleteModalFile(undefined)}
+                        onClick={() => setDeleteFile(undefined)}
                     >
                         No
                     </Button>
@@ -149,7 +185,9 @@ export const FilesPage: React.FC<{}> = () => {
                         <Col key={file.id} className="col-auto mb-3">
                             <FileView
                                 file={file}
-                                showDeleteModal={showDeleteModal}
+                                setDeleteFile={setDeleteFile}
+                                setEditFile={setEditFile}
+                                editMode={editFile === file}
                             />
                         </Col>
                     );

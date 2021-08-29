@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { LinkModel } from '../models/link';
-import { Table } from 'react-bootstrap';
+import { Button, Table } from 'react-bootstrap';
 import { useEffect } from 'react';
 
 export const LinkView: React.FC<{ link: LinkModel }> = ({ link }) => {
@@ -16,7 +16,11 @@ export const LinkView: React.FC<{ link: LinkModel }> = ({ link }) => {
                     {link.url}
                 </a>
             </td>
-            <td></td>
+            <td>
+                <Button variant="danger" onClick={() => link.delete()}>
+                    Delete
+                </Button>
+            </td>
         </tr>
     );
 };
