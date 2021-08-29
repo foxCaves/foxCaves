@@ -6,9 +6,8 @@ export class UserModel extends DatedModel {
     public username: string = '';
 
     static async getById(id: string): Promise<UserModel | undefined> {
-        let url = `/api/v1/users/${id}`;
         try {
-            const api = await fetchAPI(url);
+            const api = await fetchAPI(`/api/v1/users/${id}`);
             let m = new UserModel();
             m = Object.assign(m, api);
             m.convertDates();
@@ -32,9 +31,8 @@ export class UserDetailsModel extends UserModel {
     public storage_used: number = 0;
 
     static async getById(id: string): Promise<UserDetailsModel | undefined> {
-        let url = `/api/v1/users/${id}/details`;
         try {
-            const api = await fetchAPI(url);
+            const api = await fetchAPI(`/api/v1/users/${id}/details`);
             let m = new UserDetailsModel();
             m = Object.assign(m, api);
             m.convertDates();

@@ -30,9 +30,8 @@ export class FileModel extends DatedModel {
     public view_url: string = '';
 
     static async getById(id: string): Promise<FileModel | undefined> {
-        let url = `/api/v1/files/${id}`;
         try {
-            const api = await fetchAPI(url);
+            const api = await fetchAPI(`/api/v1/files/${id}`);
             let m = new FileModel();
             m = Object.assign(m, api);
             m.convertDates();

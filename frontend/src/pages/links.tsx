@@ -1,6 +1,6 @@
 import React, { useContext, useState } from 'react';
 import { LinkModel } from '../models/link';
-import { Button, Table } from 'react-bootstrap';
+import { Button, Form, Table } from 'react-bootstrap';
 import { useEffect } from 'react';
 import Modal from 'react-bootstrap/Modal';
 import { AppContext } from '../utils/context';
@@ -39,6 +39,8 @@ export const LinksPage: React.FC<{}> = () => {
     const [deleteLink, setDeleteLink] = useState<LinkModel | undefined>(
         undefined,
     );
+    const [showCreateLink, setShowCreateLink] = useState<boolean>(false);
+    const [createLinkUrl, setCreateLinkUrl] = useState<string>('');
 
     async function refresh() {
         const linksArray = await LinkModel.getAll();
@@ -72,6 +74,28 @@ export const LinksPage: React.FC<{}> = () => {
             }
         }
         setDeleteLink(undefined);
+    }
+
+    async function handleCreateLink() {
+        try {
+            const link = await LinkModel.create(createLinkUrl);
+            showAlert({
+                id: `link_new`,
+                contents: `Link ${link.short_url} created.`,
+                variant: 'success',
+                timeout: 5000,
+            });
+            links![link.id] = link;
+            setLinks(links);
+        } catch (err) {
+            showAlert({
+                id: `link_new}`,
+                contents: `Error creating link: ${err.message}`,
+                variant: 'danger',
+                timeout: 5000,
+            });
+        }
+        setShowCreateLink(false);
     }
 
     useEffect(() => {
@@ -118,7 +142,50 @@ export const LinksPage: React.FC<{}> = () => {
                     </Button>
                 </Modal.Footer>
             </Modal>
-            <h1>Manage links</h1>
+            <Modal
+                show={showCreateLink}
+                onHide={() => setShowCreateLink(false)}
+            >
+                <Modal.Header closeButton>
+                    <Modal.Title>Shorten link</Modal.Title>
+                </Modal.Header>
+
+                <Modal.Body>
+                    <p>
+                        Please enter the link you would like to shorten:
+                        <Form.Control
+                            type="text"
+                            name="createLink"
+                            value={createLinkUrl}
+                            onChange={(e) => setCreateLinkUrl(e.target.value)}
+                        />
+                    </p>
+                </Modal.Body>
+
+                <Modal.Footer>
+                    <Button
+                        variant="secondary"
+                        onClick={() => setShowCreateLink(false)}
+                    >
+                        Cancel
+                    </Button>
+                    <Button variant="primary" onClick={handleCreateLink}>
+                        Shorten
+                    </Button>
+                </Modal.Footer>
+            </Modal>
+            <h1>
+                Manage links{' '}
+                <Button
+                    variant="primary"
+                    onClick={() => {
+                        setCreateLinkUrl('');
+                        setShowCreateLink(true);
+                    }}
+                >
+                    Create new link
+                </Button>
+            </h1>
             <br />
             <Table striped bordered>
                 <thead>

@@ -8,9 +8,8 @@ export class LinkModel extends DatedModel {
     public user: string = '';
 
     static async getById(id: string): Promise<LinkModel | undefined> {
-        let url = `/api/v1/links/${id}`;
         try {
-            const api = await fetchAPI(url);
+            const api = await fetchAPI(`/api/v1/links/${id}`);
             let m = new LinkModel();
             m = Object.assign(m, api);
             m.convertDates();
@@ -34,6 +33,17 @@ export class LinkModel extends DatedModel {
             m.convertDates();
             return m;
         });
+    }
+
+    static async create(url: string) {
+        const api = await fetchAPI('/api/v1/links', {
+            method: 'POST',
+            body: JSON.stringify({ url }),
+        });
+        let m = new LinkModel();
+        m = Object.assign(m, api);
+        m.convertDates();
+        return m;
     }
 
     async delete() {
