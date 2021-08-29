@@ -39,7 +39,7 @@ const FileContentView: React.FC<{ file: FileModel }> = ({ file }) => {
         case FileModelType.Audio:
             return <audio src={file.direct_url} controls />;
         case FileModelType.Iframe:
-            return <iframe src={file.direct_url} className="mw-100 preview-iframe" />;
+            return <iframe title="PDF preview" src={file.direct_url} className="mw-100 preview-iframe" />;
         default:
             return <h3>No preview available</h3>;
     }
