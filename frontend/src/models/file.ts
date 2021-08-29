@@ -1,4 +1,4 @@
-import { fetchAPI, HttpError } from '../utils/api';
+import { fetchAPI, fetchAPIRaw, HttpError } from '../utils/api';
 import { formatSize } from '../utils/formatting';
 import { DatedModel } from './base';
 
@@ -55,6 +55,12 @@ export class FileModel extends DatedModel {
             m = Object.assign(m, api);
             m.convertDates();
             return m;
+        });
+    }
+
+    async delete() {
+        await fetchAPIRaw(`/api/v1/files/${this.id}`, {
+            method: 'DELETE',
         });
     }
 

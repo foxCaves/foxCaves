@@ -40,16 +40,16 @@ export const LinksPage: React.FC<{}> = () => {
 
     if (loading || !links) {
         return (
-            <div>
+            <>
                 <h1>Manage links</h1>
                 <br />
                 <h3>Loading...</h3>
-            </div>
+            </>
         );
     }
 
     return (
-        <div>
+        <>
             <h1>Manage links</h1>
             <br />
             <Table striped bordered>
@@ -66,6 +66,6 @@ export const LinksPage: React.FC<{}> = () => {
                     ))}
                 </tbody>
             </Table>
-        </div>
+        </>
     );
 };
