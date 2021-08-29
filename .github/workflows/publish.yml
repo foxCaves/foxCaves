@@ -25,6 +25,6 @@ jobs:
           push: true
           build-args: |
             GIT_REVISION=${{ github.sha }}
-            REACT_APP_SENTRY_DSN="https://5d99e8f38f4c48e8b9f2803cba13caad@o804863.ingest.sentry.io/5803116"
+            REACT_APP_SENTRY_DSN=https://5d99e8f38f4c48e8b9f2803cba13caad@o804863.ingest.sentry.io/5803116
           tags: |
             ghcr.io/foxcaves/site/foxcaves-site:latest
