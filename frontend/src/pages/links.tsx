@@ -58,7 +58,7 @@ export const LinksPage: React.FC<{}> = () => {
                 await link.delete();
                 showAlert({
                     id: `link_${link.id}`,
-                    contents: `Link ${link.short_url} deleted`,
+                    contents: `Link "${link.short_url}" deleted`,
                     variant: 'success',
                     timeout: 5000,
                 });
@@ -81,7 +81,7 @@ export const LinksPage: React.FC<{}> = () => {
             const link = await LinkModel.create(createLinkUrl);
             showAlert({
                 id: `link_new`,
-                contents: `Link ${link.short_url} created.`,
+                contents: `Link "${link.short_url}" created.`,
                 variant: 'success',
                 timeout: 5000,
             });
