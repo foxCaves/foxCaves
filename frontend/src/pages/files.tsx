@@ -14,6 +14,7 @@ import { useCallback } from 'react';
 import { useInputFieldSetter } from '../utils/hooks';
 
 import './files.css';
+import nothumb from './nothumb.gif';
 
 export const FileView: React.FC<{
     file: FileModel;
@@ -74,7 +75,7 @@ export const FileView: React.FC<{
                 )}
             </Card.Header>
             <Card.Body>
-                <Card.Img variant="top" src={file.thumbnail_image} />
+                <Card.Img variant="top" src={file.thumbnail_url || nothumb} />
             </Card.Body>
             <Card.Footer className="d-flex">
                 <div className="flex-grow-1 p-1">{file.getFormattedSize()}</div>
