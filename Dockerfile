@@ -7,9 +7,6 @@ COPY frontend/package-lock.json /opt/stage/
 RUN npm ci
 COPY frontend/ /opt/stage/
 
-ARG GIT_REVISION=UNKNOWN
-RUN echo $GIT_REVISION > /opt/stage/.revision
-
 RUN npm run build
 
 
@@ -23,7 +20,9 @@ COPY etc/nginx/main.conf /usr/local/openresty/nginx/conf/custom.conf
 
 COPY backend /var/www/foxcaves/lua
 COPY --from=frontend_builder /opt/stage/build /var/www/foxcaves/html
-COPY --from=frontend_builder /opt/stage/.revision /var/www/foxcaves/.revision
+
+ARG GIT_REVISION=UNKNOWN
+RUN echo $GIT_REVISION > /var/www/foxcaves/.revision
 
 VOLUME /var/www/foxcaves/storage
 VOLUME /var/www/foxcaves/config
