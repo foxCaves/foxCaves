@@ -11,6 +11,7 @@ import { RegistrationPage } from './pages/register';
 import { FilesPage } from './pages/files';
 import { LinksPage } from './pages/links';
 import { AccountPage } from './pages/account';
+import { ViewPage } from './pages/view';
 import React, { useContext, useState, useEffect } from 'react';
 import { UserDetailsModel } from './models/user';
 import { AlertClass, AppContext, AppContextClass } from './utils/context';
@@ -201,6 +202,9 @@ export const App: React.FC = () => {
                         </CustomRoute>
                         <Route path="/logout">
                             <LogoutPage />
+                        </Route>
+                        <Route path="/view">
+                            <ViewPage />
                         </Route>
                         <Route path="/" exact>
                             <HomePage />
