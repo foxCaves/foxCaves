@@ -6,6 +6,8 @@ import { FileModel, FileModelType } from '../models/file';
 import { UserModel } from '../models/user';
 import { formatDate } from '../utils/formatting';
 
+import './view.css';
+
 const TextView: React.FC<{ src: string }> = ({ src }) => {
     const [dataLoading, setDataLoading] = useState(false);
     const [data, setData] = useState<string | undefined>();
@@ -31,13 +33,13 @@ const FileContentView: React.FC<{ file: FileModel }> = ({ file }) => {
         case FileModelType.Text:
             return <TextView src={file.direct_url} />;
         case FileModelType.Image:
-            return <img src={file.direct_url} alt={file.name} style={{ maxWidth: '100%' }} />;
+            return <img src={file.direct_url} alt={file.name} className="mw-100" />;
         case FileModelType.Video:
-            return <video src={file.direct_url} controls style={{ maxWidth: '100%' }} />;
+            return <video src={file.direct_url} controls className="mw-100" />;
         case FileModelType.Audio:
             return <audio src={file.direct_url} controls />;
         case FileModelType.Iframe:
-            return <iframe src={file.direct_url} style={{ width: '100%', minHeight: '600px' }} />;
+            return <iframe src={file.direct_url} className="mw-100 preview-iframe" />;
         default:
             return <h3>No preview available</h3>;
     }

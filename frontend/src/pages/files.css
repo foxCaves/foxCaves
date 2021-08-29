@@ -1,0 +1,9 @@
+.file-card {
+    width: 10rem;
+}
+.file-card .card-header {
+    overflow: hidden;
+    max-width: 100%;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}

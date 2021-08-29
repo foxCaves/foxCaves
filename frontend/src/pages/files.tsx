@@ -13,6 +13,8 @@ import { useDropzone } from 'react-dropzone';
 import { useCallback } from 'react';
 import { useInputFieldSetter } from '../utils/hooks';
 
+import './files.css';
+
 export const FileView: React.FC<{
     file: FileModel;
     setDeleteFile: (file: FileModel | undefined) => void;
@@ -58,8 +60,8 @@ export const FileView: React.FC<{
     }, [file, setDeleteFile]);
 
     return (
-        <Card text="white" bg="primary" style={{ width: '10rem' }}>
-            <Card.Header>
+        <Card text="white" bg="primary" className="file-card">
+            <Card.Header title={file.name}>
                 {editMode ? (
                     <Form.Control
                         type="text"
