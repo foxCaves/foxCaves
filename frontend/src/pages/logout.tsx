@@ -34,7 +34,7 @@ export const LogoutPage: React.FC = () => {
     const logout = useCallback(async () => {
         setLogoutStarted(true);
         await logoutAPI();
-        refreshUser();
+        await refreshUser();
         setLogoutDone(true);
         setLogoutStarted(false);
     }, [logoutAPI, refreshUser]);
