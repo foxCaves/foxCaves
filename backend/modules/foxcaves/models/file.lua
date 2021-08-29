@@ -27,18 +27,7 @@ local file_model = {
         storage = path.abs(ROOT .. "/storage/"),
         temp = path.abs(ROOT .. "/tmp/"),
     },
-    thumbnails = {},
 }
-
-local function scan_thumbnails()
-    local dir = path.abs(ROOT .. "/html/static/_head/img/thumbs/")
-    for file in lfs.dir(dir) do
-        if file:sub(1, 4) == "ext_" then
-            file_model.thumbnails[file:sub(5, file:len() - 4)] = file
-        end
-    end
-end
-scan_thumbnails()
 
 require("foxcaves.module_helper").setmodenv()
 
@@ -295,15 +284,6 @@ function file_mt:get_public()
     }
     if res.thumbnail_extension and res.thumbnail_extension ~= "" then
         res.thumbnail_url = url_config.short .. "/thumbs/" .. res.id .. "." .. res.thumbnail_extension
-    end
-    if res.type == file_model.type.image and res.thumbnail_url then
-        res.thumbnail_image = res.thumbnail_url
-    else
-        local thumbnail = file_model.thumbnails[self.extension]
-        if not thumbnail then
-            thumbnail = "nothumb.png"
-        end
-        res.thumbnail_image = url_config.main .. "/static/_head/img/thumbs/" .. thumbnail
     end
     return res
 end

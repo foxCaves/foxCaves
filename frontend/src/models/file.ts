@@ -22,7 +22,6 @@ export class FileModel extends DatedModel {
     public mimetype: string = '';
 
     public thumbnail_url?: string;
-    public thumbnail_image: string = '';
     public thumbnail_extension: string = '';
 
     public download_url: string = '';
