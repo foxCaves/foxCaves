@@ -3,6 +3,10 @@ local link_model = require("foxcaves.models.link")
 local ngx = ngx
 
 R.register_route("/api/v1/links", "POST", R.make_route_opts(), function()
+    if not ngx.ctx.user:can_perform_write() then
+        return utils.api_error("You cannot create links", 403)
+    end
+
     local link = link_model.new()
     link:set_owner(ngx.ctx.user)
 

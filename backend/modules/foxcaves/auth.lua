@@ -4,7 +4,6 @@ local auth_utils = require("foxcaves.auth_utils")
 local cookies = require("foxcaves.cookies")
 local redis = require("foxcaves.redis")
 local random = require("foxcaves.random")
-local consts = require("foxcaves.consts")
 local user_model = require("foxcaves.models.user")
 
 local ngx = ngx
@@ -30,7 +29,7 @@ function M.login(username_or_id, credential, options)
     local login_with_id = options.login_with_id
 
     if utils.is_falsy_or_null(username_or_id) or utils.is_falsy_or_null(credential) then
-        return consts.LOGIN_BAD_CREDENTIALS
+        return false
     end
 
     local user
@@ -41,18 +40,12 @@ function M.login(username_or_id, credential, options)
     end
 
     if not user then
-        return consts.LOGIN_BAD_CREDENTIALS
+        return false
     end
 
     local auth_func = options.login_method or M.LOGIN_METHOD_PASSWORD
     if not auth_func(user, credential) then
-        return consts.LOGIN_BAD_CREDENTIALS
-    end
-
-    if user.active == 0 then
-        return consts.LOGIN_USER_INACTIVE
-    elseif user.active == -1 then
-        return consts.LOGIN_USER_BANNED
+        return false
     end
 
     if not nosession then
@@ -74,7 +67,7 @@ function M.login(username_or_id, credential, options)
 
     ngx.ctx.user = user
 
-    return consts.LOGIN_SUCCESS
+    return true
 end
 
 function M.logout()
@@ -112,9 +105,9 @@ end
 function M.check()
     local user, apikey = parse_authorization_header(ngx.var.http_authorization)
     if user and apikey then
-        local success = (M.login(user, apikey, {
+        local success = M.login(user, apikey, {
                             nosession = true, login_method = M.LOGIN_METHOD_APIKEY
-                        }) == consts.LOGIN_SUCCESS)
+                        })
         if not success then
             return utils.api_error("Invalid username or API key", 401)
         end
@@ -134,7 +127,7 @@ function M.check()
         if (not utils.is_falsy_or_null(result)) and
                 M.login(result[1], result[2], {
                     nosession = true, login_with_id = true, login_method = M.LOGIN_METHOD_LOGINKEY
-                }) == consts.LOGIN_SUCCESS then
+                }) then
             ngx.ctx.sessionid = sessionid
             cookie:set({
                 key = "sessionid",

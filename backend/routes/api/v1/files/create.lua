@@ -5,6 +5,10 @@ local ngx = ngx
 local io = io
 
 R.register_route("/api/v1/files", "POST", R.make_route_opts(), function()
+    if not ngx.ctx.user:can_perform_write() then
+        return utils.api_error("You cannot create files", 403)
+    end
+
     local name = ngx.var.arg_name
 
     if not name then

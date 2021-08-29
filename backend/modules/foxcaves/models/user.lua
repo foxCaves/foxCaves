@@ -274,6 +274,10 @@ function user_mt:delete()
     self:send_self_event('delete')
 end
 
+function user_mt:can_perform_write()
+    return self.active == 1
+end
+
 user_mt.__index = user_mt
 
 return user_model
