@@ -53,7 +53,7 @@ export const LiveLoadingContainer: React.FC = ({ children }) => {
         ws.onmessage = (event) => {
             const data = JSON.parse(event.data);
             console.log(data);
-        }
+        };
     }, [wsOpen]);
 
     return (
