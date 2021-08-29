@@ -71,6 +71,20 @@ export class FileModel extends DatedModel {
         this.name = name;
     }
 
+    static async upload(file: File) {
+        const api = await fetchAPI(
+            `/api/v1/files?name=${encodeURIComponent(file.name)}`,
+            {
+                method: 'POST',
+                rawBody: file,
+            },
+        );
+        let m = new FileModel();
+        m = Object.assign(m, api);
+        m.convertDates();
+        return m;
+    }
+
     getFormattedSize() {
         return formatSize(this.size);
     }

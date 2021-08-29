@@ -7,6 +7,7 @@ export class HttpError extends Error {
 export interface APIRequestInfo {
     method?: string;
     body?: any;
+    rawBody?: BodyInit;
 }
 
 export async function fetchAPIRaw(url: string, info?: APIRequestInfo) {
@@ -18,6 +19,8 @@ export async function fetchAPIRaw(url: string, info?: APIRequestInfo) {
             init.headers = {
                 'Content-Type': 'application/json',
             };
+        } else if (info.rawBody) {
+            init.body = info.rawBody;
         }
     }
 
