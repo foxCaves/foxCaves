@@ -234,20 +234,22 @@ export const FilesPage: React.FC<{}> = () => {
                     <h3>Uploading: {uploadFileName}</h3>
                 </Row>
             ) : null}
-            <Row className="mt-2 justify-content-center">
-                {Object.values(files).map((file) => {
-                    return (
-                        <Col key={file.id} className="col-auto mb-3">
-                            <FileView
-                                file={file}
-                                setDeleteFile={setDeleteFile}
-                                setEditFile={setEditFile}
-                                editMode={editFile === file}
-                            />
-                        </Col>
-                    );
-                })}
-            </Row>
+            <Container className="mt-2 justify-content-center">
+                <Row>
+                    {Object.values(files).map((file) => {
+                        return (
+                            <Col key={file.id} className="col-auto mb-3">
+                                <FileView
+                                    file={file}
+                                    setDeleteFile={setDeleteFile}
+                                    setEditFile={setEditFile}
+                                    editMode={editFile === file}
+                                />
+                            </Col>
+                        );
+                    })}
+                </Row>
+            </Container>
         </>
     );
 };
