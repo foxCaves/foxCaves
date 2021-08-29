@@ -24,6 +24,7 @@ import {
 import { LinkContainer } from 'react-router-bootstrap';
 
 import './app.css';
+import { useCallback } from 'react';
 
 const AlertView: React.FC<{ alert: AlertClass }> = ({ alert }) => {
     const { closeAlert } = useContext(AppContext);
@@ -56,36 +57,42 @@ export const App: React.FC = () => {
     const [userLoadStarted, setUserLoadStarted] = useState(false);
     const [alerts, setAlerts] = useState<AlertClass[]>([]);
 
-    async function refreshUser() {
+    const refreshUser = useCallback(async () => {
         const user = await UserDetailsModel.getById('self');
         setUser(user);
         setUserLoaded(true);
-    }
+    }, []);
 
-    function showAlert(alert: AlertClass) {
-        let newAlerts = [...alerts];
-        closeAlert(alert.id);
-        newAlerts.push(alert);
-        if (alert.timeout > 0) {
-            alert.__timeout = setTimeout(() => {
-                closeAlert(alert.id);
-            }, alert.timeout);
-        }
-        setAlerts(newAlerts);
-    }
-
-    function closeAlert(id: string) {
-        let newAlerts = [...alerts];
-        const oldAlert = newAlerts.find((a) => a.id === id);
-        if (oldAlert) {
-            newAlerts = newAlerts.filter((a) => a.id !== id);
-            if (oldAlert.__timeout) {
-                clearTimeout(oldAlert.__timeout);
-                oldAlert.__timeout = undefined;
+    const closeAlert = useCallback(
+        (id: string) => {
+            let newAlerts = [...alerts];
+            const oldAlert = newAlerts.find((a) => a.id === id);
+            if (oldAlert) {
+                newAlerts = newAlerts.filter((a) => a.id !== id);
+                if (oldAlert.__timeout) {
+                    clearTimeout(oldAlert.__timeout);
+                    oldAlert.__timeout = undefined;
+                }
             }
-        }
-        setAlerts(newAlerts);
-    }
+            setAlerts(newAlerts);
+        },
+        [alerts],
+    );
+
+    const showAlert = useCallback(
+        (alert: AlertClass) => {
+            let newAlerts = [...alerts];
+            closeAlert(alert.id);
+            newAlerts.push(alert);
+            if (alert.timeout > 0) {
+                alert.__timeout = setTimeout(() => {
+                    closeAlert(alert.id);
+                }, alert.timeout);
+            }
+            setAlerts(newAlerts);
+        },
+        [alerts, closeAlert],
+    );
 
     const context: AppContextClass = {
         user,
@@ -101,7 +108,7 @@ export const App: React.FC = () => {
         }
         setUserLoadStarted(true);
         refreshUser().then(() => setUserLoadStarted(false));
-    }, [userLoadStarted, userLoaded, user]);
+    }, [userLoadStarted, userLoaded, refreshUser]);
 
     return (
         <AppContext.Provider value={context}>
