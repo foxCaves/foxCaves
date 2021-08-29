@@ -18,7 +18,10 @@ function newLink() {
 }
 
 function createLink(linkurl: string) {
-	fetch("/api/v1/links?url="+encodeURIComponent(linkurl), { method: 'POST' })
+	fetch('/api/v1/links', {
+		method: 'POST',
+		body: new URLSearchParams({ url: linkurl }),
+	})
 	.then(res => res.json())
 	.then(data => {
 		LINKS[data.id] = convertToDates(data);

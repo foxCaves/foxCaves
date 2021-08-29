@@ -62,13 +62,13 @@ function M.get_post_args()
         local data = M.get_body_data()
         local ok, res = pcall(cjson.decode, data)
         if not ok then
-            return
+            return {}
         end
-        return res
+        return res or {}
     end
 
     ngx.req.read_body()
-    return ngx.req.get_post_args()
+    return ngx.req.get_post_args() or {}
 end
 
 function M.api_error(error, code)
