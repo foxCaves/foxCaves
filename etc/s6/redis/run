@@ -1,6 +1,0 @@
-#!/bin/sh
-set -e
-
-cd /var/lib/redis
-chown -R redis:redis /var/lib/redis
-exec s6-setuidgid redis /usr/bin/redis-server
