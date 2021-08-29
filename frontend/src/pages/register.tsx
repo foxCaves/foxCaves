@@ -1,67 +1,80 @@
-import React, { FormEvent, useState, useContext } from 'react';
+import React, { FormEvent, useState, useContext, useCallback } from 'react';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import { fetchAPI } from '../utils/api';
 import { AppContext } from '../utils/context';
 import { Redirect } from 'react-router-dom';
 import FloatingLabel from 'react-bootstrap/FloatingLabel';
+import { useCheckboxFieldSetter, useInputFieldSetter } from '../utils/hooks';
 
 export const RegistrationPage: React.FC = () => {
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
-    const [passwordConfirm, setPasswordConfirm] = useState('');
-    const [email, setEmail] = useState('');
-    const [agreetos, setAgreetos] = useState(false);
+    const [username, setUsernameCB] = useInputFieldSetter('');
+    const [password, setPasswordCB] = useInputFieldSetter('');
+    const [passwordConfirm, setPasswordConfirmCB] = useInputFieldSetter('');
+    const [email, setEmailCB] = useInputFieldSetter('');
+    const [agreetos, setAgreetosCB] = useCheckboxFieldSetter(false);
     const [registrationDone, setRegistrationDone] = useState(false);
 
     const { showAlert, closeAlert } = useContext(AppContext);
 
-    async function handleSubmit(event: FormEvent<HTMLFormElement>) {
-        closeAlert('register');
-        event.preventDefault();
+    const handleSubmit = useCallback(
+        async (event: FormEvent<HTMLFormElement>) => {
+            closeAlert('register');
+            event.preventDefault();
 
-        if (password !== passwordConfirm) {
+            if (password !== passwordConfirm) {
+                showAlert({
+                    id: 'register',
+                    contents: 'Passwords do not match',
+                    variant: 'danger',
+                    timeout: 5000,
+                });
+                return;
+            }
+
+            try {
+                await fetchAPI('/api/v1/users', {
+                    method: 'POST',
+                    body: {
+                        username,
+                        password,
+                        email,
+                        agreetos,
+                    },
+                });
+            } catch (err: any) {
+                showAlert({
+                    id: 'register',
+                    contents: `Error registering account: ${err.message}`,
+                    variant: 'danger',
+                    timeout: 5000,
+                });
+                return;
+            }
             showAlert({
                 id: 'register',
-                contents: 'Passwords do not match',
-                variant: 'danger',
-                timeout: 5000,
+                contents:
+                    'Registration successful! Please check your E-Mail for activation instructions!',
+                variant: 'success',
+                timeout: 30000,
             });
-            return;
-        }
-
-        try {
-            await fetchAPI('/api/v1/users', {
-                method: 'POST',
-                body: {
-                    username,
-                    password,
-                    email,
-                    agreetos,
-                },
-            });
-        } catch (err: any) {
-            showAlert({
-                id: 'register',
-                contents: `Error registering account: ${err.message}`,
-                variant: 'danger',
-                timeout: 5000,
-            });
-            return;
-        }
-        showAlert({
-            id: 'register',
-            contents:
-                'Registration successful! Please check your E-Mail for activation instructions!',
-            variant: 'success',
-            timeout: 30000,
-        });
-        setRegistrationDone(true);
-    }
+            setRegistrationDone(true);
+        },
+        [
+            username,
+            password,
+            passwordConfirm,
+            email,
+            agreetos,
+            showAlert,
+            closeAlert,
+        ],
+    );
 
     if (registrationDone) {
         return <Redirect to="/" />;
     }
+
     return (
         <>
             <h1>Register</h1>
@@ -74,7 +87,7 @@ export const RegistrationPage: React.FC = () => {
                         placeholder="testuser"
                         required
                         value={username}
-                        onChange={(e) => setUsername(e.target.value)}
+                        onChange={setUsernameCB}
                     />
                 </FloatingLabel>
                 <FloatingLabel className="mb-3" label="Password">
@@ -84,7 +97,7 @@ export const RegistrationPage: React.FC = () => {
                         placeholder="password"
                         required
                         value={password}
-                        onChange={(e) => setPassword(e.target.value)}
+                        onChange={setPasswordCB}
                     />
                 </FloatingLabel>
                 <FloatingLabel className="mb-3" label="Confirm password">
@@ -94,7 +107,7 @@ export const RegistrationPage: React.FC = () => {
                         placeholder="password"
                         required
                         value={passwordConfirm}
-                        onChange={(e) => setPasswordConfirm(e.target.value)}
+                        onChange={setPasswordConfirmCB}
                     />
                 </FloatingLabel>
                 <FloatingLabel className="mb-3" label="E-Mail">
@@ -104,7 +117,7 @@ export const RegistrationPage: React.FC = () => {
                         placeholder="test@example.com"
                         required
                         value={email}
-                        onChange={(e) => setEmail(e.target.value)}
+                        onChange={setEmailCB}
                     />
                 </FloatingLabel>
                 <Form.Group className="mb-3">
@@ -115,7 +128,7 @@ export const RegistrationPage: React.FC = () => {
                         label="I agree to the Terms of Service and Privacy Policy"
                         value="true"
                         checked={agreetos}
-                        onChange={(e) => setAgreetos(e.target.checked)}
+                        onChange={setAgreetosCB}
                     />
                 </Form.Group>
                 <Button variant="primary" type="submit" size="lg">
