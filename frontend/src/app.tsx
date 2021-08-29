@@ -203,7 +203,7 @@ export const App: React.FC = () => {
                         <Route path="/logout">
                             <LogoutPage />
                         </Route>
-                        <Route path="/view">
+                        <Route path="/view/:id">
                             <ViewPage />
                         </Route>
                         <Route path="/" exact>
