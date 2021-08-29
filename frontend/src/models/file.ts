@@ -2,14 +2,14 @@ import { fetchAPI, fetchAPIRaw, HttpError } from '../utils/api';
 import { formatSize } from '../utils/formatting';
 import { DatedModel } from './base';
 
-enum FileType {
-    OTHER = 0,
-    IMAGE = 1,
-    TEXT = 2,
-    VIDEO = 3,
-    AUDIO = 4,
-    IFRAME = 5,
-    UNKNOWN = -1,
+export enum FileModelType {
+    Other = 0,
+    Image = 1,
+    Text = 2,
+    Video = 3,
+    Audio = 4,
+    Iframe = 5,
+    Unknown = -1,
 }
 
 export class FileModel extends DatedModel {
@@ -18,7 +18,7 @@ export class FileModel extends DatedModel {
     public extension: string = '';
     public size: number = 0;
     public user: string = '';
-    public type: FileType = FileType.UNKNOWN;
+    public type: FileModelType = FileModelType.Unknown;
     public mimetype: string = '';
 
     public thumbnail_url?: string;
