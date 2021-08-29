@@ -1,4 +1,4 @@
-import { fetchAPI, HttpError } from '../utils/api';
+import { fetchAPI, fetchAPIRaw, HttpError } from '../utils/api';
 import { DatedModel } from './base';
 
 export class LinkModel extends DatedModel {
@@ -33,6 +33,12 @@ export class LinkModel extends DatedModel {
             m = Object.assign(m, api);
             m.convertDates();
             return m;
+        });
+    }
+
+    async delete() {
+        await fetchAPIRaw(`/api/v1/links/${this.id}`, {
+            method: 'DELETE',
         });
     }
 }
