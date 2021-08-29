@@ -64,6 +64,14 @@ export class FileModel extends DatedModel {
         });
     }
 
+    async rename(name: string) {
+        await fetchAPIRaw(`/api/v1/files/${this.id}`, {
+            method: 'PATCH',
+            body: JSON.stringify({ name }),
+        });
+        this.name = name;
+    }
+
     getFormattedSize() {
         return formatSize(this.size);
     }

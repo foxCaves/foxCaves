@@ -3,6 +3,14 @@ import { AppContext } from '../utils/context';
 import ProgressBar from 'react-bootstrap/ProgressBar';
 import { formatSize, formatSizeWithInfinite } from './formatting';
 
+const ProgressBarLabel: React.FC<{ isChild?: boolean }> = ({ children }) => {
+    return (
+        <div className="justify-content-center d-flex position-absolute w-100">
+            {children}
+        </div>
+    );
+};
+
 export const StorageUseBar: React.FC = () => {
     const { user } = useContext(AppContext);
     if (!user) {
@@ -17,9 +25,11 @@ export const StorageUseBar: React.FC = () => {
     return (
         <ProgressBar className="position-relative">
             <ProgressBar now={nowPerc} />
-            <div className="justify-content-center d-flex position-absolute w-100">{`${formatSize(
+            <ProgressBarLabel>{`${formatSize(
                 user.storage_used,
-            )} / ${formatSizeWithInfinite(user.storage_quota)}`}</div>
+            )} / ${formatSizeWithInfinite(
+                user.storage_quota,
+            )}`}</ProgressBarLabel>
         </ProgressBar>
     );
 };

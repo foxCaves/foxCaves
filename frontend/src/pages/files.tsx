@@ -30,7 +30,9 @@ export const FileView: React.FC<{
                         <Dropdown.Item href={file.download_url}>
                             Download
                         </Dropdown.Item>
-                        <Dropdown.Item>Rename</Dropdown.Item>
+                        <Dropdown.Item onClick={() => (file.name = 'meow')}>
+                            Rename
+                        </Dropdown.Item>
                         <Dropdown.Item onClick={() => showDeleteModal(file)}>
                             Delete
                         </Dropdown.Item>
