@@ -4,11 +4,17 @@ import { Button, Form, Table } from 'react-bootstrap';
 import { useEffect } from 'react';
 import Modal from 'react-bootstrap/Modal';
 import { AppContext } from '../utils/context';
+import { useCallback } from 'react';
+import { useInputFieldSetter } from '../utils/hooks';
 
 export const LinkView: React.FC<{
     link: LinkModel;
     setDeleteLink: (link: LinkModel | undefined) => void;
 }> = ({ link, setDeleteLink }) => {
+    const setDeleteLinkCB = useCallback(() => {
+        setDeleteLink(link);
+    }, [link, setDeleteLink]);
+
     return (
         <tr>
             <td>
@@ -22,7 +28,7 @@ export const LinkView: React.FC<{
                 </a>
             </td>
             <td>
-                <Button variant="danger" onClick={() => setDeleteLink(link)}>
+                <Button variant="danger" onClick={setDeleteLinkCB}>
                     Delete
                 </Button>
             </td>
@@ -40,18 +46,19 @@ export const LinksPage: React.FC<{}> = () => {
         undefined,
     );
     const [showCreateLink, setShowCreateLink] = useState<boolean>(false);
-    const [createLinkUrl, setCreateLinkUrl] = useState<string>('');
+    const [createLinkUrl, setCreateLinkUrlCB, setCreateLinkUrl] =
+        useInputFieldSetter('https://');
 
-    async function refresh() {
+    const refresh = useCallback(async () => {
         const linksArray = await LinkModel.getAll();
         const linksMap: LinkMap = {};
         for (const link of linksArray) {
             linksMap[link.id] = link;
         }
         setLinks(linksMap);
-    }
+    }, []);
 
-    async function handleDeleteLink() {
+    const handleDeleteLink = useCallback(async () => {
         const link = deleteLink;
         if (link) {
             try {
@@ -74,9 +81,9 @@ export const LinksPage: React.FC<{}> = () => {
             }
         }
         setDeleteLink(undefined);
-    }
+    }, [deleteLink, links, showAlert]);
 
-    async function handleCreateLink() {
+    const handleCreateLink = useCallback(async () => {
         try {
             const link = await LinkModel.create(createLinkUrl);
             showAlert({
@@ -96,7 +103,20 @@ export const LinksPage: React.FC<{}> = () => {
             });
         }
         setShowCreateLink(false);
-    }
+    }, [createLinkUrl, links, showAlert]);
+
+    const showCreateLinkDialog = useCallback(() => {
+        setCreateLinkUrl('');
+        setShowCreateLink(true);
+    }, [setCreateLinkUrl]);
+
+    const hideCreateLinkDialog = useCallback(() => {
+        setShowCreateLink(false);
+    }, []);
+
+    const hideDeleteLinkDialog = useCallback(() => {
+        setDeleteLink(undefined);
+    }, []);
 
     useEffect(() => {
         if (loading || links) {
@@ -104,7 +124,7 @@ export const LinksPage: React.FC<{}> = () => {
         }
         setLoading(true);
         refresh().then(() => setLoading(false));
-    }, [loading, links]);
+    }, [refresh, loading, links]);
 
     if (loading || !links) {
         return (
@@ -118,7 +138,7 @@ export const LinksPage: React.FC<{}> = () => {
 
     return (
         <>
-            <Modal show={deleteLink} onHide={() => setDeleteLink(undefined)}>
+            <Modal show={deleteLink} onHide={hideDeleteLinkDialog}>
                 <Modal.Header closeButton>
                     <Modal.Title>Delete file?</Modal.Title>
                 </Modal.Header>
@@ -131,10 +151,7 @@ export const LinksPage: React.FC<{}> = () => {
                 </Modal.Body>
 
                 <Modal.Footer>
-                    <Button
-                        variant="secondary"
-                        onClick={() => setDeleteLink(undefined)}
-                    >
+                    <Button variant="secondary" onClick={hideDeleteLinkDialog}>
                         No
                     </Button>
                     <Button variant="primary" onClick={handleDeleteLink}>
@@ -142,10 +159,7 @@ export const LinksPage: React.FC<{}> = () => {
                     </Button>
                 </Modal.Footer>
             </Modal>
-            <Modal
-                show={showCreateLink}
-                onHide={() => setShowCreateLink(false)}
-            >
+            <Modal show={showCreateLink} onHide={hideCreateLinkDialog}>
                 <Modal.Header closeButton>
                     <Modal.Title>Shorten link</Modal.Title>
                 </Modal.Header>
@@ -157,16 +171,13 @@ export const LinksPage: React.FC<{}> = () => {
                             type="text"
                             name="createLink"
                             value={createLinkUrl}
-                            onChange={(e) => setCreateLinkUrl(e.target.value)}
+                            onChange={setCreateLinkUrlCB}
                         />
                     </p>
                 </Modal.Body>
 
                 <Modal.Footer>
-                    <Button
-                        variant="secondary"
-                        onClick={() => setShowCreateLink(false)}
-                    >
+                    <Button variant="secondary" onClick={hideCreateLinkDialog}>
                         Cancel
                     </Button>
                     <Button variant="primary" onClick={handleCreateLink}>
@@ -175,14 +186,9 @@ export const LinksPage: React.FC<{}> = () => {
                 </Modal.Footer>
             </Modal>
             <h1>
-                Manage links{' '}
-                <Button
-                    variant="primary"
-                    onClick={() => {
-                        setCreateLinkUrl('');
-                        setShowCreateLink(true);
-                    }}
-                >
+                Manage links
+                <span className="p-3"></span>
+                <Button variant="primary" onClick={showCreateLinkDialog}>
                     Create new link
                 </Button>
             </h1>
