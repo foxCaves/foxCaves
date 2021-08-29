@@ -18,7 +18,7 @@ export const LogoutPage: React.FC = () => {
                 await fetchAPIRaw('/api/v1/users/sessions/logout', {
                     method: 'POST',
                 });
-            } catch (err) {
+            } catch (err: any) {
                 showAlert({
                     id: 'logout',
                     contents: `Error logging out: ${err.message}`,

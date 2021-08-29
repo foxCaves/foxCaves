@@ -22,10 +22,10 @@ export const LoginPage: React.FC = () => {
                     remember,
                 },
             });
-        } catch (err) {
+        } catch (err: any) {
             showAlert({
                 id: 'login',
-                contents: err.message,
+                contents: `Error logging in: ${err.message}`,
                 variant: 'danger',
                 timeout: 5000,
             });

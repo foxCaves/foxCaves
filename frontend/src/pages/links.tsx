@@ -64,7 +64,7 @@ export const LinksPage: React.FC<{}> = () => {
                 });
                 delete links![link.id];
                 setLinks(links);
-            } catch (err) {
+            } catch (err: any) {
                 showAlert({
                     id: `link_${link.id}`,
                     contents: `Error deleting link: ${err.message}`,
@@ -87,7 +87,7 @@ export const LinksPage: React.FC<{}> = () => {
             });
             links![link.id] = link;
             setLinks(links);
-        } catch (err) {
+        } catch (err: any) {
             showAlert({
                 id: `link_new}`,
                 contents: `Error creating link: ${err.message}`,

@@ -29,7 +29,7 @@ export const FileView: React.FC<{
                     variant: 'success',
                     timeout: 5000,
                 });
-            } catch (err) {
+            } catch (err: any) {
                 showAlert({
                     id: `file_${file.id}`,
                     contents: `Error renaming file: ${err.message}`,
@@ -119,7 +119,7 @@ export const FilesPage: React.FC<{}> = () => {
                 });
                 delete files![file.id];
                 setFiles(files);
-            } catch (err) {
+            } catch (err: any) {
                 showAlert({
                     id: `file_${file.id}`,
                     contents: `Error deleting file: ${err.message}`,

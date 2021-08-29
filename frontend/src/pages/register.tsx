@@ -40,10 +40,10 @@ export const RegistrationPage: React.FC = () => {
                     agreetos,
                 },
             });
-        } catch (err) {
+        } catch (err: any) {
             showAlert({
                 id: 'register',
-                contents: err.message,
+                contents: `Error registering account: ${err.message}`,
                 variant: 'danger',
                 timeout: 5000,
             });

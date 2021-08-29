@@ -72,10 +72,10 @@ export const AccountPage: React.FC = () => {
                 method,
                 body,
             });
-        } catch (err) {
+        } catch (err: any) {
             showAlert({
                 id: 'account',
-                contents: err.message,
+                contents: `Error changing account: ${err.message}`,
                 variant: 'danger',
                 timeout: 5000,
             });
