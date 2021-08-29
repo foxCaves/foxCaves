@@ -3,6 +3,18 @@ import { FileModel } from '../models/file';
 import Card from 'react-bootstrap/Card';
 import { Col, Row } from 'react-bootstrap';
 
+export const FileView: React.FC<{ file: FileModel }> = ({ file }) => {
+    return (
+        <Card text="white" bg="primary" style={{ width: '10rem' }}>
+            <Card.Header>{file.name}</Card.Header>
+            <Card.Body>
+                <Card.Img variant="top" src={file.thumbnail_image} />
+            </Card.Body>
+            <Card.Footer>{file.getFormattedSize()}</Card.Footer>
+        </Card>
+    );
+};
+
 export const FilesPage: React.FC<{}> = () => {
     const [files, setFiles] = useState<FileModel[] | undefined>(undefined);
     const [loading, setLoading] = useState(false);
@@ -38,22 +50,7 @@ export const FilesPage: React.FC<{}> = () => {
                 {files.map((file) => {
                     return (
                         <Col key={file.id} className="col-auto mb-3">
-                            <Card
-                                text="white"
-                                bg="primary"
-                                style={{ width: '10rem' }}
-                            >
-                                <Card.Header>{file.name}</Card.Header>
-                                <Card.Body>
-                                    <Card.Img
-                                        variant="top"
-                                        src={file.thumbnail_image}
-                                    />
-                                </Card.Body>
-                                <Card.Footer>
-                                    {file.getFormattedSize()}
-                                </Card.Footer>
-                            </Card>
+                            <FileView file={file} />
                         </Col>
                     );
                 })}

@@ -3,6 +3,24 @@ import { LinkModel } from '../models/link';
 import { Table } from 'react-bootstrap';
 import { useEffect } from 'react';
 
+export const LinkView: React.FC<{ link: LinkModel }> = ({ link }) => {
+    return (
+        <tr>
+            <td>
+                <a rel="noreferrer" target="_blank" href={link.short_url}>
+                    {link.short_url}
+                </a>
+            </td>
+            <td>
+                <a rel="noreferrer" target="_blank" href={link.url}>
+                    {link.url}
+                </a>
+            </td>
+            <td></td>
+        </tr>
+    );
+};
+
 export const LinksPage: React.FC<{}> = () => {
     const [links, setLinks] = useState<LinkModel[] | undefined>(undefined);
     const [loading, setLoading] = useState(false);
@@ -44,27 +62,7 @@ export const LinksPage: React.FC<{}> = () => {
                 </thead>
                 <tbody>
                     {links.map((link) => (
-                        <tr key={link.id}>
-                            <td>
-                                <a
-                                    rel="noreferrer"
-                                    target="_blank"
-                                    href={link.short_url}
-                                >
-                                    {link.short_url}
-                                </a>
-                            </td>
-                            <td>
-                                <a
-                                    rel="noreferrer"
-                                    target="_blank"
-                                    href={link.url}
-                                >
-                                    {link.url}
-                                </a>
-                            </td>
-                            <td></td>
-                        </tr>
+                        <LinkView key={link.id} link={link} />
                     ))}
                 </tbody>
             </Table>
