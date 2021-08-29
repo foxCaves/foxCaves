@@ -21,13 +21,19 @@ export const LinkView: React.FC<{ link: LinkModel }> = ({ link }) => {
     );
 };
 
+type LinkMap = { [key: string]: LinkModel };
+
 export const LinksPage: React.FC<{}> = () => {
-    const [links, setLinks] = useState<LinkModel[] | undefined>(undefined);
+    const [links, setLinks] = useState<LinkMap | undefined>(undefined);
     const [loading, setLoading] = useState(false);
 
     async function refresh() {
-        const links = await LinkModel.getAll();
-        setLinks(links);
+        const linksArray = await LinkModel.getAll();
+        const linksMap: LinkMap = {};
+        for (const link of linksArray) {
+            linksMap[link.id] = link;
+        }
+        setLinks(linksMap);
     }
 
     useEffect(() => {
@@ -61,7 +67,7 @@ export const LinksPage: React.FC<{}> = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {links.map((link) => (
+                    {Object.values(links).map((link) => (
                         <LinkView key={link.id} link={link} />
                     ))}
                 </tbody>
