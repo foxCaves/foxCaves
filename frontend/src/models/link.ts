@@ -38,7 +38,7 @@ export class LinkModel extends DatedModel {
     static async create(url: string) {
         const api = await fetchAPI('/api/v1/links', {
             method: 'POST',
-            body: JSON.stringify({ url }),
+            body: { url },
         });
         let m = new LinkModel();
         m = Object.assign(m, api);
