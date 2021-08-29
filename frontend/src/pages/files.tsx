@@ -10,6 +10,8 @@ import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
 import { useDropzone } from 'react-dropzone';
+import { useCallback } from 'react';
+import { useInputFieldSetter } from '../utils/hooks';
 
 export const FileView: React.FC<{
     file: FileModel;
@@ -18,9 +20,9 @@ export const FileView: React.FC<{
     editMode: boolean;
 }> = ({ file, editMode, setDeleteFile, setEditFile }) => {
     const { showAlert } = useContext(AppContext);
-    const [editFileName, setEditFileName] = useState(file.name);
+    const [editFileName, setEditFileName] = useInputFieldSetter(file.name);
 
-    async function onKeyDownEdit(e: KeyboardEvent) {
+    const onKeyDownEdit = useCallback(async (e: KeyboardEvent) => {
         if (e.key === 'Enter') {
             try {
                 await file.rename(editFileName);
@@ -42,7 +44,15 @@ export const FileView: React.FC<{
         } else if (e.key === 'Escape') {
             setEditFile(undefined);
         }
-    }
+    }, [file, editFileName, showAlert, setEditFile]);
+
+    const setEditFileCB = useCallback(() => {
+        setEditFile(file);
+    }, [file, setEditFile]);
+
+    const setDeleteFileCB = useCallback(() => {
+        setDeleteFile(file);
+    }, [file, setDeleteFile]);
 
     return (
         <Card text="white" bg="primary" style={{ width: '10rem' }}>
@@ -51,7 +61,7 @@ export const FileView: React.FC<{
                     <Form.Control
                         type="text"
                         value={editFileName}
-                        onChange={(e) => setEditFileName(e.target.value)}
+                        onChange={setEditFileName}
                         onKeyDown={onKeyDownEdit}
                     />
                 ) : (
@@ -72,10 +82,10 @@ export const FileView: React.FC<{
                         <Dropdown.Item href={file.download_url}>
                             Download
                         </Dropdown.Item>
-                        <Dropdown.Item onClick={() => setEditFile(file)}>
+                        <Dropdown.Item onClick={setEditFileCB}>
                             Rename
                         </Dropdown.Item>
-                        <Dropdown.Item onClick={() => setDeleteFile(file)}>
+                        <Dropdown.Item onClick={setDeleteFileCB}>
                             Delete
                         </Dropdown.Item>
                     </Dropdown.Menu>
@@ -97,7 +107,7 @@ export const FilesPage: React.FC<{}> = () => {
     const [editFile, setEditFile] = useState<FileModel | undefined>(undefined);
     const [uploadFileName, setUploadFileName] = useState('');
 
-    async function onDrop(acceptedFiles: File[]) {
+    const onDrop = useCallback(async (acceptedFiles: File[]) => {
         for (const file of acceptedFiles) {
             try {
                 setUploadFileName(file.name);
@@ -120,22 +130,22 @@ export const FilesPage: React.FC<{}> = () => {
             }
         }
         setUploadFileName('');
-    }
+    }, [files, showAlert, setUploadFileName]);
 
     const dropzone = useDropzone({
         onDrop,
     });
 
-    async function refresh() {
+    const refresh = useCallback(async () => {
         const filesArray = await FileModel.getAll();
         const filesMap: FileMap = {};
         for (const file of filesArray) {
             filesMap[file.id] = file;
         }
         setFiles(filesMap);
-    }
+    }, []);
 
-    async function handleDeleteFile() {
+    const handleDeleteFile = useCallback(async () => {
         const file = deleteFile;
         if (file) {
             try {
@@ -158,7 +168,11 @@ export const FilesPage: React.FC<{}> = () => {
             }
         }
         setDeleteFile(undefined);
-    }
+    }, [deleteFile, files, showAlert]);
+
+    const unsetDeleteFile = useCallback(() => {
+        setDeleteFile(undefined);
+    }, []);
 
     useEffect(() => {
         if (loading || files) {
@@ -166,7 +180,7 @@ export const FilesPage: React.FC<{}> = () => {
         }
         setLoading(true);
         refresh().then(() => setLoading(false));
-    }, [loading, files]);
+    }, [loading, files, refresh]);
 
     if (loading || !files) {
         return (
@@ -181,7 +195,7 @@ export const FilesPage: React.FC<{}> = () => {
 
     return (
         <>
-            <Modal show={deleteFile} onHide={() => setDeleteFile(undefined)}>
+            <Modal show={deleteFile} onHide={unsetDeleteFile}>
                 <Modal.Header closeButton>
                     <Modal.Title>Delete file?</Modal.Title>
                 </Modal.Header>
@@ -194,7 +208,7 @@ export const FilesPage: React.FC<{}> = () => {
                 <Modal.Footer>
                     <Button
                         variant="secondary"
-                        onClick={() => setDeleteFile(undefined)}
+                        onClick={unsetDeleteFile}
                     >
                         No
                     </Button>
