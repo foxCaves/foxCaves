@@ -103,7 +103,7 @@ export const LinksPage: React.FC<{}> = () => {
     }, [createLinkUrl, links, showAlert]);
 
     const showCreateLinkDialog = useCallback(() => {
-        setCreateLinkUrl('');
+        setCreateLinkUrl('https://');
         setShowCreateLink(true);
     }, [setCreateLinkUrl]);
 
