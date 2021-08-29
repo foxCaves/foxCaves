@@ -22,29 +22,32 @@ export const FileView: React.FC<{
     const { showAlert } = useContext(AppContext);
     const [editFileName, setEditFileName] = useInputFieldSetter(file.name);
 
-    const onKeyDownEdit = useCallback(async (e: KeyboardEvent) => {
-        if (e.key === 'Enter') {
-            try {
-                await file.rename(editFileName);
-                showAlert({
-                    id: `file_${file.id}`,
-                    contents: `File renamed to "${file.name}"`,
-                    variant: 'success',
-                    timeout: 5000,
-                });
-            } catch (err: any) {
-                showAlert({
-                    id: `file_${file.id}`,
-                    contents: `Error renaming file: ${err.message}`,
-                    variant: 'danger',
-                    timeout: 5000,
-                });
+    const onKeyDownEdit = useCallback(
+        async (e: KeyboardEvent) => {
+            if (e.key === 'Enter') {
+                try {
+                    await file.rename(editFileName);
+                    showAlert({
+                        id: `file_${file.id}`,
+                        contents: `File renamed to "${file.name}"`,
+                        variant: 'success',
+                        timeout: 5000,
+                    });
+                } catch (err: any) {
+                    showAlert({
+                        id: `file_${file.id}`,
+                        contents: `Error renaming file: ${err.message}`,
+                        variant: 'danger',
+                        timeout: 5000,
+                    });
+                }
+                setEditFile(undefined);
+            } else if (e.key === 'Escape') {
+                setEditFile(undefined);
             }
-            setEditFile(undefined);
-        } else if (e.key === 'Escape') {
-            setEditFile(undefined);
-        }
-    }, [file, editFileName, showAlert, setEditFile]);
+        },
+        [file, editFileName, showAlert, setEditFile],
+    );
 
     const setEditFileCB = useCallback(() => {
         setEditFile(file);
@@ -107,30 +110,33 @@ export const FilesPage: React.FC<{}> = () => {
     const [editFile, setEditFile] = useState<FileModel | undefined>(undefined);
     const [uploadFileName, setUploadFileName] = useState('');
 
-    const onDrop = useCallback(async (acceptedFiles: File[]) => {
-        for (const file of acceptedFiles) {
-            try {
-                setUploadFileName(file.name);
-                const fileObj = await FileModel.upload(file);
-                showAlert({
-                    id: `file_${fileObj.id}`,
-                    contents: `File "${fileObj.name}" uploaded!`,
-                    variant: 'success',
-                    timeout: 5000,
-                });
-                files![fileObj.id] = fileObj;
-                setFiles(files);
-            } catch (err: any) {
-                showAlert({
-                    id: `fileupload_${file.name}`,
-                    contents: `Error uploading file: ${err.message}`,
-                    variant: 'danger',
-                    timeout: 5000,
-                });
+    const onDrop = useCallback(
+        async (acceptedFiles: File[]) => {
+            for (const file of acceptedFiles) {
+                try {
+                    setUploadFileName(file.name);
+                    const fileObj = await FileModel.upload(file);
+                    showAlert({
+                        id: `file_${fileObj.id}`,
+                        contents: `File "${fileObj.name}" uploaded!`,
+                        variant: 'success',
+                        timeout: 5000,
+                    });
+                    files![fileObj.id] = fileObj;
+                    setFiles(files);
+                } catch (err: any) {
+                    showAlert({
+                        id: `fileupload_${file.name}`,
+                        contents: `Error uploading file: ${err.message}`,
+                        variant: 'danger',
+                        timeout: 5000,
+                    });
+                }
             }
-        }
-        setUploadFileName('');
-    }, [files, showAlert, setUploadFileName]);
+            setUploadFileName('');
+        },
+        [files, showAlert, setUploadFileName],
+    );
 
     const dropzone = useDropzone({
         onDrop,
@@ -206,10 +212,7 @@ export const FilesPage: React.FC<{}> = () => {
                     </p>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button
-                        variant="secondary"
-                        onClick={unsetDeleteFile}
-                    >
+                    <Button variant="secondary" onClick={unsetDeleteFile}>
                         No
                     </Button>
                     <Button variant="primary" onClick={handleDeleteFile}>

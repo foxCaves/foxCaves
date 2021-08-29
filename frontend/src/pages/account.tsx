@@ -1,4 +1,10 @@
-import React, { FormEvent, useEffect, useContext, useState } from 'react';
+import React, {
+    FormEvent,
+    useEffect,
+    useContext,
+    useState,
+    useCallback,
+} from 'react';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import { fetchAPIRaw } from '../utils/api';
@@ -6,96 +12,125 @@ import { AppContext } from '../utils/context';
 import FloatingLabel from 'react-bootstrap/FloatingLabel';
 import Modal from 'react-bootstrap/Modal';
 import { Col, Row } from 'react-bootstrap';
+import { useInputFieldSetter } from '../utils/hooks';
 
 export const AccountPage: React.FC = () => {
     const { user, showAlert, closeAlert, refreshUser } = useContext(AppContext);
     const userEmail = user!.email!;
 
     const [showDeleteAccountModal, setShowDeleteAccountModal] = useState(false);
-    const [currentPassword, setCurrentPassword] = useState('');
-    const [newPassword, setNewPassword] = useState('');
-    const [newPasswordConfirm, setNewPasswordConfirm] = useState('');
-    const [email, setEmail] = useState(userEmail);
+    const [currentPassword, setCurrentPasswordCB] = useInputFieldSetter('');
+    const [newPassword, setNewPasswordCB] = useInputFieldSetter('');
+    const [newPasswordConfirm, setNewPasswordConfirmCB] =
+        useInputFieldSetter('');
+    const [email, setEmailCB, setEmail] = useInputFieldSetter(userEmail);
 
     useEffect(() => {
         setEmail(userEmail!);
-    }, [userEmail]);
+    }, [userEmail, setEmail]);
 
-    async function handleAPIKeyRegen(event: FormEvent) {
-        event.preventDefault();
-        await sendUserChange({
-            apikey: 'CHANGE',
-        });
-    }
+    const sendUserChange = useCallback(
+        async (body: { [key: string]: string }, method: string = 'PATCH') => {
+            closeAlert('account');
+            body.current_password = currentPassword;
+            try {
+                await fetchAPIRaw(`/api/v1/users/${user!.id}`, {
+                    method,
+                    body,
+                });
+            } catch (err: any) {
+                showAlert({
+                    id: 'account',
+                    contents: `Error changing account: ${err.message}`,
+                    variant: 'danger',
+                    timeout: 5000,
+                });
+                return false;
+            }
+            await refreshUser();
+            showAlert({
+                id: 'account',
+                contents: 'Account change successful!',
+                variant: 'success',
+                timeout: 2000,
+            });
+            return true;
+        },
+        [showAlert, closeAlert, currentPassword, refreshUser, user],
+    );
 
-    async function handleDeleteAccount(event: FormEvent) {
-        event.preventDefault();
-        await sendUserChange({}, 'DELETE');
+    const handleAPIKeyRegen = useCallback(
+        async (event: FormEvent) => {
+            event.preventDefault();
+            await sendUserChange({
+                apikey: 'CHANGE',
+            });
+        },
+        [sendUserChange],
+    );
+
+    const handleDeleteAccount = useCallback(
+        async (event: FormEvent) => {
+            event.preventDefault();
+            await sendUserChange({}, 'DELETE');
+            setShowDeleteAccountModal(false);
+        },
+        [sendUserChange],
+    );
+
+    const handleKillSessions = useCallback(
+        async (event: FormEvent) => {
+            event.preventDefault();
+            await sendUserChange({
+                loginkey: 'CHANGE',
+            });
+        },
+        [sendUserChange],
+    );
+
+    const handleSubmit = useCallback(
+        async (event: FormEvent<HTMLFormElement>) => {
+            event.preventDefault();
+            closeAlert('account');
+
+            if (newPassword !== newPasswordConfirm) {
+                showAlert({
+                    id: 'account',
+                    contents: 'New passwords do not match',
+                    variant: 'danger',
+                    timeout: 5000,
+                });
+                return;
+            }
+
+            await sendUserChange({
+                password: newPassword,
+                email: email,
+            });
+        },
+        [
+            sendUserChange,
+            showAlert,
+            closeAlert,
+            newPassword,
+            newPasswordConfirm,
+            email,
+        ],
+    );
+
+    const doShowDeleteAccountModal = useCallback(() => {
+        setShowDeleteAccountModal(true);
+    }, []);
+
+    const doHideDeleteAccountModal = useCallback(() => {
         setShowDeleteAccountModal(false);
-    }
-
-    async function handleKillSessions(event: FormEvent) {
-        event.preventDefault();
-        await sendUserChange({
-            loginkey: 'CHANGE',
-        });
-    }
-
-    async function handleSubmit(event: FormEvent<HTMLFormElement>) {
-        event.preventDefault();
-        closeAlert('account');
-
-        if (newPassword !== newPasswordConfirm) {
-            showAlert({
-                id: 'account',
-                contents: 'New passwords do not match',
-                variant: 'danger',
-                timeout: 5000,
-            });
-            return;
-        }
-
-        await sendUserChange({
-            password: newPassword,
-            email: email,
-        });
-    }
-
-    async function sendUserChange(
-        body: { [key: string]: string },
-        method: string = 'PATCH',
-    ) {
-        closeAlert('account');
-        body.current_password = currentPassword;
-        try {
-            await fetchAPIRaw(`/api/v1/users/${user!.id}`, {
-                method,
-                body,
-            });
-        } catch (err: any) {
-            showAlert({
-                id: 'account',
-                contents: `Error changing account: ${err.message}`,
-                variant: 'danger',
-                timeout: 5000,
-            });
-            return false;
-        }
-        await refreshUser();
-        showAlert({
-            id: 'account',
-            contents: 'Account change successful!',
-            variant: 'success',
-            timeout: 2000,
-        });
-        return true;
-    }
+    }, []);
 
     return (
         <>
             <Modal
                 show={showDeleteAccountModal}
-                onHide={() => setShowDeleteAccountModal(false)}
+                onHide={doHideDeleteAccountModal}
             >
                 <Modal.Header closeButton>
                     <Modal.Title>Delete account</Modal.Title>
@@ -108,7 +143,7 @@ export const AccountPage: React.FC = () => {
                 <Modal.Footer>
                     <Button
                         variant="secondary"
-                        onClick={() => setShowDeleteAccountModal(false)}
+                        onClick={doHideDeleteAccountModal}
                     >
                         No
                     </Button>
@@ -127,7 +162,7 @@ export const AccountPage: React.FC = () => {
                         placeholder="password"
                         required
                         value={currentPassword}
-                        onChange={(e) => setCurrentPassword(e.target.value)}
+                        onChange={setCurrentPasswordCB}
                     />
                 </FloatingLabel>
                 <FloatingLabel className="mb-3" label="Username">
@@ -145,7 +180,7 @@ export const AccountPage: React.FC = () => {
                         type="password"
                         placeholder="password"
                         value={newPassword}
-                        onChange={(e) => setNewPassword(e.target.value)}
+                        onChange={setNewPasswordCB}
                     />
                 </FloatingLabel>
                 <FloatingLabel className="mb-3" label="Confirm new password">
@@ -154,7 +189,7 @@ export const AccountPage: React.FC = () => {
                         type="password"
                         placeholder="password"
                         value={newPasswordConfirm}
-                        onChange={(e) => setNewPasswordConfirm(e.target.value)}
+                        onChange={setNewPasswordConfirmCB}
                     />
                 </FloatingLabel>
                 <FloatingLabel className="mb-3" label="E-Mail">
@@ -163,7 +198,7 @@ export const AccountPage: React.FC = () => {
                         type="email"
                         placeholder="test@example.com"
                         value={email}
-                        onChange={(e) => setEmail(e.target.value)}
+                        onChange={setEmailCB}
                     />
                     <Form.Label>E-Mail</Form.Label>
                 </FloatingLabel>
@@ -212,7 +247,7 @@ export const AccountPage: React.FC = () => {
                             variant="danger"
                             type="button"
                             size="lg"
-                            onClick={() => setShowDeleteAccountModal(true)}
+                            onClick={doShowDeleteAccountModal}
                         >
                             Delete account
                         </Button>
