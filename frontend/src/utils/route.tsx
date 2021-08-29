@@ -14,11 +14,7 @@ interface CustomRouteOptions {
     path: string;
     login?: LoginState;
 }
-export const CustomRoute: React.FC<CustomRouteOptions> = ({
-    path,
-    login,
-    children,
-}) => {
+export const CustomRoute: React.FC<CustomRouteOptions> = ({ path, login, children }) => {
     const ctx = useContext(AppContext);
 
     let component: ReactNode;
@@ -59,12 +55,7 @@ interface CustomNavLinkOptions {
     exact?: boolean;
     login?: LoginState;
 }
-export const CustomNavLink: React.FC<CustomNavLinkOptions> = ({
-    to,
-    exact,
-    login,
-    children,
-}) => {
+export const CustomNavLink: React.FC<CustomNavLinkOptions> = ({ to, exact, login, children }) => {
     const ctx = useContext(AppContext);
     if (!shouldRender(login, ctx)) {
         return null;
@@ -76,12 +67,7 @@ export const CustomNavLink: React.FC<CustomNavLinkOptions> = ({
     );
 };
 
-export const CustomDropDownItem: React.FC<CustomNavLinkOptions> = ({
-    to,
-    exact,
-    login,
-    children,
-}) => {
+export const CustomDropDownItem: React.FC<CustomNavLinkOptions> = ({ to, exact, login, children }) => {
     const ctx = useContext(AppContext);
     if (!shouldRender(login, ctx)) {
         return null;

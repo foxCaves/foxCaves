@@ -1,10 +1,4 @@
-import React, {
-    FormEvent,
-    useEffect,
-    useContext,
-    useState,
-    useCallback,
-} from 'react';
+import React, { FormEvent, useEffect, useContext, useState, useCallback } from 'react';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import { fetchAPIRaw } from '../utils/api';
@@ -21,8 +15,7 @@ export const AccountPage: React.FC = () => {
     const [showDeleteAccountModal, setShowDeleteAccountModal] = useState(false);
     const [currentPassword, setCurrentPasswordCB] = useInputFieldSetter('');
     const [newPassword, setNewPasswordCB] = useInputFieldSetter('');
-    const [newPasswordConfirm, setNewPasswordConfirmCB] =
-        useInputFieldSetter('');
+    const [newPasswordConfirm, setNewPasswordConfirmCB] = useInputFieldSetter('');
     const [email, setEmailCB, setEmail] = useInputFieldSetter(userEmail);
 
     useEffect(() => {
@@ -108,14 +101,7 @@ export const AccountPage: React.FC = () => {
                 email: email,
             });
         },
-        [
-            sendUserChange,
-            showAlert,
-            closeAlert,
-            newPassword,
-            newPasswordConfirm,
-            email,
-        ],
+        [sendUserChange, showAlert, closeAlert, newPassword, newPasswordConfirm, email],
     );
 
     const doShowDeleteAccountModal = useCallback(() => {
@@ -128,10 +114,7 @@ export const AccountPage: React.FC = () => {
 
     return (
         <>
-            <Modal
-                show={showDeleteAccountModal}
-                onHide={doHideDeleteAccountModal}
-            >
+            <Modal show={showDeleteAccountModal} onHide={doHideDeleteAccountModal}>
                 <Modal.Header closeButton>
                     <Modal.Title>Delete account</Modal.Title>
                 </Modal.Header>
@@ -141,10 +124,7 @@ export const AccountPage: React.FC = () => {
                 </Modal.Body>
 
                 <Modal.Footer>
-                    <Button
-                        variant="secondary"
-                        onClick={doHideDeleteAccountModal}
-                    >
+                    <Button variant="secondary" onClick={doHideDeleteAccountModal}>
                         No
                     </Button>
                     <Button variant="danger" onClick={handleDeleteAccount}>
@@ -166,13 +146,7 @@ export const AccountPage: React.FC = () => {
                     />
                 </FloatingLabel>
                 <FloatingLabel className="mb-3" label="Username">
-                    <Form.Control
-                        readOnly
-                        name="username"
-                        type="text"
-                        placeholder="testuser"
-                        value={user!.username}
-                    />
+                    <Form.Control readOnly name="username" type="text" placeholder="testuser" value={user!.username} />
                 </FloatingLabel>
                 <FloatingLabel className="mb-3" label="New password">
                     <Form.Control
@@ -216,12 +190,7 @@ export const AccountPage: React.FC = () => {
                         </FloatingLabel>
                     </Col>
                     <Col xs="auto">
-                        <Button
-                            variant="primary"
-                            type="button"
-                            size="lg"
-                            onClick={handleAPIKeyRegen}
-                        >
+                        <Button variant="primary" type="button" size="lg" onClick={handleAPIKeyRegen}>
                             Regenerate
                         </Button>
                     </Col>
@@ -233,22 +202,12 @@ export const AccountPage: React.FC = () => {
                         </Button>
                     </Col>
                     <Col>
-                        <Button
-                            variant="warning"
-                            type="button"
-                            size="lg"
-                            onClick={handleKillSessions}
-                        >
+                        <Button variant="warning" type="button" size="lg" onClick={handleKillSessions}>
                             Kill all sessions
                         </Button>
                     </Col>
                     <Col>
-                        <Button
-                            variant="danger"
-                            type="button"
-                            size="lg"
-                            onClick={doShowDeleteAccountModal}
-                        >
+                        <Button variant="danger" type="button" size="lg" onClick={doShowDeleteAccountModal}>
                             Delete account
                         </Button>
                     </Col>

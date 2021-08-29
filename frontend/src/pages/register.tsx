@@ -53,22 +53,13 @@ export const RegistrationPage: React.FC = () => {
             }
             showAlert({
                 id: 'register',
-                contents:
-                    'Registration successful! Please check your E-Mail for activation instructions!',
+                contents: 'Registration successful! Please check your E-Mail for activation instructions!',
                 variant: 'success',
                 timeout: 30000,
             });
             setRegistrationDone(true);
         },
-        [
-            username,
-            password,
-            passwordConfirm,
-            email,
-            agreetos,
-            showAlert,
-            closeAlert,
-        ],
+        [username, password, passwordConfirm, email, agreetos, showAlert, closeAlert],
     );
 
     if (registrationDone) {

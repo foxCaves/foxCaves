@@ -17,6 +17,4 @@ export interface AppContextClass {
     refreshUser(): Promise<void>;
 }
 
-export const AppContext = React.createContext<AppContextClass>(
-    {} as AppContextClass,
-);
+export const AppContext = React.createContext<AppContextClass>({} as AppContextClass);

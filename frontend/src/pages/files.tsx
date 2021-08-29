@@ -82,15 +82,9 @@ export const FileView: React.FC<{
                         <LinkContainer to={`/view/${file.id}`}>
                             <Dropdown.Item>View</Dropdown.Item>
                         </LinkContainer>
-                        <Dropdown.Item href={file.download_url}>
-                            Download
-                        </Dropdown.Item>
-                        <Dropdown.Item onClick={setEditFileCB}>
-                            Rename
-                        </Dropdown.Item>
-                        <Dropdown.Item onClick={setDeleteFileCB}>
-                            Delete
-                        </Dropdown.Item>
+                        <Dropdown.Item href={file.download_url}>Download</Dropdown.Item>
+                        <Dropdown.Item onClick={setEditFileCB}>Rename</Dropdown.Item>
+                        <Dropdown.Item onClick={setDeleteFileCB}>Delete</Dropdown.Item>
                     </Dropdown.Menu>
                 </Dropdown>
             </Card.Footer>
@@ -104,9 +98,7 @@ export const FilesPage: React.FC<{}> = () => {
     const { showAlert } = useContext(AppContext);
     const [files, setFiles] = useState<FileMap | undefined>(undefined);
     const [loading, setLoading] = useState(false);
-    const [deleteFile, setDeleteFile] = useState<FileModel | undefined>(
-        undefined,
-    );
+    const [deleteFile, setDeleteFile] = useState<FileModel | undefined>(undefined);
     const [editFile, setEditFile] = useState<FileModel | undefined>(undefined);
     const [uploadFileName, setUploadFileName] = useState('');
 
@@ -230,14 +222,9 @@ export const FilesPage: React.FC<{}> = () => {
                     >
                         <input {...dropzone.getInputProps()} />
                         {dropzone.isDragActive ? (
-                            <h4 className="m-0">
-                                Drop the file here to upload it!
-                            </h4>
+                            <h4 className="m-0">Drop the file here to upload it!</h4>
                         ) : (
-                            <h4 className="m-0">
-                                Drag 'n' drop some files here, or click to
-                                select files to upload
-                            </h4>
+                            <h4 className="m-0">Drag 'n' drop some files here, or click to select files to upload</h4>
                         )}
                     </Col>
                 </Row>

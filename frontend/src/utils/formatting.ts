@@ -1,14 +1,4 @@
-const sizePostFixes = [
-    ' B',
-    ' kB',
-    ' MB',
-    ' GB',
-    ' TB',
-    ' PB',
-    ' EB',
-    ' ZB',
-    ' YB',
-];
+const sizePostFixes = [' B', ' kB', ' MB', ' GB', ' TB', ' PB', ' EB', ' ZB', ' YB'];
 
 export function formatDate(d: Date) {
     return d.toISOString();

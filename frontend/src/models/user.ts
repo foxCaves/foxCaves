@@ -13,10 +13,7 @@ export class UserModel extends DatedModel {
             m.convertDates();
             return m;
         } catch (e) {
-            if (
-                e instanceof HttpError &&
-                (e.status === 404 || e.status === 403)
-            ) {
+            if (e instanceof HttpError && (e.status === 404 || e.status === 403)) {
                 return undefined;
             }
             throw e;
@@ -38,10 +35,7 @@ export class UserDetailsModel extends UserModel {
             m.convertDates();
             return m;
         } catch (e) {
-            if (
-                e instanceof HttpError &&
-                (e.status === 404 || e.status === 403)
-            ) {
+            if (e instanceof HttpError && (e.status === 404 || e.status === 403)) {
                 return undefined;
             }
             throw e;

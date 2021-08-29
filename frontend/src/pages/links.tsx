@@ -42,12 +42,9 @@ export const LinksPage: React.FC<{}> = () => {
     const { showAlert } = useContext(AppContext);
     const [links, setLinks] = useState<LinkMap | undefined>(undefined);
     const [loading, setLoading] = useState(false);
-    const [deleteLink, setDeleteLink] = useState<LinkModel | undefined>(
-        undefined,
-    );
+    const [deleteLink, setDeleteLink] = useState<LinkModel | undefined>(undefined);
     const [showCreateLink, setShowCreateLink] = useState<boolean>(false);
-    const [createLinkUrl, setCreateLinkUrlCB, setCreateLinkUrl] =
-        useInputFieldSetter('https://');
+    const [createLinkUrl, setCreateLinkUrlCB, setCreateLinkUrl] = useInputFieldSetter('https://');
 
     const refresh = useCallback(async () => {
         const linksArray = await LinkModel.getAll();
@@ -203,11 +200,7 @@ export const LinksPage: React.FC<{}> = () => {
                 </thead>
                 <tbody>
                     {Object.values(links).map((link) => (
-                        <LinkView
-                            key={link.id}
-                            setDeleteLink={setDeleteLink}
-                            link={link}
-                        />
+                        <LinkView key={link.id} setDeleteLink={setDeleteLink} link={link} />
                     ))}
                 </tbody>
             </Table>

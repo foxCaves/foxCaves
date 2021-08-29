@@ -15,12 +15,7 @@ import { ViewPage } from './pages/view';
 import React, { useContext, useState, useEffect } from 'react';
 import { UserDetailsModel } from './models/user';
 import { AlertClass, AppContext, AppContextClass } from './utils/context';
-import {
-    LoginState,
-    CustomRoute,
-    CustomNavLink,
-    CustomDropDownItem,
-} from './utils/route';
+import { LoginState, CustomRoute, CustomNavLink, CustomDropDownItem } from './utils/route';
 import { LinkContainer } from 'react-router-bootstrap';
 
 import './app.css';
@@ -30,12 +25,7 @@ const AlertView: React.FC<{ alert: AlertClass }> = ({ alert }) => {
     const { closeAlert } = useContext(AppContext);
 
     return (
-        <Alert
-            show
-            variant={alert.variant}
-            onClose={() => closeAlert(alert.id)}
-            dismissible
-        >
+        <Alert show variant={alert.variant} onClose={() => closeAlert(alert.id)} dismissible>
             {alert.contents}
         </Alert>
     );
@@ -121,60 +111,35 @@ export const App: React.FC = () => {
                         <Navbar.Toggle aria-controls="navbar-nav" />
                         <Navbar.Collapse id="navbar-nav">
                             <Nav className="me-auto">
-                                <CustomNavLink
-                                    login={LoginState.LoggedIn}
-                                    to="/files"
-                                >
+                                <CustomNavLink login={LoginState.LoggedIn} to="/files">
                                     Files
                                 </CustomNavLink>
-                                <CustomNavLink
-                                    login={LoginState.LoggedIn}
-                                    to="/links"
-                                >
+                                <CustomNavLink login={LoginState.LoggedIn} to="/links">
                                     Links
                                 </CustomNavLink>
-                                <CustomNavLink
-                                    login={LoginState.LoggedOut}
-                                    to="/login"
-                                >
+                                <CustomNavLink login={LoginState.LoggedOut} to="/login">
                                     Login
                                 </CustomNavLink>
-                                <CustomNavLink
-                                    login={LoginState.LoggedOut}
-                                    to="/register"
-                                >
+                                <CustomNavLink login={LoginState.LoggedOut} to="/register">
                                     Register
                                 </CustomNavLink>
                             </Nav>
                             <Nav>
                                 <Dropdown as={Nav.Item}>
                                     <Dropdown.Toggle as={Nav.Link}>
-                                        Welcome,{' '}
-                                        {user ? user.username : 'Guest'}!
+                                        Welcome, {user ? user.username : 'Guest'}!
                                     </Dropdown.Toggle>
                                     <Dropdown.Menu>
-                                        <CustomDropDownItem
-                                            login={LoginState.LoggedIn}
-                                            to="/account"
-                                        >
+                                        <CustomDropDownItem login={LoginState.LoggedIn} to="/account">
                                             Account
                                         </CustomDropDownItem>
-                                        <CustomDropDownItem
-                                            login={LoginState.LoggedIn}
-                                            to="/logout"
-                                        >
+                                        <CustomDropDownItem login={LoginState.LoggedIn} to="/logout">
                                             Logout
                                         </CustomDropDownItem>
-                                        <CustomDropDownItem
-                                            login={LoginState.LoggedOut}
-                                            to="/login"
-                                        >
+                                        <CustomDropDownItem login={LoginState.LoggedOut} to="/login">
                                             Login
                                         </CustomDropDownItem>
-                                        <CustomDropDownItem
-                                            login={LoginState.LoggedOut}
-                                            to="/register"
-                                        >
+                                        <CustomDropDownItem login={LoginState.LoggedOut} to="/register">
                                             Register
                                         </CustomDropDownItem>
                                     </Dropdown.Menu>
@@ -189,10 +154,7 @@ export const App: React.FC = () => {
                         <CustomRoute path="/login" login={LoginState.LoggedOut}>
                             <LoginPage />
                         </CustomRoute>
-                        <CustomRoute
-                            path="/register"
-                            login={LoginState.LoggedOut}
-                        >
+                        <CustomRoute path="/register" login={LoginState.LoggedOut}>
                             <RegistrationPage />
                         </CustomRoute>
                         <CustomRoute path="/files" login={LoginState.LoggedIn}>
@@ -201,10 +163,7 @@ export const App: React.FC = () => {
                         <CustomRoute path="/links" login={LoginState.LoggedIn}>
                             <LinksPage />
                         </CustomRoute>
-                        <CustomRoute
-                            path="/account"
-                            login={LoginState.LoggedIn}
-                        >
+                        <CustomRoute path="/account" login={LoginState.LoggedIn}>
                             <AccountPage />
                         </CustomRoute>
                         <Route path="/logout">

@@ -73,8 +73,7 @@ export const ViewPage: React.FC = () => {
                 Direct link: <a href={file.direct_url}>{file.direct_url}</a>
             </p>
             <p>
-                Download link:{' '}
-                <a href={file.download_url}>{file.download_url}</a>
+                Download link: <a href={file.download_url}>{file.download_url}</a>
             </p>
         </>
     );
