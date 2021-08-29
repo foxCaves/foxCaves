@@ -1,6 +1,5 @@
 local lfs = require("lfs")
 local path = require("path")
-local utils = require("foxcaves.utils")
 local database = require("foxcaves.database")
 local random = require("foxcaves.random")
 local user_model = require("foxcaves.models.user")
@@ -8,7 +7,6 @@ local url_config = require("foxcaves.config").urls
 local ROOT = require("foxcaves.consts").ROOT
 local exec = require("foxcaves.exec")
 
-local io = io
 local os = os
 local ngx = ngx
 local next = next
@@ -99,24 +97,8 @@ local mimeHandlers = {
         return file_model.type.image, thumbext
     end,
 
-    text = function(src, dest)
-        local fh = io.open(src, "r")
-        local content = utils.escape_html(fh:read(4096))
-
-        if fh:read(1) then
-            content = content .. "\n<i>[...]</i>"
-        end
-        fh:close()
-
-        if content:sub(1,3) == "\xef\xbb\xbf" then
-            content = content:sub(4)
-        end
-
-        fh = io.open(dest .. ".txt", "w")
-        fh:write(content)
-        fh:close()
-
-        return file_model.type.text, "txt"
+    text = function()
+        return file_model.type.text, nil
     end,
 
     video = function()
