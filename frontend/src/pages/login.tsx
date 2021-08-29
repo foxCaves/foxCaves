@@ -6,6 +6,7 @@ import { AppContext } from '../utils/context';
 import FloatingLabel from 'react-bootstrap/FloatingLabel';
 import { useCheckboxFieldSetter, useInputFieldSetter } from '../utils/hooks';
 import { useCallback } from 'react';
+import { Link } from 'react-router-dom';
 
 export const LoginPage: React.FC = () => {
     const [username, setUsernameCB] = useInputFieldSetter('');
@@ -76,6 +77,9 @@ export const LoginPage: React.FC = () => {
                         onChange={setPasswordCB}
                     />
                 </FloatingLabel>
+                <p>
+                    <Link to="/email/forgot_password">Forgot password?</Link>
+                </p>
                 <Form.Group className="mb-3">
                     <Form.Check
                         type="checkbox"

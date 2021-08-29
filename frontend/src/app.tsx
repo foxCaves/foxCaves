@@ -21,6 +21,8 @@ import { UserInactiveAlert } from './utils/user_inactive_alert';
 
 import './app.css';
 import { useCallback } from 'react';
+import { ForgotPasswordPage } from './pages/email/forgot_password';
+import { EmailCodePage } from './pages/email/code';
 
 const AlertView: React.FC<{ alert: AlertClass }> = ({ alert }) => {
     const { closeAlert } = useContext(AppContext);
@@ -55,26 +57,28 @@ export const App: React.FC = () => {
     }, []);
 
     const closeAlert = useCallback(
-        (id: string) => {
-            let newAlerts = [...alerts];
-            const oldAlert = newAlerts.find((a) => a.id === id);
-            if (oldAlert) {
-                newAlerts = newAlerts.filter((a) => a.id !== id);
-                if (oldAlert.__timeout) {
-                    clearTimeout(oldAlert.__timeout);
-                    oldAlert.__timeout = undefined;
-                }
+        (id: string, onlyReturn: boolean = false) => {
+            const oldAlert = alerts.find((a) => a.id === id);
+            if (!oldAlert) {
+                return alerts;
             }
-            setAlerts(newAlerts);
+
+            const newAlerts = [...alerts].filter((a) => a.id !== id);
+            if (oldAlert.__timeout) {
+                clearTimeout(oldAlert.__timeout);
+                oldAlert.__timeout = undefined;
+            }
+            if (!onlyReturn) {
+                setAlerts(newAlerts);
+            }
+            return newAlerts;
         },
         [alerts],
     );
 
     const showAlert = useCallback(
         (alert: AlertClass) => {
-            let newAlerts = [...alerts];
-            closeAlert(alert.id);
-            newAlerts.push(alert);
+            const newAlerts = [...closeAlert(alert.id, true), alert];
             if (alert.timeout > 0) {
                 alert.__timeout = setTimeout(() => {
                     closeAlert(alert.id);
@@ -82,7 +86,7 @@ export const App: React.FC = () => {
             }
             setAlerts(newAlerts);
         },
-        [alerts, closeAlert],
+        [closeAlert],
     );
 
     const context: AppContextClass = {
@@ -173,6 +177,12 @@ export const App: React.FC = () => {
                         </Route>
                         <Route path="/view/:id">
                             <ViewPage />
+                        </Route>
+                        <Route path="/email/forgot_password">
+                            <ForgotPasswordPage />
+                        </Route>
+                        <Route path="/email/code/:code">
+                            <EmailCodePage />
                         </Route>
                         <Route path="/" exact>
                             <HomePage />
