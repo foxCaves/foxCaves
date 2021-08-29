@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { FileModel } from '../models/file';
 import Card from 'react-bootstrap/Card';
+import Dropdown from 'react-bootstrap/Dropdown';
 import { Col, Row } from 'react-bootstrap';
+import { LinkContainer } from 'react-router-bootstrap';
+
 
 export const FileView: React.FC<{ file: FileModel }> = ({ file }) => {
     return (
@@ -10,7 +13,18 @@ export const FileView: React.FC<{ file: FileModel }> = ({ file }) => {
             <Card.Body>
                 <Card.Img variant="top" src={file.thumbnail_image} />
             </Card.Body>
-            <Card.Footer>{file.getFormattedSize()}</Card.Footer>
+            <Card.Footer className="d-flex">
+                <div className="flex-grow-1 p-1">{file.getFormattedSize()}</div>
+                <Dropdown>
+                    <Dropdown.Toggle />
+                    <Dropdown.Menu>
+                        <LinkContainer to={`/view/${file.id}`}><Dropdown.Item>View</Dropdown.Item></LinkContainer>
+                        <Dropdown.Item href={file.download_url}>Download</Dropdown.Item>
+                        <Dropdown.Item>Rename</Dropdown.Item>
+                        <Dropdown.Item>Delete</Dropdown.Item>
+                    </Dropdown.Menu>
+                </Dropdown>
+            </Card.Footer>
         </Card>
     );
 };

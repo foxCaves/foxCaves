@@ -21,7 +21,7 @@ R.register_route("/cdn/sendfile/f/{file}", "GET", R.make_route_opts_anon(), func
 
     if not disposition_type then
         ngx.status = 302
-        ngx.redirect(main_url .. "/view?id=" .. file.id)
+        ngx.redirect(main_url .. "/view/" .. file.id)
         return
     end
 
