@@ -234,7 +234,7 @@ export const FilesPage: React.FC<{}> = () => {
                     <h3>Uploading: {uploadFileName}</h3>
                 </Row>
             ) : null}
-            <Row className="mt-2">
+            <Row className="mt-2 justify-content-center">
                 {Object.values(files).map((file) => {
                     return (
                         <Col key={file.id} className="col-auto mb-3">
