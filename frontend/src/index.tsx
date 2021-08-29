@@ -6,16 +6,12 @@ import { App } from './app';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootswatch/dist/vapor/bootstrap.min.css';
 
-declare const CONFIG: {
-    sentry_dsn: string;
-};
-
-if (process.env.NODE_ENV === 'production') {
+if (process.env.REACT_APP_SENTRY_DSN) {
     Sentry.init({
-        dsn: CONFIG.sentry_dsn,
+        dsn: process.env.REACT_APP_SENTRY_DSN,
     });
 } else {
-    console.warn(`Running in ${process.env.NODE_ENV} mode. Not loading sentry`);
+    console.warn(`Not loading sentry, no DSN!`);
 }
 
 ReactDOM.render(
