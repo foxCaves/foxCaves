@@ -1,18 +1,20 @@
-import React, { useContext, useState, FormEvent } from 'react';
+import React, { useContext, FormEvent } from 'react';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import { fetchAPIRaw } from '../utils/api';
 import { AppContext } from '../utils/context';
 import FloatingLabel from 'react-bootstrap/FloatingLabel';
+import { useCheckboxFieldSetter, useInputFieldSetter } from '../utils/hooks';
+import { useCallback } from 'react';
 
 export const LoginPage: React.FC = () => {
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
-    const [remember, setRemember] = useState(false);
+    const [username, setUsernameCB] = useInputFieldSetter('');
+    const [password, setPasswordCB] = useInputFieldSetter('');
+    const [remember, setRememberCB] = useCheckboxFieldSetter(false);
 
     const { showAlert, closeAlert, refreshUser } = useContext(AppContext);
 
-    async function submitLoginFormAsync() {
+    const submitLoginFormAsync = useCallback(async () => {
         try {
             await fetchAPIRaw('/api/v1/users/sessions/login', {
                 method: 'POST',
@@ -38,13 +40,16 @@ export const LoginPage: React.FC = () => {
             variant: 'success',
             timeout: 2000,
         });
-    }
+    }, [username, password, remember, showAlert, refreshUser]);
 
-    function submitLoginForm(event: FormEvent<HTMLFormElement>) {
-        event.preventDefault();
-        closeAlert('login');
-        submitLoginFormAsync();
-    }
+    const submitLoginForm = useCallback(
+        (event: FormEvent<HTMLFormElement>) => {
+            event.preventDefault();
+            closeAlert('login');
+            submitLoginFormAsync();
+        },
+        [submitLoginFormAsync, closeAlert],
+    );
 
     return (
         <>
@@ -58,7 +63,7 @@ export const LoginPage: React.FC = () => {
                         placeholder="testuser"
                         required
                         value={username}
-                        onChange={(e) => setUsername(e.target.value)}
+                        onChange={setUsernameCB}
                     />
                 </FloatingLabel>
                 <FloatingLabel className="mb-3" label="Password">
@@ -68,7 +73,7 @@ export const LoginPage: React.FC = () => {
                         placeholder="password"
                         required
                         value={password}
-                        onChange={(e) => setPassword(e.target.value)}
+                        onChange={setPasswordCB}
                     />
                 </FloatingLabel>
                 <Form.Group className="mb-3">
@@ -79,7 +84,7 @@ export const LoginPage: React.FC = () => {
                         id="remember"
                         value="true"
                         checked={remember}
-                        onChange={(e) => setRemember(e.target.checked)}
+                        onChange={setRememberCB}
                     />
                 </Form.Group>
                 <Button variant="primary" type="submit" size="lg">
