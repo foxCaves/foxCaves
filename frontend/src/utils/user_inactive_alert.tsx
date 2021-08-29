@@ -43,11 +43,10 @@ export const UserInactiveAlert: React.FC = () => {
 
     return (
         <Alert variant="danger">
-            <Alert.Heading>
-                Your account is inactive
-            </Alert.Heading>
+            <Alert.Heading>Your account is inactive</Alert.Heading>
             <p>
-                Your account is inactive. Make sure to click the link in your activation E-Mail.<br />
+                Your account is inactive. Make sure to click the link in your activation E-Mail.
+                <br />
                 While your account is inactive, you can not upload or edit files, and you cannot shorten links.
             </p>
             <Alert.Link onClick={requestActivationEmail}>Re-send activation E-Mail</Alert.Link>

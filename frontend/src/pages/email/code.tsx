@@ -39,7 +39,7 @@ export const EmailCodePage: React.FC = () => {
         setLoading(true);
         sendCode();
     }, [loading, sendCode]);
-    
+
     return (
         <>
             <h1>E-Mail code</h1>
