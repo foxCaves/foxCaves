@@ -9,7 +9,7 @@ async function makeFilePreview(file: FileInfo) {
 		case FILE_TYPE_IMAGE:
 			return `<a href="${file.direct_url}"><img src="${file.direct_url}"></a>`;
 		case FILE_TYPE_TEXT:
-			return `<pre class="prettyprint linenums" style="display: none;" data-thumbnail-source="${file.thumbnail_url}"></pre>`;
+			return `<pre class="prettyprint linenums" style="display: none;" data-thumbnail-source="${file.direct_url}"></pre>`;
 		case FILE_TYPE_VIDEO:
 			return `<video controls="controls" crossOrigin="anonymous">
 						<source src="${file.direct_url}" type="${file.mimetype}" />
