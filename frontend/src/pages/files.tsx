@@ -1,5 +1,6 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { FileModel } from '../models/file';
+import { StorageUseBar } from '../utils/storage_use';
 import Card from 'react-bootstrap/Card';
 import Dropdown from 'react-bootstrap/Dropdown';
 import { AppContext } from '../utils/context';
@@ -101,6 +102,7 @@ export const FilesPage: React.FC<{}> = () => {
         return (
             <>
                 <h1>Manage files</h1>
+                <StorageUseBar />
                 <br />
                 <h3>Loading...</h3>
             </>
@@ -137,6 +139,7 @@ export const FilesPage: React.FC<{}> = () => {
                 </Modal.Footer>
             </Modal>
             <h1>Manage files</h1>
+            <StorageUseBar />
             <br />
             <Row>
                 {Object.values(files).map((file) => {

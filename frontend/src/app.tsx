@@ -12,7 +12,7 @@ import { FilesPage } from './pages/files';
 import { LinksPage } from './pages/links';
 import { AccountPage } from './pages/account';
 import React, { useContext, useState, useEffect } from 'react';
-import { UserModel } from './models/user';
+import { UserDetailsModel } from './models/user';
 import { AlertClass, AppContext, AppContextClass } from './utils/context';
 import {
     LoginState,
@@ -50,13 +50,13 @@ const AlertList: React.FC<{ alerts: AlertClass[] }> = ({ alerts }) => {
 };
 
 export const App: React.FC = () => {
-    const [user, setUser] = useState<UserModel | undefined>(undefined);
+    const [user, setUser] = useState<UserDetailsModel | undefined>(undefined);
     const [userLoaded, setUserLoaded] = useState(false);
     const [userLoadStarted, setUserLoadStarted] = useState(false);
     const [alerts, setAlerts] = useState<AlertClass[]>([]);
 
     async function refreshUser() {
-        const user = await UserModel.getById('self', true);
+        const user = await UserDetailsModel.getById('self');
         setUser(user);
         setUserLoaded(true);
     }

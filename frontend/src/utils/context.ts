@@ -1,5 +1,5 @@
 import React, { ReactNode } from 'react';
-import { UserModel } from '../models/user';
+import { UserDetailsModel } from '../models/user';
 
 export interface AlertClass {
     id: string;
@@ -10,7 +10,7 @@ export interface AlertClass {
 }
 
 export interface AppContextClass {
-    user?: UserModel;
+    user?: UserDetailsModel;
     userLoaded: boolean;
     showAlert(alert: AlertClass): void;
     closeAlert(id: string): void;

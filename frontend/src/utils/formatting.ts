@@ -29,3 +29,10 @@ export function formatSize(size: number) {
 
     return size + sizePostFixes[sinc]!;
 }
+
+export function formatSizeWithInfinite(size: number) {
+    if (size < 0) {
+        return '\u221E';
+    }
+    return formatSize(size);
+}
