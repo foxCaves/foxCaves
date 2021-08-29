@@ -1,9 +1,14 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { LinkModel } from '../models/link';
 import { Button, Table } from 'react-bootstrap';
 import { useEffect } from 'react';
+import Modal from 'react-bootstrap/Modal';
+import { AppContext } from '../utils/context';
 
-export const LinkView: React.FC<{ link: LinkModel }> = ({ link }) => {
+export const LinkView: React.FC<{
+    link: LinkModel;
+    setDeleteLink: (link: LinkModel | undefined) => void;
+}> = ({ link, setDeleteLink }) => {
     return (
         <tr>
             <td>
@@ -17,7 +22,7 @@ export const LinkView: React.FC<{ link: LinkModel }> = ({ link }) => {
                 </a>
             </td>
             <td>
-                <Button variant="danger" onClick={() => link.delete()}>
+                <Button variant="danger" onClick={() => setDeleteLink(link)}>
                     Delete
                 </Button>
             </td>
@@ -28,8 +33,12 @@ export const LinkView: React.FC<{ link: LinkModel }> = ({ link }) => {
 type LinkMap = { [key: string]: LinkModel };
 
 export const LinksPage: React.FC<{}> = () => {
+    const { showAlert } = useContext(AppContext);
     const [links, setLinks] = useState<LinkMap | undefined>(undefined);
     const [loading, setLoading] = useState(false);
+    const [deleteLink, setDeleteLink] = useState<LinkModel | undefined>(
+        undefined,
+    );
 
     async function refresh() {
         const linksArray = await LinkModel.getAll();
@@ -38,6 +47,31 @@ export const LinksPage: React.FC<{}> = () => {
             linksMap[link.id] = link;
         }
         setLinks(linksMap);
+    }
+
+    async function handleDeleteLink() {
+        const link = deleteLink;
+        if (link) {
+            try {
+                await link.delete();
+                showAlert({
+                    id: `link_${link.id}`,
+                    contents: `Link ${link.short_url} deleted`,
+                    variant: 'success',
+                    timeout: 5000,
+                });
+                delete links![link.id];
+                setLinks(links);
+            } catch (err) {
+                showAlert({
+                    id: `link_${link.id}`,
+                    contents: `Error deleting link: ${err.message}`,
+                    variant: 'danger',
+                    timeout: 5000,
+                });
+            }
+        }
+        setDeleteLink(undefined);
     }
 
     useEffect(() => {
@@ -60,6 +94,30 @@ export const LinksPage: React.FC<{}> = () => {
 
     return (
         <>
+            <Modal show={deleteLink} onHide={() => setDeleteLink(undefined)}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Delete file?</Modal.Title>
+                </Modal.Header>
+
+                <Modal.Body>
+                    <p>
+                        Are you sure to delete the link "{deleteLink?.short_url}
+                        "?
+                    </p>
+                </Modal.Body>
+
+                <Modal.Footer>
+                    <Button
+                        variant="secondary"
+                        onClick={() => setDeleteLink(undefined)}
+                    >
+                        No
+                    </Button>
+                    <Button variant="primary" onClick={handleDeleteLink}>
+                        Yes
+                    </Button>
+                </Modal.Footer>
+            </Modal>
             <h1>Manage links</h1>
             <br />
             <Table striped bordered>
@@ -72,7 +130,11 @@ export const LinksPage: React.FC<{}> = () => {
                 </thead>
                 <tbody>
                     {Object.values(links).map((link) => (
-                        <LinkView key={link.id} link={link} />
+                        <LinkView
+                            key={link.id}
+                            setDeleteLink={setDeleteLink}
+                            link={link}
+                        />
                     ))}
                 </tbody>
             </Table>
