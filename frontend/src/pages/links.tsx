@@ -141,10 +141,7 @@ export const LinksPage: React.FC<{}> = () => {
                 </Modal.Header>
 
                 <Modal.Body>
-                    <p>
-                        Are you sure to delete the link "{deleteLink?.short_url}
-                        "?
-                    </p>
+                    <p>Are you sure to delete the link "{deleteLink?.short_url}"?</p>
                 </Modal.Body>
 
                 <Modal.Footer>

@@ -198,10 +198,7 @@ export const FilesPage: React.FC<{}> = () => {
                     <Modal.Title>Delete file?</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <p>
-                        Are you sure to delete the file "{deleteFile?.name}
-                        "?
-                    </p>
+                    <p>Are you sure to delete the file "{deleteFile?.name}"?</p>
                 </Modal.Body>
                 <Modal.Footer>
                     <Button variant="secondary" onClick={unsetDeleteFile}>
