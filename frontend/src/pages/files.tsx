@@ -15,6 +15,7 @@ import { useInputFieldSetter } from '../utils/hooks';
 
 import './files.css';
 import nothumb from './nothumb.gif';
+import { FilesContext } from '../utils/liveloading';
 
 export const FileView: React.FC<{
     file: FileModel;
@@ -95,11 +96,9 @@ export const FileView: React.FC<{
     );
 };
 
-type FileMap = { [key: string]: FileModel };
-
 export const FilesPage: React.FC<{}> = () => {
     const { showAlert } = useContext(AppContext);
-    const [files, setFiles] = useState<FileMap | undefined>(undefined);
+    const { refresh, set, models } = useContext(FilesContext);
     const [loading, setLoading] = useState(false);
     const [deleteFile, setDeleteFile] = useState<FileModel | undefined>(undefined);
     const [editFile, setEditFile] = useState<FileModel | undefined>(undefined);
@@ -117,8 +116,8 @@ export const FilesPage: React.FC<{}> = () => {
                         variant: 'success',
                         timeout: 5000,
                     });
-                    files![fileObj.id] = fileObj;
-                    setFiles(files);
+                    models![fileObj.id] = fileObj;
+                    set(models!);
                 } catch (err: any) {
                     showAlert({
                         id: `fileupload_${file.name}`,
@@ -130,21 +129,12 @@ export const FilesPage: React.FC<{}> = () => {
             }
             setUploadFileName('');
         },
-        [files, showAlert, setUploadFileName],
+        [models, set, showAlert, setUploadFileName],
     );
 
     const dropzone = useDropzone({
         onDrop,
     });
-
-    const refresh = useCallback(async () => {
-        const filesArray = await FileModel.getAll();
-        const filesMap: FileMap = {};
-        for (const file of filesArray) {
-            filesMap[file.id] = file;
-        }
-        setFiles(filesMap);
-    }, []);
 
     const handleDeleteFile = useCallback(async () => {
         const file = deleteFile;
@@ -157,8 +147,8 @@ export const FilesPage: React.FC<{}> = () => {
                     variant: 'success',
                     timeout: 5000,
                 });
-                delete files![file.id];
-                setFiles(files);
+                delete models![file.id];
+                set(models!);
             } catch (err: any) {
                 showAlert({
                     id: `file_${file.id}`,
@@ -169,21 +159,21 @@ export const FilesPage: React.FC<{}> = () => {
             }
         }
         setDeleteFile(undefined);
-    }, [deleteFile, files, showAlert]);
+    }, [deleteFile, set, models, showAlert]);
 
     const unsetDeleteFile = useCallback(() => {
         setDeleteFile(undefined);
     }, []);
 
     useEffect(() => {
-        if (loading || files) {
+        if (loading || models) {
             return;
         }
         setLoading(true);
         refresh().then(() => setLoading(false));
-    }, [loading, files, refresh]);
+    }, [loading, models, refresh]);
 
-    if (loading || !files) {
+    if (loading || !models) {
         return (
             <>
                 <h1>Manage files</h1>
@@ -236,7 +226,7 @@ export const FilesPage: React.FC<{}> = () => {
             ) : null}
             <Container className="mt-2 justify-content-center">
                 <Row>
-                    {Object.values(files).map((file) => {
+                    {Object.values(models).map((file) => {
                         return (
                             <Col key={file.id} className="col-auto mb-3">
                                 <FileView

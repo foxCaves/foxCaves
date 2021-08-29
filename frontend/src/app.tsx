@@ -23,6 +23,7 @@ import './app.css';
 import { useCallback } from 'react';
 import { ForgotPasswordPage } from './pages/email/forgot_password';
 import { EmailCodePage } from './pages/email/code';
+import { LiveLoadingContainer } from './utils/liveloading';
 
 const AlertView: React.FC<{ alert: AlertClass }> = ({ alert }) => {
     const { closeAlert } = useContext(AppContext);
@@ -91,6 +92,7 @@ export const App: React.FC = () => {
 
     const context: AppContextClass = {
         user,
+        setUser,
         userLoaded,
         showAlert,
         refreshUser,
@@ -107,92 +109,94 @@ export const App: React.FC = () => {
 
     return (
         <AppContext.Provider value={context}>
-            <Router>
-                <Navbar variant="dark" bg="primary" fixed="top">
+            <LiveLoadingContainer>
+                <Router>
+                    <Navbar variant="dark" bg="primary" fixed="top">
+                        <Container>
+                            <LinkContainer to="/" exact>
+                                <Navbar.Brand>foxCaves</Navbar.Brand>
+                            </LinkContainer>
+                            <Navbar.Toggle aria-controls="navbar-nav" />
+                            <Navbar.Collapse id="navbar-nav">
+                                <Nav className="me-auto">
+                                    <CustomNavLink login={LoginState.LoggedIn} to="/files">
+                                        Files
+                                    </CustomNavLink>
+                                    <CustomNavLink login={LoginState.LoggedIn} to="/links">
+                                        Links
+                                    </CustomNavLink>
+                                    <CustomNavLink login={LoginState.LoggedOut} to="/login">
+                                        Login
+                                    </CustomNavLink>
+                                    <CustomNavLink login={LoginState.LoggedOut} to="/register">
+                                        Register
+                                    </CustomNavLink>
+                                </Nav>
+                                <Nav>
+                                    <Dropdown as={Nav.Item}>
+                                        <Dropdown.Toggle as={Nav.Link}>
+                                            Welcome, {user ? user.username : 'Guest'}!
+                                        </Dropdown.Toggle>
+                                        <Dropdown.Menu>
+                                            <CustomDropDownItem login={LoginState.LoggedIn} to="/account">
+                                                Account
+                                            </CustomDropDownItem>
+                                            <CustomDropDownItem login={LoginState.LoggedIn} to="/logout">
+                                                Logout
+                                            </CustomDropDownItem>
+                                            <CustomDropDownItem login={LoginState.LoggedOut} to="/login">
+                                                Login
+                                            </CustomDropDownItem>
+                                            <CustomDropDownItem login={LoginState.LoggedOut} to="/register">
+                                                Register
+                                            </CustomDropDownItem>
+                                        </Dropdown.Menu>
+                                    </Dropdown>
+                                </Nav>
+                            </Navbar.Collapse>
+                        </Container>
+                    </Navbar>
                     <Container>
-                        <LinkContainer to="/" exact>
-                            <Navbar.Brand>foxCaves</Navbar.Brand>
-                        </LinkContainer>
-                        <Navbar.Toggle aria-controls="navbar-nav" />
-                        <Navbar.Collapse id="navbar-nav">
-                            <Nav className="me-auto">
-                                <CustomNavLink login={LoginState.LoggedIn} to="/files">
-                                    Files
-                                </CustomNavLink>
-                                <CustomNavLink login={LoginState.LoggedIn} to="/links">
-                                    Links
-                                </CustomNavLink>
-                                <CustomNavLink login={LoginState.LoggedOut} to="/login">
-                                    Login
-                                </CustomNavLink>
-                                <CustomNavLink login={LoginState.LoggedOut} to="/register">
-                                    Register
-                                </CustomNavLink>
-                            </Nav>
-                            <Nav>
-                                <Dropdown as={Nav.Item}>
-                                    <Dropdown.Toggle as={Nav.Link}>
-                                        Welcome, {user ? user.username : 'Guest'}!
-                                    </Dropdown.Toggle>
-                                    <Dropdown.Menu>
-                                        <CustomDropDownItem login={LoginState.LoggedIn} to="/account">
-                                            Account
-                                        </CustomDropDownItem>
-                                        <CustomDropDownItem login={LoginState.LoggedIn} to="/logout">
-                                            Logout
-                                        </CustomDropDownItem>
-                                        <CustomDropDownItem login={LoginState.LoggedOut} to="/login">
-                                            Login
-                                        </CustomDropDownItem>
-                                        <CustomDropDownItem login={LoginState.LoggedOut} to="/register">
-                                            Register
-                                        </CustomDropDownItem>
-                                    </Dropdown.Menu>
-                                </Dropdown>
-                            </Nav>
-                        </Navbar.Collapse>
+                        <UserInactiveAlert />
+                        <AlertList alerts={alerts} />
+                        <Switch>
+                            <CustomRoute path="/login" login={LoginState.LoggedOut}>
+                                <LoginPage />
+                            </CustomRoute>
+                            <CustomRoute path="/register" login={LoginState.LoggedOut}>
+                                <RegistrationPage />
+                            </CustomRoute>
+                            <CustomRoute path="/files" login={LoginState.LoggedIn}>
+                                <FilesPage />
+                            </CustomRoute>
+                            <CustomRoute path="/links" login={LoginState.LoggedIn}>
+                                <LinksPage />
+                            </CustomRoute>
+                            <CustomRoute path="/account" login={LoginState.LoggedIn}>
+                                <AccountPage />
+                            </CustomRoute>
+                            <Route path="/logout">
+                                <LogoutPage />
+                            </Route>
+                            <Route path="/view/:id">
+                                <ViewPage />
+                            </Route>
+                            <Route path="/email/forgot_password">
+                                <ForgotPasswordPage />
+                            </Route>
+                            <Route path="/email/code/:code">
+                                <EmailCodePage />
+                            </Route>
+                            <Route path="/" exact>
+                                <HomePage />
+                            </Route>
+                            <Route path="/">
+                                <h3>404 - Page not found</h3>
+                            </Route>
+                        </Switch>
                     </Container>
-                </Navbar>
-                <Container>
-                    <UserInactiveAlert />
-                    <AlertList alerts={alerts} />
-                    <Switch>
-                        <CustomRoute path="/login" login={LoginState.LoggedOut}>
-                            <LoginPage />
-                        </CustomRoute>
-                        <CustomRoute path="/register" login={LoginState.LoggedOut}>
-                            <RegistrationPage />
-                        </CustomRoute>
-                        <CustomRoute path="/files" login={LoginState.LoggedIn}>
-                            <FilesPage />
-                        </CustomRoute>
-                        <CustomRoute path="/links" login={LoginState.LoggedIn}>
-                            <LinksPage />
-                        </CustomRoute>
-                        <CustomRoute path="/account" login={LoginState.LoggedIn}>
-                            <AccountPage />
-                        </CustomRoute>
-                        <Route path="/logout">
-                            <LogoutPage />
-                        </Route>
-                        <Route path="/view/:id">
-                            <ViewPage />
-                        </Route>
-                        <Route path="/email/forgot_password">
-                            <ForgotPasswordPage />
-                        </Route>
-                        <Route path="/email/code/:code">
-                            <EmailCodePage />
-                        </Route>
-                        <Route path="/" exact>
-                            <HomePage />
-                        </Route>
-                        <Route path="/">
-                            <h3>404 - Page not found</h3>
-                        </Route>
-                    </Switch>
-                </Container>
-            </Router>
+                </Router>
+            </LiveLoadingContainer>
         </AppContext.Provider>
     );
 };

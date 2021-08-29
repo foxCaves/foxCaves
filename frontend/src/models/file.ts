@@ -43,7 +43,7 @@ export class FileModel extends DatedModel {
         }
     }
 
-    static async getAll() {
+    static async getAll(): Promise<FileModel[]> {
         const res = await fetchAPI('/api/v1/files');
         return res.map((api: any) => {
             let m = new FileModel();

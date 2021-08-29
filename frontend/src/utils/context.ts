@@ -11,6 +11,7 @@ export interface AlertClass {
 
 export interface AppContextClass {
     user?: UserDetailsModel;
+    setUser(user: UserDetailsModel): void;
     userLoaded: boolean;
     showAlert(alert: AlertClass): void;
     closeAlert(id: string): void;

@@ -6,6 +6,7 @@ import Modal from 'react-bootstrap/Modal';
 import { AppContext } from '../utils/context';
 import { useCallback } from 'react';
 import { useInputFieldSetter } from '../utils/hooks';
+import { LinksContext } from '../utils/liveloading';
 
 export const LinkView: React.FC<{
     link: LinkModel;
@@ -36,24 +37,13 @@ export const LinkView: React.FC<{
     );
 };
 
-type LinkMap = { [key: string]: LinkModel };
-
 export const LinksPage: React.FC<{}> = () => {
     const { showAlert } = useContext(AppContext);
-    const [links, setLinks] = useState<LinkMap | undefined>(undefined);
+    const { refresh, set, models } = useContext(LinksContext);
     const [loading, setLoading] = useState(false);
     const [deleteLink, setDeleteLink] = useState<LinkModel | undefined>(undefined);
     const [showCreateLink, setShowCreateLink] = useState<boolean>(false);
     const [createLinkUrl, setCreateLinkUrlCB, setCreateLinkUrl] = useInputFieldSetter('https://');
-
-    const refresh = useCallback(async () => {
-        const linksArray = await LinkModel.getAll();
-        const linksMap: LinkMap = {};
-        for (const link of linksArray) {
-            linksMap[link.id] = link;
-        }
-        setLinks(linksMap);
-    }, []);
 
     const handleDeleteLink = useCallback(async () => {
         const link = deleteLink;
@@ -66,8 +56,8 @@ export const LinksPage: React.FC<{}> = () => {
                     variant: 'success',
                     timeout: 5000,
                 });
-                delete links![link.id];
-                setLinks(links);
+                delete models![link.id];
+                set(models!);
             } catch (err: any) {
                 showAlert({
                     id: `link_${link.id}`,
@@ -78,29 +68,29 @@ export const LinksPage: React.FC<{}> = () => {
             }
         }
         setDeleteLink(undefined);
-    }, [deleteLink, links, showAlert]);
+    }, [deleteLink, models, set, showAlert]);
 
     const handleCreateLink = useCallback(async () => {
         try {
             const link = await LinkModel.create(createLinkUrl);
             showAlert({
-                id: `link_new`,
+                id: 'link_new',
                 contents: `Link "${link.short_url}" created.`,
                 variant: 'success',
                 timeout: 5000,
             });
-            links![link.id] = link;
-            setLinks(links);
+            models![link.id] = link;
+            set(models!);
         } catch (err: any) {
             showAlert({
-                id: `link_new}`,
+                id: 'link_new',
                 contents: `Error creating link: ${err.message}`,
                 variant: 'danger',
                 timeout: 5000,
             });
         }
         setShowCreateLink(false);
-    }, [createLinkUrl, links, showAlert]);
+    }, [createLinkUrl, models, set, showAlert]);
 
     const showCreateLinkDialog = useCallback(() => {
         setCreateLinkUrl('https://');
@@ -116,14 +106,14 @@ export const LinksPage: React.FC<{}> = () => {
     }, []);
 
     useEffect(() => {
-        if (loading || links) {
+        if (loading || models) {
             return;
         }
         setLoading(true);
         refresh().then(() => setLoading(false));
-    }, [refresh, loading, links]);
+    }, [refresh, loading, models]);
 
-    if (loading || !links) {
+    if (loading || !models) {
         return (
             <>
                 <h1>Manage links</h1>
@@ -196,7 +186,7 @@ export const LinksPage: React.FC<{}> = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {Object.values(links).map((link) => (
+                    {Object.values(models).map((link) => (
                         <LinkView key={link.id} setDeleteLink={setDeleteLink} link={link} />
                     ))}
                 </tbody>
