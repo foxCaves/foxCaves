@@ -12,24 +12,29 @@ import { FilesPage } from './pages/files';
 import { LinksPage } from './pages/links';
 import { AccountPage } from './pages/account';
 import { ViewPage } from './pages/view';
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useContext, useState, useEffect, useCallback, useRef } from 'react';
 import { UserDetailsModel } from './models/user';
 import { AlertClass, AppContext, AppContextClass } from './utils/context';
 import { LoginState, CustomRoute, CustomNavLink, CustomDropDownItem } from './utils/route';
 import { LinkContainer } from 'react-router-bootstrap';
 import { UserInactiveAlert } from './utils/user_inactive_alert';
-
-import './app.css';
-import { useCallback } from 'react';
 import { ForgotPasswordPage } from './pages/email/forgot_password';
 import { EmailCodePage } from './pages/email/code';
 import { LiveLoadingContainer } from './utils/liveloading';
 
+import './app.css';
+
 const AlertView: React.FC<{ alert: AlertClass }> = ({ alert }) => {
+    const { id } = alert;
+
     const { closeAlert } = useContext(AppContext);
 
+    const closeThisAlert = useCallback(() => {
+        closeAlert(id);
+    }, [closeAlert, id]);
+
     return (
-        <Alert show variant={alert.variant} onClose={() => closeAlert(alert.id)} dismissible>
+        <Alert show variant={alert.variant} onClose={closeThisAlert} dismissible>
             {alert.contents}
         </Alert>
     );
@@ -77,12 +82,15 @@ export const App: React.FC = () => {
         [alerts],
     );
 
+    const closeAlertRef = useRef(closeAlert);
+    closeAlertRef.current = closeAlert;
+
     const showAlert = useCallback(
         (alert: AlertClass) => {
             const newAlerts = [...closeAlert(alert.id, true), alert];
             if (alert.timeout > 0) {
                 alert.__timeout = setTimeout(() => {
-                    closeAlert(alert.id);
+                    closeAlertRef.current(alert.id);
                 }, alert.timeout);
             }
             setAlerts(newAlerts);
