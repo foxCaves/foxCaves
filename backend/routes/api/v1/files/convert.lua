@@ -18,7 +18,7 @@ R.register_route("/api/v1/files/{id}/convert", "POST", R.make_route_opts(), func
         return utils.api_error("Not your file", 403)
     end
 
-    if file.type ~= file_model.type.image then
+    if file.mimetype:sub(1, 6) ~= "image/" then
         return utils.api_error("Not an image", 400)
     end
 

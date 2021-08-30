@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useCallback } from 'react';
 import { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { FileModel, FileModelType } from '../models/file';
+import { FileModel } from '../models/file';
 import { UserModel } from '../models/user';
 import { formatDate } from '../utils/formatting';
 
@@ -29,20 +29,22 @@ const TextView: React.FC<{ src: string }> = ({ src }) => {
 };
 
 const FileContentView: React.FC<{ file: FileModel }> = ({ file }) => {
-    switch (file.type) {
-        case FileModelType.Text:
+    const mimeSplit = file.mimetype.split('/');
+    switch (mimeSplit[0]) {
+        case 'text':
             return <TextView src={file.direct_url} />;
-        case FileModelType.Image:
+        case 'image':
             return <img src={file.direct_url} alt={file.name} className="mw-100" />;
-        case FileModelType.Video:
+        case 'video':
             return <video src={file.direct_url} controls className="mw-100" />;
-        case FileModelType.Audio:
+        case 'audio':
             return <audio src={file.direct_url} controls />;
-        case FileModelType.Iframe:
-            return <iframe title="PDF preview" src={file.direct_url} className="mw-100 preview-iframe" />;
-        default:
-            return <h3>No preview available</h3>;
+        case 'application':
+            if (mimeSplit[2] === 'pdf') {
+                return <iframe title="PDF preview" src={file.direct_url} className="mw-100 preview-iframe" />;
+            }
     }
+    return <h3>No preview available</h3>;
 };
 
 export const ViewPage: React.FC = () => {

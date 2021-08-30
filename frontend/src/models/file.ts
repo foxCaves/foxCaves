@@ -2,27 +2,14 @@ import { fetchAPI, fetchAPIRaw, HttpError } from '../utils/api';
 import { formatSize } from '../utils/formatting';
 import { BaseModel } from './base';
 
-export enum FileModelType {
-    Other = 0,
-    Image = 1,
-    Text = 2,
-    Video = 3,
-    Audio = 4,
-    Iframe = 5,
-    Unknown = -1,
-}
-
 export class FileModel extends BaseModel {
     public id: string = '';
     public name: string = '';
-    public extension: string = '';
     public size: number = 0;
     public user: string = '';
-    public type: FileModelType = FileModelType.Unknown;
     public mimetype: string = '';
 
     public thumbnail_url?: string;
-    public thumbnail_extension: string = '';
 
     public download_url: string = '';
     public direct_url: string = '';

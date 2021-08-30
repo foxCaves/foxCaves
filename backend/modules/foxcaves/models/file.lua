@@ -81,28 +81,9 @@ local mimeHandlers = {
             "+repage", "-format", "png", thumbnail
         )
         if not lfs.attributes(thumbnail, "size") then
-            return file_model.type.image, nil
+            return nil
         end
-        return file_model.type.image, thumbext
-    end,
-
-    text = function()
-        return file_model.type.text, nil
-    end,
-
-    video = function()
-        return file_model.type.video, nil
-    end,
-
-    audio = function()
-        return file_model.type.audio, nil
-    end,
-
-    application = function(_, _, suffix)
-        if suffix == "pdf" then
-            return file_model.type.iframe, nil
-        end
-        return file_model.type.other, nil
+        return thumbext
     end
 }
 
@@ -221,7 +202,7 @@ function file_mt:move_upload_data(src)
     local thumbDest = file_model.paths.temp .. "thumb_" .. self.id
 
     local prefix, suffix = self:get_mimetype():match("([a-z]+)/([a-z]+)")
-    self.type, self.thumbnail_extension = mimeHandlers[prefix](src, thumbDest, suffix)
+    self.thumbnail_extension = mimeHandlers[prefix](src, thumbDest, suffix)
 
     lfs.mkdir(file_model.paths.storage .. self.id)
 
@@ -238,20 +219,20 @@ function file_mt:save()
     if self.not_in_db then
         res = database.get_shared():query_single(
             'INSERT INTO files \
-                (id, name, "user", extension, type, size, thumbnail_extension) VALUES (%s, %s, %s, %s, %s, %s, %s) \
+                (id, name, "user", extension, size, thumbnail_extension) VALUES (%s, %s, %s, %s, %s, %s, %s) \
                 RETURNING ' .. database.TIME_COLUMNS,
-            self.id, self.name, self.user, self.extension, self.type, self.size, self.thumbnail_extension or ""
+            self.id, self.name, self.user, self.extension, self.size, self.thumbnail_extension or ""
         )
         primary_push_action = 'create'
         self.not_in_db = nil
     else
         res = database.get_shared():query_single(
             'UPDATE files \
-                SET name = %s, "user" = %s, extension = %s, type = %s, size = %s, thumbnail_extension = %s, \
+                SET name = %s, "user" = %s, extension = %s, size = %s, thumbnail_extension = %s, \
                 updated_at = (now() at time zone \'utc\') \
                 WHERE id = %s \
                 RETURNING ' .. database.TIME_COLUMNS,
-            self.name, self.user, self.extension, self.type, self.size, self.thumbnail_extension or "", self.id
+            self.name, self.user, self.extension, self.size, self.thumbnail_extension or "", self.id
         )
         primary_push_action = 'update'
     end
@@ -270,8 +251,6 @@ function file_mt:get_public()
         id = self.id,
         name = self.name,
         user = self.user,
-        extension = self.extension,
-        type = self.type,
         size = self.size,
         created_at = self.created_at,
         updated_at = self.updated_at,
