@@ -35,7 +35,7 @@ R.register_route("/cdn/sendfile/f/{file}", "GET", R.make_route_opts_anon(), func
     ngx.req.set_uri("/rawget/" .. file.id .. "/file", true)
 end)
 
-R.register_route("/cdn/sendfile/thumb/{file}", "GET", R.make_route_opts_anon(), function(route_vars)
+R.register_route("/cdn/sendfile/thumbs/{file}", "GET", R.make_route_opts_anon(), function(route_vars)
     local id = route_vars.file
     local file = file_model.get_by_id(id)
     if not file then
