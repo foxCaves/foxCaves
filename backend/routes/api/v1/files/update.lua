@@ -23,7 +23,7 @@ R.register_route("/api/v1/files/{id}", "PATCH", R.make_route_opts(), function(ro
         if not n then
             return utils.api_error("Invalid file name")
         end
-        local _, ext = file:get_extension()
+        local ext = file:get_extension()
         if ext ~= newext then
             return utils.api_error("Extension mismatch")
         end
