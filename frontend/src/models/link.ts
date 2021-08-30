@@ -1,5 +1,6 @@
 import { fetchAPI, fetchAPIRaw, HttpError } from '../utils/api';
 import { BaseModel } from './base';
+import { UserModel } from './user';
 
 export class LinkModel extends BaseModel {
     public id: string = '';
@@ -19,8 +20,8 @@ export class LinkModel extends BaseModel {
         }
     }
 
-    static async getAll() {
-        const res = await fetchAPI('/api/v1/links');
+    static async getByUser(user: UserModel): Promise<LinkModel[]> {
+        const res = await fetchAPI(`/api/v1/users/${user.id}/links`);
         return res.map(LinkModel.wrapNew);
     }
 

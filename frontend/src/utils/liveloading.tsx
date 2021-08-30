@@ -31,24 +31,33 @@ export const LiveLoadingContainer: React.FC = ({ children }) => {
     const [links, setLinks] = useState<ModelMap<LinkModel> | undefined>(undefined);
     const [ws, setWs] = useState<ReconnectingWebSocket | undefined>(undefined);
     const { user, setUser } = useContext(AppContext);
+    const [curUserId, setCurUserId] = useState<string | undefined>(undefined);
 
     const refreshFiles = useCallback(async () => {
-        const files = await FileModel.getAll();
+        if (!user) {
+            setFiles({});
+            return;
+        }
+        const files = await FileModel.getByUser(user);
         const fileMap: ModelMap<FileModel> = {};
         for (const file of files) {
             fileMap[file.id] = file;
         }
         setFiles(fileMap);
-    }, []);
+    }, [user]);
 
     const refreshLinks = useCallback(async () => {
-        const links = await LinkModel.getAll();
+        if (!user) {
+            setLinks({});
+            return;
+        }
+        const links = await LinkModel.getByUser(user);
         const linkMap: ModelMap<LinkModel> = {};
         for (const link of links) {
             linkMap[link.id] = link;
         }
         setLinks(linkMap);
-    }, []);
+    }, [user]);
 
     const handleLiveLoadMessage = useCallback(
         (data: LiveLoadingPayload) => {
@@ -155,6 +164,16 @@ export const LiveLoadingContainer: React.FC = ({ children }) => {
 
         thisWs.setOnMessage(handleWebSocketMessage);
     }, [ws, handleWebSocketMessage]);
+
+    useEffect(() => {
+        const newUserId = user?.id;
+        if (newUserId === curUserId) {
+            return;
+        }
+        setCurUserId(newUserId);
+        setFiles(undefined);
+        setLinks(undefined);
+    }, [curUserId, user]);
 
     return (
         <>

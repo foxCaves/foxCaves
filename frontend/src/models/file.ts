@@ -1,6 +1,7 @@
 import { fetchAPI, fetchAPIRaw, HttpError } from '../utils/api';
 import { formatSize } from '../utils/formatting';
 import { BaseModel } from './base';
+import { UserModel } from './user';
 
 export class FileModel extends BaseModel {
     public id: string = '';
@@ -27,8 +28,8 @@ export class FileModel extends BaseModel {
         }
     }
 
-    static async getAll(): Promise<FileModel[]> {
-        const res = await fetchAPI('/api/v1/files');
+    static async getByUser(user: UserModel): Promise<FileModel[]> {
+        const res = await fetchAPI(`/api/v1/users/${user.id}/files`);
         return res.map(FileModel.wrapNew);
     }
 
