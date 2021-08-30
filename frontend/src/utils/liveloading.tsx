@@ -1,9 +1,12 @@
 import React from 'react';
 import { useCallback } from 'react';
 import { useEffect } from 'react';
+import { useContext } from 'react';
 import { useState } from 'react';
 import { FileModel } from '../models/file';
 import { LinkModel } from '../models/link';
+import { UserDetailsModel } from '../models/user';
+import { AppContext } from './context';
 
 type ModelMap<T> = { [key: string]: T };
 
@@ -26,6 +29,7 @@ export const LiveLoadingContainer: React.FC = ({ children }) => {
     const [files, setFiles] = useState<ModelMap<FileModel> | undefined>(undefined);
     const [links, setLinks] = useState<ModelMap<LinkModel> | undefined>(undefined);
     const [ws, setWs] = useState<WebSocket | undefined>(undefined);
+    const { user, setUser } = useContext(AppContext);
 
     const refreshFiles = useCallback(async () => {
         const files = await FileModel.getAll();
@@ -56,17 +60,18 @@ export const LiveLoadingContainer: React.FC = ({ children }) => {
                     const fileMapCopy = { ...files };
                     switch (data.action) {
                         case 'update':
-                            if (!fileMapCopy[file.id]) {
+                            const oldFile = fileMapCopy[file.id];
+                            if (!oldFile) {
                                 break;
                             }
-                            Object.assign(fileMapCopy[file.id], file);
+                            oldFile.wrap(file);
                             setFiles(fileMapCopy);
                             break;
                         case 'create':
                             if (fileMapCopy[file.id]) {
                                 break;
                             }
-                            fileMapCopy[file.id] = FileModel.wrap(file);
+                            fileMapCopy[file.id] = FileModel.wrapNew(file);
                             setFiles(fileMapCopy);
                             break;
                         case 'delete':
@@ -86,17 +91,18 @@ export const LiveLoadingContainer: React.FC = ({ children }) => {
                     const linkMapCopy = { ...links };
                     switch (data.action) {
                         case 'update':
-                            if (!linkMapCopy[link.id]) {
+                            const oldModel = linkMapCopy[link.id];
+                            if (!oldModel) {
                                 break;
                             }
-                            Object.assign(linkMapCopy[link.id], link);
+                            oldModel.wrap(link);
                             setLinks(linkMapCopy);
                             break;
                         case 'create':
                             if (linkMapCopy[link.id]) {
                                 break;
                             }
-                            linkMapCopy[link.id] = LinkModel.wrap(link);
+                            linkMapCopy[link.id] = LinkModel.wrapNew(link);
                             setLinks(linkMapCopy);
                             break;
                         case 'delete':
@@ -112,10 +118,16 @@ export const LiveLoadingContainer: React.FC = ({ children }) => {
                     if (data.action !== 'update') {
                         break;
                     }
+                    const newUser = data.data as UserDetailsModel;
+                    if (!user || newUser.id !== user.id) {
+                        break;
+                    }
+                    const mergedNewUser = UserDetailsModel.wrapNew(user.wrap(newUser));
+                    setUser(mergedNewUser);
                     break;
             }
         },
-        [files, links],
+        [files, links, setUser, user],
     );
 
     useEffect(() => {

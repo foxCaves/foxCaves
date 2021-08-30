@@ -1,6 +1,6 @@
 import { fetchAPI, fetchAPIRaw, HttpError } from '../utils/api';
 import { formatSize } from '../utils/formatting';
-import { DatedModel } from './base';
+import { BaseModel } from './base';
 
 export enum FileModelType {
     Other = 0,
@@ -12,7 +12,7 @@ export enum FileModelType {
     Unknown = -1,
 }
 
-export class FileModel extends DatedModel {
+export class FileModel extends BaseModel {
     public id: string = '';
     public name: string = '';
     public extension: string = '';
@@ -31,7 +31,7 @@ export class FileModel extends DatedModel {
     static async getById(id: string): Promise<FileModel | undefined> {
         try {
             const api = await fetchAPI(`/api/v1/files/${id}`);
-            return FileModel.wrap(api);
+            return FileModel.wrapNew(api);
         } catch (e) {
             if (e instanceof HttpError && (e.status === 404 || e.status === 403)) {
                 return undefined;
@@ -42,7 +42,7 @@ export class FileModel extends DatedModel {
 
     static async getAll(): Promise<FileModel[]> {
         const res = await fetchAPI('/api/v1/files');
-        return res.map(FileModel.wrap);
+        return res.map(FileModel.wrapNew);
     }
 
     async delete() {
@@ -64,14 +64,11 @@ export class FileModel extends DatedModel {
             method: 'POST',
             rawBody: file,
         });
-        return FileModel.wrap(api);
+        return FileModel.wrapNew(api);
     }
 
-    static wrap(obj: unknown) {
-        let m = new FileModel();
-        m = Object.assign(m, obj);
-        m.convertDates();
-        return m;
+    static wrapNew(obj: unknown) {
+        return new FileModel().wrap(obj);
     }
 
     getFormattedSize() {

@@ -1,7 +1,7 @@
 import { fetchAPI, fetchAPIRaw, HttpError } from '../utils/api';
-import { DatedModel } from './base';
+import { BaseModel } from './base';
 
-export class LinkModel extends DatedModel {
+export class LinkModel extends BaseModel {
     public id: string = '';
     public url: string = '';
     public short_url: string = '';
@@ -10,7 +10,7 @@ export class LinkModel extends DatedModel {
     static async getById(id: string): Promise<LinkModel | undefined> {
         try {
             const api = await fetchAPI(`/api/v1/links/${id}`);
-            return LinkModel.wrap(api);
+            return LinkModel.wrapNew(api);
         } catch (e) {
             if (e instanceof HttpError && (e.status === 404 || e.status === 403)) {
                 return undefined;
@@ -21,7 +21,7 @@ export class LinkModel extends DatedModel {
 
     static async getAll() {
         const res = await fetchAPI('/api/v1/links');
-        return res.map(LinkModel.wrap);
+        return res.map(LinkModel.wrapNew);
     }
 
     static async create(url: string) {
@@ -29,7 +29,7 @@ export class LinkModel extends DatedModel {
             method: 'POST',
             body: { url },
         });
-        return LinkModel.wrap(api);
+        return LinkModel.wrapNew(api);
     }
 
     async delete() {
@@ -38,10 +38,7 @@ export class LinkModel extends DatedModel {
         });
     }
 
-    static wrap(obj: unknown) {
-        let m = new LinkModel();
-        m = Object.assign(m, obj);
-        m.convertDates();
-        return m;
+    static wrapNew(obj: unknown) {
+        return new LinkModel().wrap(obj);
     }
 }
