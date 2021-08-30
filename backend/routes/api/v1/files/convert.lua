@@ -32,7 +32,7 @@ R.register_route("/api/v1/files/{id}/convert", "POST", R.make_route_opts(), func
     local srcfile = file:make_local_path()
 
     local newfilename = file.name
-    newfilename = newfilename:sub(1, newfilename:len() - file.extension:len()) .. "." .. newextension
+    newfilename = newfilename:sub(1, newfilename:len() - file:get_extension():len()) .. "." .. newextension
 
     local tmpfile =  file_model.paths.temp .. "file_new_" .. file.id .. "." .. newextension
 

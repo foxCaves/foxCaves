@@ -19,7 +19,7 @@ R.register_route("/api/v1/files/{id}", "PATCH", R.make_route_opts(), function(ro
 
     if args.name then
         local newname = args.name
-        local extcheck = "." .. file.extension
+        local extcheck = "." .. file:get_extension()
         if newname:sub((newname:len() + 1) - extcheck:len()) ~= extcheck then
             return utils.api_error("Extension mismatch")
         end

@@ -8,7 +8,12 @@ R.register_route("/cdn/sendfile/f/{file}", "GET", R.make_route_opts_anon(), func
 
     local file = file_model.get_by_id(id)
 
-    if (not file) or file.extension:lower() ~= ext:lower() then
+    if not file then
+        return utils.api_error("File not found", 404)
+    end
+
+    local file_ext = file:get_extension():lower()
+    if file_ext ~= ext:lower() then
         return utils.api_error("File not found", 404)
     end
 
@@ -26,6 +31,20 @@ R.register_route("/cdn/sendfile/f/{file}", "GET", R.make_route_opts_anon(), func
     end
 
     ngx.header["Content-Disposition"] = disposition_type .. "; filename=\"" .. file.name .. "\""
+    ngx.header["Content-Type"] = file.mimetype
+    ngx.req.set_uri("/rawget/" .. file.id .. "/file", true)
+end)
 
-    ngx.req.set_uri("/rawget/" .. file.id .. "/file." .. file.extension, true)
+R.register_route("/cdn/sendfile/thumb/{file}", "GET", R.make_route_opts_anon(), function(route_vars)
+    local id = route_vars.file
+    local file = file_model.get_by_id(id)
+    if not file then
+        return utils.api_error("File not found", 404)
+    end
+    if (not file.thumbnail_mimetype) or file.thumbnail_mimetype == "" then
+        return utils.api_error("Thumbnail for file not found", 404)
+    end
+
+    ngx.header["Content-Type"] = file.thumbnail_mimetype
+    ngx.req.set_uri("/rawget/" .. file.id .. "/thumb", true)
 end)

@@ -64,18 +64,16 @@ local mimetypes = {
 
 local mimeHandlers = {
     image = function(src, dest)
-        local thumbext = "png"
-        local thumbnail = dest .. "." .. thumbext
         exec.cmd(
             "convert", src,
             "-thumbnail", "x300", "-resize", "300x<",
             "-resize", "50%", "-gravity", "center", "-crop", "150x150+0+0",
-            "+repage", "-format", "png", thumbnail
+            "+repage", "-format", "png", dest
         )
-        if not lfs.attributes(thumbnail, "size") then
+        if not lfs.attributes(dest, "size") then
             return nil
         end
-        return thumbext
+        return "image/png"
     end
 }
 
@@ -91,14 +89,14 @@ end
 
 local function file_deletestorage(file)
     local base = file_model.paths.storage .. file.id
-    os.remove(base .. "/file." .. file.extension)
-    if file.thumbnail_extension and file.thumbnail_extension ~= "" then
-        os.remove(base .. "/thumb." .. file.thumbnail_extension)
+    os.remove(base .. "/file")
+    if file.thumbnail_mimetype and file.thumbnail_mimetype ~= "" then
+        os.remove(base .. "/thumb")
     end
     lfs.rmdir(base)
 end
 
-local file_select = 'id, name, "user", extension, size, thumbnail_extension, ' .. database.TIME_COLUMNS
+local file_select = 'id, name, "user", extension, size, mimetype, thumbnail_mimetype, ' .. database.TIME_COLUMNS
 
 function file_model.get_by_user(user)
     if not user then
@@ -158,7 +156,7 @@ function file_mt:delete()
 end
 
 function file_mt:make_local_path()
-    return file_model.paths.storage .. self.id .. "/file." .. self.extension
+    return file_model.paths.storage .. self.id .. "/file"
 end
 
 function file_mt:set_owner(user)
@@ -166,26 +164,16 @@ function file_mt:set_owner(user)
 end
 
 function file_mt:set_name(name)
-    local n, newextension = file_model.extract_name_and_extension(name)
+    local n, ext = file_model.extract_name_and_extension(name)
 
     if not n then
         return false
     end
 
-    newextension = (newextension or "bin"):lower()
-
-    if self.extension and self.extension ~= newextension then
-        file_deletestorage(self)
-    end
-
     self.name = name
-    self.extension = newextension
+    self.mimetype = mimetypes[ext] or "application/octet-stream"
 
     return true
-end
-
-function file_mt:get_mimetype()
-    return mimetypes[self.extension] or "application/octet-stream"
 end
 
 function file_mt:move_upload_data(src)
@@ -193,16 +181,15 @@ function file_mt:move_upload_data(src)
 
     local thumbDest = file_model.paths.temp .. "thumb_" .. self.id
 
-    local prefix, suffix = self:get_mimetype():match("([a-z]+)/([a-z]+)")
-    self.thumbnail_extension = mimeHandlers[prefix](src, thumbDest, suffix)
+    local prefix, suffix = self.mimetype:match("([a-z]+)/([a-z]+)")
+    self.thumbnail_mimetype = mimeHandlers[prefix](src, thumbDest, suffix)
 
     lfs.mkdir(file_model.paths.storage .. self.id)
 
-    file_move(src, file_model.paths.storage .. self.id .. "/file." .. self.extension)
+    file_move(src, file_model.paths.storage .. self.id .. "/file")
 
-    if self.thumbnail_extension and self.thumbnail_extension ~= "" then
-        file_move(thumbDest .. "." .. self.thumbnail_extension,
-                    file_model.paths.storage .. self.id .. "/thumb." .. self.thumbnail_extension)
+    if self.thumbnail_mimetype and self.thumbnail_mimetype ~= "" then
+        file_move(thumbDest, file_model.paths.storage .. self.id .. "/thumb")
     end
 end
 
@@ -211,20 +198,20 @@ function file_mt:save()
     if self.not_in_db then
         res = database.get_shared():query_single(
             'INSERT INTO files \
-                (id, name, "user", extension, size, thumbnail_extension) VALUES (%s, %s, %s, %s, %s, %s) \
+                (id, name, "user", size, mimetype, thumbnail_mimetype) VALUES (%s, %s, %s, %s, %s, %s) \
                 RETURNING ' .. database.TIME_COLUMNS,
-            self.id, self.name, self.user, self.extension, self.size, self.thumbnail_extension or ""
+            self.id, self.name, self.user, self.size, self.mimetype, self.thumbnail_mimetype or ""
         )
         primary_push_action = 'create'
         self.not_in_db = nil
     else
         res = database.get_shared():query_single(
             'UPDATE files \
-                SET name = %s, "user" = %s, extension = %s, size = %s, thumbnail_extension = %s, \
+                SET name = %s, "user" = %s, size = %s, mimetype = %s, thumbnail_mimetype = %s, \
                 updated_at = (now() at time zone \'utc\') \
                 WHERE id = %s \
                 RETURNING ' .. database.TIME_COLUMNS,
-            self.name, self.user, self.extension, self.size, self.thumbnail_extension or "", self.id
+            self.name, self.user, self.size, self.mimetype, self.thumbnail_mimetype or "", self.id
         )
         primary_push_action = 'update'
     end
@@ -236,8 +223,14 @@ function file_mt:save()
     user:send_self_event()
 end
 
+function file_mt:get_extension()
+    local _, ext = file_model.extract_name_and_extension(self.name)
+    ext = ext or "bin"
+    return ext:lower()
+end
+
 function file_mt:get_public()
-    local short_url = url_config.short .. "/f/" .. self.id .. "." .. self.extension
+    local short_url = url_config.short .. "/f/" .. self.id .. "." .. self:get_extension()
 
     local res = {
         id = self.id,
@@ -246,14 +239,14 @@ function file_mt:get_public()
         size = self.size,
         created_at = self.created_at,
         updated_at = self.updated_at,
+        mimetype = self.mimetype,
 
         view_url = short_url,
         direct_url = short_url .. "?raw=1",
         download_url = short_url .. "?dl=1",
-        mimetype = self:get_mimetype(),
     }
-    if self.thumbnail_extension and self.thumbnail_extension ~= "" then
-        res.thumbnail_url = url_config.short .. "/thumbs/" .. self.id .. "." .. self.thumbnail_extension
+    if self.thumbnail_mimetype and self.thumbnail_mimetype ~= "" then
+        res.thumbnail_url = url_config.short .. "/thumbs/" .. self.id
     end
     return res
 end
