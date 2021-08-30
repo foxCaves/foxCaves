@@ -273,7 +273,6 @@ function file_mt:get_public()
         extension = self.extension,
         type = self.type,
         size = self.size,
-        thumbnail_extension = self.thumbnail_extension,
         created_at = self.created_at,
         updated_at = self.updated_at,
 
@@ -282,8 +281,8 @@ function file_mt:get_public()
         download_url = short_url .. "?dl=1",
         mimetype = self:get_mimetype(),
     }
-    if res.thumbnail_extension and res.thumbnail_extension ~= "" then
-        res.thumbnail_url = url_config.short .. "/thumbs/" .. res.id .. "." .. res.thumbnail_extension
+    if self.thumbnail_extension and self.thumbnail_extension ~= "" then
+        res.thumbnail_url = url_config.short .. "/thumbs/" .. res.id .. "." .. self.thumbnail_extension
     end
     return res
 end
