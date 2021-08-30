@@ -31,10 +31,7 @@ export class FileModel extends DatedModel {
     static async getById(id: string): Promise<FileModel | undefined> {
         try {
             const api = await fetchAPI(`/api/v1/files/${id}`);
-            let m = new FileModel();
-            m = Object.assign(m, api);
-            m.convertDates();
-            return m;
+            return FileModel.wrap(api);
         } catch (e) {
             if (e instanceof HttpError && (e.status === 404 || e.status === 403)) {
                 return undefined;
@@ -45,12 +42,7 @@ export class FileModel extends DatedModel {
 
     static async getAll(): Promise<FileModel[]> {
         const res = await fetchAPI('/api/v1/files');
-        return res.map((api: any) => {
-            let m = new FileModel();
-            m = Object.assign(m, api);
-            m.convertDates();
-            return m;
-        });
+        return res.map(FileModel.wrap);
     }
 
     async delete() {
@@ -72,8 +64,12 @@ export class FileModel extends DatedModel {
             method: 'POST',
             rawBody: file,
         });
+        return FileModel.wrap(api);
+    }
+
+    static wrap(obj: unknown) {
         let m = new FileModel();
-        m = Object.assign(m, api);
+        m = Object.assign(m, obj);
         m.convertDates();
         return m;
     }

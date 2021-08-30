@@ -10,10 +10,7 @@ export class LinkModel extends DatedModel {
     static async getById(id: string): Promise<LinkModel | undefined> {
         try {
             const api = await fetchAPI(`/api/v1/links/${id}`);
-            let m = new LinkModel();
-            m = Object.assign(m, api);
-            m.convertDates();
-            return m;
+            return LinkModel.wrap(api);
         } catch (e) {
             if (e instanceof HttpError && (e.status === 404 || e.status === 403)) {
                 return undefined;
@@ -24,12 +21,7 @@ export class LinkModel extends DatedModel {
 
     static async getAll() {
         const res = await fetchAPI('/api/v1/links');
-        return res.map((api: any) => {
-            let m = new LinkModel();
-            m = Object.assign(m, api);
-            m.convertDates();
-            return m;
-        });
+        return res.map(LinkModel.wrap);
     }
 
     static async create(url: string) {
@@ -37,15 +29,19 @@ export class LinkModel extends DatedModel {
             method: 'POST',
             body: { url },
         });
-        let m = new LinkModel();
-        m = Object.assign(m, api);
-        m.convertDates();
-        return m;
+        return LinkModel.wrap(api);
     }
 
     async delete() {
         await fetchAPIRaw(`/api/v1/links/${this.id}`, {
             method: 'DELETE',
         });
+    }
+
+    static wrap(obj: unknown) {
+        let m = new LinkModel();
+        m = Object.assign(m, obj);
+        m.convertDates();
+        return m;
     }
 }

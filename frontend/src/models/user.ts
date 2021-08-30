@@ -8,16 +8,20 @@ export class UserModel extends DatedModel {
     static async getById(id: string): Promise<UserModel | undefined> {
         try {
             const api = await fetchAPI(`/api/v1/users/${id}`);
-            let m = new UserModel();
-            m = Object.assign(m, api);
-            m.convertDates();
-            return m;
+            return UserModel.wrap(api);
         } catch (e) {
             if (e instanceof HttpError && (e.status === 404 || e.status === 403)) {
                 return undefined;
             }
             throw e;
         }
+    }
+
+    static wrap(obj: unknown) {
+        let m = new UserModel();
+        m = Object.assign(m, obj);
+        m.convertDates();
+        return m;
     }
 }
 
@@ -35,15 +39,19 @@ export class UserDetailsModel extends UserModel {
     static async getById(id: string): Promise<UserDetailsModel | undefined> {
         try {
             const api = await fetchAPI(`/api/v1/users/${id}/details`);
-            let m = new UserDetailsModel();
-            m = Object.assign(m, api);
-            m.convertDates();
-            return m;
+            return UserDetailsModel.wrap(api);
         } catch (e) {
             if (e instanceof HttpError && (e.status === 404 || e.status === 403)) {
                 return undefined;
             }
             throw e;
         }
+    }
+
+    static wrap(obj: unknown) {
+        let m = new UserDetailsModel();
+        m = Object.assign(m, obj);
+        m.convertDates();
+        return m;
     }
 }
