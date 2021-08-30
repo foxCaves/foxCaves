@@ -175,6 +175,10 @@ export const LinksPage: React.FC<{}> = () => {
                 <Button variant="primary" onClick={showCreateLinkDialog}>
                     Create new link
                 </Button>
+                <span className="p-3"></span>
+                <Button variant="secondary" onClick={refresh}>
+                    Refresh
+                </Button>
             </h1>
             <br />
             <Table striped bordered>

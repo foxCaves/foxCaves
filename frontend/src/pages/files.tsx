@@ -202,7 +202,13 @@ export const FilesPage: React.FC<{}> = () => {
                     </Button>
                 </Modal.Footer>
             </Modal>
-            <h1>Manage files</h1>
+            <h1>
+                Manage files
+                <span className="p-3"></span>
+                <Button variant="secondary" onClick={refresh}>
+                    Refresh
+                </Button>
+            </h1>
             <StorageUseBar />
             <Container>
                 <Row className="mt-2">
