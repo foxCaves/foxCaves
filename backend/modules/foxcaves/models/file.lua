@@ -229,9 +229,7 @@ function file_mt:get_extension()
 end
 
 function file_mt:get_public()
-    local ext = self:get_extension()
-    local url_suffix = ext and ("." .. ext) or ""
-    local short_url = url_config.short .. "/f/" .. self.id .. url_suffix
+    local short_url = url_config.short .. "/f/" .. self.id
 
     local res = {
         id = self.id,
