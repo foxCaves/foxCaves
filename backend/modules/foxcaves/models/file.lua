@@ -96,7 +96,7 @@ local function file_deletestorage(file)
     lfs.rmdir(base)
 end
 
-local file_select = 'id, name, "user", extension, size, mimetype, thumbnail_mimetype, ' .. database.TIME_COLUMNS
+local file_select = 'id, name, "user", size, mimetype, thumbnail_mimetype, ' .. database.TIME_COLUMNS
 
 function file_model.get_by_user(user)
     if not user then
