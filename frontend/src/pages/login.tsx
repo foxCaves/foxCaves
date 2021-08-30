@@ -21,7 +21,7 @@ export const LoginPage: React.FC = () => {
             await toast.promise(
                 fetchAPIRaw('/api/v1/users/sessions/login', {
                     method: 'POST',
-                    body: {
+                    data: {
                         username,
                         password,
                         remember,

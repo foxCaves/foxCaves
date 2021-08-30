@@ -13,7 +13,7 @@ export const EmailCodePage: React.FC = () => {
         try {
             const res = await fetchAPI('/api/v1/users/emails/code', {
                 method: 'POST',
-                body: { code },
+                data: { code },
             });
 
             switch (res.action) {

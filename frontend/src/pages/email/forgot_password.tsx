@@ -15,7 +15,7 @@ export const ForgotPasswordPage: React.FC = () => {
             await toast.promise(
                 fetchAPIRaw('/api/v1/users/emails/request', {
                     method: 'POST',
-                    body: {
+                    data: {
                         username,
                         email,
                         action: 'forgotpwd',
@@ -34,7 +34,7 @@ export const ForgotPasswordPage: React.FC = () => {
             );
             await fetchAPIRaw('/api/v1/users/emails/request', {
                 method: 'POST',
-                body: {
+                data: {
                     username,
                     email,
                     action: 'forgotpwd',

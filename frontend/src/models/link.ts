@@ -28,7 +28,7 @@ export class LinkModel extends BaseModel {
     static async create(url: string) {
         const api = await fetchAPI('/api/v1/links', {
             method: 'POST',
-            body: { url },
+            data: { url },
         });
         return LinkModel.wrapNew(api);
     }

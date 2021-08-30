@@ -17,7 +17,7 @@ export const UserInactiveAlert: React.FC = () => {
             await toast.promise(
                 fetchAPIRaw('/api/v1/users/emails/request', {
                     method: 'POST',
-                    body: {
+                    data: {
                         action: 'activation',
                         email: user.email,
                         username: user.username,

@@ -30,7 +30,7 @@ export const AccountPage: React.FC = () => {
                 await toast.promise(
                     fetchAPIRaw(`/api/users/${user!.id}`, {
                         method,
-                        body,
+                        data: body,
                     }),
                     {
                         pending: 'Saving your account...',

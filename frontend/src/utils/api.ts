@@ -6,21 +6,21 @@ export class HttpError extends Error {
 
 export interface APIRequestInfo {
     method?: string;
-    body?: any;
-    rawBody?: BodyInit;
+    data?: any;
+    body?: BodyInit;
 }
 
 export async function fetchAPIRaw(url: string, info?: APIRequestInfo) {
     let init: RequestInit = {};
     if (info) {
         init.method = info.method;
-        if (info.body) {
-            init.body = JSON.stringify(info.body);
+        if (info.data) {
+            init.body = JSON.stringify(info.data);
             init.headers = {
                 'Content-Type': 'application/json',
             };
-        } else if (info.rawBody) {
-            init.body = info.rawBody;
+        } else if (info.body) {
+            init.body = info.body;
         }
     }
 

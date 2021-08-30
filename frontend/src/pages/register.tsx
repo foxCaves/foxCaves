@@ -31,7 +31,7 @@ export const RegistrationPage: React.FC = () => {
                 await toast.promise(
                     fetchAPI('/api/v1/users', {
                         method: 'POST',
-                        body: {
+                        data: {
                             username,
                             password,
                             email,

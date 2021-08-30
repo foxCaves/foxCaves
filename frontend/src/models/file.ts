@@ -42,7 +42,7 @@ export class FileModel extends BaseModel {
     async rename(name: string) {
         await fetchAPIRaw(`/api/v1/files/${this.id}`, {
             method: 'PATCH',
-            body: { name },
+            data: { name },
         });
         this.name = name;
     }
@@ -50,7 +50,7 @@ export class FileModel extends BaseModel {
     static async upload(file: File) {
         const api = await fetchAPI(`/api/v1/files?name=${encodeURIComponent(file.name)}`, {
             method: 'POST',
-            rawBody: file,
+            body: file,
         });
         return FileModel.wrapNew(api);
     }
