@@ -1,8 +1,4 @@
-import React, { useRef } from 'react';
-import { useCallback } from 'react';
-import { useEffect } from 'react';
-import { useContext } from 'react';
-import { useState } from 'react';
+import React, { useRef, useMemo, useCallback, useEffect, useContext, useState } from 'react';
 import { FileModel } from '../models/file';
 import { LinkModel } from '../models/link';
 import { UserDetailsModel } from '../models/user';
@@ -182,12 +178,28 @@ export const LiveLoadingContainer: React.FC = ({ children }) => {
         setLinks(undefined);
     }, [curUserId, user]);
 
+    const linksContext = useMemo(
+        () => ({
+            models: links,
+            set: setLinks,
+            refresh: refreshLinks,
+        }),
+        [links, refreshLinks, setLinks],
+    );
+
+    const filesContext = useMemo(
+        () => ({
+            models: files,
+            set: setFiles,
+            refresh: refreshFiles,
+        }),
+        [files, refreshFiles, setFiles],
+    );
+
     return (
         <>
-            <LinksContext.Provider value={{ models: links, refresh: refreshLinks, set: setLinks }}>
-                <FilesContext.Provider value={{ models: files, refresh: refreshFiles, set: setFiles }}>
-                    {children}
-                </FilesContext.Provider>
+            <LinksContext.Provider value={linksContext}>
+                <FilesContext.Provider value={filesContext}>{children}</FilesContext.Provider>
             </LinksContext.Provider>
         </>
     );
