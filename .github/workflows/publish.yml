@@ -37,7 +37,7 @@ jobs:
           push: true
           builder: ${{ steps.buildx.outputs.name }}
           cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,dest=/tmp/.buildx-cache-new
+          cache-to: type=local,mode=max,dest=/tmp/.buildx-cache-new
           build-args: |
             GIT_REVISION=${{ github.sha }}
             REACT_APP_SENTRY_DSN=https://5d99e8f38f4c48e8b9f2803cba13caad@o804863.ingest.sentry.io/5803116
