@@ -1,4 +1,4 @@
-FROM node:current AS frontend_builder
+FROM node:lts-alpine AS frontend_builder
 
 RUN mkdir /opt/stage
 WORKDIR /opt/stage
