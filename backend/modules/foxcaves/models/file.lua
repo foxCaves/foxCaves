@@ -261,7 +261,7 @@ function file_mt:get_public()
         mimetype = self:get_mimetype(),
     }
     if self.thumbnail_extension and self.thumbnail_extension ~= "" then
-        res.thumbnail_url = url_config.short .. "/thumbs/" .. res.id .. "." .. self.thumbnail_extension
+        res.thumbnail_url = url_config.short .. "/thumbs/" .. self.id .. "." .. self.thumbnail_extension
     end
     return res
 end

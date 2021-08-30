@@ -177,29 +177,6 @@ function user_mt:send_self_event(action)
     self:send_event(action, 'user', self:get_private())
 end
 
-function user_mt:get_private()
-    return {
-        id = self.id,
-        username = self.username,
-        email = self.email,
-        apikey = self.apikey,
-        active = self.active,
-        storage_used = self:calculate_storage_used(),
-        storage_quota = self.storage_quota,
-        created_at = self.created_at,
-        updated_at = self.updated_at,
-    }
-end
-
-function user_mt:get_public()
-    return {
-        id = self.id,
-        username = self.username,
-        created_at = self.created_at,
-        updated_at = self.updated_at,
-    }
-end
-
 function user_mt:save()
     local res, primary_push_action
     if self.not_in_db then
@@ -276,6 +253,29 @@ end
 
 function user_mt:can_perform_write()
     return self.active == 1
+end
+
+function user_mt:get_private()
+    return {
+        id = self.id,
+        username = self.username,
+        email = self.email,
+        apikey = self.apikey,
+        active = self.active,
+        storage_used = self:calculate_storage_used(),
+        storage_quota = self.storage_quota,
+        created_at = self.created_at,
+        updated_at = self.updated_at,
+    }
+end
+
+function user_mt:get_public()
+    return {
+        id = self.id,
+        username = self.username,
+        created_at = self.created_at,
+        updated_at = self.updated_at,
+    }
 end
 
 user_mt.__index = user_mt
