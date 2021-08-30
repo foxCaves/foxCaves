@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { useCallback } from 'react';
 import { useEffect } from 'react';
 import { useContext } from 'react';
@@ -29,7 +29,7 @@ export const FilesContext = React.createContext<ModelContext<FileModel>>({} as M
 export const LiveLoadingContainer: React.FC = ({ children }) => {
     const [files, setFiles] = useState<ModelMap<FileModel> | undefined>(undefined);
     const [links, setLinks] = useState<ModelMap<LinkModel> | undefined>(undefined);
-    const [ws, setWs] = useState<ReconnectingWebSocket | undefined>(undefined);
+    const wsRef = useRef<ReconnectingWebSocket | undefined>();
     const { user, setUser } = useContext(AppContext);
     const [curUserId, setCurUserId] = useState<string | undefined>(undefined);
 
@@ -152,18 +152,25 @@ export const LiveLoadingContainer: React.FC = ({ children }) => {
     );
 
     useEffect(() => {
-        let thisWs = ws;
-        if (!thisWs) {
-            const url = new URL(document.location.href);
-            url.pathname = '/api/v1/ws/events';
-            url.search = '';
-            url.protocol = url.protocol === 'http:' ? 'ws:' : 'wss:';
-            thisWs = new ReconnectingWebSocket(url.href);
-            setWs(thisWs);
+        if (wsRef.current) {
+            return;
         }
 
-        thisWs.setOnMessage(handleWebSocketMessage);
-    }, [ws, handleWebSocketMessage]);
+        const url = new URL(document.location.href);
+        url.pathname = '/api/v1/ws/events';
+        url.search = '';
+        url.protocol = url.protocol === 'http:' ? 'ws:' : 'wss:';
+        const thisWs = new ReconnectingWebSocket(url.href);
+        wsRef.current = thisWs;
+
+        return () => {
+            thisWs?.close();
+        };
+    }, []);
+
+    useEffect(() => {
+        wsRef.current?.setOnMessage(handleWebSocketMessage);
+    }, [handleWebSocketMessage]);
 
     useEffect(() => {
         const newUserId = user?.id;

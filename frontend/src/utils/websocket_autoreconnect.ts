@@ -1,17 +1,32 @@
 export class ReconnectingWebSocket {
     private ws?: WebSocket;
+    private shouldReconnect = true;
     private onmessage?: (data: MessageEvent<any>) => void;
 
     constructor(private url: string) {
         this.connect();
     }
 
+    close() {
+        this.shouldReconnect = false;
+        if (!this.ws) {
+            return;
+        }
+        this.ws.close();
+    }
+
     connect(oldWs?: WebSocket) {
+        if (!this.shouldReconnect) {
+            return;
+        }
+
         if (oldWs && oldWs !== this.ws) {
             return;
         }
 
         if (oldWs) {
+            oldWs.onclose = null;
+            oldWs.onerror = null;
             oldWs.close();
         }
 
@@ -25,9 +40,7 @@ export class ReconnectingWebSocket {
         ws.onclose = doReconnect;
         ws.onerror = doReconnect;
 
-        const reconnectTimeout = setTimeout(() => {
-            doReconnect();
-        }, 10000);
+        const reconnectTimeout = this.doReconnect(ws, 10000);
 
         ws.onopen = () => {
             clearTimeout(reconnectTimeout);
@@ -36,10 +49,10 @@ export class ReconnectingWebSocket {
         this.ws = ws;
     }
 
-    doReconnect(oldWs: WebSocket) {
-        setTimeout(() => {
+    doReconnect(oldWs: WebSocket, timeout = 500): NodeJS.Timeout {
+        return setTimeout(() => {
             this.connect(oldWs);
-        }, 500);
+        }, timeout);
     }
 
     setOnMessage(callback: (data: MessageEvent<any>) => void) {
