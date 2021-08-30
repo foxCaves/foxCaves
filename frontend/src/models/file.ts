@@ -48,9 +48,10 @@ export class FileModel extends BaseModel {
     }
 
     static async upload(file: File) {
+        const stream = file.stream();
         const api = await fetchAPI(`/api/v1/files?name=${encodeURIComponent(file.name)}`, {
             method: 'POST',
-            body: file,
+            body: stream,
         });
         return FileModel.wrapNew(api);
     }
