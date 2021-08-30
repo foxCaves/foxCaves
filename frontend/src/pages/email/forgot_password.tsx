@@ -1,16 +1,14 @@
-import React, { useCallback, useContext, FormEvent } from 'react';
+import React, { useCallback, FormEvent } from 'react';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import { useInputFieldSetter } from '../../utils/hooks';
-import { AppContext } from '../../utils/context';
 import FloatingLabel from 'react-bootstrap/FloatingLabel';
 import { fetchAPIRaw } from '../../utils/api';
+import { toast } from 'react-toastify';
 
 export const ForgotPasswordPage: React.FC = () => {
     const [username, setUsernameCB] = useInputFieldSetter('');
     const [email, setEmailCB] = useInputFieldSetter('');
-
-    const { showAlert, closeAlert } = useContext(AppContext);
 
     const submitForgotPasswordFormAsync = useCallback(async () => {
         try {
@@ -23,29 +21,24 @@ export const ForgotPasswordPage: React.FC = () => {
                 },
             });
         } catch (err: any) {
-            showAlert({
-                id: 'forgot_password',
-                contents: `Error sending forgot password E-Mail: ${err.message}`,
-                variant: 'danger',
-                timeout: 5000,
+            toast(`Error sending forgot password E-Mail: ${err.message}`, {
+                type: 'error',
+                autoClose: 5000,
             });
             return;
         }
-        showAlert({
-            id: 'forgot_password',
-            contents: 'Forgot password E-Mail sent!',
-            variant: 'success',
-            timeout: 2000,
+        toast('Forgot password E-Mail sent!', {
+            type: 'success',
+            autoClose: 2000,
         });
-    }, [username, email, showAlert]);
+    }, [username, email]);
 
     const submitForgotPasswordForm = useCallback(
         (event: FormEvent<HTMLFormElement>) => {
             event.preventDefault();
-            closeAlert('forgot_password');
             submitForgotPasswordFormAsync();
         },
-        [submitForgotPasswordFormAsync, closeAlert],
+        [submitForgotPasswordFormAsync],
     );
 
     return (

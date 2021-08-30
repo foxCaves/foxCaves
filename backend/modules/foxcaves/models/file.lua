@@ -219,7 +219,7 @@ function file_mt:save()
     if self.not_in_db then
         res = database.get_shared():query_single(
             'INSERT INTO files \
-                (id, name, "user", extension, size, thumbnail_extension) VALUES (%s, %s, %s, %s, %s, %s, %s) \
+                (id, name, "user", extension, size, thumbnail_extension) VALUES (%s, %s, %s, %s, %s, %s) \
                 RETURNING ' .. database.TIME_COLUMNS,
             self.id, self.name, self.user, self.extension, self.size, self.thumbnail_extension or ""
         )

@@ -1,11 +1,11 @@
-import React, { FormEvent, useState, useContext, useCallback } from 'react';
+import React, { FormEvent, useState, useCallback } from 'react';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import { fetchAPI } from '../utils/api';
-import { AppContext } from '../utils/context';
 import { Redirect } from 'react-router-dom';
 import FloatingLabel from 'react-bootstrap/FloatingLabel';
 import { useCheckboxFieldSetter, useInputFieldSetter } from '../utils/hooks';
+import { toast } from 'react-toastify';
 
 export const RegistrationPage: React.FC = () => {
     const [username, setUsernameCB] = useInputFieldSetter('');
@@ -15,19 +15,14 @@ export const RegistrationPage: React.FC = () => {
     const [agreetos, setAgreetosCB] = useCheckboxFieldSetter(false);
     const [registrationDone, setRegistrationDone] = useState(false);
 
-    const { showAlert, closeAlert } = useContext(AppContext);
-
     const handleSubmit = useCallback(
         async (event: FormEvent<HTMLFormElement>) => {
-            closeAlert('register');
             event.preventDefault();
 
             if (password !== passwordConfirm) {
-                showAlert({
-                    id: 'register',
-                    contents: 'Passwords do not match',
-                    variant: 'danger',
-                    timeout: 5000,
+                toast('Passwords do not match', {
+                    type: 'error',
+                    autoClose: 5000,
                 });
                 return;
             }
@@ -43,23 +38,19 @@ export const RegistrationPage: React.FC = () => {
                     },
                 });
             } catch (err: any) {
-                showAlert({
-                    id: 'register',
-                    contents: `Error registering account: ${err.message}`,
-                    variant: 'danger',
-                    timeout: 5000,
+                toast(`Error registering account: ${err.message}`, {
+                    type: 'error',
+                    autoClose: 5000,
                 });
                 return;
             }
-            showAlert({
-                id: 'register',
-                contents: 'Registration successful! Please check your E-Mail for activation instructions!',
-                variant: 'success',
-                timeout: 30000,
+            toast('Registration successful! Please check your E-Mail for activation instructions!', {
+                type: 'success',
+                autoClose: 30000,
             });
             setRegistrationDone(true);
         },
-        [username, password, passwordConfirm, email, agreetos, showAlert, closeAlert],
+        [username, password, passwordConfirm, email, agreetos],
     );
 
     if (registrationDone) {

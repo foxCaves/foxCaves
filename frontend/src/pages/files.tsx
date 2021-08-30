@@ -3,7 +3,6 @@ import { FileModel } from '../models/file';
 import { StorageUseBar } from '../utils/storage_use';
 import Card from 'react-bootstrap/Card';
 import Dropdown from 'react-bootstrap/Dropdown';
-import { AppContext } from '../utils/context';
 import { Col, Container, Row } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 import Button from 'react-bootstrap/Button';
@@ -16,6 +15,7 @@ import { useInputFieldSetter } from '../utils/hooks';
 import './files.css';
 import nothumb from './nothumb.gif';
 import { FilesContext } from '../utils/liveloading';
+import { toast } from 'react-toastify';
 
 export const FileView: React.FC<{
     file: FileModel;
@@ -23,7 +23,6 @@ export const FileView: React.FC<{
     setEditFile: (file: FileModel | undefined) => void;
     editMode: boolean;
 }> = ({ file, editMode, setDeleteFile, setEditFile }) => {
-    const { showAlert } = useContext(AppContext);
     const [editFileName, setEditFileName] = useInputFieldSetter(file.name);
 
     const onKeyDownEdit = useCallback(
@@ -31,18 +30,14 @@ export const FileView: React.FC<{
             if (e.key === 'Enter') {
                 try {
                     await file.rename(editFileName);
-                    showAlert({
-                        id: `file_${file.id}`,
-                        contents: `File renamed to "${file.name}"`,
-                        variant: 'success',
-                        timeout: 5000,
+                    toast(`File renamed to "${file.name}"`, {
+                        type: 'success',
+                        autoClose: 5000,
                     });
                 } catch (err: any) {
-                    showAlert({
-                        id: `file_${file.id}`,
-                        contents: `Error renaming file: ${err.message}`,
-                        variant: 'danger',
-                        timeout: 5000,
+                    toast(`Error renaming file: ${err.message}`, {
+                        type: 'error',
+                        autoClose: 5000,
                     });
                 }
                 setEditFile(undefined);
@@ -50,7 +45,7 @@ export const FileView: React.FC<{
                 setEditFile(undefined);
             }
         },
-        [file, editFileName, showAlert, setEditFile],
+        [file, editFileName, setEditFile],
     );
 
     const setEditFileCB = useCallback(() => {
@@ -97,7 +92,6 @@ export const FileView: React.FC<{
 };
 
 export const FilesPage: React.FC<{}> = () => {
-    const { showAlert } = useContext(AppContext);
     const { refresh, set, models } = useContext(FilesContext);
     const [loading, setLoading] = useState(false);
     const [deleteFile, setDeleteFile] = useState<FileModel | undefined>(undefined);
@@ -110,26 +104,22 @@ export const FilesPage: React.FC<{}> = () => {
                 try {
                     setUploadFileName(file.name);
                     const fileObj = await FileModel.upload(file);
-                    showAlert({
-                        id: `file_${fileObj.id}`,
-                        contents: `File "${fileObj.name}" uploaded!`,
-                        variant: 'success',
-                        timeout: 5000,
+                    toast(`File "${fileObj.name}" uploaded!`, {
+                        type: 'success',
+                        autoClose: 5000,
                     });
                     models![fileObj.id] = fileObj;
                     set(models!);
                 } catch (err: any) {
-                    showAlert({
-                        id: `fileupload_${file.name}`,
-                        contents: `Error uploading file: ${err.message}`,
-                        variant: 'danger',
-                        timeout: 5000,
+                    toast(`Error uploading file: ${err.message}`, {
+                        type: 'error',
+                        autoClose: 5000,
                     });
                 }
             }
             setUploadFileName('');
         },
-        [models, set, showAlert, setUploadFileName],
+        [models, set, setUploadFileName],
     );
 
     const dropzone = useDropzone({
@@ -141,25 +131,21 @@ export const FilesPage: React.FC<{}> = () => {
         if (file) {
             try {
                 await file.delete();
-                showAlert({
-                    id: `file_${file.id}`,
-                    contents: `File "${file.name}" deleted`,
-                    variant: 'success',
-                    timeout: 5000,
+                toast(`File "${file.name}" deleted`, {
+                    type: 'success',
+                    autoClose: 5000,
                 });
                 delete models![file.id];
                 set(models!);
             } catch (err: any) {
-                showAlert({
-                    id: `file_${file.id}`,
-                    contents: `Error deleting file: ${err.message}`,
-                    variant: 'danger',
-                    timeout: 5000,
+                toast(`Error deleting file: ${err.message}`, {
+                    type: 'error',
+                    autoClose: 5000,
                 });
             }
         }
         setDeleteFile(undefined);
-    }, [deleteFile, set, models, showAlert]);
+    }, [deleteFile, set, models]);
 
     const unsetDeleteFile = useCallback(() => {
         setDeleteFile(undefined);

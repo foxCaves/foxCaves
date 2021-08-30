@@ -7,13 +7,14 @@ import FloatingLabel from 'react-bootstrap/FloatingLabel';
 import { useCheckboxFieldSetter, useInputFieldSetter } from '../utils/hooks';
 import { useCallback } from 'react';
 import { Link } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 export const LoginPage: React.FC = () => {
     const [username, setUsernameCB] = useInputFieldSetter('');
     const [password, setPasswordCB] = useInputFieldSetter('');
     const [remember, setRememberCB] = useCheckboxFieldSetter(false);
 
-    const { showAlert, closeAlert, refreshUser } = useContext(AppContext);
+    const { refreshUser } = useContext(AppContext);
 
     const submitLoginFormAsync = useCallback(async () => {
         try {
@@ -26,30 +27,25 @@ export const LoginPage: React.FC = () => {
                 },
             });
         } catch (err: any) {
-            showAlert({
-                id: 'login',
-                contents: `Error logging in: ${err.message}`,
-                variant: 'danger',
-                timeout: 5000,
+            toast(`Error logging in: ${err.message}`, {
+                type: 'error',
+                autoClose: 5000,
             });
             return;
         }
         await refreshUser();
-        showAlert({
-            id: 'login',
-            contents: 'Logged in!',
-            variant: 'success',
-            timeout: 2000,
+        toast('Logged in!', {
+            type: 'success',
+            autoClose: 2000,
         });
-    }, [username, password, remember, showAlert, refreshUser]);
+    }, [username, password, remember, refreshUser]);
 
     const submitLoginForm = useCallback(
         (event: FormEvent<HTMLFormElement>) => {
             event.preventDefault();
-            closeAlert('login');
             submitLoginFormAsync();
         },
-        [submitLoginFormAsync, closeAlert],
+        [submitLoginFormAsync],
     );
 
     return (

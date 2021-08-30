@@ -7,6 +7,7 @@ import { FileModel } from '../models/file';
 import { LinkModel } from '../models/link';
 import { UserDetailsModel } from '../models/user';
 import { AppContext } from './context';
+import { ReconnectingWebSocket } from './websocket_autoreconnect';
 
 type ModelMap<T> = { [key: string]: T };
 
@@ -28,7 +29,7 @@ export const FilesContext = React.createContext<ModelContext<FileModel>>({} as M
 export const LiveLoadingContainer: React.FC = ({ children }) => {
     const [files, setFiles] = useState<ModelMap<FileModel> | undefined>(undefined);
     const [links, setLinks] = useState<ModelMap<LinkModel> | undefined>(undefined);
-    const [ws, setWs] = useState<WebSocket | undefined>(undefined);
+    const [ws, setWs] = useState<ReconnectingWebSocket | undefined>(undefined);
     const { user, setUser } = useContext(AppContext);
 
     const refreshFiles = useCallback(async () => {
@@ -137,17 +138,17 @@ export const LiveLoadingContainer: React.FC = ({ children }) => {
             url.pathname = '/api/v1/ws/events';
             url.search = '';
             url.protocol = url.protocol === 'http:' ? 'ws:' : 'wss:';
-            thisWs = new WebSocket(url.href);
+            thisWs = new ReconnectingWebSocket(url.href);
             setWs(thisWs);
         }
 
-        thisWs.onmessage = (event) => {
+        thisWs.setOnMessage((event) => {
             const data = JSON.parse(event.data);
             if (data.type !== 'liveloading') {
                 return;
             }
             handleLiveLoadMessage(data as LiveLoadingPayload);
-        };
+        });
     }, [ws, handleLiveLoadMessage]);
 
     return (

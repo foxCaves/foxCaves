@@ -3,9 +3,10 @@ import { AppContext } from '../utils/context';
 import Alert from 'react-bootstrap/Alert';
 import { useCallback } from 'react';
 import { fetchAPIRaw } from './api';
+import { toast } from 'react-toastify';
 
 export const UserInactiveAlert: React.FC = () => {
-    const { user, showAlert } = useContext(AppContext);
+    const { user } = useContext(AppContext);
 
     const requestActivationEmail = useCallback(async () => {
         if (!user) {
@@ -21,21 +22,17 @@ export const UserInactiveAlert: React.FC = () => {
                     username: user.username,
                 },
             });
-            showAlert({
-                id: 'activation',
-                variant: 'success',
-                contents: 'Activation E-Mail sent!',
-                timeout: 5000,
+            toast('Activation E-Mail sent!', {
+                type: 'success',
+                autoClose: 5000,
             });
         } catch (err: any) {
-            showAlert({
-                id: 'activation',
-                variant: 'danger',
-                contents: `Error requesting new activation E-Mail: ${err.message}`,
-                timeout: 10000,
+            toast(`Error requesting new activation E-Mail: ${err.message}`, {
+                type: 'error',
+                autoClose: 10000,
             });
         }
-    }, [user, showAlert]);
+    }, [user]);
 
     if (!user || user.isActive()) {
         return null;

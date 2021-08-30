@@ -3,10 +3,10 @@ import { LinkModel } from '../models/link';
 import { Button, Form, Table } from 'react-bootstrap';
 import { useEffect } from 'react';
 import Modal from 'react-bootstrap/Modal';
-import { AppContext } from '../utils/context';
 import { useCallback } from 'react';
 import { useInputFieldSetter } from '../utils/hooks';
 import { LinksContext } from '../utils/liveloading';
+import { toast } from 'react-toastify';
 
 export const LinkView: React.FC<{
     link: LinkModel;
@@ -38,7 +38,6 @@ export const LinkView: React.FC<{
 };
 
 export const LinksPage: React.FC<{}> = () => {
-    const { showAlert } = useContext(AppContext);
     const { refresh, set, models } = useContext(LinksContext);
     const [loading, setLoading] = useState(false);
     const [deleteLink, setDeleteLink] = useState<LinkModel | undefined>(undefined);
@@ -50,47 +49,39 @@ export const LinksPage: React.FC<{}> = () => {
         if (link) {
             try {
                 await link.delete();
-                showAlert({
-                    id: `link_${link.id}`,
-                    contents: `Link "${link.short_url}" deleted`,
-                    variant: 'success',
-                    timeout: 5000,
+                toast(`Link "${link.short_url}" deleted`, {
+                    type: 'success',
+                    autoClose: 5000,
                 });
                 delete models![link.id];
                 set(models!);
             } catch (err: any) {
-                showAlert({
-                    id: `link_${link.id}`,
-                    contents: `Error deleting link: ${err.message}`,
-                    variant: 'danger',
-                    timeout: 5000,
+                toast(`Error deleting link: ${err.message}`, {
+                    type: 'error',
+                    autoClose: 5000,
                 });
             }
         }
         setDeleteLink(undefined);
-    }, [deleteLink, models, set, showAlert]);
+    }, [deleteLink, models, set]);
 
     const handleCreateLink = useCallback(async () => {
         try {
             const link = await LinkModel.create(createLinkUrl);
-            showAlert({
-                id: 'link_new',
-                contents: `Link "${link.short_url}" created.`,
-                variant: 'success',
-                timeout: 5000,
+            toast(`Link "${link.short_url}" created.`, {
+                type: 'success',
+                autoClose: 5000,
             });
             models![link.id] = link;
             set(models!);
         } catch (err: any) {
-            showAlert({
-                id: 'link_new',
-                contents: `Error creating link: ${err.message}`,
-                variant: 'danger',
-                timeout: 5000,
+            toast(`Error creating link: ${err.message}`, {
+                type: 'error',
+                autoClose: 5000,
             });
         }
         setShowCreateLink(false);
-    }, [createLinkUrl, models, set, showAlert]);
+    }, [createLinkUrl, models, set]);
 
     const showCreateLinkDialog = useCallback(() => {
         setCreateLinkUrl('https://');

@@ -2,9 +2,10 @@ import React, { useContext, useState, useEffect, useCallback } from 'react';
 import { fetchAPIRaw } from '../utils/api';
 import { AppContext } from '../utils/context';
 import { Redirect } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 export const LogoutPage: React.FC = () => {
-    const { showAlert, refreshUser } = useContext(AppContext);
+    const { refreshUser } = useContext(AppContext);
     const [logoutDone, setLogoutDone] = useState(false);
     const [logoutStarted, setLogoutStarted] = useState(false);
 
@@ -14,22 +15,18 @@ export const LogoutPage: React.FC = () => {
                 method: 'POST',
             });
         } catch (err: any) {
-            showAlert({
-                id: 'logout',
-                contents: `Error logging out: ${err.message}`,
-                variant: 'danger',
-                timeout: 5000,
+            toast(`Error logging out: ${err.message}`, {
+                type: 'error',
+                autoClose: 5000,
             });
             return;
         }
 
-        showAlert({
-            id: 'logout',
-            contents: 'Logged out!',
-            variant: 'success',
-            timeout: 5000,
+        toast('Logged out!', {
+            type: 'success',
+            autoClose: 5000,
         });
-    }, [showAlert]);
+    }, []);
 
     const logout = useCallback(async () => {
         setLogoutStarted(true);

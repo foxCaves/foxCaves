@@ -25,7 +25,6 @@ CREATE TABLE files (
     "user" UUID REFERENCES users (id),
     name VARCHAR(255),
     extension VARCHAR(255),
-    type INT,
     size BIGINT,
     thumbnail_extension VARCHAR(255),
     created_at timestamp without time zone DEFAULT (now() at time zone 'utc'),

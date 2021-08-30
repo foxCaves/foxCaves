@@ -3,7 +3,6 @@ import Container from 'react-bootstrap/Container';
 import Navbar from 'react-bootstrap/Navbar';
 import Nav from 'react-bootstrap/Nav';
 import Dropdown from 'react-bootstrap/Dropdown';
-import Alert from 'react-bootstrap/Alert';
 import { HomePage } from './pages/home';
 import { LoginPage } from './pages/login';
 import { LogoutPage } from './pages/logout';
@@ -12,9 +11,9 @@ import { FilesPage } from './pages/files';
 import { LinksPage } from './pages/links';
 import { AccountPage } from './pages/account';
 import { ViewPage } from './pages/view';
-import React, { useContext, useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { UserDetailsModel } from './models/user';
-import { AlertClass, AppContext, AppContextClass } from './utils/context';
+import { AppContext, AppContextClass } from './utils/context';
 import { LoginState, CustomRoute, CustomNavLink, CustomDropDownItem } from './utils/route';
 import { LinkContainer } from 'react-router-bootstrap';
 import { UserInactiveAlert } from './utils/user_inactive_alert';
@@ -23,38 +22,13 @@ import { EmailCodePage } from './pages/email/code';
 import { LiveLoadingContainer } from './utils/liveloading';
 
 import './app.css';
-
-const AlertView: React.FC<{ alert: AlertClass }> = ({ alert }) => {
-    const { id } = alert;
-
-    const { closeAlert } = useContext(AppContext);
-
-    const closeThisAlert = useCallback(() => {
-        closeAlert(id);
-    }, [closeAlert, id]);
-
-    return (
-        <Alert show variant={alert.variant} onClose={closeThisAlert} dismissible>
-            {alert.contents}
-        </Alert>
-    );
-};
-
-const AlertList: React.FC<{ alerts: AlertClass[] }> = ({ alerts }) => {
-    return (
-        <>
-            {alerts.map((alert) => (
-                <AlertView alert={alert} key={alert.id} />
-            ))}
-        </>
-    );
-};
+import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer } from 'react-toastify';
 
 export const App: React.FC = () => {
     const [user, setUser] = useState<UserDetailsModel | undefined>(undefined);
     const [userLoaded, setUserLoaded] = useState(false);
     const [userLoadStarted, setUserLoadStarted] = useState(false);
-    const [alerts, setAlerts] = useState<AlertClass[]>([]);
 
     const refreshUser = useCallback(async () => {
         const user = await UserDetailsModel.getById('self');
@@ -62,49 +36,11 @@ export const App: React.FC = () => {
         setUserLoaded(true);
     }, []);
 
-    const closeAlert = useCallback(
-        (id: string, onlyReturn: boolean = false) => {
-            const oldAlert = alerts.find((a) => a.id === id);
-            if (!oldAlert) {
-                return alerts;
-            }
-
-            const newAlerts = [...alerts].filter((a) => a.id !== id);
-            if (oldAlert.__timeout) {
-                clearTimeout(oldAlert.__timeout);
-                oldAlert.__timeout = undefined;
-            }
-            if (!onlyReturn) {
-                setAlerts(newAlerts);
-            }
-            return newAlerts;
-        },
-        [alerts],
-    );
-
-    const closeAlertRef = useRef(closeAlert);
-    closeAlertRef.current = closeAlert;
-
-    const showAlert = useCallback(
-        (alert: AlertClass) => {
-            const newAlerts = [...closeAlert(alert.id, true), alert];
-            if (alert.timeout > 0) {
-                alert.__timeout = setTimeout(() => {
-                    closeAlertRef.current(alert.id);
-                }, alert.timeout);
-            }
-            setAlerts(newAlerts);
-        },
-        [closeAlert],
-    );
-
     const context: AppContextClass = {
         user,
         setUser,
         userLoaded,
-        showAlert,
         refreshUser,
-        closeAlert,
     };
 
     useEffect(() => {
@@ -166,7 +102,6 @@ export const App: React.FC = () => {
                     </Navbar>
                     <Container>
                         <UserInactiveAlert />
-                        <AlertList alerts={alerts} />
                         <Switch>
                             <CustomRoute path="/login" login={LoginState.LoggedOut}>
                                 <LoginPage />
@@ -204,6 +139,7 @@ export const App: React.FC = () => {
                         </Switch>
                     </Container>
                 </Router>
+                <ToastContainer theme="colored" position="bottom-right" />
             </LiveLoadingContainer>
         </AppContext.Provider>
     );

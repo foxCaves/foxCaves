@@ -7,9 +7,10 @@ import FloatingLabel from 'react-bootstrap/FloatingLabel';
 import Modal from 'react-bootstrap/Modal';
 import { Col, Row } from 'react-bootstrap';
 import { useInputFieldSetter } from '../utils/hooks';
+import { toast } from 'react-toastify';
 
 export const AccountPage: React.FC = () => {
-    const { user, showAlert, closeAlert, refreshUser } = useContext(AppContext);
+    const { user, refreshUser } = useContext(AppContext);
     const userEmail = user!.email!;
 
     const [showDeleteAccountModal, setShowDeleteAccountModal] = useState(false);
@@ -24,7 +25,6 @@ export const AccountPage: React.FC = () => {
 
     const sendUserChange = useCallback(
         async (body: { [key: string]: string }, method: string = 'PATCH') => {
-            closeAlert('account');
             body.current_password = currentPassword;
             try {
                 await fetchAPIRaw(`/api/v1/users/${user!.id}`, {
@@ -32,24 +32,20 @@ export const AccountPage: React.FC = () => {
                     body,
                 });
             } catch (err: any) {
-                showAlert({
-                    id: 'account',
-                    contents: `Error changing account: ${err.message}`,
-                    variant: 'danger',
-                    timeout: 5000,
+                toast(`Error changing account: ${err.message}`, {
+                    type: 'error',
+                    autoClose: 5000,
                 });
                 return false;
             }
             await refreshUser();
-            showAlert({
-                id: 'account',
-                contents: 'Account change successful!',
-                variant: 'success',
-                timeout: 2000,
+            toast('Account change successful!', {
+                type: 'success',
+                autoClose: 2000,
             });
             return true;
         },
-        [showAlert, closeAlert, currentPassword, refreshUser, user],
+        [currentPassword, refreshUser, user],
     );
 
     const handleAPIKeyRegen = useCallback(
@@ -84,14 +80,10 @@ export const AccountPage: React.FC = () => {
     const handleSubmit = useCallback(
         async (event: FormEvent<HTMLFormElement>) => {
             event.preventDefault();
-            closeAlert('account');
-
             if (newPassword !== newPasswordConfirm) {
-                showAlert({
-                    id: 'account',
-                    contents: 'New passwords do not match',
-                    variant: 'danger',
-                    timeout: 5000,
+                toast('New passwords do not match', {
+                    type: 'error',
+                    autoClose: 5000,
                 });
                 return;
             }
@@ -101,7 +93,7 @@ export const AccountPage: React.FC = () => {
                 email: email,
             });
         },
-        [sendUserChange, showAlert, closeAlert, newPassword, newPasswordConfirm, email],
+        [sendUserChange, newPassword, newPasswordConfirm, email],
     );
 
     const doShowDeleteAccountModal = useCallback(() => {
