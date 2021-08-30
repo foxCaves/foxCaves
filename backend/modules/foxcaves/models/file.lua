@@ -138,11 +138,11 @@ function file_model.new()
 end
 
 function file_model.extract_name_and_extension(name)
-    local res = ngx.re.match(name, "^([^<>\r\n\t]*?)\\.([a-zA-Z0-9]+)?$", "o")
+    local res = ngx.re.match(name, "^([^<>\r\n\t]*?)(\\.[a-zA-Z0-9]+)?$", "o")
     if not res then
         return nil, nil
     end
-    return res[1], res[2]
+    return res[1], (res[2] and res[2]:sub(2):lower())
 end
 
 function file_mt:delete()
@@ -225,12 +225,13 @@ end
 
 function file_mt:get_extension()
     local _, ext = file_model.extract_name_and_extension(self.name)
-    ext = ext or "bin"
-    return ext:lower()
+    return ext
 end
 
 function file_mt:get_public()
-    local short_url = url_config.short .. "/f/" .. self.id .. "." .. self:get_extension()
+    local ext = self:get_extension()
+    local url_suffix = ext and ("." .. ext) or ""
+    local short_url = url_config.short .. "/f/" .. self.id .. url_suffix
 
     local res = {
         id = self.id,
