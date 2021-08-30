@@ -20,6 +20,5 @@ return {
     },
     sentry = {
         dsn = nil,
-        dsn_frontend = nil,
     },
 }
