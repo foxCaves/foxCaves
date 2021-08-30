@@ -15,14 +15,6 @@ local setmetatable = setmetatable
 local file_mt = {}
 
 local file_model = {
-    type = {
-        other = 0,
-        image = 1,
-        text = 2,
-        video = 3,
-        audio = 4,
-        iframe = 5,
-    },
     paths = {
         storage = path.abs(ROOT .. "/storage/"),
         temp = path.abs(ROOT .. "/tmp/"),
