@@ -2,6 +2,9 @@
 
 const { get } = require('https');
 const { writeFileSync } = require('fs');
+const { join } = require('path');
+
+const outfile = join(__dirname, '../modules/foxcaves/mimetypes.lua');
 
 const URL = 'https://cdn.jsdelivr.net/gh/jshttp/mime-db@master/db.json';
 
@@ -18,7 +21,7 @@ function parseMimes(mimes) {
         }
     }
 
-    writeFileSync('../modules/foxcaves/mimetypes.lua', 'return {\n' +
+    writeFileSync(outfile, 'return {\n' +
         Object.entries(extensionToMimeMap).map(([key, value]) => `\t[${JSON.stringify(key)}] = ${JSON.stringify(value)}`).join(',\n') +
     '\n}\n');
 }
