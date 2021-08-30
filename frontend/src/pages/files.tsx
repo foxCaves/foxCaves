@@ -28,18 +28,24 @@ export const FileView: React.FC<{
     const onKeyDownEdit = useCallback(
         async (e: KeyboardEvent) => {
             if (e.key === 'Enter') {
-                try {
-                    await file.rename(editFileName);
-                    toast(`File renamed to "${file.name}"`, {
-                        type: 'success',
-                        autoClose: 5000,
-                    });
-                } catch (err: any) {
-                    toast(`Error renaming file: ${err.message}`, {
-                        type: 'error',
-                        autoClose: 5000,
-                    });
+                const oldName = file.name;
+                const newName = editFileName;
+                if (oldName === newName) {
+                    setEditFile(undefined);
+                    return;
                 }
+                try {
+                    await toast.promise(file.rename(editFileName), {
+                        success: `File "${oldName}" renamed to "${newName}"`,
+                        pending: `Renaming file "${oldName}" to "${newName}"...`,
+                        error: {
+                            render({ data }) {
+                                const err = data as Error;
+                                return `Error renaming file "${oldName}" to "${newName}": ${err.message}`;
+                            },
+                        },
+                    });
+                } catch {}
                 setEditFile(undefined);
             } else if (e.key === 'Escape') {
                 setEditFile(undefined);
@@ -96,30 +102,27 @@ export const FilesPage: React.FC<{}> = () => {
     const [loading, setLoading] = useState(false);
     const [deleteFile, setDeleteFile] = useState<FileModel | undefined>(undefined);
     const [editFile, setEditFile] = useState<FileModel | undefined>(undefined);
-    const [uploadFileName, setUploadFileName] = useState('');
 
     const onDrop = useCallback(
         async (acceptedFiles: File[]) => {
             for (const file of acceptedFiles) {
                 try {
-                    setUploadFileName(file.name);
-                    const fileObj = await FileModel.upload(file);
-                    toast(`File "${fileObj.name}" uploaded!`, {
-                        type: 'success',
-                        autoClose: 5000,
+                    const fileObj = await toast.promise(FileModel.upload(file), {
+                        success: `File "${file.name}" uploaded`,
+                        pending: `Uploading file "${file.name}"...`,
+                        error: {
+                            render({ data }) {
+                                const err = data as Error;
+                                return `Error uploading file "${file.name}": ${err.message}`;
+                            },
+                        },
                     });
                     models![fileObj.id] = fileObj;
                     set(models!);
-                } catch (err: any) {
-                    toast(`Error uploading file: ${err.message}`, {
-                        type: 'error',
-                        autoClose: 5000,
-                    });
-                }
+                } catch {}
             }
-            setUploadFileName('');
         },
-        [models, set, setUploadFileName],
+        [models, set],
     );
 
     const dropzone = useDropzone({
@@ -130,19 +133,19 @@ export const FilesPage: React.FC<{}> = () => {
         const file = deleteFile;
         if (file) {
             try {
-                await file.delete();
-                toast(`File "${file.name}" deleted`, {
-                    type: 'success',
-                    autoClose: 5000,
+                await toast.promise(file.delete(), {
+                    success: `File "${file.name}" deleted!`,
+                    pending: `Deleting file "${file.name}"...`,
+                    error: {
+                        render({ data }) {
+                            const err = data as Error;
+                            return `Error deleting file "${file.name}": ${err.message}`;
+                        },
+                    },
                 });
                 delete models![file.id];
                 set(models!);
-            } catch (err: any) {
-                toast(`Error deleting file: ${err.message}`, {
-                    type: 'error',
-                    autoClose: 5000,
-                });
-            }
+            } catch {}
         }
         setDeleteFile(undefined);
     }, [deleteFile, set, models]);
@@ -211,11 +214,6 @@ export const FilesPage: React.FC<{}> = () => {
                     </Col>
                 </Row>
             </Container>
-            {uploadFileName ? (
-                <Row className="mt-2">
-                    <h3>Uploading: {uploadFileName}</h3>
-                </Row>
-            ) : null}
             <Container className="mt-2 justify-content-center">
                 <Row>
                     {Object.values(models).map((file) => {

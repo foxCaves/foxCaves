@@ -9,32 +9,29 @@ export const LogoutPage: React.FC = () => {
     const [logoutDone, setLogoutDone] = useState(false);
     const [logoutStarted, setLogoutStarted] = useState(false);
 
-    const logoutAPI = useCallback(async () => {
-        try {
-            await fetchAPIRaw('/api/v1/users/sessions/logout', {
-                method: 'POST',
-            });
-        } catch (err: any) {
-            toast(`Error logging out: ${err.message}`, {
-                type: 'error',
-                autoClose: 5000,
-            });
-            return;
-        }
-
-        toast('Logged out!', {
-            type: 'success',
-            autoClose: 5000,
-        });
-    }, []);
-
     const logout = useCallback(async () => {
         setLogoutStarted(true);
-        await logoutAPI();
+        try {
+            await toast.promise(
+                fetchAPIRaw('/api/v1/users/sessions/logout', {
+                    method: 'POST',
+                }),
+                {
+                    success: 'Logged out!',
+                    pending: 'Logging out...',
+                    error: {
+                        render({ data }) {
+                            const err = data as Error;
+                            return `Error logging out: ${err.message}`;
+                        },
+                    },
+                },
+            );
+        } catch {}
         await refreshUser();
         setLogoutDone(true);
         setLogoutStarted(false);
-    }, [logoutAPI, refreshUser]);
+    }, [refreshUser]);
 
     useEffect(() => {
         if (logoutDone || logoutStarted) {

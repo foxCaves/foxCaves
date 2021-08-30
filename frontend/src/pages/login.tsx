@@ -18,26 +18,28 @@ export const LoginPage: React.FC = () => {
 
     const submitLoginFormAsync = useCallback(async () => {
         try {
-            await fetchAPIRaw('/api/v1/users/sessions/login', {
-                method: 'POST',
-                body: {
-                    username,
-                    password,
-                    remember,
+            await toast.promise(
+                fetchAPIRaw('/api/v1/users/sessions/login', {
+                    method: 'POST',
+                    body: {
+                        username,
+                        password,
+                        remember,
+                    },
+                }),
+                {
+                    success: 'Logged in!',
+                    pending: 'Logging in...',
+                    error: {
+                        render({ data }) {
+                            const err = data as Error;
+                            return `Error logging in: ${err.message}`;
+                        },
+                    },
                 },
-            });
-        } catch (err: any) {
-            toast(`Error logging in: ${err.message}`, {
-                type: 'error',
-                autoClose: 5000,
-            });
-            return;
-        }
+            );
+        } catch {}
         await refreshUser();
-        toast('Logged in!', {
-            type: 'success',
-            autoClose: 2000,
-        });
     }, [username, password, remember, refreshUser]);
 
     const submitLoginForm = useCallback(

@@ -14,24 +14,27 @@ export const UserInactiveAlert: React.FC = () => {
         }
 
         try {
-            await fetchAPIRaw('/api/v1/users/emails/request', {
-                method: 'POST',
-                body: {
-                    action: 'activation',
-                    email: user.email,
-                    username: user.username,
+            await toast.promise(
+                fetchAPIRaw('/api/v1/users/emails/request', {
+                    method: 'POST',
+                    body: {
+                        action: 'activation',
+                        email: user.email,
+                        username: user.username,
+                    },
+                }),
+                {
+                    success: 'Activation E-Mail sent!',
+                    pending: 'Requesting new activation E-Mail...',
+                    error: {
+                        render({ data }) {
+                            const err = data as Error;
+                            return `Error requesting new activation E-Mail: ${err.message}`;
+                        },
+                    },
                 },
-            });
-            toast('Activation E-Mail sent!', {
-                type: 'success',
-                autoClose: 5000,
-            });
-        } catch (err: any) {
-            toast(`Error requesting new activation E-Mail: ${err.message}`, {
-                type: 'error',
-                autoClose: 10000,
-            });
-        }
+            );
+        } catch {}
     }, [user]);
 
     if (!user || user.isActive()) {

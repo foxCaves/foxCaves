@@ -28,26 +28,30 @@ export const RegistrationPage: React.FC = () => {
             }
 
             try {
-                await fetchAPI('/api/v1/users', {
-                    method: 'POST',
-                    body: {
-                        username,
-                        password,
-                        email,
-                        agreetos,
+                await toast.promise(
+                    fetchAPI('/api/v1/users', {
+                        method: 'POST',
+                        body: {
+                            username,
+                            password,
+                            email,
+                            agreetos,
+                        },
+                    }),
+                    {
+                        success: 'Registration successful! Please check your E-Mail for activation instructions!',
+                        pending: 'Registering account...',
+                        error: {
+                            render({ data }) {
+                                const err = data as Error;
+                                return `Error registering account: ${err.message}`;
+                            },
+                        },
                     },
-                });
-            } catch (err: any) {
-                toast(`Error registering account: ${err.message}`, {
-                    type: 'error',
-                    autoClose: 5000,
-                });
+                );
+            } catch {
                 return;
             }
-            toast('Registration successful! Please check your E-Mail for activation instructions!', {
-                type: 'success',
-                autoClose: 30000,
-            });
             setRegistrationDone(true);
         },
         [username, password, passwordConfirm, email, agreetos],

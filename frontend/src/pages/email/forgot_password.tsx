@@ -12,6 +12,26 @@ export const ForgotPasswordPage: React.FC = () => {
 
     const submitForgotPasswordFormAsync = useCallback(async () => {
         try {
+            await toast.promise(
+                fetchAPIRaw('/api/v1/users/emails/request', {
+                    method: 'POST',
+                    body: {
+                        username,
+                        email,
+                        action: 'forgotpwd',
+                    },
+                }),
+                {
+                    success: 'Forgot password E-Mail sent!',
+                    pending: 'Sending forgot password E-Mail...',
+                    error: {
+                        render({ data }) {
+                            const err = data as Error;
+                            return `Error sending forgot password E-Mail: ${err.message}`;
+                        },
+                    },
+                },
+            );
             await fetchAPIRaw('/api/v1/users/emails/request', {
                 method: 'POST',
                 body: {
@@ -20,17 +40,7 @@ export const ForgotPasswordPage: React.FC = () => {
                     action: 'forgotpwd',
                 },
             });
-        } catch (err: any) {
-            toast(`Error sending forgot password E-Mail: ${err.message}`, {
-                type: 'error',
-                autoClose: 5000,
-            });
-            return;
-        }
-        toast('Forgot password E-Mail sent!', {
-            type: 'success',
-            autoClose: 2000,
-        });
+        } catch {}
     }, [username, email]);
 
     const submitForgotPasswordForm = useCallback(

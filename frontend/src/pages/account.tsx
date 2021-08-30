@@ -27,23 +27,24 @@ export const AccountPage: React.FC = () => {
         async (body: { [key: string]: string }, method: string = 'PATCH') => {
             body.current_password = currentPassword;
             try {
-                await fetchAPIRaw(`/api/v1/users/${user!.id}`, {
-                    method,
-                    body,
-                });
-            } catch (err: any) {
-                toast(`Error changing account: ${err.message}`, {
-                    type: 'error',
-                    autoClose: 5000,
-                });
-                return false;
-            }
+                await toast.promise(
+                    fetchAPIRaw(`/api/users/${user!.id}`, {
+                        method,
+                        body,
+                    }),
+                    {
+                        pending: 'Saving your account...',
+                        success: 'Your account changes have been saved!',
+                        error: {
+                            render({ data }) {
+                                const err = data as Error;
+                                return `Error changing account: ${err.message}`;
+                            },
+                        },
+                    },
+                );
+            } catch {}
             await refreshUser();
-            toast('Account change successful!', {
-                type: 'success',
-                autoClose: 2000,
-            });
-            return true;
         },
         [currentPassword, refreshUser, user],
     );

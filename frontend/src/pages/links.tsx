@@ -48,38 +48,38 @@ export const LinksPage: React.FC<{}> = () => {
         const link = deleteLink;
         if (link) {
             try {
-                await link.delete();
-                toast(`Link "${link.short_url}" deleted`, {
-                    type: 'success',
-                    autoClose: 5000,
+                await toast.promise(link.delete(), {
+                    success: `Link "${link.short_url}" deleted`,
+                    pending: `Deleting link "${link.short_url}"...`,
+                    error: {
+                        render({ data }) {
+                            const err = data as Error;
+                            return `Error deleting link: ${err.message}`;
+                        },
+                    },
                 });
                 delete models![link.id];
                 set(models!);
-            } catch (err: any) {
-                toast(`Error deleting link: ${err.message}`, {
-                    type: 'error',
-                    autoClose: 5000,
-                });
-            }
+            } catch {}
         }
         setDeleteLink(undefined);
     }, [deleteLink, models, set]);
 
     const handleCreateLink = useCallback(async () => {
         try {
-            const link = await LinkModel.create(createLinkUrl);
-            toast(`Link "${link.short_url}" created.`, {
-                type: 'success',
-                autoClose: 5000,
+            const link = await toast.promise(LinkModel.create(createLinkUrl), {
+                success: `Link "${createLinkUrl}" created!`,
+                pending: `Creating link "${createLinkUrl}"...`,
+                error: {
+                    render({ data }) {
+                        const err = data as Error;
+                        return `Error creating link "${createLinkUrl}": ${err.message}`;
+                    },
+                },
             });
             models![link.id] = link;
             set(models!);
-        } catch (err: any) {
-            toast(`Error creating link: ${err.message}`, {
-                type: 'error',
-                autoClose: 5000,
-            });
-        }
+        } catch {}
         setShowCreateLink(false);
     }, [createLinkUrl, models, set]);
 
