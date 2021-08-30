@@ -4,16 +4,10 @@ local main_url = require("foxcaves.config").urls.main
 local ngx = ngx
 
 R.register_route("/cdn/sendfile/f/{file}", "GET", R.make_route_opts_anon(), function(route_vars)
-    local id, ext = file_model.extract_name_and_extension(route_vars.file)
+    local id = file_model.extract_name_and_extension(route_vars.file)
 
     local file = file_model.get_by_id(id)
-
     if not file then
-        return utils.api_error("File not found", 404)
-    end
-
-    local file_ext = file:get_extension():lower()
-    if file_ext ~= ext:lower() then
         return utils.api_error("File not found", 404)
     end
 
@@ -36,11 +30,13 @@ R.register_route("/cdn/sendfile/f/{file}", "GET", R.make_route_opts_anon(), func
 end)
 
 R.register_route("/cdn/sendfile/thumbs/{file}", "GET", R.make_route_opts_anon(), function(route_vars)
-    local id = route_vars.file
+    local id = file_model.extract_name_and_extension(route_vars.file)
+
     local file = file_model.get_by_id(id)
     if not file then
         return utils.api_error("File not found", 404)
     end
+
     if (not file.thumbnail_mimetype) or file.thumbnail_mimetype == "" then
         return utils.api_error("Thumbnail for file not found", 404)
     end
