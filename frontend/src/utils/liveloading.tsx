@@ -131,6 +131,17 @@ export const LiveLoadingContainer: React.FC = ({ children }) => {
         [files, links, setUser, user],
     );
 
+    const handleWebSocketMessage = useCallback(
+        (event: MessageEvent<any>) => {
+            const data = JSON.parse(event.data);
+            if (data.type !== 'liveloading') {
+                return;
+            }
+            handleLiveLoadMessage(data as LiveLoadingPayload);
+        },
+        [handleLiveLoadMessage],
+    );
+
     useEffect(() => {
         let thisWs = ws;
         if (!thisWs) {
@@ -142,14 +153,8 @@ export const LiveLoadingContainer: React.FC = ({ children }) => {
             setWs(thisWs);
         }
 
-        thisWs.setOnMessage((event) => {
-            const data = JSON.parse(event.data);
-            if (data.type !== 'liveloading') {
-                return;
-            }
-            handleLiveLoadMessage(data as LiveLoadingPayload);
-        });
-    }, [ws, handleLiveLoadMessage]);
+        thisWs.setOnMessage(handleWebSocketMessage);
+    }, [ws, handleWebSocketMessage]);
 
     return (
         <>
