@@ -162,6 +162,21 @@ export const FilesPage: React.FC<{}> = () => {
         refresh().then(() => setLoading(false));
     }, [loading, models, refresh]);
 
+    const refreshButton = useCallback(async () => {
+        try {
+            await toast.promise(refresh(), {
+                success: 'Files refreshed!',
+                pending: 'Refreshing files...',
+                error: {
+                    render({ data }) {
+                        const err = data as Error;
+                        return `Error refreshing files: ${err.message}`;
+                    },
+                },
+            });
+        } catch {}
+    }, [refresh]);
+
     if (loading || !models) {
         return (
             <>
@@ -194,7 +209,7 @@ export const FilesPage: React.FC<{}> = () => {
             <h1>
                 Manage files
                 <span className="p-3"></span>
-                <Button variant="secondary" onClick={refresh}>
+                <Button variant="secondary" onClick={refreshButton}>
                     Refresh
                 </Button>
             </h1>

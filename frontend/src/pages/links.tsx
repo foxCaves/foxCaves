@@ -104,6 +104,21 @@ export const LinksPage: React.FC<{}> = () => {
         refresh().then(() => setLoading(false));
     }, [refresh, loading, models]);
 
+    const refreshButton = useCallback(async () => {
+        try {
+            await toast.promise(refresh(), {
+                success: 'Links refreshed!',
+                pending: 'Refreshing links...',
+                error: {
+                    render({ data }) {
+                        const err = data as Error;
+                        return `Error refreshing links: ${err.message}`;
+                    },
+                },
+            });
+        } catch {}
+    }, [refresh]);
+
     if (loading || !models) {
         return (
             <>
@@ -167,7 +182,7 @@ export const LinksPage: React.FC<{}> = () => {
                     Create new link
                 </Button>
                 <span className="p-3"></span>
-                <Button variant="secondary" onClick={refresh}>
+                <Button variant="secondary" onClick={refreshButton}>
                     Refresh
                 </Button>
             </h1>
