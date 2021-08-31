@@ -37,6 +37,9 @@ export async function uploadFile(file: File): Promise<FileModel> {
         autoClose: false,
         progress: 0,
         type: 'info',
+        closeButton: false,
+        closeOnClick: false,
+        draggable: false,
     });
 
     const progressHandler = (e: ProgressEvent<XMLHttpRequestEventTarget>) => {
