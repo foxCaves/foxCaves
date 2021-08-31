@@ -47,15 +47,6 @@ export class FileModel extends BaseModel {
         this.name = name;
     }
 
-    static async upload(file: File) {
-        const stream = file.stream();
-        const api = await fetchAPI(`/api/v1/files?name=${encodeURIComponent(file.name)}`, {
-            method: 'POST',
-            body: stream,
-        });
-        return FileModel.wrapNew(api);
-    }
-
     static wrapNew(obj: unknown) {
         return new FileModel().wrap(obj);
     }

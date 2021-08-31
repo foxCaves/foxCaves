@@ -16,6 +16,7 @@ import './files.css';
 import nothumb from './nothumb.gif';
 import { FilesContext } from '../utils/liveloading';
 import { toast } from 'react-toastify';
+import { uploadFile } from '../utils/file_uploader';
 
 export const FileView: React.FC<{
     file: FileModel;
@@ -107,16 +108,7 @@ export const FilesPage: React.FC<{}> = () => {
         async (acceptedFiles: File[]) => {
             for (const file of acceptedFiles) {
                 try {
-                    const fileObj = await toast.promise(FileModel.upload(file), {
-                        success: `File "${file.name}" uploaded`,
-                        pending: `Uploading file "${file.name}"...`,
-                        error: {
-                            render({ data }) {
-                                const err = data as Error;
-                                return `Error uploading file "${file.name}": ${err.message}`;
-                            },
-                        },
-                    });
+                    const fileObj = await uploadFile(file);
                     models![fileObj.id] = fileObj;
                     set(models!);
                 } catch {}

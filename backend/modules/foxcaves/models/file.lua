@@ -145,7 +145,10 @@ function file_mt:move_upload_data(src)
     local thumbDest = file_model.paths.temp .. "thumb_" .. self.id
 
     local prefix, suffix = self.mimetype:match("([a-z]+)/([a-z]+)")
-    self.thumbnail_mimetype = mimeHandlers[prefix](src, thumbDest, suffix)
+    local handler = mimeHandlers[prefix]
+    if handler then
+        self.thumbnail_mimetype = handler(src, thumbDest, suffix)
+    end
 
     lfs.mkdir(file_model.paths.storage .. self.id)
 
