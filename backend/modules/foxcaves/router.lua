@@ -91,6 +91,7 @@ function ROUTE_REG_MT.register_route(url, method, options, func, descriptor)
         local newroute = route.children[seg]
         if not newroute then
             newroute = {
+                url_part = rawseg,
                 children = {},
                 methods = {},
             }

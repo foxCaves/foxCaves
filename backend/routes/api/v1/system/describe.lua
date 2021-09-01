@@ -13,26 +13,31 @@ load_model("user")
 load_model("file")
 load_model("link")
 
-local function recurse_route_tree(int, outt)
-    outt.methods = {}
-    for k, route in next, int.children do
-        outt.children = outt.children or {}
-        outt.children[k] = {}
-        recurse_route_tree(route, outt.children[k])
+local function recurse_route_tree(int)
+    local outt = {}
+    for _, route in next, int.children do
+        local children = recurse_route_tree(route)
+        if children then
+            outt.children = outt.children or {}
+            outt.children[route.url_part] = children
+        end
     end
     for m, route in next, int.methods do
-        outt.methods = outt.methods or {}
         if route.descriptor and not route.descriptor.hidden then
+            outt.methods = outt.methods or {}
             outt.methods[m] = route.descriptor
         end
+    end
+
+    if outt.methods or outt.children then
+        return outt
     end
 end
 
 R.register_route("/api/v1/system/describe", "GET", R.make_route_opts_anon({ empty_is_array = true }), function()
     local res = {
-        routes = {},
+        routes = recurse_route_tree(ROUTE_TREE.children.api.children.v1),
         models = MODEL_TABLE,
     }
-    recurse_route_tree(ROUTE_TREE, res.routes.children.api.children.v1.children)
     return res
 end)
