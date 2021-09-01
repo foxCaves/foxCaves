@@ -4,7 +4,7 @@ setmetatable(_G, {
         error("Attempt to read unknown from _G: " .. k)
     end,
     __newindex = function(_, k)
-        if k == "lfs" or k == "path" then
+        if k == "lfs" or k == "path" or k == "socket" then
             return
         end
         error("Attempt to write to _G: " .. k)
@@ -28,3 +28,5 @@ rawset(_G, 'OSENV', {
 for k, _ in pairs(OSENV) do
     rawset(OSENV, k, os.getenv(k))
 end
+
+dofile(root .. "/migrator.lua")

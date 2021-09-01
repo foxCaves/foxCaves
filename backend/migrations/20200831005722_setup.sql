@@ -1,10 +1,3 @@
-CREATE USER foxcaves;
-CREATE DATABASE foxcaves;
-
-GRANT ALL PRIVILEGES ON DATABASE foxcaves TO foxcaves;
-
-\c foxcaves foxcaves;
-
 CREATE TABLE users (
     id UUID PRIMARY KEY,
     username VARCHAR(255),
