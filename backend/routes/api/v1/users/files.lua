@@ -30,11 +30,9 @@ end, {
     },
     response = {
         body = {
-            contentType = "json",
             type = "array",
-            contents = {
-                type = "file",
-                level = "private",
+            items = {
+                type = "file.private",
             },
         },
     },

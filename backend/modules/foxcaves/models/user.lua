@@ -288,15 +288,15 @@ function user_model.get_private_fields()
             required = true,
         },
         active = {
-            type = "number",
+            type = "integer",
             required = true,
         },
         storage_used = {
-            type = "number",
+            type = "integer",
             required = true,
         },
         storage_quota = {
-            type = "number",
+            type = "integer",
             required = true,
         },
         created_at = {

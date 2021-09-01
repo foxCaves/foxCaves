@@ -58,9 +58,9 @@ end, {
             },
         },
         body = {
-            contentType = "json",
+            type = "object",
             required = true,
-            args = {
+            fields = {
                 extension = {
                     description = "Extension to convert to (jpg, png, bmp or gif)",
                     type = "string",
@@ -71,9 +71,7 @@ end, {
     },
     response = {
         body = {
-            contentType = "json",
-            type = "file",
-            level = "private",
+            type = "file.private",
         },
     },
 })

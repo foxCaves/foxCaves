@@ -27,9 +27,7 @@ end, {
     },
     response = {
         body = {
-            contentType = "json",
-            type = "user",
-            level = "public",
+            type = "user.public",
         },
     },
 })
@@ -55,9 +53,7 @@ end, {
     },
     response = {
         body = {
-            contentType = "json",
-            type = "user",
-            level = "private",
+            type = "user.private",
         },
     },
 })

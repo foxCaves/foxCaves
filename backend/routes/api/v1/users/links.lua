@@ -30,11 +30,9 @@ end, {
     },
     response = {
         body = {
-            contentType = "json",
             type = "array",
-            contents = {
-                type = "link",
-                level = "private",
+            items = {
+                type = "link.private",
             },
         },
     },

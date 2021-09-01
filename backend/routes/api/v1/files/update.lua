@@ -42,9 +42,9 @@ end, {
             },
         },
         body = {
-            contentType = "json",
+            type = "object",
             required = true,
-            args = {
+            fields = {
                 name = {
                     type = "string",
                     description = "The new name of the file",
@@ -55,9 +55,7 @@ end, {
     },
     response = {
         body = {
-            contentType = "json",
-            type = "file",
-            level = "private",
+            type = "file.private",
         },
     },
 })

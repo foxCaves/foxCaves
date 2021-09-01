@@ -28,9 +28,9 @@ end, {
     description = "Creates a link",
     request = {
         body = {
-            contentType = "json",
+            type = "object",
             required = true,
-            args = {
+            fields = {
                 url = {
                     type = "string",
                     description = "The URL the link should point to",
@@ -41,9 +41,7 @@ end, {
     },
     response = {
         body = {
-            contentType = "json",
-            type = "link",
-            level = "private",
+            type = "link.private",
         },
     },
 })

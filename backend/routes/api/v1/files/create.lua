@@ -63,16 +63,14 @@ end, {
             },
         },
         body = {
-            contentType = "raw",
+            type = "raw",
             description = "The file data",
             required = true,
         },
     },
     response = {
         body = {
-            contentType = "json",
-            type = "file",
-            level = "private",
+            type = "file.private",
         },
     },
 })

@@ -24,9 +24,7 @@ end, {
     },
     response = {
         body = {
-            contentType = "json",
-            type = "file",
-            level = "private",
+            type = "file.private",
         },
     },
 })

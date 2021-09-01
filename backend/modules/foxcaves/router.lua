@@ -39,6 +39,7 @@ local ROUTE_TREE = {
     children = {},
     methods = {},
 }
+local ROUTE_TABLE = {}
 
 local BASE_OPTS = {
     check_login = true,
@@ -91,11 +92,11 @@ function ROUTE_REG_MT.register_route(url, method, options, func, descriptor)
         local newroute = route.children[seg]
         if not newroute then
             newroute = {
-                url_part = rawseg,
                 children = {},
                 methods = {},
             }
             route.children[seg] = newroute
+            ROUTE_TABLE[url] = newroute.methods
         end
         route = newroute
     end
@@ -117,8 +118,8 @@ function ROUTE_REG_MT.register_route(url, method, options, func, descriptor)
     route.methods[method] = route_tbl
 end
 
-function ROUTE_REG_MT.get_route_tree()
-    return ROUTE_TREE
+function ROUTE_REG_MT.get_route_table()
+    return ROUTE_TABLE
 end
 
 local function scan_route_file(file)

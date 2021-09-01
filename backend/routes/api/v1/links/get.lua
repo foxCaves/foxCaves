@@ -19,9 +19,7 @@ end, {
     },
     response = {
         body = {
-            contentType = "json",
-            type = "link",
-            level = "public",
+            type = "link.public",
         },
     },
 })

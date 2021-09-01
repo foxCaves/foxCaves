@@ -232,7 +232,7 @@ function file_model.get_public_fields()
             required = true,
         },
         size = {
-            type = "number",
+            type = "integer",
             required = true,
         },
         created_at = {
