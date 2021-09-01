@@ -27,12 +27,19 @@ local function setup_super()
 end
 
 local function process_migration_dir(db, ran_migrations, dir)
+    local file_array = {}
     for file in lfs.dir(dir) do
+        table.insert(file_array, file)
+    end
+    table.sort(file_array)
+    for file in ipairs(file_array) do
         if file:sub(1, 1) ~= "." then
             local absfile = dir .. "/" .. file
             local attributes = lfs.attributes(absfile)
             if attributes.mode == "file" then
-                if not ran_migrations[file] then
+                if ran_migrations[file] then
+                    print("Skipping: " .. file)
+                else
                     print("Running: " .. file)
                     local fh = io.open(absfile, "r")
                     local data = fh:read("*a")
@@ -80,6 +87,8 @@ if config.use_super then
     print("Super migrator done!")
 end
 
-print("Running migrator...")
-setup_db()
-print("Migrator done!")
+if config.use_migrations then
+    print("Running migrator...")
+    setup_db()
+    print("Migrator done!")
+end
