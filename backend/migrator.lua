@@ -32,7 +32,7 @@ local function process_migration_dir(db, ran_migrations, dir)
         table.insert(file_array, file)
     end
     table.sort(file_array)
-    for file in ipairs(file_array) do
+    for _, file in ipairs(file_array) do
         if file:sub(1, 1) ~= "." then
             local absfile = dir .. "/" .. file
             local attributes = lfs.attributes(absfile)
