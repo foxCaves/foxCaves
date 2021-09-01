@@ -21,7 +21,7 @@ end, {
         params = {
             id = {
                 type = "string",
-                description = "The id of the user"
+                description = "The id of the user (or the string \"self\")"
             },
         },
     },
@@ -49,7 +49,7 @@ end, {
         params = {
             id = {
                 type = "uuid",
-                description = "The id of the user"
+                description = "The id of the user (or the string \"self\")"
             },
         },
     },
