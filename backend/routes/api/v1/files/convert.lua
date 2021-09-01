@@ -10,7 +10,7 @@ R.register_route("/api/v1/files/{file}/convert", "POST", R.make_route_opts(), fu
     if not file then
         return utils.api_error("File not found", 404)
     end
-    if file.user ~= ngx.ctx.user.id then
+    if file.owner ~= ngx.ctx.user.id then
         return utils.api_error("Not your file", 403)
     end
 

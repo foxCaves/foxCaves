@@ -7,7 +7,7 @@ R.register_route("/api/v1/links/{link}", "DELETE", R.make_route_opts(), function
     if not link then
         return utils.api_error("Link not found", 404)
     end
-    if link.user ~= ngx.ctx.user.id then
+    if link.owner ~= ngx.ctx.user.id then
         return utils.api_error("Not your link", 403)
     end
     link:delete()

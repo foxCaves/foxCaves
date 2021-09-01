@@ -7,7 +7,7 @@ R.register_route("/api/v1/files/{file}", "DELETE", R.make_route_opts(), function
     if not file then
         return utils.api_error("Not found", 404)
     end
-    if file.user ~= ngx.ctx.user.id then
+    if file.owner ~= ngx.ctx.user.id then
         return utils.api_error("Not your file", 403)
     end
     file:delete()
