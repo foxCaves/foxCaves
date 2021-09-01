@@ -1,7 +1,6 @@
 local get_route_table = R.get_route_table
 local next = next
 
-
 local function describe_api()
     local res = {
         routes = {},
