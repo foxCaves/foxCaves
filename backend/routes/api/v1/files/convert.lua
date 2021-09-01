@@ -5,12 +5,8 @@ local exec = require("foxcaves.exec")
 local ngx = ngx
 local os = os
 
-R.register_route("/api/v1/files/{id}/convert", "POST", R.make_route_opts(), function(route_vars)
-    if not ngx.ctx.user:can_perform_write() then
-        return utils.api_error("You cannot create files", 403)
-    end
-
-    local file = file_model.get_by_id(route_vars.id)
+R.register_route("/api/v1/files/{file}/convert", "POST", R.make_route_opts(), function(route_vars)
+    local file = file_model.get_by_id(route_vars.file)
     if not file then
         return utils.api_error("File not found", 404)
     end
@@ -50,9 +46,10 @@ R.register_route("/api/v1/files/{id}/convert", "POST", R.make_route_opts(), func
     return file:get_private()
 end, {
     description = "Convert image file to another format",
+    authorization = {"owner"},
     request = {
         params = {
-            id = {
+            file = {
                 type = "string",
                 description = "The id of the file"
             },

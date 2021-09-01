@@ -2,8 +2,8 @@ local utils = require("foxcaves.utils")
 local file_model = require("foxcaves.models.file")
 local ngx = ngx
 
-R.register_route("/api/v1/files/{id}", "DELETE", R.make_route_opts(), function(route_vars)
-    local file = file_model.get_by_id(route_vars.id)
+R.register_route("/api/v1/files/{file}", "DELETE", R.make_route_opts(), function(route_vars)
+    local file = file_model.get_by_id(route_vars.file)
     if not file then
         return utils.api_error("Not found", 404)
     end
@@ -14,9 +14,10 @@ R.register_route("/api/v1/files/{id}", "DELETE", R.make_route_opts(), function(r
     return file:get_private()
 end, {
     description = "Deletes a file",
+    authorization = {"owner"},
     request = {
         params = {
-            id = {
+            file = {
                 type = "string",
                 description = "The id of the file"
             },

@@ -2,11 +2,7 @@ local utils = require("foxcaves.utils")
 local file_model = require("foxcaves.models.file")
 local ngx = ngx
 
-R.register_route("/api/v1/files/{id}", "PATCH", R.make_route_opts(), function(route_vars)
-    if not ngx.ctx.user:can_perform_write() then
-        return utils.api_error("You cannot update files", 403)
-    end
-
+R.register_route("/api/v1/files/{file}", "PATCH", R.make_route_opts(), function(route_vars)
     local file = file_model.get_by_id(route_vars.id)
     if not file then
         return utils.api_error("File not found", 404)
@@ -34,9 +30,10 @@ R.register_route("/api/v1/files/{id}", "PATCH", R.make_route_opts(), function(ro
     return file:get_private()
 end, {
     description = "Updates information about a file",
+    authorization = {"owner"},
     request = {
         params = {
-            id = {
+            file = {
                 type = "string",
                 description = "The id of the file"
             },

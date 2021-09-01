@@ -54,6 +54,7 @@ R.register_route("/api/v1/files", "POST", R.make_route_opts(), function()
     return file:get_private()
 end, {
     description = "Uploads a file",
+    authorization = {"active"},
     request = {
         query = {
             name = {

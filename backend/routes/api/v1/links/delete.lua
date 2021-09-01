@@ -2,8 +2,8 @@ local utils = require("foxcaves.utils")
 local link_model = require("foxcaves.models.link")
 local ngx = ngx
 
-R.register_route("/api/v1/links/{id}", "DELETE", R.make_route_opts(), function(route_vars)
-    local link = link_model.get_by_id(route_vars.id)
+R.register_route("/api/v1/links/{link}", "DELETE", R.make_route_opts(), function(route_vars)
+    local link = link_model.get_by_id(route_vars.link)
     if not link then
         return utils.api_error("Link not found", 404)
     end
@@ -14,9 +14,10 @@ R.register_route("/api/v1/links/{id}", "DELETE", R.make_route_opts(), function(r
     return link:get_private()
 end, {
     description = "Deletes a link",
+    authorization = {"owner"},
     request = {
         params = {
-            id = {
+            link = {
                 type = "string",
                 description = "The id of the link"
             },

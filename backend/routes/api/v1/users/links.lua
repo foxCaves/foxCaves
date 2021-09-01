@@ -4,8 +4,8 @@ local utils = require("foxcaves.utils")
 local ngx = ngx
 local next = next
 
-R.register_route("/api/v1/users/{id}/links", "GET", R.make_route_opts({ empty_is_array = true }), function(route_vars)
-    local user = user_model.get_by_id(route_vars.id)
+R.register_route("/api/v1/users/{user}/links", "GET", R.make_route_opts({ empty_is_array = true }), function(route_vars)
+    local user = user_model.get_by_id(route_vars.user)
     if not user then
         return utils.api_error("User not found", 404)
     end
@@ -20,9 +20,10 @@ R.register_route("/api/v1/users/{id}/links", "GET", R.make_route_opts({ empty_is
     return res
 end, {
     description = "Get a list of links of a user",
+    authentication = {"self"},
     request = {
         params = {
-            id = {
+            user = {
                 type = "uuid",
                 description = "The id of the user"
             },
