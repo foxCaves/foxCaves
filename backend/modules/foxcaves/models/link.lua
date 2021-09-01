@@ -17,7 +17,7 @@ local function makelinkmt(link)
     return link
 end
 
-local link_select = 'id, "user", url, ' .. database.TIME_COLUMNS
+local link_select = 'id, owner, url, ' .. database.TIME_COLUMNS
 
 function link_model.get_by_user(user)
     if not user then
@@ -28,7 +28,7 @@ function link_model.get_by_user(user)
         user = user.id
     end
 
-    local links = database.get_shared():query('SELECT ' .. link_select .. ' FROM links WHERE "user" = %s', user)
+    local links = database.get_shared():query('SELECT ' .. link_select .. ' FROM links WHERE owner = %s', user)
     for k,v in next, links do
         links[k] = makelinkmt(v)
     end
@@ -61,12 +61,12 @@ end
 function link_mt:delete()
     database.get_shared():query('DELETE FROM links WHERE id = %s', self.id)
 
-    local user = user_model.get_by_id(self.user)
-    user:send_event('delete', 'link', self:get_private())
+    local owner = user_model.get_by_id(self.owner)
+    owner:send_event('delete', 'link', self:get_private())
 end
 
 function link_mt:set_owner(user)
-    self.user = user.id or user
+    self.owner = user.id or user
 end
 
 function link_mt:set_url(url)
@@ -78,34 +78,34 @@ function link_mt:save()
     local res, primary_push_action
     if self.not_in_db then
         res = database.get_shared():query_single(
-            'INSERT INTO links (id, "user", url) VALUES (%s, %s, %s) RETURNING ' .. database.TIME_COLUMNS,
-            self.id, self.user, self.url
+            'INSERT INTO links (id, owner, url) VALUES (%s, %s, %s) RETURNING ' .. database.TIME_COLUMNS,
+            self.id, self.owner, self.url
         )
         primary_push_action = 'create'
         self.not_in_db = nil
     else
         res = database.get_shared():query_single(
             'UPDATE links \
-                SET "user" = %s, url = %s, \
+                SET owner = %s, url = %s, \
                 updated_at = (now() at time zone \'utc\') \
                 WHERE id = %s \
                 RETURNING ' .. database.TIME_COLUMNS,
-            self.user, self.url, self.id
+            self.owner, self.url, self.id
         )
         primary_push_action = 'update'
     end
     self.created_at = res.created_at
     self.updated_at = res.updated_at
 
-    local user = user_model.get_by_id(self.user)
-    user:send_event(primary_push_action, 'link', self:get_private())
+    local owner = user_model.get_by_id(self.owner)
+    owner:send_event(primary_push_action, 'link', self:get_private())
 end
 
 function link_mt:get_public()
     return {
         id = self.id,
         url = self.url,
-        user = self.user,
+        owner = self.owner,
         short_url = url_config.short .. "/" .. self.id,
         created_at = self.created_at,
         updated_at = self.updated_at,
@@ -123,7 +123,7 @@ function link_model.get_public_fields()
             type = "string",
             required = true,
         },
-        user = {
+        owner = {
             type = "uuid",
             required = true,
         },

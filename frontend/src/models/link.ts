@@ -6,7 +6,7 @@ export class LinkModel extends BaseModel {
     public id: string = '';
     public url: string = '';
     public short_url: string = '';
-    public user: string = '';
+    public owner: string = '';
 
     static async getById(id: string): Promise<LinkModel | undefined> {
         try {

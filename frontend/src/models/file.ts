@@ -7,7 +7,7 @@ export class FileModel extends BaseModel {
     public id: string = '';
     public name: string = '';
     public size: number = 0;
-    public user: string = '';
+    public owner: string = '';
     public mimetype: string = '';
 
     public thumbnail_url?: string;

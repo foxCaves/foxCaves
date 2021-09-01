@@ -62,7 +62,7 @@ export const ViewPage: React.FC = () => {
                 setFileError('File not found');
             } else {
                 setFile(file);
-                const owner = await UserModel.getById(file.user);
+                const owner = await UserModel.getById(file.owner);
                 setOwner(owner);
             }
         } catch (err: any) {

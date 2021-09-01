@@ -59,7 +59,7 @@ local function file_deletestorage(file)
     lfs.rmdir(base)
 end
 
-local file_select = 'id, name, "user", size, mimetype, thumbnail_mimetype, ' .. database.TIME_COLUMNS
+local file_select = 'id, name, owner, size, mimetype, thumbnail_mimetype, ' .. database.TIME_COLUMNS
 
 function file_model.get_by_user(user)
     if not user then
@@ -70,7 +70,7 @@ function file_model.get_by_user(user)
         user = user.id
     end
 
-    local files = database.get_shared():query('SELECT ' .. file_select .. ' FROM files WHERE "user" = %s', user)
+    local files = database.get_shared():query('SELECT ' .. file_select .. ' FROM files WHERE owner = %s', user)
     for k,v in next, files do
         files[k] = makefilemt(v)
     end
@@ -113,9 +113,9 @@ function file_mt:delete()
 
     database.get_shared():query('DELETE FROM files WHERE id = %s', self.id)
 
-    local user = user_model.get_by_id(self.user)
-    user:send_event('delete', 'file', self:get_private())
-    user:send_self_event()
+    local owner = user_model.get_by_id(self.owner)
+    owner:send_event('delete', 'file', self:get_private())
+    owner:send_self_event()
 end
 
 function file_mt:make_local_path()
@@ -123,7 +123,7 @@ function file_mt:make_local_path()
 end
 
 function file_mt:set_owner(user)
-    self.user = user.id or user
+    self.owner = user.id or user
 end
 
 function file_mt:set_name(name)
@@ -164,29 +164,29 @@ function file_mt:save()
     if self.not_in_db then
         res = database.get_shared():query_single(
             'INSERT INTO files \
-                (id, name, "user", size, mimetype, thumbnail_mimetype) VALUES (%s, %s, %s, %s, %s, %s) \
+                (id, name, owner, size, mimetype, thumbnail_mimetype) VALUES (%s, %s, %s, %s, %s, %s) \
                 RETURNING ' .. database.TIME_COLUMNS,
-            self.id, self.name, self.user, self.size, self.mimetype, self.thumbnail_mimetype or ""
+            self.id, self.name, self.owner, self.size, self.mimetype, self.thumbnail_mimetype or ""
         )
         primary_push_action = 'create'
         self.not_in_db = nil
     else
         res = database.get_shared():query_single(
             'UPDATE files \
-                SET name = %s, "user" = %s, size = %s, mimetype = %s, thumbnail_mimetype = %s, \
+                SET name = %s, owner = %s, size = %s, mimetype = %s, thumbnail_mimetype = %s, \
                 updated_at = (now() at time zone \'utc\') \
                 WHERE id = %s \
                 RETURNING ' .. database.TIME_COLUMNS,
-            self.name, self.user, self.size, self.mimetype, self.thumbnail_mimetype or "", self.id
+            self.name, self.owner, self.size, self.mimetype, self.thumbnail_mimetype or "", self.id
         )
         primary_push_action = 'update'
     end
     self.created_at = res.created_at
     self.updated_at = res.updated_at
 
-    local user = user_model.get_by_id(self.user)
-    user:send_event(primary_push_action, 'file', self:get_private())
-    user:send_self_event()
+    local owner = user_model.get_by_id(self.owner)
+    owner:send_event(primary_push_action, 'file', self:get_private())
+    owner:send_self_event()
 end
 
 function file_mt:get_extension()
@@ -200,7 +200,7 @@ function file_mt:get_public()
     local res = {
         id = self.id,
         name = self.name,
-        user = self.user,
+        owner = self.owner,
         size = self.size,
         created_at = self.created_at,
         updated_at = self.updated_at,
@@ -227,7 +227,7 @@ function file_model.get_public_fields()
             type = "string",
             required = true,
         },
-        user = {
+        owner = {
             type = "uuid",
             required = true,
         },

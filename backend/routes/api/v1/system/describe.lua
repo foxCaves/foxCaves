@@ -4,6 +4,12 @@ local next = next
 local function describe_api()
     local res = {
         routes = {},
+        authorizations = {
+            anonymous = "Any or nonone",
+            self = "Must be the user for which data is being requested",
+            active = "Must be a user with user.active = 1",
+            owner = "Must be the owner of the resource (resource.owner == user.id)",
+        },
         types = {
             ["string"] = {
                 type = "string",
