@@ -29,27 +29,25 @@ end
 local function process_migration_dir(db, ran_migrations, dir)
     local file_array = {}
     for file in lfs.dir(dir) do
-        table.insert(file_array, file)
+        local absfile = dir .. "/" .. file
+        local attributes = lfs.attributes(absfile)
+        if file:sub(1, 1) ~= "." and attributes.mode == "file" then
+            if ran_migrations[file] then
+                print("Skipping: " .. file)
+            else
+                table.insert(file_array, file)
+            end
+        end
     end
     table.sort(file_array)
     for _, file in ipairs(file_array) do
-        if file:sub(1, 1) ~= "." then
-            local absfile = dir .. "/" .. file
-            local attributes = lfs.attributes(absfile)
-            if attributes.mode == "file" then
-                if ran_migrations[file] then
-                    print("Skipping: " .. file)
-                else
-                    print("Running: " .. file)
-                    local fh = io.open(absfile, "r")
-                    local data = fh:read("*a")
-                    fh:close()
-                    db:query_err(data)
-                    ran_migrations[file] = true
-                    db:query_err("INSERT INTO migrations (name) VALUES (" .. db:escape_literal(file) .. ");")
-                end
-            end
-        end
+        local absfile = dir .. "/" .. file
+        print("Running: " .. file)
+        local fh = io.open(absfile, "r")
+        local data = fh:read("*a")
+        fh:close()
+        db:query_err(data)
+        db:query_err("INSERT INTO migrations (name) VALUES (" .. db:escape_literal(file) .. ");")
     end
 end
 local function setup_db()
