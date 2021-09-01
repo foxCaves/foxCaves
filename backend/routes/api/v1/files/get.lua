@@ -7,4 +7,21 @@ R.register_route("/api/v1/files/{id}", "GET", R.make_route_opts_anon(), function
         return utils.api_error("File not found", 404)
     end
     return file:get_public()
-end)
+end, {
+    description = "Get information about a file",
+    request = {
+        params = {
+            id = {
+                type = "string",
+                description = "The id of the file"
+            },
+        },
+    },
+    response = {
+        body = {
+            contentType = "json",
+            type = "file",
+            level = "public",
+        },
+    },
+})

@@ -15,7 +15,27 @@ R.register_route("/api/v1/users/{id}/files", "GET", R.make_route_opts({ empty_is
 
     local res = file_model.get_by_user(user)
     for k, v in next, res do
-        res[k] = v:get_public()
+        res[k] = v:get_private()
     end
     return res
-end)
+end, {
+    description = "Get a list of files of a user",
+    request = {
+        params = {
+            id = {
+                type = "uuid",
+                description = "The id of the user"
+            },
+        },
+    },
+    response = {
+        body = {
+            contentType = "json",
+            type = "array",
+            contents = {
+                type = "file",
+                level = "private",
+            },
+        },
+    },
+})

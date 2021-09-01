@@ -12,4 +12,21 @@ R.register_route("/api/v1/files/{id}", "DELETE", R.make_route_opts(), function(r
     end
     file:delete()
     return file:get_private()
-end)
+end, {
+    description = "Deletes a file",
+    request = {
+        params = {
+            id = {
+                type = "string",
+                description = "The id of the file"
+            },
+        },
+    },
+    response = {
+        body = {
+            contentType = "json",
+            type = "file",
+            level = "private",
+        },
+    },
+})

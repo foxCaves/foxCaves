@@ -32,4 +32,32 @@ R.register_route("/api/v1/files/{id}", "PATCH", R.make_route_opts(), function(ro
 
     file:save()
     return file:get_private()
-end)
+end, {
+    description = "Updates information about a file",
+    request = {
+        params = {
+            id = {
+                type = "string",
+                description = "The id of the file"
+            },
+        },
+        body = {
+            contentType = "json",
+            required = true,
+            args = {
+                name = {
+                    type = "string",
+                    description = "The new name of the file",
+                    required = false,
+                },
+            },
+        },
+    },
+    response = {
+        body = {
+            contentType = "json",
+            type = "file",
+            level = "private",
+        },
+    },
+})

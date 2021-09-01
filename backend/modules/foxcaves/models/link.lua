@@ -113,6 +113,36 @@ function link_mt:get_public()
 end
 link_mt.get_private = link_mt.get_public
 
+function link_model.get_public_fields()
+    return {
+        id = {
+            type = "string",
+            required = true,
+        },
+        url = {
+            type = "string",
+            required = true,
+        },
+        user = {
+            type = "uuid",
+            required = true,
+        },
+        short_url = {
+            type = "string",
+            required = true,
+        },
+        created_at = {
+            type = "timestamp",
+            required = true,
+        },
+        updated_at = {
+            type = "timestamp",
+            required = true,
+        },
+    }
+end
+link_model.get_private_fields = link_model.get_public_fields
+
 link_mt.__index = link_mt
 
 return link_model

@@ -217,6 +217,56 @@ function file_mt:get_public()
 end
 file_mt.get_private = file_mt.get_public
 
+function file_model.get_public_fields()
+    return {
+        id = {
+            type = "string",
+            required = true,
+        },
+        name = {
+            type = "string",
+            required = true,
+        },
+        user = {
+            type = "uuid",
+            required = true,
+        },
+        size = {
+            type = "number",
+            required = true,
+        },
+        created_at = {
+            type = "timestamp",
+            required = true,
+        },
+        updated_at = {
+            type = "timestamp",
+            required = true,
+        },
+        mimetype = {
+            type = "string",
+            required = true,
+        },
+        view_url = {
+            type = "string",
+            required = true,
+        },
+        direct_url = {
+            type = "string",
+            required = true,
+        },
+        download_url ={
+            type = "string",
+            required = true,
+        },
+        thumbnail_url = {
+            type = "string",
+            required = false,
+        },
+    }
+end
+file_model.get_private_fields = file_model.get_public_fields
+
 file_mt.__index = file_mt
 
 return file_model

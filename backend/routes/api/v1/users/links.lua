@@ -18,4 +18,24 @@ R.register_route("/api/v1/users/{id}/links", "GET", R.make_route_opts({ empty_is
         res[k] = v:get_public()
     end
     return res
-end)
+end, {
+    description = "Get a list of links of a user",
+    request = {
+        params = {
+            id = {
+                type = "uuid",
+                description = "The id of the user"
+            },
+        },
+    },
+    response = {
+        body = {
+            contentType = "json",
+            type = "array",
+            contents = {
+                type = "link",
+                level = "private",
+            },
+        },
+    },
+})

@@ -48,4 +48,32 @@ R.register_route("/api/v1/files/{id}/convert", "POST", R.make_route_opts(), func
     file:move_upload_data(tmpfile)
     file:save()
     return file:get_private()
-end)
+end, {
+    description = "Convert image file to another format",
+    request = {
+        params = {
+            id = {
+                type = "string",
+                description = "The id of the file"
+            },
+        },
+        body = {
+            contentType = "json",
+            required = true,
+            args = {
+                extension = {
+                    description = "Extension to convert to (jpg, png, bmp or gif)",
+                    type = "string",
+                    required = true,
+                },
+            },
+        },
+    },
+    response = {
+        body = {
+            contentType = "json",
+            type = "file",
+            level = "private",
+        },
+    },
+})

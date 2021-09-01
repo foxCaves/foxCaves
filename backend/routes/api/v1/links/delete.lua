@@ -12,4 +12,21 @@ R.register_route("/api/v1/links/{id}", "DELETE", R.make_route_opts(), function(r
     end
     link:delete()
     return link:get_private()
-end)
+end, {
+    description = "Deletes a link",
+    request = {
+        params = {
+            id = {
+                type = "string",
+                description = "The id of the link"
+            },
+        },
+    },
+    response = {
+        body = {
+            contentType = "json",
+            type = "link",
+            level = "private",
+        },
+    },
+})

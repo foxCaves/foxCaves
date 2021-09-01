@@ -66,7 +66,7 @@ end
 
 local c_open, c_close, c_star = ('{}*'):byte(1,3)
 
-function ROUTE_REG_MT.register_route(url, method, options, func)
+function ROUTE_REG_MT.register_route(url, method, options, func, descriptor)
     method = method:upper()
     local urlsplit = explode("/", url:sub(2))
 
@@ -103,12 +103,21 @@ function ROUTE_REG_MT.register_route(url, method, options, func)
         ngx.log(ngx.ERR, "Double registration for route handler for " .. route_id)
     end
 
-    route.methods[method] = {
+    local route_tbl = {
         mappings = mappings,
         id = route_id,
+        url = url,
+        method =  method,
         func = setfenv(func, module_helper.EMPTY_TABLE),
         options = options,
+        descriptor = descriptor,
     }
+
+    route.methods[method] = route_tbl
+end
+
+function ROUTE_REG_MT.get_route_tree()
+    return ROUTE_TREE
 end
 
 local function scan_route_file(file)

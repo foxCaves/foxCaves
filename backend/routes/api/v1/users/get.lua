@@ -15,7 +15,24 @@ R.register_route("/api/v1/users/{id}", "GET", R.make_route_opts({ allow_guest = 
         return utils.api_error("User not found", 404)
     end
     return user:get_public()
-end)
+end, {
+    description = "Get information about a user",
+    request = {
+        params = {
+            id = {
+                type = "string",
+                description = "The id of the user"
+            },
+        },
+    },
+    response = {
+        body = {
+            contentType = "json",
+            type = "user",
+            level = "public",
+        },
+    },
+})
 
 R.register_route("/api/v1/users/{id}/details", "GET", R.make_route_opts(), function(route_vars)
     local user = user_model.get_by_id(convert_user_id(route_vars.id))
@@ -26,4 +43,21 @@ R.register_route("/api/v1/users/{id}/details", "GET", R.make_route_opts(), funct
         return utils.api_error("You do not have permission to view this user's details", 403)
     end
     return user:get_private()
-end)
+end, {
+    description = "Get detailed information about a user",
+    request = {
+        params = {
+            id = {
+                type = "uuid",
+                description = "The id of the user"
+            },
+        },
+    },
+    response = {
+        body = {
+            contentType = "json",
+            type = "user",
+            level = "private",
+        },
+    },
+})

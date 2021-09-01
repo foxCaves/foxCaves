@@ -269,12 +269,74 @@ function user_mt:get_private()
     }
 end
 
+function user_model.get_private_fields()
+    return {
+        id = {
+            type = "uuid",
+            required = true,
+        },
+        username = {
+            type = "string",
+            required = true,
+        },
+        email = {
+            type = "string",
+            required = true,
+        },
+        apikey = {
+            type = "string",
+            required = true,
+        },
+        active = {
+            type = "number",
+            required = true,
+        },
+        storage_used = {
+            type = "number",
+            required = true,
+        },
+        storage_quota = {
+            type = "number",
+            required = true,
+        },
+        created_at = {
+            type = "timestamp",
+            required = true,
+        },
+        updated_at = {
+            type = "timestamp",
+            required = true,
+        },
+    }
+end
+
 function user_mt:get_public()
     return {
         id = self.id,
         username = self.username,
         created_at = self.created_at,
         updated_at = self.updated_at,
+    }
+end
+
+function user_model.get_public_fields()
+    return {
+        id = {
+            type = "uuid",
+            required = true,
+        },
+        username = {
+            type = "string",
+            required = true,
+        },
+        created_at = {
+            type = "timestamp",
+            required = true,
+        },
+        updated_at = {
+            type = "timestamp",
+            required = true,
+        },
     }
 end
 

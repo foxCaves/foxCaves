@@ -52,4 +52,27 @@ R.register_route("/api/v1/files", "POST", R.make_route_opts(), function()
     file:save()
 
     return file:get_private()
-end)
+end, {
+    description = "Uploads a file",
+    request = {
+        query = {
+            name = {
+                description = "The name of the file",
+                type = "string",
+                required = true,
+            },
+        },
+        body = {
+            contentType = "raw",
+            description = "The file data",
+            required = true,
+        },
+    },
+    response = {
+        body = {
+            contentType = "json",
+            type = "file",
+            level = "private",
+        },
+    },
+})

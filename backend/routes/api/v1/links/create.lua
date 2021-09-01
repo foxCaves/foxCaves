@@ -24,4 +24,26 @@ R.register_route("/api/v1/links", "POST", R.make_route_opts(), function()
     link:save()
 
     return link:get_private()
-end)
+end, {
+    description = "Creates a link",
+    request = {
+        body = {
+            contentType = "json",
+            required = true,
+            args = {
+                url = {
+                    type = "string",
+                    description = "The URL the link should point to",
+                    required = true,
+                },
+            },
+        },
+    },
+    response = {
+        body = {
+            contentType = "json",
+            type = "link",
+            level = "private",
+        },
+    },
+})
