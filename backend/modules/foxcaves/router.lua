@@ -35,7 +35,6 @@ local ROUTE_REG_TABLE = setmetatable({}, {
     end,
 })
 
-local ROUTE_INIT_DONE = false
 local ROUTE_TREE = {
     children = {},
     methods = {},
@@ -123,10 +122,6 @@ end
 
 function ROUTE_REG_MT.get_table()
     return ROUTE_TABLE
-end
-
-function ROUTE_REG_MT.is_init_done()
-    return ROUTE_INIT_DONE
 end
 
 local function scan_route_file(file)
@@ -236,6 +231,5 @@ function M.execute()
 end
 
 scan_route_dir(ROUTES_ROOT)
-ROUTE_INIT_DONE = true
 
 return M

@@ -1,7 +1,4 @@
-local utils = require("foxcaves.utils")
-
-local get_route_table = R.get_table
-local is_route_init_done = R.is_init_done
+local ROUTE_TABLE = R.get_table()
 local next = next
 
 local function describe_api()
@@ -67,7 +64,7 @@ local function describe_api()
         }
     end
 
-    for url, methods in next, get_route_table() do
+    for url, methods in next, ROUTE_TABLE do
         for method, route in next, methods do
             if route.descriptor and not route.descriptor.hidden then
                 if not res.routes[url] then
@@ -82,11 +79,7 @@ local function describe_api()
 end
 
 local api_description_cache = nil
-
 R.register_route("/api/v1/system/describe", "GET", R.make_route_opts_anon({ empty_is_array = true }), function()
-    if not is_route_init_done() then
-        return utils.api_error("Server starting", 500)
-    end
     if not api_description_cache then
         api_description_cache = describe_api()
     end
