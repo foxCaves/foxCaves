@@ -178,9 +178,11 @@ local function route_execute()
 
     local route_vars = {}
     for i, mapping in next, handler.mappings do
-        route_vars[mapping] = urlsplit[i]
+        if i ~= wildcard_i then
+            route_vars[mapping] = ngx.unescape_uri(urlsplit[i])
+        end
     end
-    if wildcard_i > 0 and #urlsplit > wildcard_i then
+    if wildcard_i > 0 then
         local wildcard_map = handler.mappings[wildcard_i]
         local res = {}
         for i = wildcard_i, #urlsplit do
