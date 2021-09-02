@@ -98,8 +98,6 @@ function ROUTE_REG_MT.register_route(url, method, options, func, descriptor)
                 methods = {},
             }
             route.children[seg] = newroute
-            ROUTE_TABLE[url] = newroute.methods
-            ngx.log(ngx.ERR, "R " .. url)
         end
         route = newroute
     end
@@ -107,6 +105,8 @@ function ROUTE_REG_MT.register_route(url, method, options, func, descriptor)
     if route.methods[method] then
         ngx.log(ngx.ERR, "Double registration for route handler for " .. route_id)
     end
+
+    ROUTE_TABLE[url] = route.methods
 
     local route_tbl = {
         mappings = mappings,
