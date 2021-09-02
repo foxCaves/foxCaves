@@ -7,7 +7,7 @@ export class UserModel extends BaseModel {
 
     static async getById(id: string): Promise<UserModel | undefined> {
         try {
-            const api = await fetchAPI(`/api/v1/users/${id}`);
+            const api = await fetchAPI(`/api/v1/users/${encodeURIComponent(id)}`);
             return UserModel.wrapNew(api);
         } catch (e) {
             if (e instanceof HttpError && (e.status === 404 || e.status === 403)) {
@@ -35,7 +35,7 @@ export class UserDetailsModel extends UserModel {
 
     static async getById(id: string): Promise<UserDetailsModel | undefined> {
         try {
-            const api = await fetchAPI(`/api/v1/users/${id}/details`);
+            const api = await fetchAPI(`/api/v1/users/${encodeURIComponent(id)}/details`);
             return UserDetailsModel.wrapNew(api);
         } catch (e) {
             if (e instanceof HttpError && (e.status === 404 || e.status === 403)) {

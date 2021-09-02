@@ -28,7 +28,7 @@ export const AccountPage: React.FC = () => {
             body.current_password = currentPassword;
             try {
                 await toast.promise(
-                    fetchAPIRaw(`/api/users/${user!.id}`, {
+                    fetchAPIRaw(`/api/users/${encodeURIComponent(user!.id)}`, {
                         method,
                         data: body,
                     }),

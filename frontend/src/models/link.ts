@@ -10,7 +10,7 @@ export class LinkModel extends BaseModel {
 
     static async getById(id: string): Promise<LinkModel | undefined> {
         try {
-            const api = await fetchAPI(`/api/v1/links/${id}`);
+            const api = await fetchAPI(`/api/v1/links/${encodeURIComponent(id)}`);
             return LinkModel.wrapNew(api);
         } catch (e) {
             if (e instanceof HttpError && (e.status === 404 || e.status === 403)) {
@@ -21,7 +21,7 @@ export class LinkModel extends BaseModel {
     }
 
     static async getByUser(user: UserModel): Promise<LinkModel[]> {
-        const res = await fetchAPI(`/api/v1/users/${user.id}/links`);
+        const res = await fetchAPI(`/api/v1/users/${encodeURIComponent(user.id)}/links`);
         return res.map(LinkModel.wrapNew);
     }
 
@@ -34,7 +34,7 @@ export class LinkModel extends BaseModel {
     }
 
     async delete() {
-        await fetchAPIRaw(`/api/v1/links/${this.id}`, {
+        await fetchAPIRaw(`/api/v1/links/${encodeURIComponent(this.id)}`, {
             method: 'DELETE',
         });
     }
