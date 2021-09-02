@@ -35,11 +35,14 @@ local ROUTE_REG_TABLE = setmetatable({}, {
     end,
 })
 
+local ROUTE_INIT_DONE = false
 local ROUTE_TREE = {
     children = {},
     methods = {},
 }
-local ROUTE_TABLE = {}
+local ROUTE_TABLE = {
+    ["/"] = ROUTE_TREE.methods,
+}
 
 local BASE_OPTS = {
     check_login = true,
@@ -118,8 +121,12 @@ function ROUTE_REG_MT.register_route(url, method, options, func, descriptor)
     route.methods[method] = route_tbl
 end
 
-function ROUTE_REG_MT.get_route_table()
+function ROUTE_REG_MT.get_table()
     return ROUTE_TABLE
+end
+
+function ROUTE_REG_MT.is_init_done()
+    return ROUTE_INIT_DONE
 end
 
 local function scan_route_file(file)
@@ -229,5 +236,6 @@ function M.execute()
 end
 
 scan_route_dir(ROUTES_ROOT)
+ROUTE_INIT_DONE = true
 
 return M
