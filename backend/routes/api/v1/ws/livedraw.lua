@@ -249,7 +249,7 @@ R.register_route("/api/v1/ws/livedraw", "GET", R.make_route_opts({ allow_guest =
         should_run = false
     end
 
-    user.image = ngx.var.arg_id
+    user.image = ngx.var.arg_file
     user.drawingsession = ngx.var.arg_session
     user.channel = string_format("%s:%s", user.image, user.drawingsession)
     if ngx.ctx.user then
