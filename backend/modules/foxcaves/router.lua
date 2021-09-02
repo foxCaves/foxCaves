@@ -99,6 +99,7 @@ function ROUTE_REG_MT.register_route(url, method, options, func, descriptor)
             }
             route.children[seg] = newroute
             ROUTE_TABLE[url] = newroute.methods
+            ngx.log(ngx.ERR, "R " .. url)
         end
         route = newroute
     end

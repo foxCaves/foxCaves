@@ -65,7 +65,9 @@ local function describe_api()
     end
 
     for url, methods in next, ROUTE_TABLE do
+        ngx.log(ngx.ERR, "D " .. url)
         for method, route in next, methods do
+            ngx.log(ngx.ERR, "D " .. url .. " " .. method)
             if route.descriptor and not route.descriptor.hidden then
                 if not res.routes[url] then
                     res.routes[url] = {}
