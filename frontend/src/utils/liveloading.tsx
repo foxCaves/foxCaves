@@ -148,6 +148,12 @@ export const LiveLoadingContainer: React.FC = ({ children }) => {
     );
 
     useEffect(() => {
+        if (!user) {
+            wsRef.current?.close();
+            wsRef.current = undefined;
+            return;
+        }
+
         if (wsRef.current) {
             return;
         }
@@ -162,11 +168,15 @@ export const LiveLoadingContainer: React.FC = ({ children }) => {
         return () => {
             thisWs?.close();
         };
-    }, []);
+    }, [user]);
 
     useEffect(() => {
+        if (!user) {
+            return;
+        }
+
         wsRef.current?.setOnMessage(handleWebSocketMessage);
-    }, [handleWebSocketMessage]);
+    }, [user, handleWebSocketMessage]);
 
     useEffect(() => {
         const newUserId = user?.id;
