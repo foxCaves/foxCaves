@@ -32,10 +32,13 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "lint": "eslint --ext .js,.jsx.ts,.tsx src/ && prettier --check src/",
-    "fmt": "prettier --write src/"
+    "lint": "eslint --ext .js,.jsx,.ts,.tsx src/ && prettier --check src/",
+    "fmt": "eslint --fix --ext .js,.jsx,.ts,.tsx src/ && prettier --write src/"
   },
   "eslintConfig": {
+    "rules": {
+        "sort-imports": "error"
+    },
     "extends": [
       "react-app",
       "react-app/jest"

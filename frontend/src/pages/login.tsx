@@ -1,13 +1,14 @@
-import React, { useContext, FormEvent } from 'react';
-import Form from 'react-bootstrap/Form';
-import Button from 'react-bootstrap/Button';
-import { fetchAPIRaw } from '../utils/api';
-import { AppContext } from '../utils/context';
-import FloatingLabel from 'react-bootstrap/FloatingLabel';
+import React, { FormEvent, useContext } from 'react';
 import { useCheckboxFieldSetter, useInputFieldSetter } from '../utils/hooks';
-import { useCallback } from 'react';
+
+import { AppContext } from '../utils/context';
+import Button from 'react-bootstrap/Button';
+import FloatingLabel from 'react-bootstrap/FloatingLabel';
+import Form from 'react-bootstrap/Form';
 import { Link } from 'react-router-dom';
+import { fetchAPIRaw } from '../utils/api';
 import { toast } from 'react-toastify';
+import { useCallback } from 'react';
 
 export const LoginPage: React.FC = () => {
     const [username, setUsernameCB] = useInputFieldSetter('');

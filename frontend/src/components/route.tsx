@@ -1,9 +1,10 @@
+import { AppContext, AppContextClass } from '../utils/context';
 import React, { ReactNode, useContext } from 'react';
 import { Redirect, Route } from 'react-router-dom';
-import { AppContext, AppContextClass } from '../utils/context';
+
+import Dropdown from 'react-bootstrap/Dropdown';
 import { LinkContainer } from 'react-router-bootstrap';
 import Nav from 'react-bootstrap/Nav';
-import Dropdown from 'react-bootstrap/Dropdown';
 
 export enum LoginState {
     LoggedIn = 1,

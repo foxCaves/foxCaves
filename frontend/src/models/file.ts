@@ -1,7 +1,8 @@
-import { fetchAPI, fetchAPIRaw, HttpError } from '../utils/api';
-import { formatSize } from '../utils/formatting';
+import { HttpError, fetchAPI, fetchAPIRaw } from '../utils/api';
+
 import { BaseModel } from './base';
 import { UserModel } from './user';
+import { formatSize } from '../utils/formatting';
 
 export class FileModel extends BaseModel {
     public id: string = '';

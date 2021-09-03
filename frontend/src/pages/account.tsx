@@ -1,13 +1,14 @@
-import React, { FormEvent, useEffect, useContext, useState, useCallback } from 'react';
-import Form from 'react-bootstrap/Form';
-import Button from 'react-bootstrap/Button';
-import { fetchAPIRaw } from '../utils/api';
-import { AppContext } from '../utils/context';
-import FloatingLabel from 'react-bootstrap/FloatingLabel';
-import Modal from 'react-bootstrap/Modal';
 import { Col, Row } from 'react-bootstrap';
-import { useInputFieldSetter } from '../utils/hooks';
+import React, { FormEvent, useCallback, useContext, useEffect, useState } from 'react';
+
+import { AppContext } from '../utils/context';
+import Button from 'react-bootstrap/Button';
+import FloatingLabel from 'react-bootstrap/FloatingLabel';
+import Form from 'react-bootstrap/Form';
+import Modal from 'react-bootstrap/Modal';
+import { fetchAPIRaw } from '../utils/api';
 import { toast } from 'react-toastify';
+import { useInputFieldSetter } from '../utils/hooks';
 
 export const AccountPage: React.FC = () => {
     const { user, refreshUser } = useContext(AppContext);

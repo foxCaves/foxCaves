@@ -1,23 +1,24 @@
-import React, { useContext, useState, useEffect, KeyboardEvent } from 'react';
-import { FileModel } from '../models/file';
-import { StorageUseBar } from '../components/storage_use';
+import '../resources/files.css';
+
+import { Col, Container, Row } from 'react-bootstrap';
+import React, { KeyboardEvent, useContext, useEffect, useState } from 'react';
+
+import AspectRatio from 'react-aspect-ratio';
+import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
 import Dropdown from 'react-bootstrap/Dropdown';
-import { Col, Container, Row } from 'react-bootstrap';
-import { LinkContainer } from 'react-router-bootstrap';
-import Button from 'react-bootstrap/Button';
-import Modal from 'react-bootstrap/Modal';
-import Form from 'react-bootstrap/Form';
-import { useDropzone } from 'react-dropzone';
-import { useCallback } from 'react';
-import { useInputFieldSetter } from '../utils/hooks';
+import { FileModel } from '../models/file';
 import { FilesContext } from '../components/liveloading';
+import Form from 'react-bootstrap/Form';
+import { LinkContainer } from 'react-router-bootstrap';
+import Modal from 'react-bootstrap/Modal';
+import { StorageUseBar } from '../components/storage_use';
+import nothumb from '../resources/nothumb.gif';
 import { toast } from 'react-toastify';
 import { uploadFile } from '../utils/file_uploader';
-import AspectRatio from 'react-aspect-ratio';
-
-import '../resources/files.css';
-import nothumb from '../resources/nothumb.gif';
+import { useCallback } from 'react';
+import { useDropzone } from 'react-dropzone';
+import { useInputFieldSetter } from '../utils/hooks';
 
 export const FileView: React.FC<{
     file: FileModel;

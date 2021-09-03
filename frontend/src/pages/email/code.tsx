@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
+
+import { fetchAPI } from '../../utils/api';
 import { useCallback } from 'react';
 import { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { fetchAPI } from '../../utils/api';
 
 export const EmailCodePage: React.FC = () => {
     const { code } = useParams<{ code: string }>();

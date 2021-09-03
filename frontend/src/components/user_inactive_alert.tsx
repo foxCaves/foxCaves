@@ -1,9 +1,10 @@
 import React, { useContext } from 'react';
-import { AppContext } from '../utils/context';
+
 import Alert from 'react-bootstrap/Alert';
-import { useCallback } from 'react';
+import { AppContext } from '../utils/context';
 import { fetchAPIRaw } from '../utils/api';
 import { toast } from 'react-toastify';
+import { useCallback } from 'react';
 
 export const UserInactiveAlert: React.FC = () => {
     const { user } = useContext(AppContext);

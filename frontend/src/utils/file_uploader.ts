@@ -1,6 +1,6 @@
-import { toast } from 'react-toastify';
 import { FileModel } from '../models/file';
 import { HttpError } from './api';
+import { toast } from 'react-toastify';
 
 function uploadFileInternal(file: File, onProgress: (e: ProgressEvent<XMLHttpRequestEventTarget>) => void) {
     return new Promise<FileModel>((resolve, reject) => {

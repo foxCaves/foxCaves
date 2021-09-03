@@ -1,10 +1,11 @@
-import React, { FormEvent, useState, useCallback } from 'react';
-import Form from 'react-bootstrap/Form';
-import Button from 'react-bootstrap/Button';
-import { fetchAPI } from '../utils/api';
-import { Redirect } from 'react-router-dom';
-import FloatingLabel from 'react-bootstrap/FloatingLabel';
+import React, { FormEvent, useCallback, useState } from 'react';
 import { useCheckboxFieldSetter, useInputFieldSetter } from '../utils/hooks';
+
+import Button from 'react-bootstrap/Button';
+import FloatingLabel from 'react-bootstrap/FloatingLabel';
+import Form from 'react-bootstrap/Form';
+import { Redirect } from 'react-router-dom';
+import { fetchAPI } from '../utils/api';
 import { toast } from 'react-toastify';
 
 export const RegistrationPage: React.FC = () => {

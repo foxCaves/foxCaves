@@ -1,10 +1,11 @@
-import React, { useCallback, FormEvent } from 'react';
-import Form from 'react-bootstrap/Form';
+import React, { FormEvent, useCallback } from 'react';
+
 import Button from 'react-bootstrap/Button';
-import { useInputFieldSetter } from '../../utils/hooks';
 import FloatingLabel from 'react-bootstrap/FloatingLabel';
+import Form from 'react-bootstrap/Form';
 import { fetchAPIRaw } from '../../utils/api';
 import { toast } from 'react-toastify';
+import { useInputFieldSetter } from '../../utils/hooks';
 
 export const ForgotPasswordPage: React.FC = () => {
     const [username, setUsernameCB] = useInputFieldSetter('');

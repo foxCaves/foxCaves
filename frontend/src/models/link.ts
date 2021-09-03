@@ -1,4 +1,5 @@
-import { fetchAPI, fetchAPIRaw, HttpError } from '../utils/api';
+import { HttpError, fetchAPI, fetchAPIRaw } from '../utils/api';
+
 import { BaseModel } from './base';
 import { UserModel } from './user';
 

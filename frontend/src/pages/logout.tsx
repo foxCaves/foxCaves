@@ -1,7 +1,8 @@
-import React, { useContext, useState, useEffect, useCallback } from 'react';
-import { fetchAPIRaw } from '../utils/api';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
+
 import { AppContext } from '../utils/context';
 import { Redirect } from 'react-router-dom';
+import { fetchAPIRaw } from '../utils/api';
 import { toast } from 'react-toastify';
 
 export const LogoutPage: React.FC = () => {

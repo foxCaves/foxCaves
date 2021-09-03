@@ -1,12 +1,13 @@
+import '../resources/view.css';
+
 import React, { useState } from 'react';
-import { useCallback } from 'react';
-import { useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+
 import { FileModel } from '../models/file';
 import { UserModel } from '../models/user';
 import { formatDate } from '../utils/formatting';
-
-import '../resources/view.css';
+import { useCallback } from 'react';
+import { useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 
 const TextView: React.FC<{ src: string }> = ({ src }) => {
     const [dataLoading, setDataLoading] = useState(false);

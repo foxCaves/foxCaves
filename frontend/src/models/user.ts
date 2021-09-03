@@ -1,4 +1,5 @@
-import { fetchAPI, HttpError } from '../utils/api';
+import { HttpError, fetchAPI } from '../utils/api';
+
 import { BaseModel } from './base';
 
 export class UserModel extends BaseModel {

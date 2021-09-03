@@ -1,7 +1,8 @@
 import React, { useContext } from 'react';
+import { formatSize, formatSizeWithInfinite } from '../utils/formatting';
+
 import { AppContext } from '../utils/context';
 import ProgressBar from 'react-bootstrap/ProgressBar';
-import { formatSize, formatSizeWithInfinite } from '../utils/formatting';
 
 const ProgressBarLabel: React.FC<{ isChild?: boolean }> = ({ children }) => {
     return <div className="justify-content-center d-flex position-absolute w-100">{children}</div>;

@@ -1,30 +1,31 @@
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
-import Container from 'react-bootstrap/Container';
-import Navbar from 'react-bootstrap/Navbar';
-import Nav from 'react-bootstrap/Nav';
-import Dropdown from 'react-bootstrap/Dropdown';
-import { HomePage } from './pages/home';
-import { LoginPage } from './pages/login';
-import { LogoutPage } from './pages/logout';
-import { RegistrationPage } from './pages/register';
-import { FilesPage } from './pages/files';
-import { LinksPage } from './pages/links';
-import { AccountPage } from './pages/account';
-import { ViewPage } from './pages/view';
-import React, { useState, useEffect, useCallback } from 'react';
-import { UserDetailsModel } from './models/user';
-import { AppContext, AppContextClass } from './utils/context';
-import { LoginState, CustomRoute, CustomNavLink, CustomDropDownItem } from './components/route';
-import { LinkContainer } from 'react-router-bootstrap';
-import { UserInactiveAlert } from './components/user_inactive_alert';
-import { ForgotPasswordPage } from './pages/email/forgot_password';
-import { EmailCodePage } from './pages/email/code';
-import { LiveLoadingContainer } from './components/liveloading';
-
 import './resources/app.css';
 import 'react-toastify/dist/ReactToastify.css';
 import 'react-aspect-ratio/aspect-ratio.css';
+
+import { AppContext, AppContextClass } from './utils/context';
+import { CustomDropDownItem, CustomNavLink, CustomRoute, LoginState } from './components/route';
+import React, { useCallback, useEffect, useState } from 'react';
+import { Route, BrowserRouter as Router, Switch } from 'react-router-dom';
+
+import { AccountPage } from './pages/account';
+import Container from 'react-bootstrap/Container';
+import Dropdown from 'react-bootstrap/Dropdown';
+import { EmailCodePage } from './pages/email/code';
+import { FilesPage } from './pages/files';
+import { ForgotPasswordPage } from './pages/email/forgot_password';
+import { HomePage } from './pages/home';
+import { LinkContainer } from 'react-router-bootstrap';
+import { LinksPage } from './pages/links';
+import { LiveLoadingContainer } from './components/liveloading';
+import { LoginPage } from './pages/login';
+import { LogoutPage } from './pages/logout';
+import Nav from 'react-bootstrap/Nav';
+import Navbar from 'react-bootstrap/Navbar';
+import { RegistrationPage } from './pages/register';
 import { ToastContainer } from 'react-toastify';
+import { UserDetailsModel } from './models/user';
+import { UserInactiveAlert } from './components/user_inactive_alert';
+import { ViewPage } from './pages/view';
 
 export const App: React.FC = () => {
     const [user, setUser] = useState<UserDetailsModel | undefined>(undefined);
