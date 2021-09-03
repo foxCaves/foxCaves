@@ -3,7 +3,7 @@ local file_model = require("foxcaves.models.file")
 local main_url = require("foxcaves.config").urls.main
 local ngx = ngx
 
-R.register_route("/cdn/sendfile/f/{file}", "GET", R.make_route_opts_anon(), function(route_vars)
+R.register_route("/fcv-cdn/sendfile/f/{file}", "GET", R.make_route_opts_anon(), function(route_vars)
     local id = file_model.extract_name_and_extension(route_vars.file)
 
     local file = file_model.get_by_id(id)
@@ -26,10 +26,10 @@ R.register_route("/cdn/sendfile/f/{file}", "GET", R.make_route_opts_anon(), func
 
     ngx.header["Content-Disposition"] = disposition_type .. "; filename=\"" .. file.name .. "\""
     ngx.header["Content-Type"] = file.mimetype
-    ngx.req.set_uri("/rawget/" .. file.id .. "/file", true)
+    ngx.req.set_uri("/fcv-rawget/" .. file.id .. "/file", true)
 end)
 
-R.register_route("/cdn/sendfile/thumbs/{file}", "GET", R.make_route_opts_anon(), function(route_vars)
+R.register_route("/fcv-cdn/sendfile/t/{file}", "GET", R.make_route_opts_anon(), function(route_vars)
     local id = file_model.extract_name_and_extension(route_vars.file)
 
     local file = file_model.get_by_id(id)
@@ -42,5 +42,5 @@ R.register_route("/cdn/sendfile/thumbs/{file}", "GET", R.make_route_opts_anon(),
     end
 
     ngx.header["Content-Type"] = file.thumbnail_mimetype
-    ngx.req.set_uri("/rawget/" .. file.id .. "/thumb", true)
+    ngx.req.set_uri("/fcv-rawget/" .. file.id .. "/thumb", true)
 end)

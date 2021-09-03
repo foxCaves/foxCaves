@@ -211,7 +211,7 @@ function file_mt:get_public()
         download_url = short_url .. "?dl=1",
     }
     if self.thumbnail_mimetype and self.thumbnail_mimetype ~= "" then
-        res.thumbnail_url = url_config.short .. "/thumbs/" .. self.id
+        res.thumbnail_url = url_config.short .. "/t/" .. self.id
     end
     return res
 end
