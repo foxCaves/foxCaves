@@ -11,12 +11,13 @@ import Form from 'react-bootstrap/Form';
 import { useDropzone } from 'react-dropzone';
 import { useCallback } from 'react';
 import { useInputFieldSetter } from '../utils/hooks';
-
-import './files.css';
-import nothumb from './nothumb.gif';
 import { FilesContext } from '../utils/liveloading';
 import { toast } from 'react-toastify';
 import { uploadFile } from '../utils/file_uploader';
+import AspectRatio from 'react-aspect-ratio';
+
+import './files.css';
+import nothumb from './nothumb.gif';
 
 export const FileView: React.FC<{
     file: FileModel;
@@ -78,7 +79,9 @@ export const FileView: React.FC<{
                 )}
             </Card.Header>
             <Card.Body>
-                <Card.Img variant="top" src={file.thumbnail_url || nothumb} />
+                <AspectRatio ratio="1/1">
+                    <Card.Img variant="top" src={file.thumbnail_url || nothumb} />
+                </AspectRatio>
             </Card.Body>
             <Card.Footer className="d-flex">
                 <div className="flex-grow-1 p-1">{file.getFormattedSize()}</div>
@@ -213,11 +216,13 @@ export const FilesPage: React.FC<{}> = () => {
                         {...dropzone.getRootProps()}
                     >
                         <input {...dropzone.getInputProps()} />
-                        {dropzone.isDragActive ? (
-                            <h4 className="m-0">Drop the file here to upload it!</h4>
-                        ) : (
-                            <h4 className="m-0">Drag 'n' drop some files here, or click to select files to upload</h4>
-                        )}
+                        <h4 className="m-0">
+                            {dropzone.isDragActive ? (
+                                <>Drop the file here to upload it!</>
+                            ) : (
+                                <>Drag 'n' drop some files here, or click to select files to upload</>
+                            )}
+                        </h4>
                     </Col>
                 </Row>
             </Container>

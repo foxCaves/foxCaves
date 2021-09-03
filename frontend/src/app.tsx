@@ -23,6 +23,7 @@ import { LiveLoadingContainer } from './utils/liveloading';
 
 import './app.css';
 import 'react-toastify/dist/ReactToastify.css';
+import 'react-aspect-ratio/aspect-ratio.css';
 import { ToastContainer } from 'react-toastify';
 
 export const App: React.FC = () => {

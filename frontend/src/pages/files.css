@@ -7,3 +7,7 @@
     text-overflow: ellipsis;
     white-space: nowrap;
 }
+.file-card .card-img-top {
+    background: url('./nothumb.gif') no-repeat center center;
+    background-size: cover;
+}
