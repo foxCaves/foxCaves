@@ -14,14 +14,14 @@ import { ViewPage } from './pages/view';
 import React, { useState, useEffect, useCallback } from 'react';
 import { UserDetailsModel } from './models/user';
 import { AppContext, AppContextClass } from './utils/context';
-import { LoginState, CustomRoute, CustomNavLink, CustomDropDownItem } from './utils/route';
+import { LoginState, CustomRoute, CustomNavLink, CustomDropDownItem } from './components/route';
 import { LinkContainer } from 'react-router-bootstrap';
-import { UserInactiveAlert } from './utils/user_inactive_alert';
+import { UserInactiveAlert } from './components/user_inactive_alert';
 import { ForgotPasswordPage } from './pages/email/forgot_password';
 import { EmailCodePage } from './pages/email/code';
-import { LiveLoadingContainer } from './utils/liveloading';
+import { LiveLoadingContainer } from './components/liveloading';
 
-import './app.css';
+import './resources/app.css';
 import 'react-toastify/dist/ReactToastify.css';
 import 'react-aspect-ratio/aspect-ratio.css';
 import { ToastContainer } from 'react-toastify';

@@ -5,7 +5,7 @@ import { useEffect } from 'react';
 import Modal from 'react-bootstrap/Modal';
 import { useCallback } from 'react';
 import { useInputFieldSetter } from '../utils/hooks';
-import { LinksContext } from '../utils/liveloading';
+import { LinksContext } from '../components/liveloading';
 import { toast } from 'react-toastify';
 
 export const LinkView: React.FC<{

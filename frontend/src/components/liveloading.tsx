@@ -2,8 +2,8 @@ import React, { useRef, useMemo, useCallback, useEffect, useContext, useState } 
 import { FileModel } from '../models/file';
 import { LinkModel } from '../models/link';
 import { UserDetailsModel } from '../models/user';
-import { AppContext } from './context';
-import { ReconnectingWebSocket } from './websocket_autoreconnect';
+import { AppContext } from '../utils/context';
+import { ReconnectingWebSocket } from '../utils/websocket_autoreconnect';
 
 type ModelMap<T> = { [key: string]: T };
 

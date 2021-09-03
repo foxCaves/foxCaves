@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import { AppContext } from '../utils/context';
 import Alert from 'react-bootstrap/Alert';
 import { useCallback } from 'react';
-import { fetchAPIRaw } from './api';
+import { fetchAPIRaw } from '../utils/api';
 import { toast } from 'react-toastify';
 
 export const UserInactiveAlert: React.FC = () => {

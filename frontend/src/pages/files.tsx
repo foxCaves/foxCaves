@@ -1,6 +1,6 @@
 import React, { useContext, useState, useEffect, KeyboardEvent } from 'react';
 import { FileModel } from '../models/file';
-import { StorageUseBar } from '../utils/storage_use';
+import { StorageUseBar } from '../components/storage_use';
 import Card from 'react-bootstrap/Card';
 import Dropdown from 'react-bootstrap/Dropdown';
 import { Col, Container, Row } from 'react-bootstrap';
@@ -11,13 +11,13 @@ import Form from 'react-bootstrap/Form';
 import { useDropzone } from 'react-dropzone';
 import { useCallback } from 'react';
 import { useInputFieldSetter } from '../utils/hooks';
-import { FilesContext } from '../utils/liveloading';
+import { FilesContext } from '../components/liveloading';
 import { toast } from 'react-toastify';
 import { uploadFile } from '../utils/file_uploader';
 import AspectRatio from 'react-aspect-ratio';
 
-import './files.css';
-import nothumb from './nothumb.gif';
+import '../resources/files.css';
+import nothumb from '../resources/nothumb.gif';
 
 export const FileView: React.FC<{
     file: FileModel;

@@ -6,7 +6,7 @@ import { FileModel } from '../models/file';
 import { UserModel } from '../models/user';
 import { formatDate } from '../utils/formatting';
 
-import './view.css';
+import '../resources/view.css';
 
 const TextView: React.FC<{ src: string }> = ({ src }) => {
     const [dataLoading, setDataLoading] = useState(false);
