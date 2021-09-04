@@ -29,7 +29,6 @@ export const LiveDrawPage: React.FC = () => {
         FileModel.getById(id).then(setFile, console.error);
     }, [id]);
 
-
     const getFileName = useCallback(() => {
         return `${fileName}-edit.png`;
     }, [fileName]);
@@ -59,9 +58,8 @@ export const LiveDrawPage: React.FC = () => {
             await uploadFile(namedBlob);
         }, 'image/png');
     }, [getFileName]);
-    
+
     useEffect(() => {
-        console.log('init manager');
         const manager = new LiveDrawManager(
             canvasRef.current!,
             foregroundCanvasRef.current!,
@@ -78,7 +76,6 @@ export const LiveDrawPage: React.FC = () => {
         if (!file) {
             return;
         }
-        console.log('file', file);
 
         managerRef.current!.setup(file, sid);
     }, [file, sid]);
@@ -98,18 +95,17 @@ export const LiveDrawPage: React.FC = () => {
             <div id="live-draw-options">
                 <fieldset>
                     <legend>Brush Settings</legend>
-                    <select onChange={selectBrush}>
+                    <select defaultValue="brush" onChange={selectBrush}>
                         <option>rectangle</option>
                         <option>circle</option>
-                        <option selected>brush</option>
+                        <option>brush</option>
                         <option>erase</option>
                         <option>line</option>
-                        <option>text</option>
                         <option>restore</option>
                         <option>polygon</option>
                     </select>
                     <input id="live-draw-text-input" type="text" placeholder="drawtext" />
-                    <input id="live-draw-font-input" type="text" value="Verdana" placeholder="font" />
+                    <input id="live-draw-font-input" type="text" defaultValue="Verdana" placeholder="font" />
                     <br />
                     <span>0</span>
                     <input
