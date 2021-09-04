@@ -1,7 +1,7 @@
 import '../../resources/livedraw.css';
 
 import { BlobWithName, uploadFile } from '../../utils/file_uploader';
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 import { Redirect, useParams } from 'react-router-dom';
 import { disconnect, setBrush, setBrushWidth, setup } from './manager';
 
@@ -16,6 +16,8 @@ export const LiveDrawRedirectPage: React.FC = () => {
 export const LiveDrawPage: React.FC = () => {
     const { id, sid } = useParams<{ id: string; sid: string }>();
 
+    const canvasRef = useRef<HTMLCanvasElement>(null);
+
     useEffect(() => {
         setup(id, sid);
 
@@ -24,8 +26,8 @@ export const LiveDrawPage: React.FC = () => {
         };
     }, [id, sid]);
 
-    const getCanvas = useCallback(() => {
-        return document.getElementById('canvas') as HTMLCanvasElement;
+    const getFileName = useCallback(() => {
+        return 'live-draw.png';
     }, []);
 
     const selectBrush = useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -37,21 +39,27 @@ export const LiveDrawPage: React.FC = () => {
     }, []);
 
     const downloadImage = useCallback(() => {
-        document.location.href = getCanvas().toDataURL('image/png');
-    }, [getCanvas]);
+        const data = canvasRef.current!.toDataURL('image/png');
+        const link = document.createElement('a');
+        link.download = getFileName();
+        link.href = data;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }, [getFileName]);
 
     const saveImage = useCallback(() => {
-        getCanvas().toBlob(async (blob) => {
+        canvasRef.current!.toBlob(async (blob) => {
             const namedBlob = blob as BlobWithName;
-            namedBlob.name = 'live-draw.png';
+            namedBlob.name = getFileName();
             await uploadFile(namedBlob);
         }, 'image/png');
-    }, [getCanvas]);
+    }, [getFileName]);
 
     return (
         <>
             <div id="livedraw-wrapper">
-                <canvas id="livedraw"></canvas>
+                <canvas ref={canvasRef} id="livedraw"></canvas>
             </div>
 
             <div id="live-draw-options">
