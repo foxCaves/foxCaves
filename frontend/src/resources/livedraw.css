@@ -19,3 +19,56 @@
     stroke: black;
     stroke-width: 1px;
 }
+
+#live-draw-options > fieldset {
+    display: inline;
+    vertical-align: text-top;
+}
+
+#color-selector,
+#saturisation-selector,
+#opacity-selector {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+
+    height: 150px;
+    display: inline-block;
+    outline: 3px solid black;
+}
+
+#color-selector {
+    width: 250px;
+
+    background-image: -webkit-linear-gradient(top, black, transparent, white),
+        -webkit-linear-gradient(left, #f00, #ff0, #0f0, #0ff, #00f, #f0f, #f00);
+}
+
+#color-selector-inner {
+    position: relative;
+    left: 100px;
+    top: 0px;
+    width: 10px;
+    height: 10px;
+    display: block;
+    pointer-events: none;
+}
+
+#saturisation-selector {
+    width: 20px;
+    background-image: -webkit-linear-gradient(top, hsl(0, 100%, 50%), transparent);
+}
+
+#opacity-selector {
+    width: 20px;
+    background-image: -webkit-linear-gradient(top, hsl(0, 100%, 50%), transparent);
+}
+
+#saturisation-selector-inner,
+#opacity-selector-inner {
+    width: 20px;
+    height: 1px;
+    background-color: black;
+    position: relative;
+    pointer-events: none;
+}
