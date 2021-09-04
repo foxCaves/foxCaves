@@ -352,7 +352,7 @@ const paintBrushes: {
             font: 'Verdana',
         },
         setup(user) {
-            // if (user !== localUser) return;
+            if (user !== localUser) return;
             // TODO: This should really not be here...
             const textInput = document.getElementById('live-draw-text-input') as HTMLInputElement;
             const fontInput = document.getElementById('live-draw-font-input') as HTMLInputElement;
