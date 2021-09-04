@@ -93,7 +93,7 @@ export const FileView: React.FC<{
                             <Dropdown.Item>View</Dropdown.Item>
                         </LinkContainer>
                         <LinkContainer to={`/livedraw/${file.id}`}>
-                            <Dropdown.Item>Edit</Dropdown.Item>
+                            <Dropdown.Item>Live draw</Dropdown.Item>
                         </LinkContainer>
                         <Dropdown.Item href={file.download_url}>Download</Dropdown.Item>
                         <Dropdown.Item onClick={setEditFileCB}>Rename</Dropdown.Item>
