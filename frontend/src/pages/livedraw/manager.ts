@@ -437,7 +437,7 @@ function makeLocalUser(manager: LiveDrawManager): LocalUser {
         brushData: {
             width: 0,
             color: 'black',
-            brush: paintBrushes.text!,
+            brush: paintBrushes.pencil!,
             customData: {},
             setWidth(bWidth: number) {
                 if (bWidth === this.width) return;
