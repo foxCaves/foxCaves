@@ -3,9 +3,9 @@ import '../../resources/livedraw.css';
 import { BlobWithName, uploadFile } from '../../utils/file_uploader';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Redirect, useParams } from 'react-router-dom';
-import { disconnect, setBrush, setBrushWidth, setup } from './manager';
 
 import { FileModel } from '../../models/file';
+import { LiveDrawManager } from './manager';
 import { randomString } from '../../utils/random';
 
 export const LiveDrawRedirectPage: React.FC = () => {
@@ -20,6 +20,10 @@ export const LiveDrawPage: React.FC = () => {
     const [fileLoadDone, setFileLoadDone] = useState(false);
     const [file, setFile] = useState<FileModel | undefined>(undefined);
     const canvasRef = useRef<HTMLCanvasElement>(null);
+    const foregroundCanvasRef = useRef<HTMLCanvasElement>(null);
+    const backgroundCanvasRef = useRef<HTMLCanvasElement>(null);
+    const brushWidthSliderRef = useRef<HTMLInputElement>(null);
+    const managerRef = useRef<LiveDrawManager | undefined>(undefined);
 
     const fileName = file ? file.name : `ID_${id}`;
 
@@ -40,24 +44,16 @@ export const LiveDrawPage: React.FC = () => {
         loadFile();
     }, [fileLoading, fileLoadDone, loadFile]);
 
-    useEffect(() => {
-        setup(id, sid);
-
-        return () => {
-            disconnect();
-        };
-    }, [id, sid]);
-
     const getFileName = useCallback(() => {
         return `${fileName}-edit.png`;
     }, [fileName]);
 
     const selectBrush = useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
-        setBrush(e.target.value);
+        managerRef.current?.setBrush(e.target.value);
     }, []);
 
     const selectBrushWidth = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-        setBrushWidth(parseInt(e.target.value, 10));
+        managerRef.current?.setBrushWidth(parseInt(e.target.value, 10));
     }, []);
 
     const downloadImage = useCallback(() => {
@@ -78,6 +74,30 @@ export const LiveDrawPage: React.FC = () => {
         }, 'image/png');
     }, [getFileName]);
 
+    useEffect(() => {
+        if (managerRef.current) {
+            managerRef.current.destroy();
+            managerRef.current = undefined;
+        }
+
+        if (!file) {
+            return;
+        }
+
+        const manager = new LiveDrawManager(
+            canvasRef.current!,
+            foregroundCanvasRef.current!,
+            backgroundCanvasRef.current!,
+            brushWidthSliderRef.current!,
+        );
+        manager.setup(file, sid);
+        managerRef.current = manager;
+
+        return () => {
+            manager.destroy();
+        };
+    }, [file, sid]);
+
     return (
         <>
             <h1>Edit file: {fileName}</h1>
@@ -86,6 +106,9 @@ export const LiveDrawPage: React.FC = () => {
             <div id="livedraw-wrapper">
                 <canvas ref={canvasRef} id="livedraw"></canvas>
             </div>
+
+            <canvas ref={backgroundCanvasRef} id="livedraw-background"></canvas>
+            <canvas ref={foregroundCanvasRef} id="livedraw-foreground"></canvas>
 
             <div id="live-draw-options">
                 <fieldset>
@@ -106,6 +129,7 @@ export const LiveDrawPage: React.FC = () => {
                     <span>0</span>
                     <input
                         id="brush-width-slider"
+                        ref={brushWidthSliderRef}
                         type="range"
                         value="10"
                         min="1"

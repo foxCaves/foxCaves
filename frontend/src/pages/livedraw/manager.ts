@@ -1,14 +1,6 @@
 import { FileModel } from '../../models/file';
 
 const MathPIDouble = Math.PI * 2.0;
-let canvasPos: DOMRect;
-let scaleFactor = 1.0;
-let imagePattern: CanvasPattern;
-let brushSizeSlider: HTMLInputElement;
-let backgroundCanvasCTX: CanvasRenderingContext2D,
-    foregroundCanvasCTX: CanvasRenderingContext2D,
-    finalCanvasCTX: CanvasRenderingContext2D;
-let backgroundCanvas: HTMLCanvasElement, foregroundCanvas: HTMLCanvasElement, finalCanvas: HTMLCanvasElement;
 
 const MAX_BRUSH_WIDTH = 200;
 
@@ -51,6 +43,7 @@ interface User {
     brushData: BrushData;
     cursorData: CursorData;
     local: boolean;
+    scaleFactor: number;
 }
 
 interface LocalUserBrushData extends BrushData {
@@ -111,7 +104,7 @@ const paintBrushes: {
     rectangle: {
         select(user, foregroundCanvasCTX, backgroundCanvasCTX) {
             backgroundCanvasCTX.lineCap = 'butt';
-            foregroundCanvasCTX.lineWidth = user.brushData.width * scaleFactor;
+            foregroundCanvasCTX.lineWidth = user.brushData.width * user.scaleFactor;
         },
         down(x, y, user) {
             user.cursorData.lastX = x;
@@ -138,7 +131,7 @@ const paintBrushes: {
     circle: {
         select(user, foregroundCanvasCTX, backgroundCanvasCTX) {
             backgroundCanvasCTX.lineCap = 'butt';
-            foregroundCanvasCTX.lineWidth = user.brushData.width * scaleFactor;
+            foregroundCanvasCTX.lineWidth = user.brushData.width * user.scaleFactor;
         },
         down(x, y, user) {
             this.active = true;
@@ -193,8 +186,8 @@ const paintBrushes: {
     },
     brush: {
         keepLineWidth: true,
-        select(_user, foregroundCanvasCTX) {
-            foregroundCanvasCTX.lineWidth = 1 / scaleFactor;
+        select(user, foregroundCanvasCTX) {
+            foregroundCanvasCTX.lineWidth = 1 / user.scaleFactor;
         },
         down(x, y, user) {
             user.cursorData.lastX = x;
@@ -221,14 +214,14 @@ const paintBrushes: {
         },
         preview(x, y, user, foregroundCanvasCTX) {
             foregroundCanvasCTX.beginPath();
-            foregroundCanvasCTX.arc(x, y, (user.brushData.width / 2) * scaleFactor, 0, MathPIDouble);
+            foregroundCanvasCTX.arc(x, y, (user.brushData.width / 2) * user.scaleFactor, 0, MathPIDouble);
             foregroundCanvasCTX.stroke();
         },
     },
     erase: {
         keepLineWidth: true,
-        select(_user, foregroundCanvasCTX) {
-            foregroundCanvasCTX.lineWidth = 1 / scaleFactor;
+        select(user, foregroundCanvasCTX) {
+            foregroundCanvasCTX.lineWidth = 1 / user.scaleFactor;
             foregroundCanvasCTX.strokeStyle = 'black';
         },
         down(x, y, user) {
@@ -255,15 +248,15 @@ const paintBrushes: {
         },
         preview(x, y, user, foregroundCanvasCTX) {
             foregroundCanvasCTX.beginPath();
-            foregroundCanvasCTX.arc(x, y, (user.brushData.width / 2) * scaleFactor, 0, MathPIDouble);
+            foregroundCanvasCTX.arc(x, y, (user.brushData.width / 2) * user.scaleFactor, 0, MathPIDouble);
             foregroundCanvasCTX.stroke();
         },
     },
     restore: {
         keepLineWidth: true,
         keepBackgroundStrokeStyle: true,
-        select(_user, foregroundCanvasCTX) {
-            foregroundCanvasCTX.lineWidth = 1 / scaleFactor;
+        select(user, foregroundCanvasCTX) {
+            foregroundCanvasCTX.lineWidth = 1 / user.scaleFactor;
             foregroundCanvasCTX.strokeStyle = 'black';
         },
         down(x, y, user) {
@@ -279,8 +272,8 @@ const paintBrushes: {
             this.move(x, y, user, backgroundCanvasCTX);
         },
         move(x, y, user, backgroundCanvasCTX) {
-            backgroundCanvasCTX.strokeStyle = imagePattern;
-            backgroundCanvasCTX.lineWidth = user.brushData.width * scaleFactor;
+            // TODO: backgroundCanvasCTX.strokeStyle = imagePattern;
+            backgroundCanvasCTX.lineWidth = user.brushData.width * user.scaleFactor;
             backgroundCanvasCTX.lineCap = 'round';
 
             backgroundCanvasCTX.beginPath();
@@ -292,7 +285,7 @@ const paintBrushes: {
         },
         preview(x, y, user, foregroundCanvasCTX) {
             foregroundCanvasCTX.beginPath();
-            foregroundCanvasCTX.arc(x, y, (user.brushData.width / 2) * scaleFactor, 0, MathPIDouble);
+            foregroundCanvasCTX.arc(x, y, (user.brushData.width / 2) * user.scaleFactor, 0, MathPIDouble);
             foregroundCanvasCTX.stroke();
         },
     },
@@ -329,6 +322,7 @@ const paintBrushes: {
             return true;
         },
     },
+    /* TODO
     text: {
         keepLineWidth: true,
         usesCustomData: true,
@@ -337,7 +331,7 @@ const paintBrushes: {
             font: 'Verdana',
         },
         setup(user) {
-            if (user !== localUser) return;
+            // if (user !== localUser) return;
             // TODO: This should really not be here...
             const textInput = document.getElementById('live-draw-text-input') as HTMLInputElement;
             const fontInput = document.getElementById('live-draw-font-input') as HTMLInputElement;
@@ -373,7 +367,7 @@ const paintBrushes: {
         },
         down() {},
         up(x, y, user, backgroundCanvasCTX) {
-            backgroundCanvasCTX.font = (scaleFactor * user.brushData.width +
+            backgroundCanvasCTX.font = (user.scaleFactor * user.brushData.width +
                 'px ' +
                 user.brushData.customData.text!.font) as string;
             backgroundCanvasCTX.textAlign = 'left';
@@ -384,7 +378,7 @@ const paintBrushes: {
             return true;
         },
         preview(x, y, user, foregroundCanvasCTX) {
-            foregroundCanvasCTX.font = (scaleFactor * user.brushData.width +
+            foregroundCanvasCTX.font = (user.scaleFactor * user.brushData.width +
                 'px ' +
                 user.brushData.customData.text!.font) as string;
             foregroundCanvasCTX.fillText(user.brushData.customData.text!.text as string, x, y);
@@ -393,8 +387,8 @@ const paintBrushes: {
 		setFontSize(user, fontSize) {
 			user.brushData.customData.text.fontSize = fontSize
 			networking.sendCustomPacket("text", "fontSize", fontSize);
-		}*/
-    },
+		}*
+    },*/
     polygon: {
         usesCustomData: true,
         setup(user) {
@@ -436,78 +430,64 @@ const paintBrushes: {
     },
 };
 
-const localUser: LocalUser = {
-    local: true,
-    brushData: {
-        width: 0,
-        color: 'black',
-        brush: paintBrushes.text!,
-        customData: {},
-        setWidth(bWidth: number) {
-            if (bWidth === this.width) return;
-            const strWidth = bWidth.toString();
-            this.width = bWidth;
-            brushSizeSlider.value = strWidth;
-            this.setBrushAttribsLocal();
-            networking.sendDrawEvent(PaintEvent.WIDTH, strWidth);
+function makeLocalUser(manager: LiveDrawManager): LocalUser {
+    const localUser: LocalUser = {
+        local: true,
+        scaleFactor: 1.0,
+        brushData: {
+            width: 0,
+            color: 'black',
+            brush: paintBrushes.text!,
+            customData: {},
+            setWidth(bWidth: number) {
+                if (bWidth === this.width) return;
+                const strWidth = bWidth.toString();
+                this.width = bWidth;
+                manager.brushSizeSlider.value = strWidth;
+                this.setBrushAttribsLocal();
+                manager.sendDrawEvent(PaintEvent.WIDTH, strWidth);
+            },
+            setColor(bColor: string) {
+                this.color = bColor;
+                this.setBrushAttribsLocal();
+                manager.sendDrawEvent(PaintEvent.COLOR, bColor);
+            },
+            setBrush(brush: string) {
+                if (this.brush && this.brush.unselectLocal) {
+                    this.brush.unselectLocal();
+                }
+
+                this.brush = paintBrushes[brush]!;
+                manager.backgroundCanvasCTX.globalCompositeOperation = 'source-over';
+
+                if (this.brush.selectLocal) {
+                    this.brush.selectLocal(localUser, manager.foregroundCanvasCTX, manager.backgroundCanvasCTX);
+                }
+                this.brush.select(localUser, manager.foregroundCanvasCTX, manager.backgroundCanvasCTX);
+                manager.sendDrawEvent(PaintEvent.BRUSH, brush);
+            },
+            setBrushAttribsLocal() {
+                manager.backgroundCanvasCTX.lineWidth = this.width * localUser.scaleFactor;
+                if (localUser.brushData.brush && localUser.brushData.brush.keepBackgroundStrokeStyle !== true) {
+                    manager.backgroundCanvasCTX.strokeStyle = this.color;
+                }
+                manager.backgroundCanvasCTX.fillStyle = this.color;
+
+                manager.foregroundCanvasCTX.strokeStyle = this.color;
+                manager.foregroundCanvasCTX.fillStyle = this.color;
+                if (localUser.brushData.brush && localUser.brushData.brush.keepLineWidth !== true) {
+                    manager.foregroundCanvasCTX.lineWidth = this.width * localUser.scaleFactor;
+                }
+            },
         },
-        setColor(bColor: string) {
-            this.color = bColor;
-            this.setBrushAttribsLocal();
-            networking.sendDrawEvent(PaintEvent.COLOR, bColor);
+        cursorData: {
+            x: 0,
+            y: 0,
+            lastX: 0,
+            lastY: 0,
         },
-        setBrush(brush: string) {
-            if (this.brush && this.brush.unselectLocal) {
-                this.brush.unselectLocal();
-            }
-
-            this.brush = paintBrushes[brush]!;
-            backgroundCanvasCTX.globalCompositeOperation = 'source-over';
-
-            if (this.brush.selectLocal) {
-                this.brush.selectLocal(localUser, foregroundCanvasCTX, backgroundCanvasCTX);
-            }
-            this.brush.select(localUser, foregroundCanvasCTX, backgroundCanvasCTX);
-            networking.sendDrawEvent(PaintEvent.BRUSH, brush);
-        },
-        setBrushAttribsLocal() {
-            backgroundCanvasCTX.lineWidth = this.width * scaleFactor;
-            if (localUser.brushData.brush && localUser.brushData.brush.keepBackgroundStrokeStyle !== true)
-                backgroundCanvasCTX.strokeStyle = this.color;
-            backgroundCanvasCTX.fillStyle = this.color;
-
-            foregroundCanvasCTX.strokeStyle = this.color;
-            foregroundCanvasCTX.fillStyle = this.color;
-            if (localUser.brushData.brush && localUser.brushData.brush.keepLineWidth !== true)
-                foregroundCanvasCTX.lineWidth = this.width * scaleFactor;
-        },
-    },
-    cursorData: {
-        x: 0,
-        y: 0,
-        lastX: 0,
-        lastY: 0,
-    },
-};
-
-function calcOffsets(event: MouseEvent): [number, number] {
-    let x: number;
-    let y: number;
-
-    if (!event.offsetX) {
-        x = event.pageX - canvasPos.left;
-        y = event.pageY - canvasPos.top;
-    } else {
-        x = event.offsetX;
-        y = event.offsetY;
-    }
-
-    x = Math.round(x);
-    y = Math.round(y);
-    if (x < 0) x = 0;
-    if (y < 0) y = 0;
-
-    return [x, y];
+    };
+    return localUser;
 }
 
 function sign(x: number) {
@@ -518,10 +498,80 @@ function clamp(val: number, min: number, max: number) {
     return Math.max(min, Math.min(max, val));
 }
 
-const liveDrawInput = {
-    cursorX: 0,
-    cursorY: 0,
-    isDrawing: false,
+export class LiveDrawManager {
+    public localUser: LocalUser;
+
+    public cursorX = 0;
+    public cursorY = 0;
+    public isDrawing = false;
+
+    private shouldConnect = false;
+    private socket: WebSocket | undefined = undefined;
+
+    public defaultFont = '24px Verdana';
+
+    public canvasPos: DOMRect;
+    public imagePattern?: CanvasPattern;
+    public brushSizeSlider: HTMLInputElement;
+    public backgroundCanvasCTX: CanvasRenderingContext2D;
+    public foregroundCanvasCTX: CanvasRenderingContext2D;
+    public finalCanvasCTX: CanvasRenderingContext2D;
+    public backgroundCanvas: HTMLCanvasElement;
+    public foregroundCanvas: HTMLCanvasElement;
+    public finalCanvas: HTMLCanvasElement;
+
+    constructor(
+        canvas: HTMLCanvasElement,
+        backgroundCanvas: HTMLCanvasElement,
+        foregroundCanvas: HTMLCanvasElement,
+        brushSizeSlider: HTMLInputElement,
+    ) {
+        this.brushSizeSlider = brushSizeSlider;
+
+        this.backgroundCanvas = backgroundCanvas;
+        this.foregroundCanvas = foregroundCanvas;
+        this.finalCanvas = canvas;
+
+        this.backgroundCanvasCTX = backgroundCanvas.getContext('2d')!;
+        this.foregroundCanvasCTX = foregroundCanvas.getContext('2d')!;
+        this.finalCanvasCTX = canvas.getContext('2d')!;
+
+        this.localUser = makeLocalUser(this);
+        this.canvasPos = canvas.getBoundingClientRect();
+        this.paintCanvas = this.paintCanvas.bind(this);
+
+        this.finalCanvas.addEventListener('mousedown', (event) => this.mouseDown(event), false);
+        this.finalCanvas.addEventListener('mouseup', (event) => this.mouseUp(event, this.backgroundCanvasCTX), false);
+        this.finalCanvas.addEventListener(
+            'mousemove',
+            (event) => this.mouseMove(event, this.backgroundCanvasCTX),
+            false,
+        ); // FIX
+
+        this.finalCanvas.addEventListener('wheel', (event) => this.mouseScroll(event), false);
+        this.finalCanvas.addEventListener('dblclick', (event) => this.doubleClick(event), false);
+    }
+
+    calcOffsets(event: MouseEvent): [number, number] {
+        let x: number;
+        let y: number;
+
+        if (!event.offsetX) {
+            x = event.pageX - this.canvasPos.left;
+            y = event.pageY - this.canvasPos.top;
+        } else {
+            x = event.offsetX;
+            y = event.offsetY;
+        }
+
+        x = Math.round(x);
+        y = Math.round(y);
+        if (x < 0) x = 0;
+        if (y < 0) y = 0;
+
+        return [x, y];
+    }
+
     mouseDown(event: MouseEvent) {
         if (event.button !== 0) {
             return;
@@ -530,14 +580,15 @@ const liveDrawInput = {
 
         this.isDrawing = true;
 
-        const [offsetX, offsetY] = calcOffsets(event);
+        const [offsetX, offsetY] = this.calcOffsets(event);
 
-        const sendX = offsetX / scaleFactor;
-        const sendY = offsetY / scaleFactor;
+        const sendX = offsetX / this.localUser.scaleFactor;
+        const sendY = offsetY / this.localUser.scaleFactor;
 
-        localUser.brushData.brush.down(offsetX, offsetY, localUser);
-        networking.sendBrushEvent(PaintEvent.MOUSE_DOWN, sendX, sendY);
-    },
+        this.localUser.brushData.brush.down(offsetX, offsetY, this.localUser);
+        this.sendBrushEvent(PaintEvent.MOUSE_DOWN, sendX, sendY);
+    }
+
     mouseUp(event: MouseEvent, backgroundCanvasCTX: CanvasRenderingContext2D) {
         if (event.button !== 0) {
             return;
@@ -549,75 +600,73 @@ const liveDrawInput = {
         }
         this.isDrawing = false;
 
-        const [offsetX, offsetY] = calcOffsets(event);
+        const [offsetX, offsetY] = this.calcOffsets(event);
 
-        const sendX = offsetX / scaleFactor;
-        const sendY = offsetY / scaleFactor;
+        const sendX = offsetX / this.localUser.scaleFactor;
+        const sendY = offsetY / this.localUser.scaleFactor;
 
-        localUser.brushData.brush.up(offsetX, offsetY, localUser, backgroundCanvasCTX);
-        networking.sendBrushEvent(PaintEvent.MOUSE_UP, sendX, sendY);
+        this.localUser.brushData.brush.up(offsetX, offsetY, this.localUser, backgroundCanvasCTX);
+        this.sendBrushEvent(PaintEvent.MOUSE_UP, sendX, sendY);
 
-        localUser.cursorData.lastX = 0;
-        localUser.cursorData.lastY = 0;
-    },
+        this.localUser.cursorData.lastX = 0;
+        this.localUser.cursorData.lastY = 0;
+    }
     mouseMove(event: MouseEvent, backgroundCanvasCTX: CanvasRenderingContext2D) {
         event.preventDefault();
 
-        const [offsetX, offsetY] = calcOffsets(event);
+        const [offsetX, offsetY] = this.calcOffsets(event);
 
         this.cursorX = offsetX;
         this.cursorY = offsetY;
 
-        const sendX = offsetX / scaleFactor;
-        const sendY = offsetY / scaleFactor;
+        const sendX = offsetX / this.localUser.scaleFactor;
+        const sendY = offsetY / this.localUser.scaleFactor;
 
         if (!this.isDrawing) {
-            networking.sendBrushEvent(PaintEvent.MOUSE_CURSOR, sendX, sendY);
+            this.sendBrushEvent(PaintEvent.MOUSE_CURSOR, sendX, sendY);
             return;
         }
 
-        if (!localUser.brushData.brush.move(offsetX, offsetY, localUser, backgroundCanvasCTX)) {
-            networking.sendBrushEvent(PaintEvent.MOUSE_MOVE, sendX, sendY);
+        if (!this.localUser.brushData.brush.move(offsetX, offsetY, this.localUser, backgroundCanvasCTX)) {
+            this.sendBrushEvent(PaintEvent.MOUSE_MOVE, sendX, sendY);
         } else {
-            networking.sendBrushEvent(PaintEvent.MOUSE_CURSOR, sendX, sendY);
+            this.sendBrushEvent(PaintEvent.MOUSE_CURSOR, sendX, sendY);
         }
-    },
+    }
     mouseScroll(event: WheelEvent) {
         event.preventDefault();
         const delta = sign(-event.deltaY) * 2;
 
-        localUser.brushData.setWidth(clamp(localUser.brushData.width + delta, 1, MAX_BRUSH_WIDTH));
-    },
+        this.localUser.brushData.setWidth(clamp(this.localUser.brushData.width + delta, 1, MAX_BRUSH_WIDTH));
+    }
     doubleClick(event: MouseEvent) {
         event.preventDefault();
-        const [offsetX, offsetY] = calcOffsets(event);
-        if (localUser.brushData.brush.doubleClick)
-            localUser.brushData.brush.doubleClick(offsetX, offsetY, localUser, backgroundCanvasCTX);
+        const [offsetX, offsetY] = this.calcOffsets(event);
+        if (this.localUser.brushData.brush.doubleClick) {
+            this.localUser.brushData.brush.doubleClick(offsetX, offsetY, this.localUser, this.backgroundCanvasCTX);
+        }
 
         this.cursorX = offsetX;
         this.cursorY = offsetY;
 
-        const sendX = offsetX / scaleFactor;
-        const sendY = offsetY / scaleFactor;
+        const sendX = offsetX / this.localUser.scaleFactor;
+        const sendY = offsetY / this.localUser.scaleFactor;
 
-        networking.sendBrushEvent(PaintEvent.MOUSE_DOUBLE_CLICK, sendX, sendY);
-    },
-};
+        this.sendBrushEvent(PaintEvent.MOUSE_DOUBLE_CLICK, sendX, sendY);
+    }
 
-const networking = {
-    shouldConnect: false,
-    socket: undefined as WebSocket | undefined,
     recvRaw(msg: string) {
         msg = msg.trim();
         if (msg.length < 1) {
             return;
         }
         this.recvDirectEvent(msg.charAt(0) as PaintEvent, msg.substr(1));
-    },
+    }
+
     recvDirectEvent(eventype: PaintEvent, payload: string) {
         const commands = payload.split('|');
         if (eventype === PaintEvent.ERROR) {
-            this.close();
+            this.destroy();
             alert('Network error: ' + commands + '\nPlease refresh this page to rejoin!');
             return;
         }
@@ -627,6 +676,7 @@ const networking = {
                 const from: RemotePaintUser = (paintUsers[id!] = {
                     local: false,
                     name: name!,
+                    scaleFactor: 1.0,
                     brushData: {
                         width: parseFloat(widthAsString!),
                         color: color!,
@@ -634,8 +684,8 @@ const networking = {
                         customData: {},
                     },
                     cursorData: {
-                        x: parseFloat(commands[5] || '0') * scaleFactor,
-                        y: parseFloat(commands[6] || '0') * scaleFactor,
+                        x: parseFloat(commands[5] || '0') * this.localUser.scaleFactor,
+                        y: parseFloat(commands[6] || '0') * this.localUser.scaleFactor,
                         lastX: 0,
                         lastY: 0,
                     },
@@ -657,12 +707,18 @@ const networking = {
                 if (commands[1] === 'r') {
                     this.sendDrawEvent(
                         PaintEvent.IMGBURST,
-                        commands[2] + '|' + finalCanvas.toDataURL('image/png').replace(/[\r\n]/g, '') + '|',
+                        commands[2] + '|' + this.finalCanvas.toDataURL('image/png').replace(/[\r\n]/g, '') + '|',
                     );
                 } else if (commands[1] === 'a') {
                     const toSet = new Image();
                     toSet.onload = () => {
-                        backgroundCanvasCTX.drawImage(toSet, 0, 0, finalCanvas.width, finalCanvas.height);
+                        this.backgroundCanvasCTX.drawImage(
+                            toSet,
+                            0,
+                            0,
+                            this.finalCanvas.width,
+                            this.finalCanvas.height,
+                        );
                     };
                     toSet.src = commands[2]!;
                 }
@@ -671,19 +727,19 @@ const networking = {
                 this.recvDrawEvent(eventype, commands);
                 break;
         }
-    },
+    }
     sendDrawEvent(eventype: PaintEvent, payload: string) {
         this.sendRaw(eventype + payload);
-    },
+    }
     sendBrushEvent(eventype: PaintEvent, x: number, y: number) {
         this.sendDrawEvent(eventype, x + '|' + y);
-    },
+    }
     recvDrawEvent(eventype: PaintEvent, payload: string[]) {
         const from = paintUsers[payload[0]!]!;
         switch (eventype) {
             case PaintEvent.MOUSE_CURSOR:
-                from.cursorData.x = parseFloat(payload[1]!) * scaleFactor;
-                from.cursorData.y = parseFloat(payload[2]!) * scaleFactor;
+                from.cursorData.x = parseFloat(payload[1]!) * this.localUser.scaleFactor;
+                from.cursorData.y = parseFloat(payload[2]!) * this.localUser.scaleFactor;
                 break;
             case PaintEvent.MOUSE_MOVE:
             case PaintEvent.MOUSE_DOWN:
@@ -711,47 +767,52 @@ const networking = {
             case PaintEvent.RESET:
                 break;
         }
-    },
+    }
     recvBrushEvent(from: User, eventype: PaintEvent, x: number, y: number) {
-        x *= scaleFactor;
-        y *= scaleFactor;
+        x *= this.localUser.scaleFactor;
+        y *= this.localUser.scaleFactor;
         from.cursorData.x = x;
         from.cursorData.y = y;
 
         const brush = from.brushData.brush;
-        backgroundCanvasCTX.lineWidth = from.brushData.width * scaleFactor; //Needed in order to draw correctly
-        backgroundCanvasCTX.strokeStyle = from.brushData.color;
-        backgroundCanvasCTX.fillStyle = from.brushData.color;
+        this.backgroundCanvasCTX.lineWidth = from.brushData.width * this.localUser.scaleFactor; //Needed in order to draw correctly
+        this.backgroundCanvasCTX.strokeStyle = from.brushData.color;
+        this.backgroundCanvasCTX.fillStyle = from.brushData.color;
 
-        brush.select(from, foregroundCanvasCTX, backgroundCanvasCTX);
+        brush.select(from, this.foregroundCanvasCTX, this.backgroundCanvasCTX);
 
         switch (eventype) {
             case PaintEvent.MOUSE_DOWN:
                 brush.down(x, y, from);
                 break;
             case PaintEvent.MOUSE_UP:
-                brush.up(x, y, from, backgroundCanvasCTX);
+                brush.up(x, y, from, this.backgroundCanvasCTX);
                 break;
             case PaintEvent.MOUSE_MOVE:
-                brush.move(x, y, from, backgroundCanvasCTX);
+                brush.move(x, y, from, this.backgroundCanvasCTX);
                 break;
             case PaintEvent.MOUSE_DOUBLE_CLICK:
-                brush.doubleClick!(x, y, from, backgroundCanvasCTX);
+                brush.doubleClick!(x, y, from, this.backgroundCanvasCTX);
                 break;
         }
 
-        localUser.brushData.setBrushAttribsLocal();
+        this.localUser.brushData.setBrushAttribsLocal();
 
-        localUser.brushData.brush.select(from, foregroundCanvasCTX, backgroundCanvasCTX);
-    },
+        this.localUser.brushData.brush.select(from, this.foregroundCanvasCTX, this.backgroundCanvasCTX);
+    }
     sendBrushPacket(brushName: string, key: string, val: string) {
         this.sendRaw(PaintEvent.CUSTOM + brushName + '|' + key + '|' + val);
-    },
-    async connect(oldSocket: WebSocket | undefined, file: FileModel, sessionId: string) {
+    }
+    async netConnect(oldSocket: WebSocket | undefined, file: FileModel, sessionId: string) {
+        if (!this.shouldConnect) {
+            return;
+        }
+
         if (oldSocket && oldSocket !== this.socket) {
             return;
         }
-        this.shouldConnect = true;
+
+        this.socket?.close();
 
         try {
             const res = await fetch(
@@ -761,34 +822,33 @@ const networking = {
             const webSocket = new WebSocket(data.url);
 
             webSocket.onmessage = (event) => {
-                networking.recvRaw(event.data);
+                if (!this.shouldConnect) {
+                    webSocket.close();
+                    return;
+                }
+                this.recvRaw(event.data);
             };
 
             webSocket.onclose = () => {
                 //Unwanted disconnect
-                if (!networking.shouldConnect) {
+                if (!this.shouldConnect) {
                     return;
                 }
-                window.setTimeout(() => networking.connect(webSocket, file, sessionId), 1000);
+                window.setTimeout(() => this.netConnect(webSocket, file, sessionId), 1000);
                 webSocket.close();
             };
 
             webSocket.onopen = () => {
-                localUser.brushData.setColor('black');
-                localUser.brushData.setWidth(10.0);
-                localUser.brushData.setBrush('brush');
+                this.localUser.brushData.setColor('black');
+                this.localUser.brushData.setWidth(10.0);
+                this.localUser.brushData.setBrush('brush');
             };
             this.socket = webSocket;
         } catch (e) {
             console.error(e);
         }
-    },
-    close() {
-        this.shouldConnect = false;
-        try {
-            this.socket!.close();
-        } catch (e) {}
-    },
+    }
+
     sendRaw(msg: string) {
         msg = msg.trim();
         if (msg.length === 0) {
@@ -797,275 +857,242 @@ const networking = {
         try {
             this.socket!.send(msg);
         } catch (e) {}
-    },
-};
-
-let defaultFont = '24px Verdana';
-
-function paintCanvas() {
-    if (!foregroundCanvasCTX) {
-        return;
     }
 
-    requestAnimationFrame(paintCanvas);
-    if (!localUser.brushData.brush) {
-        return;
+    paintCanvas() {
+        if (!this.shouldConnect) {
+            return;
+        }
+
+        requestAnimationFrame(this.paintCanvas);
+        if (!this.localUser.brushData.brush) {
+            return;
+        }
+
+        this.foregroundCanvasCTX.clearRect(0, 0, this.foregroundCanvas.width, this.foregroundCanvas.height);
+
+        this.localUser.brushData.brush.select(this.localUser, this.foregroundCanvasCTX, this.backgroundCanvasCTX);
+        this.localUser.brushData.brush.preview(this.cursorX, this.cursorY, this.localUser, this.foregroundCanvasCTX);
+
+        this.foregroundCanvasCTX.textAlign = 'left';
+        this.foregroundCanvasCTX.textBaseline = 'top';
+
+        for (const user of Object.values(paintUsers)) {
+            user.brushData.brush.select(user, this.foregroundCanvasCTX, this.backgroundCanvasCTX);
+            user.brushData.brush.preview(user.cursorData.x, user.cursorData.y, user, this.foregroundCanvasCTX);
+
+            this.foregroundCanvasCTX.font = this.defaultFont;
+            this.foregroundCanvasCTX.fillText(
+                user.name,
+                user.cursorData.x + user.brushData.width,
+                user.cursorData.y + user.brushData.width,
+            );
+        }
+
+        this.finalCanvasCTX.clearRect(0, 0, this.finalCanvas.width, this.finalCanvas.height);
+
+        this.finalCanvasCTX.drawImage(this.backgroundCanvas, 0, 0);
+        this.finalCanvasCTX.drawImage(this.foregroundCanvas, 0, 0);
+
+        this.localUser.brushData.brush.select(this.localUser, this.foregroundCanvasCTX, this.backgroundCanvasCTX);
     }
 
-    foregroundCanvasCTX.clearRect(0, 0, foregroundCanvas.width, foregroundCanvas.height);
+    loadImage(file: FileModel, sessionId: string) {
+        const baseImage = new Image();
+        baseImage.crossOrigin = 'anonymous';
 
-    localUser.brushData.brush.select(localUser, foregroundCanvasCTX, backgroundCanvasCTX);
-    localUser.brushData.brush.preview(liveDrawInput.cursorX, liveDrawInput.cursorY, localUser, foregroundCanvasCTX);
+        baseImage.onload = () => {
+            const maxWidth = document.getElementById('livedraw-wrapper')!.getBoundingClientRect().width;
 
-    foregroundCanvasCTX.textAlign = 'left';
-    foregroundCanvasCTX.textBaseline = 'top';
+            if (baseImage.width > maxWidth) {
+                this.localUser.scaleFactor = maxWidth / baseImage.width;
+            } else {
+                this.localUser.scaleFactor = 1.0;
+            }
 
-    for (const user of Object.values(paintUsers)) {
-        user.brushData.brush.select(user, foregroundCanvasCTX, backgroundCanvasCTX);
-        user.brushData.brush.preview(user.cursorData.x, user.cursorData.y, user, foregroundCanvasCTX);
+            this.defaultFont = 12 / this.localUser.scaleFactor + 'px Verdana';
 
-        foregroundCanvasCTX.font = defaultFont;
-        foregroundCanvasCTX.fillText(
-            user.name,
-            user.cursorData.x + user.brushData.width,
-            user.cursorData.y + user.brushData.width,
+            this.netConnect(undefined, file, sessionId);
+
+            this.backgroundCanvas.width = this.foregroundCanvas.width = this.finalCanvas.width = baseImage.width;
+            this.backgroundCanvas.height = this.foregroundCanvas.height = this.finalCanvas.height = baseImage.height;
+
+            this.finalCanvas.style.width = this.finalCanvas.width * this.localUser.scaleFactor + 'px';
+            this.finalCanvas.style.height = this.finalCanvas.height * this.localUser.scaleFactor + 'px';
+
+            this.canvasPos = this.finalCanvas.getBoundingClientRect();
+
+            this.backgroundCanvasCTX.drawImage(baseImage, 0, 0);
+
+            this.imagePattern = this.backgroundCanvasCTX.createPattern(baseImage, 'no-repeat')!;
+
+            requestAnimationFrame(this.paintCanvas);
+        };
+        baseImage.src = file.direct_url;
+    }
+
+    setupColorSelector() {
+        const hlSelector = document.getElementById('color-selector')!;
+        const hlSelectorMarker = document.getElementById('color-selector-inner')!;
+        const sSelector = document.getElementById('saturisation-selector')!;
+        const sSelectorMarker = document.getElementById('saturisation-selector-inner')!;
+        const oSelector = document.getElementById('opacity-selector')!;
+        const oSelectorMarker = document.getElementById('opacity-selector-inner')!;
+
+        let hue = 0;
+        let saturisation = 100;
+        let lightness = 0;
+        let opacity = 1;
+
+        let hlSelectorDown: boolean;
+        let sSelectorDown: boolean;
+        let oSelectorDown: boolean;
+
+        const manager = this;
+
+        function setHSLColor(h: number, s: number, l: number, o: number) {
+            manager.localUser.brushData.setColor(
+                (hlSelector.style.outlineColor =
+                    sSelector.style.outlineColor =
+                    oSelector.style.outlineColor =
+                        'hsla(' + h + ', ' + s + '%, ' + l + '%, ' + o + ')'),
+            );
+        }
+        let hlSelectorMouseMoveListener: (this: HTMLElement, event: MouseEvent) => void;
+        let sSelectorMouseMoveListener: (this: HTMLElement, event: MouseEvent) => void;
+        let oSelectorMouseMoveListener: (this: HTMLElement, event: MouseEvent) => void;
+
+        hlSelector.addEventListener('mousedown', (event) => {
+            if (event.button === 0) {
+                hlSelectorDown = true;
+                hlSelectorMouseMoveListener.call(hlSelector, event);
+            }
+        });
+        hlSelector.addEventListener('mouseup', (event) => {
+            if (event.button === 0) hlSelectorDown = false;
+        });
+        hlSelector.addEventListener(
+            'mousemove',
+            (hlSelectorMouseMoveListener = (event) => {
+                if (!hlSelectorDown) {
+                    return;
+                }
+
+                hue = (event.offsetX / hlSelector.offsetWidth) * 360;
+                lightness = (event.offsetY / hlSelector.offsetHeight) * 100;
+
+                const buildStr = '-webkit-linear-gradient(top, hsl(' + hue + ', 100%, ' + lightness + '%), hsl';
+                sSelector.style.backgroundImage = buildStr + '(' + hue + ', 0%, ' + lightness + '%))';
+                oSelector.style.backgroundImage = buildStr + 'a(' + hue + ', 0%, ' + lightness + '%, ' + opacity + '))';
+
+                hlSelectorMarker.style.left = event.offsetX - 5 + 'px';
+                hlSelectorMarker.style.top = event.offsetY - 5 + 'px';
+
+                setHSLColor(hue, saturisation, lightness, opacity);
+            }),
+        );
+
+        sSelector.addEventListener('mousedown', (event) => {
+            if (event.button === 0) {
+                sSelectorDown = true;
+                sSelectorMouseMoveListener.call(sSelector, event);
+            }
+        });
+        sSelector.addEventListener('mouseup', (event) => {
+            if (event.button === 0) sSelectorDown = false;
+        });
+        sSelector.addEventListener(
+            'mousemove',
+            (sSelectorMouseMoveListener = (event) => {
+                if (!sSelectorDown) {
+                    return;
+                }
+
+                saturisation = (1 - event.offsetY / sSelector.offsetHeight) * 100;
+
+                sSelectorMarker.style.top = event.offsetY + 'px';
+
+                hlSelector.style.backgroundImage =
+                    '-webkit-linear-gradient(top, black, transparent, white),' +
+                    '-webkit-linear-gradient(left, hsl(0, ' +
+                    saturisation +
+                    '%, 50%), hsl(60, ' +
+                    saturisation +
+                    '%, 50%), hsl(120, ' +
+                    saturisation +
+                    '%, 50%),' +
+                    'hsl(180, ' +
+                    saturisation +
+                    '%, 50%), hsl(240, ' +
+                    saturisation +
+                    '%, 50%), hsl(300, ' +
+                    saturisation +
+                    '%, 50%), hsl(0, ' +
+                    saturisation +
+                    '%, 50%))';
+
+                setHSLColor(hue, saturisation, lightness, opacity);
+            }),
+        );
+
+        oSelector.addEventListener('mousedown', (event) => {
+            if (event.button === 0) {
+                oSelectorDown = true;
+                oSelectorMouseMoveListener.call(oSelector, event);
+            }
+        });
+        oSelector.addEventListener('mouseup', (event) => {
+            if (event.button === 0) oSelectorDown = false;
+        });
+        oSelector.addEventListener(
+            'mousemove',
+            (oSelectorMouseMoveListener = (event) => {
+                if (!oSelectorDown) {
+                    return;
+                }
+
+                opacity = 1 - event.offsetY / oSelector.offsetHeight;
+
+                oSelectorMarker.style.top = event.offsetY + 'px';
+
+                setHSLColor(hue, saturisation, lightness, opacity);
+            }),
         );
     }
 
-    finalCanvasCTX.clearRect(0, 0, finalCanvas.width, finalCanvas.height);
-
-    finalCanvasCTX.drawImage(backgroundCanvas, 0, 0);
-    finalCanvasCTX.drawImage(foregroundCanvas, 0, 0);
-
-    localUser.brushData.brush.select(localUser, foregroundCanvasCTX, backgroundCanvasCTX);
-}
-
-function loadImage(file: FileModel, sessionId: string) {
-    const baseImage = new Image();
-    baseImage.crossOrigin = 'anonymous';
-
-    baseImage.onload = () => {
-        const maxWidth = document.getElementById('livedraw-wrapper')!.getBoundingClientRect().width;
-
-        if (baseImage.width > maxWidth) {
-            scaleFactor = maxWidth / baseImage.width;
-        } else {
-            scaleFactor = 1.0;
-        }
-
-        defaultFont = 12 / scaleFactor + 'px Verdana';
-
-        networking.connect(undefined, file, sessionId);
-
-        backgroundCanvas.width = foregroundCanvas.width = finalCanvas.width = baseImage.width;
-        backgroundCanvas.height = foregroundCanvas.height = finalCanvas.height = baseImage.height;
-
-        finalCanvas.style.width = finalCanvas.width * scaleFactor + 'px';
-        finalCanvas.style.height = finalCanvas.height * scaleFactor + 'px';
-
-        canvasPos = finalCanvas.getBoundingClientRect();
-
-        backgroundCanvasCTX.drawImage(baseImage, 0, 0);
-
-        imagePattern = backgroundCanvasCTX.createPattern(baseImage, 'no-repeat')!;
-
-        requestAnimationFrame(paintCanvas);
-    };
-    baseImage.src = file.direct_url;
-}
-
-function setupCanvas() {
-    backgroundCanvas = document.createElement('canvas');
-    foregroundCanvas = document.createElement('canvas');
-    finalCanvas = document.getElementById('livedraw') as HTMLCanvasElement;
-
-    backgroundCanvasCTX = backgroundCanvas.getContext('2d')!;
-    foregroundCanvasCTX = foregroundCanvas.getContext('2d')!;
-    finalCanvasCTX = finalCanvas.getContext('2d')!;
-
-    finalCanvas.addEventListener('mousedown', (event) => liveDrawInput.mouseDown(event), false);
-    finalCanvas.addEventListener('mouseup', (event) => liveDrawInput.mouseUp(event, backgroundCanvasCTX), false);
-    finalCanvas.addEventListener('mousemove', (event) => liveDrawInput.mouseMove(event, backgroundCanvasCTX), false); // FIX
-
-    finalCanvas.addEventListener('wheel', (event) => liveDrawInput.mouseScroll(event), false);
-    finalCanvas.addEventListener('dblclick', (event) => liveDrawInput.doubleClick(event), false);
-}
-
-function setupColorSelector() {
-    const hlSelector = document.getElementById('color-selector')!;
-    const hlSelectorMarker = document.getElementById('color-selector-inner')!;
-    const sSelector = document.getElementById('saturisation-selector')!;
-    const sSelectorMarker = document.getElementById('saturisation-selector-inner')!;
-    const oSelector = document.getElementById('opacity-selector')!;
-    const oSelectorMarker = document.getElementById('opacity-selector-inner')!;
-
-    let hue = 0;
-    let saturisation = 100;
-    let lightness = 0;
-    let opacity = 1;
-
-    let hlSelectorDown: boolean;
-    let sSelectorDown: boolean;
-    let oSelectorDown: boolean;
-
-    function setHSLColor(h: number, s: number, l: number, o: number) {
-        localUser.brushData.setColor(
-            (hlSelector.style.outlineColor =
-                sSelector.style.outlineColor =
-                oSelector.style.outlineColor =
-                    'hsla(' + h + ', ' + s + '%, ' + l + '%, ' + o + ')'),
-        );
-    }
-    let hlSelectorMouseMoveListener: (this: HTMLElement, event: MouseEvent) => void;
-    let sSelectorMouseMoveListener: (this: HTMLElement, event: MouseEvent) => void;
-    let oSelectorMouseMoveListener: (this: HTMLElement, event: MouseEvent) => void;
-
-    hlSelector.addEventListener('mousedown', (event) => {
-        if (event.button === 0) {
-            hlSelectorDown = true;
-            hlSelectorMouseMoveListener.call(hlSelector, event);
-        }
-    });
-    hlSelector.addEventListener('mouseup', (event) => {
-        if (event.button === 0) hlSelectorDown = false;
-    });
-    hlSelector.addEventListener(
-        'mousemove',
-        (hlSelectorMouseMoveListener = (event) => {
-            if (!hlSelectorDown) {
-                return;
+    setupBrushes() {
+        for (const brush in paintBrushes) {
+            const pBrush = paintBrushes[brush]!;
+            if (pBrush.usesCustomData) {
+                this.localUser.brushData.customData[brush] = {
+                    ...pBrush.defaultCustomData,
+                };
             }
-
-            hue = (event.offsetX / hlSelector.offsetWidth) * 360;
-            lightness = (event.offsetY / hlSelector.offsetHeight) * 100;
-
-            const buildStr = '-webkit-linear-gradient(top, hsl(' + hue + ', 100%, ' + lightness + '%), hsl';
-            sSelector.style.backgroundImage = buildStr + '(' + hue + ', 0%, ' + lightness + '%))';
-            oSelector.style.backgroundImage = buildStr + 'a(' + hue + ', 0%, ' + lightness + '%, ' + opacity + '))';
-
-            hlSelectorMarker.style.left = event.offsetX - 5 + 'px';
-            hlSelectorMarker.style.top = event.offsetY - 5 + 'px';
-
-            setHSLColor(hue, saturisation, lightness, opacity);
-        }),
-    );
-
-    sSelector.addEventListener('mousedown', (event) => {
-        if (event.button === 0) {
-            sSelectorDown = true;
-            sSelectorMouseMoveListener.call(sSelector, event);
-        }
-    });
-    sSelector.addEventListener('mouseup', (event) => {
-        if (event.button === 0) sSelectorDown = false;
-    });
-    sSelector.addEventListener(
-        'mousemove',
-        (sSelectorMouseMoveListener = (event) => {
-            if (!sSelectorDown) {
-                return;
+            if (pBrush.setup) {
+                pBrush.setup(this.localUser);
             }
-
-            saturisation = (1 - event.offsetY / sSelector.offsetHeight) * 100;
-
-            sSelectorMarker.style.top = event.offsetY + 'px';
-
-            hlSelector.style.backgroundImage =
-                '-webkit-linear-gradient(top, black, transparent, white),' +
-                '-webkit-linear-gradient(left, hsl(0, ' +
-                saturisation +
-                '%, 50%), hsl(60, ' +
-                saturisation +
-                '%, 50%), hsl(120, ' +
-                saturisation +
-                '%, 50%),' +
-                'hsl(180, ' +
-                saturisation +
-                '%, 50%), hsl(240, ' +
-                saturisation +
-                '%, 50%), hsl(300, ' +
-                saturisation +
-                '%, 50%), hsl(0, ' +
-                saturisation +
-                '%, 50%))';
-
-            setHSLColor(hue, saturisation, lightness, opacity);
-        }),
-    );
-
-    oSelector.addEventListener('mousedown', (event) => {
-        if (event.button === 0) {
-            oSelectorDown = true;
-            oSelectorMouseMoveListener.call(oSelector, event);
-        }
-    });
-    oSelector.addEventListener('mouseup', (event) => {
-        if (event.button === 0) oSelectorDown = false;
-    });
-    oSelector.addEventListener(
-        'mousemove',
-        (oSelectorMouseMoveListener = (event) => {
-            if (!oSelectorDown) {
-                return;
-            }
-
-            opacity = 1 - event.offsetY / oSelector.offsetHeight;
-
-            oSelectorMarker.style.top = event.offsetY + 'px';
-
-            setHSLColor(hue, saturisation, lightness, opacity);
-        }),
-    );
-}
-
-function setupBrushes() {
-    for (const brush in paintBrushes) {
-        const pBrush = paintBrushes[brush]!;
-        if (pBrush.usesCustomData) {
-            localUser.brushData.customData[brush] = {
-                ...pBrush.defaultCustomData,
-            };
-        }
-        if (pBrush.setup) {
-            pBrush.setup(localUser);
         }
     }
-}
 
-export function setBrush(brush: string) {
-    localUser.brushData.setBrush(brush);
-}
-
-export function setBrushWidth(width: number) {
-    localUser.brushData.setWidth(width);
-}
-
-export async function setup(id: string, sessionId: string) {
-    disconnect();
-
-    brushSizeSlider = document.getElementById('brush-width-slider') as HTMLInputElement;
-
-    const file = await FileModel.getById(id);
-    if (!file) {
-        return;
+    setBrush(brush: string) {
+        this.localUser.brushData.setBrush(brush);
     }
 
-    setupCanvas();
-    setupColorSelector();
-    setupBrushes();
-    loadImage(file, sessionId);
-}
+    setBrushWidth(width: number) {
+        this.localUser.brushData.setWidth(width);
+    }
 
-export async function disconnect() {
-    networking.close();
-    (canvasPos as any) = undefined;
-    scaleFactor = 1.0;
-    (imagePattern as any) = undefined;
-    (brushSizeSlider as any) = undefined;
-    (backgroundCanvasCTX as any) = undefined;
-    (foregroundCanvasCTX as any) = undefined;
-    (finalCanvasCTX as any) = undefined;
-    (backgroundCanvas as any) = undefined;
-    (foregroundCanvas as any) = undefined;
-    (finalCanvas as any) = undefined;
+    async setup(file: FileModel, sessionId: string) {
+        this.shouldConnect = true;
+        this.setupColorSelector();
+        this.setupBrushes();
+        this.loadImage(file, sessionId);
+    }
+
+    async destroy() {
+        this.shouldConnect = false;
+        try {
+            this.socket!.close();
+        } catch (e) {}
+    }
 }

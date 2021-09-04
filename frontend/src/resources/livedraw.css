@@ -68,3 +68,8 @@
     position: relative;
     pointer-events: none;
 }
+
+#livedraw-background,
+#livedraw-foreground {
+    display: none;
+}
