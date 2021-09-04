@@ -54,11 +54,7 @@
     pointer-events: none;
 }
 
-#saturisation-selector {
-    width: 20px;
-    background-image: -webkit-linear-gradient(top, hsl(0, 100%, 50%), transparent);
-}
-
+#saturisation-selector,
 #opacity-selector {
     width: 20px;
     background-image: -webkit-linear-gradient(top, hsl(0, 100%, 50%), transparent);
