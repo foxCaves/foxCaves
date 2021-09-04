@@ -147,7 +147,7 @@ const paintBrushes: {
             user.cursorData.lastY = y;
         },
         up(x, y, user, backgroundCanvasCTX) {
-            if (user.cursorData.lastX == x && user.cursorData.lastY == y) {
+            if (user.cursorData.lastX === x && user.cursorData.lastY === y) {
                 x++;
                 y++;
             }
@@ -202,7 +202,7 @@ const paintBrushes: {
             user.cursorData.lastY = y;
         },
         up(x, y, user, backgroundCanvasCTX) {
-            if (user.cursorData.lastX == x && user.cursorData.lastY == y) {
+            if (user.cursorData.lastX === x && user.cursorData.lastY === y) {
                 x++;
                 y++;
             }
@@ -237,7 +237,7 @@ const paintBrushes: {
             user.cursorData.lastY = y;
         },
         up(x, y, user, backgroundCanvasCTX) {
-            if (user.cursorData.lastX == x && user.cursorData.lastY == y) {
+            if (user.cursorData.lastX === x && user.cursorData.lastY === y) {
                 x++;
                 y++;
             }
@@ -272,7 +272,7 @@ const paintBrushes: {
             user.cursorData.lastY = y;
         },
         up(x, y, user, backgroundCanvasCTX) {
-            if (user.cursorData.lastX == x && user.cursorData.lastY == y) {
+            if (user.cursorData.lastX === x && user.cursorData.lastY === y) {
                 x++;
                 y++;
             }
@@ -307,7 +307,7 @@ const paintBrushes: {
             this.active = true;
         },
         up(x, y, user, backgroundCanvasCTX) {
-            if (user.cursorData.lastX == x && user.cursorData.lastY == y) {
+            if (user.cursorData.lastX === x && user.cursorData.lastY === y) {
                 x++;
                 y++;
             }
@@ -338,7 +338,7 @@ const paintBrushes: {
             font: 'Verdana',
         },
         setup(user) {
-            if (user != localUser) return;
+            if (user !== localUser) return;
             // TODO: This should really not be here...
             const textInput = document.getElementById('live-draw-text-input') as HTMLInputElement;
             const fontInput = document.getElementById('live-draw-font-input') as HTMLInputElement;
@@ -424,7 +424,7 @@ const paintBrushes: {
             backgroundCanvasCTX.strokeStyle = user.brushData.color;
 
             const verts = user.brushData.customData.polygon!.verts as Vertex[];
-            if (verts.length == 0) return;
+            if (verts.length === 0) return;
             const firstVert = verts[0]!;
             backgroundCanvasCTX.beginPath();
             backgroundCanvasCTX.moveTo(firstVert.x, firstVert.y);
@@ -445,7 +445,7 @@ const localUser: LocalUser = {
         brush: paintBrushes.text!,
         customData: {},
         setWidth(bWidth: number) {
-            if (bWidth == this.width) return;
+            if (bWidth === this.width) return;
             const strWidth = bWidth.toString();
             this.width = bWidth;
             brushSizeSlider.value = strWidth;
@@ -473,13 +473,13 @@ const localUser: LocalUser = {
         },
         setBrushAttribsLocal() {
             backgroundCanvasCTX.lineWidth = this.width * scaleFactor;
-            if (localUser.brushData.brush && localUser.brushData.brush.keepBackgroundStrokeStyle != true)
+            if (localUser.brushData.brush && localUser.brushData.brush.keepBackgroundStrokeStyle !== true)
                 backgroundCanvasCTX.strokeStyle = this.color;
             backgroundCanvasCTX.fillStyle = this.color;
 
             foregroundCanvasCTX.strokeStyle = this.color;
             foregroundCanvasCTX.fillStyle = this.color;
-            if (localUser.brushData.brush && localUser.brushData.brush.keepLineWidth != true)
+            if (localUser.brushData.brush && localUser.brushData.brush.keepLineWidth !== true)
                 foregroundCanvasCTX.lineWidth = this.width * scaleFactor;
         },
     },
@@ -617,7 +617,7 @@ const networking = {
     },
     recvDirectEvent(eventype: PaintEvent, payload: string) {
         const commands = payload.split('|');
-        if (eventype == PaintEvent.ERROR) {
+        if (eventype === PaintEvent.ERROR) {
             this.close();
             alert('Network error: ' + commands + '\nPlease refresh this page to rejoin!');
             return;
@@ -655,12 +655,12 @@ const networking = {
                 delete paintUsers[commands[0]!];
                 break;
             case PaintEvent.IMGBURST:
-                if (commands[1] == 'r') {
+                if (commands[1] === 'r') {
                     this.sendDrawEvent(
                         PaintEvent.IMGBURST,
                         commands[2] + '|' + finalCanvas.toDataURL('image/png').replace(/[\r\n]/g, '') + '|',
                     );
-                } else if (commands[1] == 'a') {
+                } else if (commands[1] === 'a') {
                     const toSet = new Image();
                     toSet.onload = () => {
                         backgroundCanvasCTX.drawImage(toSet, 0, 0, finalCanvas.width, finalCanvas.height);
@@ -792,7 +792,7 @@ const networking = {
     },
     sendRaw(msg: string) {
         msg = msg.trim();
-        if (msg.length == 0) {
+        if (msg.length === 0) {
             return;
         }
         try {
@@ -918,13 +918,13 @@ function setupColorSelector() {
     let oSelectorMouseMoveListener: (this: HTMLElement, event: MouseEvent) => void;
 
     hlSelector.addEventListener('mousedown', (event) => {
-        if (event.button == 0) {
+        if (event.button === 0) {
             hlSelectorDown = true;
             hlSelectorMouseMoveListener.call(hlSelector, event);
         }
     });
     hlSelector.addEventListener('mouseup', (event) => {
-        if (event.button == 0) hlSelectorDown = false;
+        if (event.button === 0) hlSelectorDown = false;
     });
     hlSelector.addEventListener(
         'mousemove',
@@ -948,13 +948,13 @@ function setupColorSelector() {
     );
 
     sSelector.addEventListener('mousedown', (event) => {
-        if (event.button == 0) {
+        if (event.button === 0) {
             sSelectorDown = true;
             sSelectorMouseMoveListener.call(sSelector, event);
         }
     });
     sSelector.addEventListener('mouseup', (event) => {
-        if (event.button == 0) sSelectorDown = false;
+        if (event.button === 0) sSelectorDown = false;
     });
     sSelector.addEventListener(
         'mousemove',
@@ -968,15 +968,15 @@ function setupColorSelector() {
             sSelectorMarker.style.top = event.offsetY + 'px';
 
             hlSelector.style.backgroundImage =
-                '-webkit-linear-gradient(top, black, transparent, white),\
-		-webkit-linear-gradient(left, hsl(0, ' +
+                '-webkit-linear-gradient(top, black, transparent, white),' +
+                '-webkit-linear-gradient(left, hsl(0, ' +
                 saturisation +
                 '%, 50%), hsl(60, ' +
                 saturisation +
                 '%, 50%), hsl(120, ' +
                 saturisation +
-                '%, 50%),\
-		hsl(180, ' +
+                '%, 50%),' +
+                'hsl(180, ' +
                 saturisation +
                 '%, 50%), hsl(240, ' +
                 saturisation +
@@ -991,13 +991,13 @@ function setupColorSelector() {
     );
 
     oSelector.addEventListener('mousedown', (event) => {
-        if (event.button == 0) {
+        if (event.button === 0) {
             oSelectorDown = true;
             oSelectorMouseMoveListener.call(oSelector, event);
         }
     });
     oSelector.addEventListener('mouseup', (event) => {
-        if (event.button == 0) oSelectorDown = false;
+        if (event.button === 0) oSelectorDown = false;
     });
     oSelector.addEventListener(
         'mousemove',
