@@ -27,7 +27,7 @@ export const LiveDrawPage: React.FC = () => {
         try {
             const file = await FileModel.getById(id);
             setFile(file);
-        } catch { }
+        } catch {}
         setFileLoading(false);
         setFileLoadDone(true);
     }, [id]);
@@ -39,7 +39,7 @@ export const LiveDrawPage: React.FC = () => {
         setFileLoading(true);
         loadFile();
     }, [fileLoading, fileLoadDone, loadFile]);
-    
+
     useEffect(() => {
         setup(id, sid);
 
