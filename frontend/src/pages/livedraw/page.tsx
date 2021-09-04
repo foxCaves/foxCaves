@@ -16,8 +16,6 @@ export const LiveDrawRedirectPage: React.FC = () => {
 
 export const LiveDrawPage: React.FC = () => {
     const { id, sid } = useParams<{ id: string; sid: string }>();
-    const [fileLoading, setFileLoading] = useState(false);
-    const [fileLoadDone, setFileLoadDone] = useState(false);
     const [file, setFile] = useState<FileModel | undefined>(undefined);
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const foregroundCanvasRef = useRef<HTMLCanvasElement>(null);
@@ -27,22 +25,10 @@ export const LiveDrawPage: React.FC = () => {
 
     const fileName = file ? file.name : `ID_${id}`;
 
-    const loadFile = useCallback(async () => {
-        try {
-            const file = await FileModel.getById(id);
-            setFile(file);
-        } catch {}
-        setFileLoading(false);
-        setFileLoadDone(true);
+    useEffect(() => {
+        FileModel.getById(id).then(setFile, console.error);
     }, [id]);
 
-    useEffect(() => {
-        if (fileLoading || fileLoadDone) {
-            return;
-        }
-        setFileLoading(true);
-        loadFile();
-    }, [fileLoading, fileLoadDone, loadFile]);
 
     const getFileName = useCallback(() => {
         return `${fileName}-edit.png`;
@@ -73,29 +59,28 @@ export const LiveDrawPage: React.FC = () => {
             await uploadFile(namedBlob);
         }, 'image/png');
     }, [getFileName]);
-
+    
     useEffect(() => {
-        if (managerRef.current) {
-            managerRef.current.destroy();
-            managerRef.current = undefined;
-        }
-
-        if (!file) {
-            return;
-        }
-
+        console.log('init manager');
         const manager = new LiveDrawManager(
             canvasRef.current!,
             foregroundCanvasRef.current!,
             backgroundCanvasRef.current!,
             brushWidthSliderRef.current!,
         );
-        manager.setup(file, sid);
         managerRef.current = manager;
-
         return () => {
             manager.destroy();
         };
+    }, []);
+
+    useEffect(() => {
+        if (!file) {
+            return;
+        }
+        console.log('file', file);
+
+        managerRef.current!.setup(file, sid);
     }, [file, sid]);
 
     return (
