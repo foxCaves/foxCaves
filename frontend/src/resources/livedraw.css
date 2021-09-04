@@ -6,7 +6,8 @@
     margin: auto;
 }
 
-#live-draw-text-input, #live-draw-font-input {
+#live-draw-text-input,
+#live-draw-font-input {
     display: none;
 }
 
