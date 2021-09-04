@@ -1,23 +1,45 @@
 import '../../resources/livedraw.css';
 
 import { BlobWithName, uploadFile } from '../../utils/file_uploader';
-import React, { useCallback, useEffect, useRef } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Redirect, useParams } from 'react-router-dom';
 import { disconnect, setBrush, setBrushWidth, setup } from './manager';
 
+import { FileModel } from '../../models/file';
 import { randomString } from '../../utils/random';
 
 export const LiveDrawRedirectPage: React.FC = () => {
     const { id } = useParams<{ id: string }>();
 
-    return <Redirect to={`/live/${id}/${randomString(12)}`} />;
+    return <Redirect to={`/livedraw/${id}/${randomString(12)}`} />;
 };
 
 export const LiveDrawPage: React.FC = () => {
     const { id, sid } = useParams<{ id: string; sid: string }>();
-
+    const [fileLoading, setFileLoading] = useState(false);
+    const [fileLoadDone, setFileLoadDone] = useState(false);
+    const [file, setFile] = useState<FileModel | undefined>(undefined);
     const canvasRef = useRef<HTMLCanvasElement>(null);
 
+    const fileName = file ? file.name : `ID_${id}`;
+
+    const loadFile = useCallback(async () => {
+        try {
+            const file = await FileModel.getById(id);
+            setFile(file);
+        } catch { }
+        setFileLoading(false);
+        setFileLoadDone(true);
+    }, [id]);
+
+    useEffect(() => {
+        if (fileLoading || fileLoadDone) {
+            return;
+        }
+        setFileLoading(true);
+        loadFile();
+    }, [fileLoading, fileLoadDone, loadFile]);
+    
     useEffect(() => {
         setup(id, sid);
 
@@ -27,8 +49,8 @@ export const LiveDrawPage: React.FC = () => {
     }, [id, sid]);
 
     const getFileName = useCallback(() => {
-        return 'live-draw.png';
-    }, []);
+        return `${fileName}-edit.png`;
+    }, [fileName]);
 
     const selectBrush = useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
         setBrush(e.target.value);
@@ -58,6 +80,9 @@ export const LiveDrawPage: React.FC = () => {
 
     return (
         <>
+            <h1>Edit file: {fileName}</h1>
+            <br />
+
             <div id="livedraw-wrapper">
                 <canvas ref={canvasRef} id="livedraw"></canvas>
             </div>
@@ -84,11 +109,11 @@ export const LiveDrawPage: React.FC = () => {
                         type="range"
                         value="10"
                         min="1"
-                        max="9999"
+                        max="200"
                         step="0.1"
                         onChange={selectBrushWidth}
                     />
-                    <span id="brush-width-slider-max">9999</span>
+                    <span id="brush-width-slider-max">200</span>
                     <br />
                     <div id="color-selector">
                         <svg id="color-selector-inner" xmlns="http://www.w3.org/2000/svg" version="1.1">

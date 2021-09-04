@@ -747,7 +747,7 @@ const networking = {
     sendBrushPacket(brushName: string, key: string, val: string) {
         this.sendRaw(PaintEvent.CUSTOM + brushName + '|' + key + '|' + val);
     },
-    async connect(oldSocket: WebSocket | undefined, fileId: string, sessionId: string) {
+    async connect(oldSocket: WebSocket | undefined, file: FileModel, sessionId: string) {
         if (oldSocket && oldSocket !== this.socket) {
             return;
         }
@@ -755,7 +755,7 @@ const networking = {
 
         try {
             const res = await fetch(
-                `/api/v1/files/${encodeURIComponent(fileId)}/livedraw?session=${encodeURIComponent(sessionId)}`,
+                `/api/v1/files/${encodeURIComponent(file.id)}/livedraw?session=${encodeURIComponent(sessionId)}`,
             );
             const data = await res.json();
             const webSocket = new WebSocket(data.url);
@@ -769,7 +769,7 @@ const networking = {
                 if (!networking.shouldConnect) {
                     return;
                 }
-                window.setTimeout(() => networking.connect(webSocket, fileId, sessionId), 1000);
+                window.setTimeout(() => networking.connect(webSocket, file, sessionId), 1000);
                 webSocket.close();
             };
 
@@ -840,7 +840,7 @@ function paintCanvas() {
     localUser.brushData.brush.select(localUser, foregroundCanvasCTX, backgroundCanvasCTX);
 }
 
-function loadImage(file: FileModel, fileId: string, sessionId: string) {
+function loadImage(file: FileModel, sessionId: string) {
     const baseImage = new Image();
     baseImage.crossOrigin = 'anonymous';
 
@@ -855,7 +855,7 @@ function loadImage(file: FileModel, fileId: string, sessionId: string) {
 
         defaultFont = 12 / scaleFactor + 'px Verdana';
 
-        networking.connect(undefined, fileId, sessionId);
+        networking.connect(undefined, file, sessionId);
 
         backgroundCanvas.width = foregroundCanvas.width = finalCanvas.width = baseImage.width;
         backgroundCanvas.height = foregroundCanvas.height = finalCanvas.height = baseImage.height;
@@ -1040,13 +1040,12 @@ export function setBrushWidth(width: number) {
     localUser.brushData.setWidth(width);
 }
 
-export async function setup(fileId: string, sessionId: string) {
-    //(document.getElementById('inviteid') as HTMLInputElement).value = document.location.href;
-    brushSizeSlider = document.getElementById('brush-width-slider') as HTMLInputElement;
-    brushSizeSlider.max = MAX_BRUSH_WIDTH.toString();
-    document.getElementById('brush-width-slider-max')!.innerText = MAX_BRUSH_WIDTH.toString();
+export async function setup(id: string, sessionId: string) {
+    disconnect();
 
-    const file = await FileModel.getById(fileId);
+    brushSizeSlider = document.getElementById('brush-width-slider') as HTMLInputElement;
+
+    const file = await FileModel.getById(id);
     if (!file) {
         return;
     }
@@ -1054,7 +1053,7 @@ export async function setup(fileId: string, sessionId: string) {
     setupCanvas();
     setupColorSelector();
     setupBrushes();
-    loadImage(file, fileId, sessionId);
+    loadImage(file, sessionId);
 }
 
 export async function disconnect() {

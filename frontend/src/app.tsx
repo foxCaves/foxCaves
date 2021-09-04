@@ -127,10 +127,10 @@ export const App: React.FC = () => {
                             <Route path="/view/:id">
                                 <ViewPage />
                             </Route>
-                            <Route path="/live/:id/:sid">
+                            <Route path="/livedraw/:id/:sid">
                                 <LiveDrawPage />
                             </Route>
-                            <Route path="/live/:id">
+                            <Route path="/livedraw/:id">
                                 <LiveDrawRedirectPage />
                             </Route>
                             <Route path="/email/forgot_password">
