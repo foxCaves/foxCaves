@@ -2,7 +2,12 @@ import { FileModel } from '../models/file';
 import { HttpError } from './api';
 import { toast } from 'react-toastify';
 
-function uploadFileInternal(file: File, onProgress: (e: ProgressEvent<XMLHttpRequestEventTarget>) => void) {
+export interface BlobWithName extends Blob {
+    name: string;
+}
+export type FileLike = File | BlobWithName;
+
+function uploadFileInternal(file: FileLike, onProgress: (e: ProgressEvent<XMLHttpRequestEventTarget>) => void) {
     return new Promise<FileModel>((resolve, reject) => {
         const xhr = new XMLHttpRequest();
         xhr.open('POST', `/api/v1/files?name=${encodeURIComponent(file.name)}`);
@@ -32,7 +37,7 @@ function uploadFileInternal(file: File, onProgress: (e: ProgressEvent<XMLHttpReq
     });
 }
 
-export async function uploadFile(file: File): Promise<FileModel> {
+export async function uploadFile(file: FileLike): Promise<FileModel> {
     const toastId = toast(`Uploading file "${file.name}"...`, {
         autoClose: false,
         progress: 0,

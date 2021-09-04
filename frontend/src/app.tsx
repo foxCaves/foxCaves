@@ -4,6 +4,7 @@ import 'react-aspect-ratio/aspect-ratio.css';
 
 import { AppContext, AppContextClass } from './utils/context';
 import { CustomDropDownItem, CustomNavLink, CustomRoute, LoginState } from './components/route';
+import { LiveDrawPage, LiveDrawRedirectPage } from './pages/livedraw/page';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Route, BrowserRouter as Router, Switch } from 'react-router-dom';
 
@@ -125,6 +126,12 @@ export const App: React.FC = () => {
                             </Route>
                             <Route path="/view/:id">
                                 <ViewPage />
+                            </Route>
+                            <Route path="/live/:id/:sid">
+                                <LiveDrawPage />
+                            </Route>
+                            <Route path="/live/:id">
+                                <LiveDrawRedirectPage />
                             </Route>
                             <Route path="/email/forgot_password">
                                 <ForgotPasswordPage />

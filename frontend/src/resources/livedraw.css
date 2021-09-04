@@ -1,0 +1,20 @@
+#livedraw-wrapper {
+    text-align: center;
+}
+
+#livedraw {
+    margin: auto;
+}
+
+#live-draw-text-input, #live-draw-font-input {
+    display: none;
+}
+
+#live-draw-options span {
+    color: white;
+}
+
+#color-selector-inner line {
+    stroke: black;
+    stroke-width: 1px;
+}
