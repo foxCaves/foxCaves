@@ -803,6 +803,10 @@ const networking = {
 let defaultFont = '24px Verdana';
 
 function paintCanvas() {
+    if (!foregroundCanvasCTX) {
+        return;
+    }
+
     requestAnimationFrame(paintCanvas);
     if (!localUser.brushData.brush) {
         return;
@@ -1055,4 +1059,14 @@ export async function setup(fileId: string, sessionId: string) {
 
 export async function disconnect() {
     networking.close();
+    (canvasPos as any) = undefined;
+    scaleFactor = 1.0;
+    (imagePattern as any) = undefined;
+    (brushSizeSlider as any) = undefined;
+    (backgroundCanvasCTX as any) = undefined;
+    (foregroundCanvasCTX as any) = undefined;
+    (finalCanvasCTX as any) = undefined;
+    (backgroundCanvas as any) = undefined;
+    (foregroundCanvas as any) = undefined;
+    (finalCanvas as any) = undefined;
 }
