@@ -11,7 +11,6 @@ let backgroundCanvasCTX: CanvasRenderingContext2D,
 let backgroundCanvas: HTMLCanvasElement, foregroundCanvas: HTMLCanvasElement, finalCanvas: HTMLCanvasElement;
 
 const MAX_BRUSH_WIDTH = 200;
-let LIVEDRAW_FILE: FileModel | undefined = undefined;
 
 enum PaintEvent {
     WIDTH = 'w',
@@ -837,7 +836,7 @@ function paintCanvas() {
     localUser.brushData.brush.select(localUser, foregroundCanvasCTX, backgroundCanvasCTX);
 }
 
-function loadImage(fileId: string, sessionId: string) {
+function loadImage(file: FileModel, fileId: string, sessionId: string) {
     const baseImage = new Image();
     baseImage.crossOrigin = 'anonymous';
 
@@ -868,7 +867,7 @@ function loadImage(fileId: string, sessionId: string) {
 
         requestAnimationFrame(paintCanvas);
     };
-    baseImage.src = LIVEDRAW_FILE!.direct_url;
+    baseImage.src = file.direct_url;
 }
 
 function setupCanvas() {
@@ -1043,12 +1042,15 @@ export async function setup(fileId: string, sessionId: string) {
     brushSizeSlider.max = MAX_BRUSH_WIDTH.toString();
     document.getElementById('brush-width-slider-max')!.innerText = MAX_BRUSH_WIDTH.toString();
 
-    LIVEDRAW_FILE = await FileModel.getById(fileId);
+    const file = await FileModel.getById(fileId);
+    if (!file) {
+        return;
+    }
 
     setupCanvas();
     setupColorSelector();
     setupBrushes();
-    loadImage(fileId, sessionId);
+    loadImage(file, fileId, sessionId);
 }
 
 export async function disconnect() {
