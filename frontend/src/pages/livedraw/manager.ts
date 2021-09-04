@@ -293,7 +293,7 @@ const paintBrushes: {
             this.move(manager, x, y, user, backgroundCanvasCTX);
         },
         move(manager, x, y, user, backgroundCanvasCTX) {
-            // TODO: backgroundCanvasCTX.strokeStyle = imagePattern;
+            backgroundCanvasCTX.strokeStyle = manager.imagePattern!;
             backgroundCanvasCTX.lineWidth = user.brushData.width * manager.scaleFactor;
             backgroundCanvasCTX.lineCap = 'round';
 
