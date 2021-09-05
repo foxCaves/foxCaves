@@ -138,9 +138,13 @@ export const LiveDrawPage: React.FC = () => {
                 </fieldset>
                 <fieldset>
                     <legend>Utils</legend>
-                    <Button variant="primary" onClick={saveImage}>Save Image</Button>
+                    <Button variant="primary" onClick={saveImage}>
+                        Save Image
+                    </Button>
                     <> </>
-                    <Button variant="secondary" onClick={downloadImage}>Download</Button>
+                    <Button variant="secondary" onClick={downloadImage}>
+                        Download
+                    </Button>
                 </fieldset>
             </div>
         </>
