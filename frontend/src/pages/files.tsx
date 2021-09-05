@@ -3,7 +3,6 @@ import '../resources/files.css';
 import { Col, Container, Row } from 'react-bootstrap';
 import React, { KeyboardEvent, useContext, useEffect, useState } from 'react';
 
-import AspectRatio from 'react-aspect-ratio';
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
 import Dropdown from 'react-bootstrap/Dropdown';
@@ -12,6 +11,7 @@ import { FilesContext } from '../components/liveloading';
 import Form from 'react-bootstrap/Form';
 import { LinkContainer } from 'react-router-bootstrap';
 import Modal from 'react-bootstrap/Modal';
+import Ratio from 'react-bootstrap/Ratio';
 import { StorageUseBar } from '../components/storage_use';
 import nothumb from '../resources/nothumb.gif';
 import { toast } from 'react-toastify';
@@ -80,9 +80,9 @@ export const FileView: React.FC<{
                 )}
             </Card.Header>
             <Card.Body>
-                <AspectRatio ratio="1/1">
+                <Ratio aspectRatio="1x1">
                     <Card.Img variant="top" src={file.thumbnail_url || nothumb} />
-                </AspectRatio>
+                </Ratio>
             </Card.Body>
             <Card.Footer className="d-flex">
                 <div className="flex-grow-1 p-1">{file.getFormattedSize()}</div>

@@ -1,6 +1,5 @@
 import './resources/app.css';
 import 'react-toastify/dist/ReactToastify.css';
-import 'react-aspect-ratio/aspect-ratio.css';
 
 import { AppContext, AppContextClass } from './utils/context';
 import { CustomDropDownItem, CustomNavLink, CustomRoute, LoginState } from './components/route';
