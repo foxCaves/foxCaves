@@ -23,6 +23,7 @@
 #live-draw-options > fieldset {
     display: inline;
     vertical-align: text-top;
+    padding: 40px;
 }
 
 #color-selector,

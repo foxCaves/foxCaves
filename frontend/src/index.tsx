@@ -1,5 +1,7 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootswatch/dist/vapor/bootstrap.min.css';
+import 'react-bootstrap-range-slider/dist/react-bootstrap-range-slider.css';
+import 'react-toastify/dist/ReactToastify.css';
 
 import * as Sentry from '@sentry/react';
 

@@ -463,7 +463,7 @@ function makeLocalUser(manager: LiveDrawManager): LocalUser {
                 if (bWidth === this.width) return;
                 const strWidth = bWidth.toString();
                 this.width = bWidth;
-                manager.brushSizeSlider.value = strWidth;
+                manager.sliderSetBrushWidth(bWidth);
                 this.setBrushAttribsLocal();
                 manager.sendDrawEvent(PaintEvent.WIDTH, strWidth);
             },
@@ -538,7 +538,7 @@ export class LiveDrawManager {
 
     public canvasPos: DOMRect;
     public imagePattern?: CanvasPattern;
-    public brushSizeSlider: HTMLInputElement;
+    public sliderSetBrushWidth: (val: number) => void;
     public backgroundCanvasCTX: CanvasRenderingContext2D;
     public foregroundCanvasCTX: CanvasRenderingContext2D;
     public finalCanvasCTX: CanvasRenderingContext2D;
@@ -550,9 +550,9 @@ export class LiveDrawManager {
         canvas: HTMLCanvasElement,
         backgroundCanvas: HTMLCanvasElement,
         foregroundCanvas: HTMLCanvasElement,
-        brushSizeSlider: HTMLInputElement,
+        sliderSetBrushWidth: (val: number) => void,
     ) {
-        this.brushSizeSlider = brushSizeSlider;
+        this.sliderSetBrushWidth = sliderSetBrushWidth;
 
         this.backgroundCanvas = backgroundCanvas;
         this.foregroundCanvas = foregroundCanvas;

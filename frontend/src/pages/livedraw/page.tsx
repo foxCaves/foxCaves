@@ -4,8 +4,11 @@ import { BlobWithName, uploadFile } from '../../utils/file_uploader';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Redirect, useParams } from 'react-router-dom';
 
+import Button from 'react-bootstrap/Button';
 import { FileModel } from '../../models/file';
+import { Form } from 'react-bootstrap';
 import { LiveDrawManager } from './manager';
+import RangeSlider from 'react-bootstrap-range-slider';
 import { randomString } from '../../utils/random';
 
 export const LiveDrawRedirectPage: React.FC = () => {
@@ -22,6 +25,7 @@ export const LiveDrawPage: React.FC = () => {
     const backgroundCanvasRef = useRef<HTMLCanvasElement>(null);
     const brushWidthSliderRef = useRef<HTMLInputElement>(null);
     const managerRef = useRef<LiveDrawManager | undefined>(undefined);
+    const [brushWidth, setBrushWidth] = useState(10);
 
     const fileName = file ? file.name : `ID_${id}`;
 
@@ -38,7 +42,9 @@ export const LiveDrawPage: React.FC = () => {
     }, []);
 
     const selectBrushWidth = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-        managerRef.current?.setBrushWidth(parseInt(e.target.value, 10));
+        const v = parseInt(e.target.value, 10);
+        managerRef.current?.setBrushWidth(v);
+        setBrushWidth(v);
     }, []);
 
     const downloadImage = useCallback(() => {
@@ -64,7 +70,7 @@ export const LiveDrawPage: React.FC = () => {
             canvasRef.current!,
             foregroundCanvasRef.current!,
             backgroundCanvasRef.current!,
-            brushWidthSliderRef.current!,
+            setBrushWidth,
         );
         managerRef.current = manager;
         return () => {
@@ -95,7 +101,7 @@ export const LiveDrawPage: React.FC = () => {
             <div id="live-draw-options">
                 <fieldset>
                     <legend>Brush Settings</legend>
-                    <select defaultValue="brush" onChange={selectBrush}>
+                    <Form.Select defaultValue="brush" onChange={selectBrush}>
                         <option>rectangle</option>
                         <option>circle</option>
                         <option>brush</option>
@@ -103,22 +109,19 @@ export const LiveDrawPage: React.FC = () => {
                         <option>line</option>
                         <option>restore</option>
                         <option>polygon</option>
-                    </select>
+                    </Form.Select>
                     <input id="live-draw-text-input" type="text" placeholder="drawtext" />
                     <input id="live-draw-font-input" type="text" defaultValue="Verdana" placeholder="font" />
                     <br />
-                    <span>0</span>
-                    <input
+                    <RangeSlider
                         id="brush-width-slider"
                         ref={brushWidthSliderRef}
-                        type="range"
-                        value="10"
-                        min="1"
-                        max="200"
-                        step="0.1"
+                        value={brushWidth}
+                        min={1}
+                        max={200}
+                        step={0.1}
                         onChange={selectBrushWidth}
                     />
-                    <span id="brush-width-slider-max">200</span>
                     <br />
                     <div id="color-selector">
                         <svg id="color-selector-inner" xmlns="http://www.w3.org/2000/svg" version="1.1">
@@ -135,8 +138,9 @@ export const LiveDrawPage: React.FC = () => {
                 </fieldset>
                 <fieldset>
                     <legend>Utils</legend>
-                    <input type="button" value="Save Image" onClick={saveImage} />
-                    <input type="button" value="Download" onClick={downloadImage} />
+                    <Button variant="primary" onClick={saveImage}>Save Image</Button>
+                    <> </>
+                    <Button variant="secondary" onClick={downloadImage}>Download</Button>
                 </fieldset>
             </div>
         </>
