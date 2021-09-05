@@ -28,6 +28,8 @@ export const FileView: React.FC<{
 }> = ({ file, editMode, setDeleteFile, setEditFile }) => {
     const [editFileName, setEditFileName] = useInputFieldSetter(file.name);
 
+    const isImage = file.mimetype.startsWith('image/');
+
     const onKeyDownEdit = useCallback(
         async (e: KeyboardEvent) => {
             if (e.key === 'Enter') {
@@ -92,9 +94,11 @@ export const FileView: React.FC<{
                         <LinkContainer to={`/view/${file.id}`}>
                             <Dropdown.Item>View</Dropdown.Item>
                         </LinkContainer>
-                        <LinkContainer to={`/livedraw/${file.id}`}>
-                            <Dropdown.Item>Live draw</Dropdown.Item>
-                        </LinkContainer>
+                        {isImage ? (
+                            <LinkContainer to={`/livedraw/${file.id}`}>
+                                <Dropdown.Item>Live draw</Dropdown.Item>
+                            </LinkContainer>
+                        ) : null}
                         <Dropdown.Item href={file.download_url}>Download</Dropdown.Item>
                         <Dropdown.Item onClick={setEditFileCB}>Rename</Dropdown.Item>
                         <Dropdown.Item onClick={setDeleteFileCB}>Delete</Dropdown.Item>
