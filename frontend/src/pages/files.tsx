@@ -9,6 +9,7 @@ import Dropdown from 'react-bootstrap/Dropdown';
 import { FileModel } from '../models/file';
 import { FilesContext } from '../components/liveloading';
 import Form from 'react-bootstrap/Form';
+import { Link } from 'react-router-dom';
 import { LinkContainer } from 'react-router-bootstrap';
 import Modal from 'react-bootstrap/Modal';
 import Ratio from 'react-bootstrap/Ratio';
@@ -83,7 +84,9 @@ export const FileView: React.FC<{
             </Card.Header>
             <Card.Body>
                 <Ratio aspectRatio="1x1">
-                    <Card.Img variant="top" src={file.thumbnail_url || nothumb} />
+                    <Link to={`/view/${file.id}`}>
+                        <Card.Img variant="top" src={file.thumbnail_url || nothumb} />
+                    </Link>
                 </Ratio>
             </Card.Body>
             <Card.Footer className="d-flex">
