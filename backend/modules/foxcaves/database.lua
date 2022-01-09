@@ -19,7 +19,11 @@ local db_meta = {}
 function db_meta:query(query, ...)
     local args = {...}
     for i,v in next, args do
-        args[i] = self.db:escape_literal(v)
+        if v == nil then
+            args[i] = "NULL"
+        else
+            args[i] = self.db:escape_literal(v)
+        end
     end
     query = query:format(unpack(args))
     local res, err = self.db:query(query)

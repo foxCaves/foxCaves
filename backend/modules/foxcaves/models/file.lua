@@ -101,10 +101,13 @@ function file_model.new()
 end
 
 function file_model.sanitize_filename(name)
-    return ngx.re.gsub(name, "[<>\r\n\t:/\\]+", "_", "o")
+    return ngx.re.gsub(name, "[<>\r\n\t:/\\\\]+", "_", "o")
 end
 
 function file_model.extract_name_and_extension(name)
+    if not name then
+        return nil, nil
+    end
     local res = ngx.re.match(name, "^(.*?)(\\.[a-zA-Z0-9_-]+)?$", "o")
     if not res then
         return nil, nil
