@@ -13,10 +13,8 @@ R.register_route("/api/v1/files/{file}", "PATCH", R.make_route_opts(), function(
 
     local args = utils.get_post_args()
 
-    if args.name then
-        if not file:set_name(newname) then
-            return utils.api_error("Invalid file name")
-        end
+    if args.name and not file:set_name(args.name) then
+        return utils.api_error("Invalid file name")
     end
 
     file:save()
