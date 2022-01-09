@@ -14,7 +14,7 @@ R.register_route("/api/v1/files/{file}", "PATCH", R.make_route_opts(), function(
     local args = utils.get_post_args()
 
     if args.name then
-        local newname = args.name
+        local newname = file_model.sanitize_filename(args.name)
         local n, newext = file_model.extract_name_and_extension(newname)
         if not n then
             return utils.api_error("Invalid file name")

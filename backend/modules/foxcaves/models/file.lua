@@ -100,8 +100,12 @@ function file_model.new()
     return file
 end
 
+function file_model.sanitize_filename(name)
+    return ngx.re.gsub("[<>\r\n\t:/\\]+", "_", "o")
+end
+
 function file_model.extract_name_and_extension(name)
-    local res = ngx.re.match(name, "^([^<>\r\n\t]*?)(\\.[a-zA-Z0-9]+)?$", "o")
+    local res = ngx.re.match(name, "^(.*?)(\\.[a-zA-Z0-9_-]+)?$", "o")
     if not res then
         return nil, nil
     end
@@ -127,6 +131,7 @@ function file_mt:set_owner(user)
 end
 
 function file_mt:set_name(name)
+    name = file_model.sanitize_filename(name)
     local n, ext = file_model.extract_name_and_extension(name)
 
     if not n then
