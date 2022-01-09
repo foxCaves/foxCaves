@@ -90,4 +90,13 @@ function M.is_falsy_or_null(v)
     return (not v) or v == ngx.null
 end
 
+function M.shorten_string(str, len)
+    local curlen = str:len()
+    if curlen <= len then
+        return str, curlen
+    end
+
+    return str:sub(1, len), len
+end
+
 return M

@@ -20,6 +20,10 @@ local file_model = {
         storage = path.abs(ROOT .. "/storage/"),
         temp = path.abs(ROOT .. "/tmp/"),
     },
+    consts = {
+        NAME_MAX_LEN = 255,
+        EXT_MAX_LEN = 32,
+    }
 }
 
 require("foxcaves.module_helper").setmodenv()
@@ -108,10 +112,12 @@ function file_model.extract_name_and_extension(name)
     if not name then
         return nil, nil
     end
+
     local res = ngx.re.match(name, "^(.*?)(\\.[a-zA-Z0-9_-]+)?$", "o")
     if not res then
         return nil, nil
     end
+
     return res[1], (res[2] and res[2]:sub(2):lower())
 end
 
@@ -133,17 +139,34 @@ function file_mt:set_owner(user)
     self.owner = user.id or user
 end
 
-function file_mt:set_name(name)
-    name = file_model.sanitize_filename(name)
-    local n, ext = file_model.extract_name_and_extension(name)
+function file_mt:set_name(rawname)
+    local name, ext = file_model.extract_name_and_extension(
+        file_model.sanitize_filename(rawname)
+    )
 
-    if not n then
+    if not name then
         return false
     end
 
-    self.name = name
-    self.mimetype = mimetypes[ext] or "application/octet-stream"
+    local fullname
+    if ext then
+        local len
+        extlen, len = utils.shorten_string(ext, file_model.consts.EXT_MAX_LEN)
+        fullname = utils.shorten_string(name, file_model.consts.NAME_MAX_LEN - (extlen + 1)) .. "." .. ext
+    else
+        fullname = utils.shorten_string(name, file_model.consts.NAME_MAX_LEN)
+    end
 
+    self.name = fullname
+
+    return true
+end
+
+function file_mt:compute_mime_type()
+    if not self.name then
+        return false
+    end
+    self.mimetype = mimetypes[self:get_extension()] or "application/octet-stream"
     return true
 end
 
