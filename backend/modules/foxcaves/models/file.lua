@@ -7,6 +7,7 @@ local url_config = require("foxcaves.config").urls
 local ROOT = require("foxcaves.consts").ROOT
 local exec = require("foxcaves.exec")
 local mimetypes = require("foxcaves.mimetypes")
+local utils = require("foxcaves.utils")
 
 local os = os
 local ngx = ngx
@@ -150,8 +151,8 @@ function file_mt:set_name(rawname)
 
     local fullname
     if ext then
-        local len
-        extlen, len = utils.shorten_string(ext, file_model.consts.EXT_MAX_LEN)
+        local extlen
+        ext, extlen = utils.shorten_string(ext, file_model.consts.EXT_MAX_LEN)
         fullname = utils.shorten_string(name, file_model.consts.NAME_MAX_LEN - (extlen + 1)) .. "." .. ext
     else
         fullname = utils.shorten_string(name, file_model.consts.NAME_MAX_LEN)
