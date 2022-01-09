@@ -163,7 +163,7 @@ function file_mt:set_name(rawname)
     return true
 end
 
-function file_mt:compute_mime_type()
+function file_mt:compute_mimetype()
     if not self.name then
         return false
     end

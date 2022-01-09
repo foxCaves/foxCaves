@@ -21,7 +21,7 @@ R.register_route("/api/v1/files", "POST", R.make_route_opts(), function()
 
     local file = file_model.new()
     file:set_owner(user)
-    if not file:set_name(name) then
+    if not file:set_name(name) or not file:compute_mimetype() then
         return utils.api_error("Invalid name")
     end
 
