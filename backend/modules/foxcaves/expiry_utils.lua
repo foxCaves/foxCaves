@@ -1,4 +1,5 @@
 local tonumber = tonumber
+local next = next
 local database = require("foxcaves.database")
 
 local M = {}
@@ -26,6 +27,13 @@ function M.parse_expiry(args, model, prefix)
             model.expires_at = res.expires_at
         end
         return
+    end
+end
+
+function M.delete_expired(model)
+    local objects = model.get_by_query("expires_at < now()")
+    for _, obj in next, objects do
+        obj:delete()
     end
 end
 

@@ -19,6 +19,14 @@ end
 
 local link_select = 'id, owner, url, expires_at, ' .. database.TIME_COLUMNS_EXPIRING
 
+function link_model.get_by_query(query, ...)
+    local links = database.get_shared():query('SELECT ' .. link_select .. ' FROM links WHERE ' .. query, ...)
+    for k,v in next, links do
+        links[k] = makelinkmt(v)
+    end
+    return links
+end
+
 function link_model.get_by_user(user)
     if not user then
         return {}
@@ -28,11 +36,7 @@ function link_model.get_by_user(user)
         user = user.id
     end
 
-    local links = database.get_shared():query('SELECT ' .. link_select .. ' FROM links WHERE owner = %s', user)
-    for k,v in next, links do
-        links[k] = makelinkmt(v)
-    end
-    return links
+    return link_model.get_by_query('owner = %s', user)
 end
 
 function link_model.get_by_id(id)
@@ -40,13 +44,11 @@ function link_model.get_by_id(id)
         return nil
     end
 
-    local link = database.get_shared():query_single('SELECT ' .. link_select .. ' FROM links WHERE id = %s', id)
-
-    if not link then
-        return nil
+    local links = link_model.get_by_query('id = %s', id)
+    if links and links[0] then
+        return makelinkmt(links[0])
     end
-
-    return makelinkmt(link)
+    return nil
 end
 
 function link_model.new()

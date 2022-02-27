@@ -71,8 +71,8 @@ end, {
                 required = false,
             },
             expires_in = {
-                type = "number",
-                description = "The expiry of the file",
+                type = "integer",
+                description = "The expiry of the file in seconds from now",
                 required = false,
             },
         },

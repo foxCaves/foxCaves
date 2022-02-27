@@ -46,8 +46,8 @@ end, {
                     required = false,
                 },
                 expires_in = {
-                    type = "number",
-                    description = "The expiry of the link",
+                    type = "integer",
+                    description = "The expiry of the link in seconds from now",
                     required = false,
                 },
             },

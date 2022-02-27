@@ -66,6 +66,14 @@ end
 
 local file_select = 'id, name, owner, size, mimetype, thumbnail_mimetype, ' .. database.TIME_COLUMNS_EXPIRING
 
+function file_model.get_by_query(query, ...)
+    local files = database.get_shared():query('SELECT ' .. file_select .. ' FROM files WHERE ' .. query, ...)
+    for k,v in next, files do
+        files[k] = makefilemt(v)
+    end
+    return files
+end
+
 function file_model.get_by_user(user)
     if not user then
         return {}
@@ -75,11 +83,7 @@ function file_model.get_by_user(user)
         user = user.id
     end
 
-    local files = database.get_shared():query('SELECT ' .. file_select .. ' FROM files WHERE owner = %s', user)
-    for k,v in next, files do
-        files[k] = makefilemt(v)
-    end
-    return files
+    return file_model.get_by_query('owner = %s', user)
 end
 
 function file_model.get_by_id(id)
@@ -87,13 +91,11 @@ function file_model.get_by_id(id)
         return nil
     end
 
-    local file = database.get_shared():query_single('SELECT ' .. file_select .. ' FROM files WHERE id = %s', id)
-
-    if not file then
-        return nil
+    local files = file_model.get_by_query('id = %s', id)
+    if files and files[0] then
+        return makefilemt(files[0])
     end
-
-    return makefilemt(file)
+    return nil
 end
 
 function file_model.new()
