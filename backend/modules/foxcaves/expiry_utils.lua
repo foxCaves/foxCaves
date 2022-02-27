@@ -31,7 +31,7 @@ function M.parse_expiry(args, model, prefix)
 end
 
 function M.delete_expired(model)
-    local objects = model.get_by_query("expires_at < now()")
+    local objects = model.get_by_query("expires_at IS NOT NULL AND expires_at < now()")
     for _, obj in next, objects do
         obj:delete()
     end
