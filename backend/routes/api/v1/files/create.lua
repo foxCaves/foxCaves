@@ -1,5 +1,6 @@
 local lfs = require("lfs")
 local utils = require("foxcaves.utils")
+local expiry_utils = require("foxcaves.expiry_utils")
 local file_model = require("foxcaves.models.file")
 local ngx = ngx
 local io = io
@@ -24,6 +25,8 @@ R.register_route("/api/v1/files", "POST", R.make_route_opts(), function()
     if not file:set_name(name) or not file:compute_mimetype() then
         return utils.api_error("Invalid name")
     end
+
+    expiry_utils.parse_expiry(ngx.var, file, "arg_")
 
     ngx.req.read_body()
     local filetmp = ngx.req.get_body_file()

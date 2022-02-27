@@ -1,4 +1,5 @@
 local utils = require("foxcaves.utils")
+local expiry_utils = require("foxcaves.expiry_utils")
 local file_model = require("foxcaves.models.file")
 local ngx = ngx
 
@@ -17,13 +18,7 @@ R.register_route("/api/v1/files/{file}", "PATCH", R.make_route_opts(), function(
         return utils.api_error("Invalid name")
     end
 
-    if args.expires_at then
-        if args.expires_at == "" then
-            file.expires_at = nil
-        else
-            file.expires_at = args.expires_at
-        end
-    end
+    expiry_utils.parse_expiry(args, file)
 
     file:save()
     return file:get_private()

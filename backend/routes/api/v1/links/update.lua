@@ -1,4 +1,5 @@
 local utils = require("foxcaves.utils")
+local expiry_utils = require("foxcaves.expiry_utils")
 local link_model = require("foxcaves.models.link")
 local ngx = ngx
 
@@ -12,13 +13,8 @@ R.register_route("/api/v1/links/{link}", "PATCH", R.make_route_opts(), function(
     end
 
     local args = utils.get_post_args()
-    if args.expires_at then
-        if args.expires_at == "" then
-            link.expires_at = nil
-        else
-            link.expires_at = args.expires_at
-        end
-    end
+
+    expiry_utils.parse_expiry(args, link)
 
     link:save()
     return link:get_private()
