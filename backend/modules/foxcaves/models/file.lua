@@ -218,6 +218,9 @@ function file_mt:save()
     self.created_at = res.created_at
     self.updated_at = res.updated_at
     self.expires_at = res.expires_at
+    if self.expires_at == ngx.null then
+        self.expires_at = nil
+    end
 
     local owner = user_model.get_by_id(self.owner)
     owner:send_event(primary_push_action, 'file', self:get_private())
