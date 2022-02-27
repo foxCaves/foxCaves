@@ -67,7 +67,9 @@ end
 local file_select = 'id, name, owner, size, mimetype, thumbnail_mimetype, ' .. database.TIME_COLUMNS_EXPIRING
 
 function file_model.get_by_query(query, ...)
-    local files = database.get_shared():query('SELECT ' .. file_select .. ' FROM files WHERE ' .. query, ...)
+    local files = database.get_shared():query('SELECT ' .. file_select .. ' FROM files ' ..
+                                              'WHERE (expires_at IS NULL OR expires_at >= NOW()) AND ' ..
+                                              '(' .. query .. ')', ...)
     for k,v in next, files do
         files[k] = makefilemt(v)
     end
