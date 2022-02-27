@@ -35,6 +35,7 @@ function M.delete_expired(model)
     for _, obj in next, objects do
         obj:delete()
     end
+    return objects
 end
 
 return M

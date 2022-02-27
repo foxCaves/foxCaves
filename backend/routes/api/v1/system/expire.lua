@@ -3,8 +3,11 @@ local link_model = require("foxcaves.models.link")
 local file_model = require("foxcaves.models.file")
 
 R.register_route("/api/v1/system/expire", "POST", R.make_route_opts_anon(), function()
-    expiry_utils.delete_expired(link_model)
-    expiry_utils.delete_expired(file_model)
+    local links = expiry_utils.delete_expired(link_model)
+    local files = expiry_utils.delete_expired(file_model)
 
-    return { ok = true }
+    return {
+        links = #links,
+        files = #files,
+    }
 end)
