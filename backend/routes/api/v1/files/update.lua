@@ -17,6 +17,14 @@ R.register_route("/api/v1/files/{file}", "PATCH", R.make_route_opts(), function(
         return utils.api_error("Invalid name")
     end
 
+    if args.expires_at then
+        if args.expires_at == "" then
+            file.expires_at = nil
+        else
+            file.expires_at = args.expires_at
+        end
+    end
+
     file:save()
     return file:get_private()
 end, {

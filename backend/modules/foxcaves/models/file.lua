@@ -64,7 +64,7 @@ local function file_deletestorage(file)
     lfs.rmdir(base)
 end
 
-local file_select = 'id, name, owner, size, mimetype, thumbnail_mimetype, ' .. database.TIME_COLUMNS
+local file_select = 'id, name, owner, size, mimetype, thumbnail_mimetype, ' .. database.TIME_COLUMNS_EXPIRING
 
 function file_model.get_by_user(user)
     if not user then
@@ -196,25 +196,26 @@ function file_mt:save()
     if self.not_in_db then
         res = database.get_shared():query_single(
             'INSERT INTO files \
-                (id, name, owner, size, mimetype, thumbnail_mimetype) VALUES (%s, %s, %s, %s, %s, %s) \
-                RETURNING ' .. database.TIME_COLUMNS,
-            self.id, self.name, self.owner, self.size, self.mimetype, self.thumbnail_mimetype or ""
+                (id, name, owner, size, mimetype, thumbnail_mimetype, expires_at) VALUES (%s, %s, %s, %s, %s, %s, %s) \
+                RETURNING ' .. database.TIME_COLUMNS_EXPIRING,
+            self.id, self.name, self.owner, self.size, self.mimetype, self.thumbnail_mimetype or "", self.expires_at
         )
         primary_push_action = 'create'
         self.not_in_db = nil
     else
         res = database.get_shared():query_single(
             'UPDATE files \
-                SET name = %s, owner = %s, size = %s, mimetype = %s, thumbnail_mimetype = %s, \
+                SET name = %s, owner = %s, size = %s, mimetype = %s, thumbnail_mimetype = %s, expires_at = %s \
                 updated_at = (now() at time zone \'utc\') \
                 WHERE id = %s \
-                RETURNING ' .. database.TIME_COLUMNS,
-            self.name, self.owner, self.size, self.mimetype, self.thumbnail_mimetype or "", self.id
+                RETURNING ' .. database.TIME_COLUMNS_EXPIRING,
+            self.name, self.owner, self.size, self.mimetype, self.thumbnail_mimetype or "", self.expires_at, self.id
         )
         primary_push_action = 'update'
     end
     self.created_at = res.created_at
     self.updated_at = res.updated_at
+    self.expires_at = res.expires_at
 
     local owner = user_model.get_by_id(self.owner)
     owner:send_event(primary_push_action, 'file', self:get_private())
@@ -236,6 +237,7 @@ function file_mt:get_public()
         size = self.size,
         created_at = self.created_at,
         updated_at = self.updated_at,
+        expires_at = self.expires_at,
         mimetype = self.mimetype,
 
         view_url = short_url,
@@ -293,6 +295,10 @@ function file_model.get_public_fields()
         },
         thumbnail_url = {
             type = "string",
+            required = false,
+        },
+        expires_at = {
+            type = "timestamp",
             required = false,
         },
     }
