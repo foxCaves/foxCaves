@@ -46,6 +46,11 @@ end, {
                     description = "The new name of the file",
                     required = false,
                 },
+                expires_at = {
+                    type = "string",
+                    description = "The new expiry of the file",
+                    required = false,
+                },
             },
         },
     },

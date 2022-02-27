@@ -21,6 +21,14 @@ R.register_route("/api/v1/links", "POST", R.make_route_opts(), function()
         return utils.api_error("Invalid URL")
     end
 
+    if args.expires_at then
+        if args.expires_at == "" then
+            link.expires_at = nil
+        else
+            link.expires_at = args.expires_at
+        end
+    end
+
     link:save()
 
     return link:get_private()
@@ -36,6 +44,11 @@ end, {
                     type = "string",
                     description = "The URL the link should point to",
                     required = true,
+                },
+                expires_at = {
+                    type = "string",
+                    description = "The new expiry of the link",
+                    required = false,
                 },
             },
         },
