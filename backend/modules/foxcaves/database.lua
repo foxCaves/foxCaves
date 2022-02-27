@@ -22,7 +22,7 @@ local db_meta = {}
 function db_meta:query(query, ...)
     local args = {...}
     for i,v in next, args do
-        if v == nil then
+        if v == nil or v == ngx.null then
             args[i] = "NULL"
         else
             args[i] = self.db:escape_literal(v)

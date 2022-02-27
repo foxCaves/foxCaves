@@ -80,7 +80,7 @@ function link_mt:save()
         res = database.get_shared():query_single(
             'INSERT INTO links (id, owner, url, expires_at) VALUES (%s, %s, %s, %s)' ..
             ' RETURNING ' .. database.TIME_COLUMNS_EXPIRING,
-            self.id, self.owner, self.url, self.expires_at
+            self.id, self.owner, self.url, self.expires_at or ngx.null
         )
         primary_push_action = 'create'
         self.not_in_db = nil
@@ -91,7 +91,7 @@ function link_mt:save()
                 updated_at = (now() at time zone \'utc\') \
                 WHERE id = %s \
                 RETURNING ' .. database.TIME_COLUMNS_EXPIRING,
-            self.owner, self.url, self.expires_at, self.id
+            self.owner, self.url, self.expires_at or ngx.null, self.id
         )
         primary_push_action = 'update'
     end

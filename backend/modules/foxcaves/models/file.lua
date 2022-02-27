@@ -198,7 +198,8 @@ function file_mt:save()
             'INSERT INTO files \
                 (id, name, owner, size, mimetype, thumbnail_mimetype, expires_at) VALUES (%s, %s, %s, %s, %s, %s, %s) \
                 RETURNING ' .. database.TIME_COLUMNS_EXPIRING,
-            self.id, self.name, self.owner, self.size, self.mimetype, self.thumbnail_mimetype or "", self.expires_at
+            self.id, self.name, self.owner, self.size, self.mimetype, self.thumbnail_mimetype or "",
+            self.expires_at or ngx.null
         )
         primary_push_action = 'create'
         self.not_in_db = nil
@@ -209,7 +210,8 @@ function file_mt:save()
                 updated_at = (now() at time zone \'utc\') \
                 WHERE id = %s \
                 RETURNING ' .. database.TIME_COLUMNS_EXPIRING,
-            self.name, self.owner, self.size, self.mimetype, self.thumbnail_mimetype or "", self.expires_at, self.id
+            self.name, self.owner, self.size, self.mimetype, self.thumbnail_mimetype or "",
+            self.expires_at or ngx.null, self.id
         )
         primary_push_action = 'update'
     end
