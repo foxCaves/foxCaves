@@ -1,2 +1,3 @@
 #!/bin/sh
-curl -s "https://${HOSTNAME}/api/v1/system/expire" -XPOST
+
+exec curl --resolve "foxcav.es:443:127.0.0.1" -s "https://foxcav.es/api/v1/system/expire" -XPOST
