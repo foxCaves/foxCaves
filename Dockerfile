@@ -16,7 +16,7 @@ FROM ghcr.io/foxcaves/base-image/alpine:latest
 
 ENV ENVIRONMENT=development
 
-COPY etc/nginx /etc/nginx/
+COPY etc /etc/
 COPY etc/nginx/main.conf /usr/local/openresty/nginx/conf/custom.conf
 
 COPY backend /var/www/foxcaves/lua
