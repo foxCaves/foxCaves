@@ -92,8 +92,8 @@ function file_model.get_by_id(id)
     end
 
     local files = file_model.get_by_query('id = %s', id)
-    if files and files[0] then
-        return makefilemt(files[0])
+    if files and files[1] then
+        return makefilemt(files[1])
     end
     return nil
 end
