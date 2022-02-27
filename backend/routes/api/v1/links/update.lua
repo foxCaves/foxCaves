@@ -37,6 +37,11 @@ end, {
                     description = "The new expiry of the link",
                     required = false,
                 },
+                expires_in = {
+                    type = "number",
+                    description = "The new expiry of the link",
+                    required = false,
+                },
             },
         },
     },

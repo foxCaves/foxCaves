@@ -65,6 +65,16 @@ end, {
                 type = "string",
                 required = true,
             },
+            expires_at = {
+                type = "string",
+                description = "The expiry of the file",
+                required = false,
+            },
+            expires_in = {
+                type = "number",
+                description = "The expiry of the file",
+                required = false,
+            },
         },
         body = {
             type = "raw",

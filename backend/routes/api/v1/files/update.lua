@@ -46,6 +46,11 @@ end, {
                     description = "The new expiry of the file",
                     required = false,
                 },
+                expires_in = {
+                    type = "number",
+                    description = "The new expiry of the file",
+                    required = false,
+                },
             },
         },
     },

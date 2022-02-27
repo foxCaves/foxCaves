@@ -42,7 +42,12 @@ end, {
                 },
                 expires_at = {
                     type = "string",
-                    description = "The new expiry of the link",
+                    description = "The expiry of the link",
+                    required = false,
+                },
+                expires_in = {
+                    type = "number",
+                    description = "The expiry of the link",
                     required = false,
                 },
             },
