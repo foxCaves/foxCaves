@@ -22,7 +22,7 @@ function M.parse_expiry(args, model, prefix)
         expires_in = tonumber(expires_in)
         if expires_in > 0 then
             local res = database.get_shared():query_single(
-                "SELECT to_json(now() + INTERVAL %s SECOND at time zone \'utc\') as expires_at", expires_in)
+                "SELECT to_json(now() + %s * (INTERVAL '1 second') at time zone 'utc') as expires_at", expires_in)
             model.expires_at = res.expires_at
         end
         return

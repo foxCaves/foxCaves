@@ -12,10 +12,10 @@ require("foxcaves.module_helper").setmodenv()
 
 config.socket_type = "nginx"
 
-M.TIME_COLUMNS = 'to_json(updated_at at time zone \'utc\') as updated_at, ' ..
-                 'to_json(created_at at time zone \'utc\') as created_at'
+M.TIME_COLUMNS = "to_json(updated_at at time zone 'utc') as updated_at, " ..
+                 "to_json(created_at at time zone 'utc') as created_at"
 
-M.TIME_COLUMNS_EXPIRING = 'to_json(expires_at at time zone \'utc\') as expires_at, ' ..
+M.TIME_COLUMNS_EXPIRING = "to_json(expires_at at time zone 'utc') as expires_at, " ..
                            M.TIME_COLUMNS
 
 local db_meta = {}
@@ -31,7 +31,7 @@ function db_meta:query(query, ...)
     query = query:format(unpack(args))
     local res, err = self.db:query(query)
     if not res then
-        error("Postgres query error: " .. err)
+        error("Postgres query error: " .. err .. "! During query: " .. query)
     end
     return res
 end
