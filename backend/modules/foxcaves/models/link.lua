@@ -20,9 +20,15 @@ end
 local link_select = 'id, owner, url, expires_at, ' .. database.TIME_COLUMNS_EXPIRING
 
 function link_model.get_by_query(query, ...)
+    return link_model.get_by_query_raw(
+        query .. ' (expires_at IS NULL OR expires_at >= NOW()) AND (' .. query .. ')' ,
+        ...
+    )
+end
+
+function link_model.get_by_query_raw(query, ...)
     local links = database.get_shared():query('SELECT ' .. link_select .. ' FROM links ' ..
-                                              'WHERE (expires_at IS NULL OR expires_at >= NOW()) AND ' ..
-                                              '(' .. query .. ')', ...)
+                                              'WHERE ' .. query, ...)
     for k,v in next, links do
         links[k] = makelinkmt(v)
     end
