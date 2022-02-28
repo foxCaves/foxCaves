@@ -20,10 +20,7 @@ end
 local link_select = 'id, owner, url, expires_at, ' .. database.TIME_COLUMNS_EXPIRING
 
 function link_model.get_by_query(query, ...)
-    return link_model.get_by_query_raw(
-        query .. ' (expires_at IS NULL OR expires_at >= NOW()) AND (' .. query .. ')' ,
-        ...
-    )
+    return link_model.get_by_query_raw('(expires_at IS NULL OR expires_at >= NOW()) AND (' .. query .. ')' , ...)
 end
 
 function link_model.get_by_query_raw(query, ...)

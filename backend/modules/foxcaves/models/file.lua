@@ -67,10 +67,7 @@ end
 local file_select = 'id, name, owner, size, mimetype, thumbnail_mimetype, ' .. database.TIME_COLUMNS_EXPIRING
 
 function file_model.get_by_query(query, ...)
-    return file_model.get_by_query_raw(
-        query .. ' (expires_at IS NULL OR expires_at >= NOW()) AND (' .. query .. ')' ,
-        ...
-    )
+    return file_model.get_by_query_raw('(expires_at IS NULL OR expires_at >= NOW()) AND (' .. query .. ')' , ...)
 end
 
 function file_model.get_by_query_raw(query, ...)
