@@ -18,7 +18,6 @@ ENV ENVIRONMENT=development
 
 COPY etc /etc/
 COPY etc/nginx/main.conf /usr/local/openresty/nginx/conf/custom.conf
-RUN ln -s /usr/local/openresty/nginx/conf/nginx.conf /etc/nginx/nginx.conf
 
 COPY backend /var/www/foxcaves/lua
 COPY --from=frontend_builder /opt/stage/build /var/www/foxcaves/html
