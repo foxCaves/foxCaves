@@ -22,7 +22,7 @@ jobs:
         run: npm ci
         working-directory: frontend
       - name: Run linters
-        uses: wearerequired/lint-action@v1
+        uses: wearerequired/lint-action@v2
         with:
           eslint: true
           eslint_dir: frontend/src
