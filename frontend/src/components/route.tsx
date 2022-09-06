@@ -1,6 +1,6 @@
 import { AppContext, AppContextClass } from '../utils/context';
+import { Navigate, Route } from 'react-router-dom';
 import React, { ReactNode, useContext } from 'react';
-import { Redirect, Route } from 'react-router-dom';
 
 import Dropdown from 'react-bootstrap/Dropdown';
 import { LinkContainer } from 'react-router-bootstrap';
@@ -14,6 +14,7 @@ export enum LoginState {
 interface CustomRouteOptions {
     path: string;
     login?: LoginState;
+    children?: React.ReactNode;
 }
 export const CustomRoute: React.FC<CustomRouteOptions> = ({ path, login, children }) => {
     const ctx = useContext(AppContext);
@@ -21,9 +22,9 @@ export const CustomRoute: React.FC<CustomRouteOptions> = ({ path, login, childre
     let component: ReactNode;
     if (ctx.userLoaded) {
         if (login === LoginState.LoggedIn && !ctx.user) {
-            component = <Redirect to="/login" />;
+            component = <Navigate to="/login" />;
         } else if (login === LoginState.LoggedOut && ctx.user) {
-            component = <Redirect to="/" />;
+            component = <Navigate to="/" />;
         } else {
             component = children;
         }
@@ -55,26 +56,27 @@ interface CustomNavLinkOptions {
     to: string;
     exact?: boolean;
     login?: LoginState;
+    children?: React.ReactNode;
 }
-export const CustomNavLink: React.FC<CustomNavLinkOptions> = ({ to, exact, login, children }) => {
+export const CustomNavLink: React.FC<CustomNavLinkOptions> = ({ to, login, children }) => {
     const ctx = useContext(AppContext);
     if (!shouldRender(login, ctx)) {
         return null;
     }
     return (
-        <LinkContainer to={to} exact={exact}>
+        <LinkContainer to={to}>
             <Nav.Link active={false}>{children}</Nav.Link>
         </LinkContainer>
     );
 };
 
-export const CustomDropDownItem: React.FC<CustomNavLinkOptions> = ({ to, exact, login, children }) => {
+export const CustomDropDownItem: React.FC<CustomNavLinkOptions> = ({ to, login, children }) => {
     const ctx = useContext(AppContext);
     if (!shouldRender(login, ctx)) {
         return null;
     }
     return (
-        <LinkContainer to={to} exact={exact}>
+        <LinkContainer to={to}>
             <Dropdown.Item>{children}</Dropdown.Item>
         </LinkContainer>
     );

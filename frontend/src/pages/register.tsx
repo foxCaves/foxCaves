@@ -4,7 +4,7 @@ import { useCheckboxFieldSetter, useInputFieldSetter } from '../utils/hooks';
 import Button from 'react-bootstrap/Button';
 import FloatingLabel from 'react-bootstrap/FloatingLabel';
 import Form from 'react-bootstrap/Form';
-import { Redirect } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 import { fetchAPI } from '../utils/api';
 import { toast } from 'react-toastify';
 
@@ -59,7 +59,7 @@ export const RegistrationPage: React.FC = () => {
     );
 
     if (registrationDone) {
-        return <Redirect to="/" />;
+        return <Navigate to="/" />;
     }
 
     return (

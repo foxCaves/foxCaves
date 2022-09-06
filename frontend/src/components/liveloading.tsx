@@ -20,10 +20,14 @@ interface LiveLoadingPayload {
     data: unknown;
 }
 
+interface LiveLoadingContainerInterface {
+    children?: React.ReactNode;
+}
+
 export const LinksContext = React.createContext<ModelContext<LinkModel>>({} as ModelContext<LinkModel>);
 export const FilesContext = React.createContext<ModelContext<FileModel>>({} as ModelContext<FileModel>);
 
-export const LiveLoadingContainer: React.FC = ({ children }) => {
+export const LiveLoadingContainer: React.FC<LiveLoadingContainerInterface> = ({ children }) => {
     const [files, setFiles] = useState<ModelMap<FileModel> | undefined>(undefined);
     const [links, setLinks] = useState<ModelMap<LinkModel> | undefined>(undefined);
     const wsRef = useRef<ReconnectingWebSocket | undefined>();

@@ -4,7 +4,7 @@ import { AppContext, AppContextClass } from './utils/context';
 import { CustomDropDownItem, CustomNavLink, CustomRoute, LoginState } from './components/route';
 import { LiveDrawPage, LiveDrawRedirectPage } from './pages/livedraw/page';
 import React, { useCallback, useEffect, useState } from 'react';
-import { Route, BrowserRouter as Router, Switch } from 'react-router-dom';
+import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 
 import { AccountPage } from './pages/account';
 import Container from 'react-bootstrap/Container';
@@ -58,7 +58,7 @@ export const App: React.FC = () => {
                 <Router>
                     <Navbar variant="dark" bg="primary" fixed="top">
                         <Container>
-                            <LinkContainer to="/" exact>
+                            <LinkContainer to="/">
                                 <Navbar.Brand>foxCaves</Navbar.Brand>
                             </LinkContainer>
                             <Navbar.Toggle aria-controls="navbar-nav" />
@@ -103,7 +103,7 @@ export const App: React.FC = () => {
                     </Navbar>
                     <Container>
                         <UserInactiveAlert />
-                        <Switch>
+                        <Routes>
                             <CustomRoute path="/login" login={LoginState.LoggedOut}>
                                 <LoginPage />
                             </CustomRoute>
@@ -137,13 +137,13 @@ export const App: React.FC = () => {
                             <Route path="/email/code/:code">
                                 <EmailCodePage />
                             </Route>
-                            <Route path="/" exact>
+                            <Route path="/">
                                 <HomePage />
                             </Route>
-                            <Route path="/">
+                            <Route path="/*">
                                 <h3>404 - Page not found</h3>
                             </Route>
-                        </Switch>
+                        </Routes>
                     </Container>
                 </Router>
                 <ToastContainer theme="colored" position="bottom-right" />

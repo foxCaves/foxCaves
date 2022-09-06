@@ -1,8 +1,8 @@
 import '../../resources/livedraw.css';
 
 import { BlobWithName, uploadFile } from '../../utils/file_uploader';
+import { Navigate, useParams } from 'react-router-dom';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Redirect, useParams } from 'react-router-dom';
 
 import Button from 'react-bootstrap/Button';
 import { FileModel } from '../../models/file';
@@ -14,7 +14,7 @@ import { randomString } from '../../utils/random';
 export const LiveDrawRedirectPage: React.FC = () => {
     const { id } = useParams<{ id: string }>();
 
-    return <Redirect to={`/livedraw/${id}/${randomString(12)}`} />;
+    return <Navigate to={`/livedraw/${id}/${randomString(12)}`} />;
 };
 
 export const LiveDrawPage: React.FC = () => {
@@ -30,7 +30,7 @@ export const LiveDrawPage: React.FC = () => {
     const fileName = file ? file.name : `ID_${id}`;
 
     useEffect(() => {
-        FileModel.getById(id).then(setFile, console.error);
+        FileModel.getById(id!).then(setFile, console.error);
     }, [id]);
 
     const getFileName = useCallback(() => {
@@ -83,7 +83,7 @@ export const LiveDrawPage: React.FC = () => {
             return;
         }
 
-        managerRef.current!.setup(file, sid);
+        managerRef.current!.setup(file, sid!);
     }, [file, sid]);
 
     return (

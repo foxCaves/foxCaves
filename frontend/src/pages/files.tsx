@@ -196,7 +196,7 @@ export const FilesPage: React.FC<{}> = () => {
 
     return (
         <>
-            <Modal show={deleteFile} onHide={unsetDeleteFile}>
+            <Modal show={!!deleteFile} onHide={unsetDeleteFile}>
                 <Modal.Header closeButton>
                     <Modal.Title>Delete file?</Modal.Title>
                 </Modal.Header>

@@ -132,7 +132,7 @@ export const LinksPage: React.FC<{}> = () => {
 
     return (
         <>
-            <Modal show={deleteLink} onHide={hideDeleteLinkDialog}>
+            <Modal show={!!deleteLink} onHide={hideDeleteLinkDialog}>
                 <Modal.Header closeButton>
                     <Modal.Title>Delete file?</Modal.Title>
                 </Modal.Header>

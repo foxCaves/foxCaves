@@ -58,7 +58,7 @@ export const ViewPage: React.FC = () => {
 
     const loadFile = useCallback(async () => {
         try {
-            const file = await FileModel.getById(id);
+            const file = await FileModel.getById(id!);
             if (!file) {
                 setFileError('File not found');
             } else {
