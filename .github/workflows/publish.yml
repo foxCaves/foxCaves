@@ -32,7 +32,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-single-buildx
       - name: Build container image
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v3
         with:
           push: true
           builder: ${{ steps.buildx.outputs.name }}
