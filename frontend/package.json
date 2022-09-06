@@ -4,7 +4,7 @@
   "dependencies": {
     "@sentry/react": "6.13.3",
     "@testing-library/jest-dom": "5.14.1",
-    "@testing-library/react": "12.1.2",
+    "@testing-library/react": "12.1.5",
     "@testing-library/user-event": "13.4.1",
     "@types/react": "17.0.30",
     "@types/react-bootstrap": "0.32.27",
