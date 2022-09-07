@@ -104,55 +104,54 @@ export const App: React.FC = () => {
                     <Container>
                         <UserInactiveAlert />
                         <Routes>
-                            <Route path="/login" element={
-                                <CustomRouteHandler login={LoginState.LoggedOut}>
-                                    <LoginPage />
-                                </CustomRouteHandler>
-                            }></Route>
-                            <Route path="/register" element={
-                                <CustomRouteHandler login={LoginState.LoggedOut}>
-                                    <RegistrationPage />
-                                </CustomRouteHandler>
-                            }></Route>
-                            <Route path="/files" element={
-                                <CustomRouteHandler login={LoginState.LoggedIn}>
-                                    <FilesPage />
-                                </CustomRouteHandler>
-                            }></Route>
-                            <Route path="/links" element={
-                                <CustomRouteHandler login={LoginState.LoggedIn}>
-                                    <LinksPage />
-                                </CustomRouteHandler>
-                            }></Route>
-                            <Route path="/account" element={
-                                <CustomRouteHandler login={LoginState.LoggedIn}>
-                                    <AccountPage />
-                                </CustomRouteHandler>
-                            }></Route>
-                            <Route path="/logout" element={
-                                <LogoutPage />
-                            }></Route>
-                            <Route path="/view/:id" element={
-                                <ViewPage />
-                            }></Route>
-                            <Route path="/livedraw/:id/:sid" element={
-                                <LiveDrawPage />
-                            }></Route>
-                            <Route path="/livedraw/:id" element={
-                                <LiveDrawRedirectPage />
-                            }></Route>
-                            <Route path="/email/forgot_password" element={
-                                <ForgotPasswordPage />
-                            }></Route>
-                            <Route path="/email/code/:code" element={
-                                <EmailCodePage />
-                            }></Route>
-                            <Route path="/" element={
-                                <HomePage />
-                            }></Route>
-                            <Route path="/*" element={
-                                <h3>404 - Page not found</h3>
-                            }></Route>
+                            <Route
+                                path="/login"
+                                element={
+                                    <CustomRouteHandler login={LoginState.LoggedOut}>
+                                        <LoginPage />
+                                    </CustomRouteHandler>
+                                }
+                            ></Route>
+                            <Route
+                                path="/register"
+                                element={
+                                    <CustomRouteHandler login={LoginState.LoggedOut}>
+                                        <RegistrationPage />
+                                    </CustomRouteHandler>
+                                }
+                            ></Route>
+                            <Route
+                                path="/files"
+                                element={
+                                    <CustomRouteHandler login={LoginState.LoggedIn}>
+                                        <FilesPage />
+                                    </CustomRouteHandler>
+                                }
+                            ></Route>
+                            <Route
+                                path="/links"
+                                element={
+                                    <CustomRouteHandler login={LoginState.LoggedIn}>
+                                        <LinksPage />
+                                    </CustomRouteHandler>
+                                }
+                            ></Route>
+                            <Route
+                                path="/account"
+                                element={
+                                    <CustomRouteHandler login={LoginState.LoggedIn}>
+                                        <AccountPage />
+                                    </CustomRouteHandler>
+                                }
+                            ></Route>
+                            <Route path="/logout" element={<LogoutPage />}></Route>
+                            <Route path="/view/:id" element={<ViewPage />}></Route>
+                            <Route path="/livedraw/:id/:sid" element={<LiveDrawPage />}></Route>
+                            <Route path="/livedraw/:id" element={<LiveDrawRedirectPage />}></Route>
+                            <Route path="/email/forgot_password" element={<ForgotPasswordPage />}></Route>
+                            <Route path="/email/code/:code" element={<EmailCodePage />}></Route>
+                            <Route path="/" element={<HomePage />}></Route>
+                            <Route path="/*" element={<h3>404 - Page not found</h3>}></Route>
                         </Routes>
                     </Container>
                 </Router>
