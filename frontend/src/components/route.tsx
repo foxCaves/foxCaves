@@ -1,22 +1,20 @@
 import { AppContext, AppContextClass } from '../utils/context';
-import { Navigate, Route } from 'react-router-dom';
 import React, { ReactNode, useContext } from 'react';
-
 import Dropdown from 'react-bootstrap/Dropdown';
 import { LinkContainer } from 'react-router-bootstrap';
 import Nav from 'react-bootstrap/Nav';
+import { Navigate } from 'react-router-dom';
 
 export enum LoginState {
     LoggedIn = 1,
     LoggedOut = 2,
 }
 
-interface CustomRouteOptions {
-    path: string;
+interface CustomRouteHandlerOptions {
     login?: LoginState;
     children?: React.ReactNode;
 }
-export const CustomRoute: React.FC<CustomRouteOptions> = ({ path, login, children }) => {
+export const CustomRouteHandler: React.FC<CustomRouteHandlerOptions> = ({ login, children }) => {
     const ctx = useContext(AppContext);
 
     let component: ReactNode;
@@ -32,7 +30,7 @@ export const CustomRoute: React.FC<CustomRouteOptions> = ({ path, login, childre
         component = <p>Loading...</p>;
     }
 
-    return <Route path={path}>{component}</Route>;
+    return <>{component}</>;
 };
 
 function shouldRender(login: LoginState | undefined, ctx: AppContextClass) {

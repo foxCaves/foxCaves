@@ -6,8 +6,8 @@ import 'react-toastify/dist/ReactToastify.css';
 import * as Sentry from '@sentry/react';
 
 import { App } from './app';
-import ReactDOM from 'react-dom';
 import { StrictMode } from 'react';
+import { createRoot } from 'react-dom/client';
 
 if (process.env.REACT_APP_SENTRY_DSN) {
     Sentry.init({
@@ -17,9 +17,10 @@ if (process.env.REACT_APP_SENTRY_DSN) {
     console.warn(`Not loading sentry, no DSN!`);
 }
 
-ReactDOM.render(
+const root = createRoot(document.getElementById('root')!);
+
+root.render(
     <StrictMode>
         <App />
     </StrictMode>,
-    document.getElementById('root'),
 );

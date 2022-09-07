@@ -1,7 +1,7 @@
 import './resources/app.css';
 
 import { AppContext, AppContextClass } from './utils/context';
-import { CustomDropDownItem, CustomNavLink, CustomRoute, LoginState } from './components/route';
+import { CustomDropDownItem, CustomNavLink, CustomRouteHandler, LoginState } from './components/route';
 import { LiveDrawPage, LiveDrawRedirectPage } from './pages/livedraw/page';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
@@ -104,45 +104,55 @@ export const App: React.FC = () => {
                     <Container>
                         <UserInactiveAlert />
                         <Routes>
-                            <CustomRoute path="/login" login={LoginState.LoggedOut}>
-                                <LoginPage />
-                            </CustomRoute>
-                            <CustomRoute path="/register" login={LoginState.LoggedOut}>
-                                <RegistrationPage />
-                            </CustomRoute>
-                            <CustomRoute path="/files" login={LoginState.LoggedIn}>
-                                <FilesPage />
-                            </CustomRoute>
-                            <CustomRoute path="/links" login={LoginState.LoggedIn}>
-                                <LinksPage />
-                            </CustomRoute>
-                            <CustomRoute path="/account" login={LoginState.LoggedIn}>
-                                <AccountPage />
-                            </CustomRoute>
-                            <Route path="/logout">
+                            <Route path="/login" element={
+                                <CustomRouteHandler login={LoginState.LoggedOut}>
+                                    <LoginPage />
+                                </CustomRouteHandler>
+                            }></Route>
+                            <Route path="/register" element={
+                                <CustomRouteHandler login={LoginState.LoggedOut}>
+                                    <RegistrationPage />
+                                </CustomRouteHandler>
+                            }></Route>
+                            <Route path="/files" element={
+                                <CustomRouteHandler login={LoginState.LoggedIn}>
+                                    <FilesPage />
+                                </CustomRouteHandler>
+                            }></Route>
+                            <Route path="/links" element={
+                                <CustomRouteHandler login={LoginState.LoggedIn}>
+                                    <LinksPage />
+                                </CustomRouteHandler>
+                            }></Route>
+                            <Route path="/account" element={
+                                <CustomRouteHandler login={LoginState.LoggedIn}>
+                                    <AccountPage />
+                                </CustomRouteHandler>
+                            }></Route>
+                            <Route path="/logout" element={
                                 <LogoutPage />
-                            </Route>
-                            <Route path="/view/:id">
+                            }></Route>
+                            <Route path="/view/:id" element={
                                 <ViewPage />
-                            </Route>
-                            <Route path="/livedraw/:id/:sid">
+                            }></Route>
+                            <Route path="/livedraw/:id/:sid" element={
                                 <LiveDrawPage />
-                            </Route>
-                            <Route path="/livedraw/:id">
+                            }></Route>
+                            <Route path="/livedraw/:id" element={
                                 <LiveDrawRedirectPage />
-                            </Route>
-                            <Route path="/email/forgot_password">
+                            }></Route>
+                            <Route path="/email/forgot_password" element={
                                 <ForgotPasswordPage />
-                            </Route>
-                            <Route path="/email/code/:code">
+                            }></Route>
+                            <Route path="/email/code/:code" element={
                                 <EmailCodePage />
-                            </Route>
-                            <Route path="/">
+                            }></Route>
+                            <Route path="/" element={
                                 <HomePage />
-                            </Route>
-                            <Route path="/*">
+                            }></Route>
+                            <Route path="/*" element={
                                 <h3>404 - Page not found</h3>
-                            </Route>
+                            }></Route>
                         </Routes>
                     </Container>
                 </Router>
