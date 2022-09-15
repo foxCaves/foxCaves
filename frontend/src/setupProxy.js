@@ -6,14 +6,14 @@ const { createProxyMiddleware } = require('http-proxy-middleware');
 module.exports = function (app) {
     app.use(
         createProxyMiddleware('/api/v1/ws', {
-            target: 'https://fcv.doridian.net',
+            target: 'https://caves.foxden.network',
             ws: true,
             changeOrigin: true,
         }),
     );
     app.use(
         createProxyMiddleware('/api', {
-            target: 'https://fcv.doridian.net',
+            target: 'https://caves.foxden.network',
             changeOrigin: true,
         }),
     );
