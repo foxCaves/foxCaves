@@ -1,2 +1,2 @@
-Contact: mailto:security@foxcav.es
+Contact: mailto:security@doridian.net
 Preferred-Languages: en, de
