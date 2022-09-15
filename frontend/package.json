@@ -12,7 +12,7 @@
     "@types/react-router-bootstrap": "0.24.5",
     "@types/react-router-dom": "5.3.3",
     "bootstrap": "5.2.1",
-    "bootswatch": "5.2.0",
+    "bootswatch": "5.2.1",
     "eslint": "8.23.1",
     "http-proxy-middleware": "2.0.6",
     "prettier": "2.7.1",
