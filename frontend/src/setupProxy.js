@@ -6,14 +6,14 @@ const { createProxyMiddleware } = require('http-proxy-middleware');
 module.exports = function (app) {
     app.use(
         createProxyMiddleware('/api/v1/ws', {
-            target: 'https://foxcaves.foxden.network',
+            target: 'https://caves.fox.ax',
             ws: true,
             changeOrigin: true,
         }),
     );
     app.use(
         createProxyMiddleware('/api', {
-            target: 'https://foxcaves.foxden.network',
+            target: 'https://caves.fox.ax',
             changeOrigin: true,
         }),
     );
