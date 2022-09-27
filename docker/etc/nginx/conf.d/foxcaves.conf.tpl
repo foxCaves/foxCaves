@@ -1,5 +1,5 @@
 resolver local=on;
-init_by_lua_file /var/www/foxcaves/lua/init.lua;
+init_by_lua_file /var/www/foxcaves/lua/nginx_init.lua;
 lua_socket_log_errors off;
 
 set_real_ip_from 10.99.10.1;
@@ -10,7 +10,7 @@ server {
 
     root /var/www/foxcaves/html;
 
-    server_name foxcav.es main.foxcaves;
+    server_name __MAIN_DOMAIN__ main.foxcaves;
 
     client_max_body_size 100M;
 
@@ -32,7 +32,7 @@ server {
 server {
     include /etc/nginx/listener.conf;
 
-    server_name f0x.es short.foxcaves;
+    server_name __SHORT_DOMAIN__ short.foxcaves;
 
     add_header Access-Control-Allow-Origin "*" always;
     add_header Access-Control-Allow-Methods "GET, OPTIONS, HEAD" always;
@@ -40,7 +40,7 @@ server {
     add_header Access-Control-Expose-Headers "Content-Type, Content-Length, Content-Range" always;
 
     location = / {
-        return 302 https://foxcav.es;
+        return 302 __MAIN_URL__;
     }
 
     location / {
@@ -80,9 +80,9 @@ server {
 server {
     include /etc/nginx/listener.conf;
 
-    server_name www.f0x.es www.foxcav.es;
+    server_name www.__SHORT_DOMAIN__ www.__MAIN_DOMAIN__;
 
     location / {
-        return 302 https://foxcav.es;
+        return 302 __MAIN_URL__;
     }
 }

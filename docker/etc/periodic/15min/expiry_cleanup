@@ -1,0 +1,3 @@
+#!/bin/sh
+
+exec curl --insecure --resolve "main.foxcaves:443:127.0.0.1" -s "https://main.foxcaves/api/v1/system/expire" -XPOST

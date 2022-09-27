@@ -1,0 +1,2 @@
+#!/bin/sh
+exec certbot --nginx --nginx-server-root /usr/local/openresty/nginx/conf renew 

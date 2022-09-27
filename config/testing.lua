@@ -4,7 +4,10 @@ return {
         port = 6379,
     },
     postgres = {
-        -- pgmoon options
+        host = "127.0.0.1",
+        port = 5432,
+        user = "foxcaves",
+        database = "foxcaves",
         use_super = true,
         use_migrations = true,
     },
@@ -12,13 +15,12 @@ return {
         host = "localhost",
         port = 25,
         from = "foxcaves@localhost",
-        -- username = "user",
-        -- password = "pass",
-        -- ssl = true,
     },
     urls = {
         short = "http://short.foxcaves",
         main = "http://main.foxcaves",
+        enable_acme = false,
+        redirect_www = false,
     },
     sentry = {
         dsn = nil,

@@ -29,4 +29,3 @@ for k, _ in pairs(OSENV) do
     rawset(OSENV, k, os.getenv(k))
 end
 
-dofile(root .. "/migrator.lua")
