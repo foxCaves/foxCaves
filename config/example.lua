@@ -16,11 +16,12 @@ return {
         -- password = "pass",
         -- ssl = true,
     },
-    urls = {
+    http = {
         short = "http://short.foxcaves",
         main = "http://main.foxcaves",
         enable_acme = true,
         redirect_www = true,
+        upstream_ips = {"1.2.3.4"},
     },
     sentry = {
         dsn = nil,

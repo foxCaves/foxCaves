@@ -16,11 +16,12 @@ return {
         port = 25,
         from = "foxcaves@localhost",
     },
-    urls = {
+    http = {
         short = "http://short.foxcaves",
         main = "http://main.foxcaves",
         enable_acme = false,
         redirect_www = false,
+        upstream_ips = {},
     },
     sentry = {
         dsn = nil,
