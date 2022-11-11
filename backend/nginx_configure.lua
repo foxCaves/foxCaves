@@ -12,7 +12,11 @@ local short_domain = url_to_domain(config.http.short)
 local main_domain = url_to_domain(config.http.main)
 local upstream_ips_str = table.concat(config.http.upstream_ips, " ")
 
-local nginx_configs = {"/etc/nginx/conf.d/foxcaves.conf", "/etc/nginx/conf.d/http-foxcaves.conf", "/etc/nginx/listener.conf"}
+local nginx_configs = {
+    "/etc/nginx/conf.d/foxcaves.conf",
+    "/etc/nginx/conf.d/http-foxcaves.conf",
+    "/etc/nginx/listener.conf"
+}
 local domains = {short_domain, main_domain}
 
 if config.http.redirect_www then
