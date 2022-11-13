@@ -17,8 +17,8 @@ return {
         from = "foxcaves@localhost",
     },
     http = {
-        short = "http://short.foxcaves",
-        main = "http://main.foxcaves",
+        short_url = "http://short.foxcaves",
+        main_url = "http://main.foxcaves",
         enable_acme = false,
         redirect_www = false,
         upstream_ips = {},

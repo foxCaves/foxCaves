@@ -8,8 +8,8 @@ local function url_to_domain(url)
     return url:gsub("https?://", "")
 end
 
-local short_domain = url_to_domain(config.http.short)
-local main_domain = url_to_domain(config.http.main)
+local short_domain = url_to_domain(config.http.short_url)
+local main_domain = url_to_domain(config.http.main_url)
 local upstream_ips_str = table.concat(config.http.upstream_ips, " ")
 
 local nginx_configs = {
@@ -32,9 +32,9 @@ for _, nginx_config in pairs(nginx_configs) do
     local data = fh:read("*a")
     fh:close()
 
-    data = data:gsub("__MAIN_URL__", config.http.main)
+    data = data:gsub("__MAIN_URL__", config.http.main_url)
     data = data:gsub("__MAIN_DOMAIN__", main_domain)
-    data = data:gsub("__SHORT_URL__", config.http.short)
+    data = data:gsub("__SHORT_URL__", config.http.short_url)
     data = data:gsub("__SHORT_DOMAIN__", short_domain)
     data = data:gsub("__UPSTREAM_IPS__", upstream_ips_str)
 

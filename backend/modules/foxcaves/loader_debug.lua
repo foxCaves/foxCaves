@@ -1,6 +1,6 @@
 local utils = require("foxcaves.utils")
 local router = require("foxcaves.router")
-local main_url = require("foxcaves.config").urls.main
+local main_url = require("foxcaves.config").http.main_url
 local ngx = ngx
 local xpcall = xpcall
 local table = table

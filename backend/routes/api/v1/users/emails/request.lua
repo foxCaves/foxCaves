@@ -3,7 +3,7 @@ local redis = require("foxcaves.redis")
 local mail = require("foxcaves.mail")
 local random = require("foxcaves.random")
 local user_model = require("foxcaves.models.user")
-local main_url = require("foxcaves.config").urls.main
+local main_url = require("foxcaves.config").http.main_url
 
 R.register_route("/api/v1/users/emails/request", "POST", R.make_route_opts_anon(), function()
     local args = utils.get_post_args()

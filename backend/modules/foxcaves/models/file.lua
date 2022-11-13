@@ -3,7 +3,7 @@ local path = require("path")
 local database = require("foxcaves.database")
 local random = require("foxcaves.random")
 local user_model = require("foxcaves.models.user")
-local url_config = require("foxcaves.config").urls
+local short_url = require("foxcaves.config").http.short_url
 local ROOT = require("foxcaves.consts").ROOT
 local exec = require("foxcaves.exec")
 local mimetypes = require("foxcaves.mimetypes")
@@ -240,7 +240,7 @@ function file_mt:get_extension()
 end
 
 function file_mt:get_public()
-    local short_url = url_config.short .. "/f/" .. self.id
+    local short_url_file = short_url .. "/f/" .. self.id
 
     local res = {
         id = self.id,
@@ -252,12 +252,12 @@ function file_mt:get_public()
         expires_at = self.expires_at,
         mimetype = self.mimetype,
 
-        view_url = short_url,
-        direct_url = short_url .. "?raw=1",
-        download_url = short_url .. "?dl=1",
+        view_url = short_url_file,
+        direct_url = short_url_file .. "?raw=1",
+        download_url = short_url_file .. "?dl=1",
     }
     if self.thumbnail_mimetype and self.thumbnail_mimetype ~= "" then
-        res.thumbnail_url = url_config.short .. "/t/" .. self.id
+        res.thumbnail_url = short_url .. "/t/" .. self.id
     end
     return res
 end

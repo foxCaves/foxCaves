@@ -7,7 +7,7 @@ local mail = require("foxcaves.mail")
 local random = require("foxcaves.random")
 local consts = require("foxcaves.consts")
 local auth_utils = require("foxcaves.auth_utils")
-local main_url = require("foxcaves.config").urls.main
+local main_url = require("foxcaves.config").http.main_url
 
 local setmetatable = setmetatable
 local ngx = ngx

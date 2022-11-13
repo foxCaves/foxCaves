@@ -1,6 +1,6 @@
 local utils = require("foxcaves.utils")
 local file_model = require("foxcaves.models.file")
-local main_url = require("foxcaves.config").urls.main
+local main_url = require("foxcaves.config").http.main_url
 local ngx = ngx
 
 R.register_route("/fcv-cdn/sendfile/f/{file}", "GET", R.make_route_opts_anon(), function(route_vars)

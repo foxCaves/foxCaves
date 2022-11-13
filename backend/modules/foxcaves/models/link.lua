@@ -1,6 +1,6 @@
 local database = require("foxcaves.database")
 local random = require("foxcaves.random")
-local url_config = require("foxcaves.config").urls
+local short_url = require("foxcaves.config").http.short_url
 local user_model = require("foxcaves.models.user")
 
 local setmetatable = setmetatable
@@ -118,7 +118,7 @@ function link_mt:get_public()
         id = self.id,
         url = self.url,
         owner = self.owner,
-        short_url = url_config.short .. "/" .. self.id,
+        short_url = short_url .. "/" .. self.id,
         created_at = self.created_at,
         updated_at = self.updated_at,
         expires_at = self.expires_at,

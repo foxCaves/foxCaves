@@ -17,8 +17,8 @@ return {
         -- ssl = true,
     },
     http = {
-        short = "http://short.foxcaves",
-        main = "http://main.foxcaves",
+        short_url = "http://short.foxcaves",
+        main_url = "http://main.foxcaves",
         enable_acme = true,
         redirect_www = true,
         upstream_ips = {"1.2.3.4"},
