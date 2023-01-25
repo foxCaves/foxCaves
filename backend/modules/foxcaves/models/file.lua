@@ -116,9 +116,9 @@ function file_model.extract_name_and_extension(name)
 end
 
 function file_mt:delete()
-    local base = file_model.paths.storage .. file.id
+    local base = file_model.paths.storage .. self.id
     os.remove(base .. "/file")
-    if file.thumbnail_mimetype and file.thumbnail_mimetype ~= "" then
+    if self.thumbnail_mimetype and self.thumbnail_mimetype ~= "" then
         os.remove(base .. "/thumb")
     end
     lfs.rmdir(base)
