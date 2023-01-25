@@ -29,7 +29,6 @@ local file_model = {
 
 require("foxcaves.module_helper").setmodenv()
 
-
 local mimeHandlers = {
     image = function(src, dest)
         exec.cmd(
@@ -45,23 +44,10 @@ local mimeHandlers = {
     end
 }
 
-local function file_move(src, dst)
-    exec.cmd("mv", src, dst)
-end
-
 local function makefilemt(file)
     file.not_in_db = nil
     setmetatable(file, file_mt)
     return file
-end
-
-local function file_deletestorage(file)
-    local base = file_model.paths.storage .. file.id
-    os.remove(base .. "/file")
-    if file.thumbnail_mimetype and file.thumbnail_mimetype ~= "" then
-        os.remove(base .. "/thumb")
-    end
-    lfs.rmdir(base)
 end
 
 local file_select = 'id, name, owner, size, mimetype, thumbnail_mimetype, ' .. database.TIME_COLUMNS_EXPIRING
@@ -130,7 +116,12 @@ function file_model.extract_name_and_extension(name)
 end
 
 function file_mt:delete()
-    file_deletestorage(self)
+    local base = file_model.paths.storage .. file.id
+    os.remove(base .. "/file")
+    if file.thumbnail_mimetype and file.thumbnail_mimetype ~= "" then
+        os.remove(base .. "/thumb")
+    end
+    lfs.rmdir(base)
 
     database.get_shared():query('DELETE FROM files WHERE id = %s', self.id)
 
@@ -176,6 +167,10 @@ function file_mt:compute_mimetype()
     end
     self.mimetype = mimetypes[self:get_extension()] or "application/octet-stream"
     return true
+end
+
+local function file_move(src, dst)
+    exec.cmd("mv", src, dst)
 end
 
 function file_mt:move_upload_data(src)
