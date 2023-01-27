@@ -38,26 +38,11 @@ server {
     }
 
     location /api/v1 {
-        default_type application/json;
-        types { }
-        content_by_lua_file /var/www/foxcaves/lua/nginx_run.lua;
-    }
-
-    location = /api/v1/files {
-        default_type application/json;
-        types { }
-
         proxy_set_header Host $host;
         proxy_http_version 1.1;
         proxy_request_buffering off;
         proxy_set_header X-Real-IP $remote_addr;
-
-        if ($request_method = POST) {
-            proxy_pass http://unix:/run/nginx-lua-http11.sock;
-        }
-        if ($request_method != POST) {
-            content_by_lua_file /var/www/foxcaves/lua/nginx_run.lua;
-        }
+        proxy_pass http://unix:/run/nginx-lua-http11.sock;
     }
 }
 
