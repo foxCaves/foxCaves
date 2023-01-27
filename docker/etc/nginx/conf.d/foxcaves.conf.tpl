@@ -7,6 +7,11 @@ set_real_ip_from 127.0.0.0/8;
 set_real_ip_from unix:;
 real_ip_header proxy_protocol;
 
+map $http_upgrade $connection_upgrade {
+    default upgrade;
+    '' close;
+}
+
 server {
     listen unix:/run/nginx-lua-http11.sock;
     server_name __MAIN_DOMAIN__;
@@ -38,10 +43,14 @@ server {
     }
 
     location /api/v1 {
-        proxy_set_header Host $host;
         proxy_http_version 1.1;
         proxy_request_buffering off;
+
         proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection $connection_upgrade;
+        proxy_set_header Host $host;
+
         proxy_pass http://unix:/run/nginx-lua-http11.sock;
     }
 }
