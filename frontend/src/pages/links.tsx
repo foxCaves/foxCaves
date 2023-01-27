@@ -60,7 +60,6 @@ export const LinksPage: React.FC<{}> = () => {
                     },
                 });
 
-
                 const modelsCopy = { ...models };
                 delete modelsCopy[link.id];
                 set(modelsCopy);
