@@ -1,10 +1,7 @@
-local upload = require("resty.upload")
-local lfs = require("lfs")
 local utils = require("foxcaves.utils")
 local expiry_utils = require("foxcaves.expiry_utils")
 local file_model = require("foxcaves.models.file")
 local ngx = ngx
-local io = io
 local math_min = math.min
 local tonumber = tonumber
 
@@ -46,7 +43,7 @@ R.register_route("/api/v1/files", "POST", R.make_route_opts(), function()
     local sock = ngx.req.socket()
     sock:settimeout(1000)
     while remaining > 0 do
-        local data, err = sock:receive(math_min(UPLOAD_CHUNK_SIZE, remaining))
+        local data, _ = sock:receive(math_min(UPLOAD_CHUNK_SIZE, remaining))
         remaining = remaining - data:len()
         if not data then
             file:upload_abort()
