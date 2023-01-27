@@ -125,7 +125,9 @@ export const FilesPage: React.FC<{}> = () => {
                     const fileObj = await uploadFile(file);
                     models![fileObj.id] = fileObj;
                     set(models!);
-                } catch {}
+                } catch (e) {
+                    console.error('Error uploading file', file, e);
+                }
             }
         },
         [models, set],

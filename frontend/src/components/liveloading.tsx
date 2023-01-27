@@ -24,8 +24,8 @@ interface LiveLoadingContainerInterface {
     children?: React.ReactNode;
 }
 
-export const LinksContext = React.createContext<ModelContext<LinkModel>>({} as ModelContext<LinkModel>);
 export const FilesContext = React.createContext<ModelContext<FileModel>>({} as ModelContext<FileModel>);
+export const LinksContext = React.createContext<ModelContext<LinkModel>>({} as ModelContext<LinkModel>);
 
 export const LiveLoadingContainer: React.FC<LiveLoadingContainerInterface> = ({ children }) => {
     const [files, setFiles] = useState<ModelMap<FileModel> | undefined>(undefined);
