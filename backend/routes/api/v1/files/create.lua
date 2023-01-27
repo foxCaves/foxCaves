@@ -53,7 +53,7 @@ R.register_route("/api/v1/files", "POST", R.make_route_opts(), function()
     end
 
     file:upload_finish()
-    file:save()
+    file:save("create")
 
     return file:get_private()
 end, {

@@ -205,7 +205,7 @@ function file_mt:upload_abort()
     file_storage_delete(self)
 end
 
-function file_mt:save()
+function file_mt:save(force_push_action)
     local res, primary_push_action
     if self.not_in_db then
         res = database.get_shared():query_single(
@@ -237,6 +237,9 @@ function file_mt:save()
     end
 
     if self.uploaded == 1 then
+        if force_push_action then
+            primary_push_action = force_push_action
+        end
         local owner = user_model.get_by_id(self.owner)
         owner:send_event(primary_push_action, 'file', self:get_private())
         owner:send_self_event()
