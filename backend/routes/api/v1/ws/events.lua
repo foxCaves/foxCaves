@@ -33,7 +33,7 @@ R.register_route("/api/v1/ws/events", "GET", R.make_route_opts(), function()
         while should_run do
             local data, typ, err = ws:recv_frame()
             if ws.fatal or typ == "close" or typ == "error" then
-                ngx.log(ngx.ERR, "WS " .. typ .. " error: " .. err)
+                ngx.log(ngx.ERR, "WS " .. tostring(typ) .. " error: " .. tostring(err))
                 return kick()
             end
             if err then
@@ -49,7 +49,7 @@ R.register_route("/api/v1/ws/events", "GET", R.make_route_opts(), function()
         while should_run do
             local res, err = redis_inst:read_reply()
             if err and err ~= "timeout" then
-                ngx.log(ngx.ERR, "Redis error: " .. err)
+                ngx.log(ngx.ERR, "Redis error: " .. tostring(err))
                 return kick()
             end
             if res then
