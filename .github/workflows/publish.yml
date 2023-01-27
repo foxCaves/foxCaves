@@ -31,6 +31,8 @@ jobs:
           key: ${{ runner.os }}-single-buildx-${{ github.sha }}
           restore-keys: |
             ${{ runner.os }}-single-buildx
+      - name: Ensure we are up to date on all images
+        run: docker pull node:lts-alpine && docker pull openresty/openresty:alpine-fat
       - name: Build container image
         uses: docker/build-push-action@v3
         with:
