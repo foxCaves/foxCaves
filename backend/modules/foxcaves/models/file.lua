@@ -9,6 +9,7 @@ local exec = require("foxcaves.exec")
 local mimetypes = require("foxcaves.mimetypes")
 local utils = require("foxcaves.utils")
 
+local io = io
 local os = os
 local ngx = ngx
 local next = next
@@ -53,7 +54,7 @@ end
 local file_select = 'id, name, owner, size, mimetype, thumbnail_mimetype, ' .. database.TIME_COLUMNS_EXPIRING
 
 function file_model.get_by_query(query, ...)
-    return file_model.get_by_query_raw('(expires_at IS NULL OR expires_at >= NOW()) AND (' .. query .. ')' , ...)
+    return file_model.get_by_query_raw('(expires_at IS NULL OR expires_at >= NOW()) AND uploaded = 1 AND (' .. query .. ')' , ...)
 end
 
 function file_model.get_by_query_raw(query, ...)
@@ -93,6 +94,7 @@ function file_model.new()
     local file = {
         not_in_db = true,
         id = random.string(10),
+        uploaded = 0,
     }
     setmetatable(file, file_mt)
     return file
@@ -115,13 +117,15 @@ function file_model.extract_name_and_extension(name)
     return res[1], (res[2] and res[2]:sub(2):lower())
 end
 
-function file_mt:delete()
-    local base = file_model.paths.storage .. self.id
+local function file_storage_delete(file)
+    local base = file_model.paths.storage .. file.id
     os.remove(base .. "/file")
-    if self.thumbnail_mimetype and self.thumbnail_mimetype ~= "" then
-        os.remove(base .. "/thumb")
-    end
+    os.remove(base .. "/thumb")
     lfs.rmdir(base)
+end
+
+function file_mt:delete()
+    file_storage_delete(self)
 
     database.get_shared():query('DELETE FROM files WHERE id = %s', self.id)
 
@@ -169,28 +173,36 @@ function file_mt:compute_mimetype()
     return true
 end
 
-local function file_move(src, dst)
-    exec.cmd("mv", src, dst)
+function file_mt:upload_begin()
+    self.uploaded = 0
+
+    lfs.mkdir(file_model.paths.storage .. self.id)
+    self._fh = io.open(self:make_local_path(), "wb")
+    self._fhsize = 0
 end
 
-function file_mt:move_upload_data(src)
-    self.size = lfs.attributes(src, "size")
+function file_mt:upload_chunk(chunk)
+    self._fh:write(chunk)
+    self._fhsize = self._fhsize + chunk:len()
+end
 
-    local thumbDest = file_model.paths.temp .. "thumb_" .. self.id
+function file_mt:upload_finish()
+    self._fh:close()
+    self._fh = nil
+    self._fhsize = nil
 
     local prefix, suffix = self.mimetype:match("([a-z]+)/([a-z]+)")
     local handler = mimeHandlers[prefix]
     if handler then
-        self.thumbnail_mimetype = handler(src, thumbDest, suffix)
+        self.thumbnail_mimetype = handler(self:make_local_path(), file_model.paths.storage .. self.id .. "/thumb", suffix)
     end
 
-    lfs.mkdir(file_model.paths.storage .. self.id)
+    self.uploaded = 1
+end
 
-    file_move(src, file_model.paths.storage .. self.id .. "/file")
-
-    if self.thumbnail_mimetype and self.thumbnail_mimetype ~= "" then
-        file_move(thumbDest, file_model.paths.storage .. self.id .. "/thumb")
-    end
+function file_mt:upload_abort()
+    self:upload_finish()
+    file_storage_delete(self)
 end
 
 function file_mt:save()
@@ -198,9 +210,9 @@ function file_mt:save()
     if self.not_in_db then
         res = database.get_shared():query_single(
             'INSERT INTO files \
-                (id, name, owner, size, mimetype, thumbnail_mimetype, expires_at) VALUES (%s, %s, %s, %s, %s, %s, %s) \
+                (id, name, owner, size, mimetype, thumbnail_mimetype, uploaded, expires_at) VALUES (%s, %s, %s, %s, %s, %s, %s, %s) \
                 RETURNING ' .. database.TIME_COLUMNS_EXPIRING,
-            self.id, self.name, self.owner, self.size, self.mimetype, self.thumbnail_mimetype or "",
+            self.id, self.name, self.owner, self.size, self.mimetype, self.thumbnail_mimetype or "", self.uploaded,
             self.expires_at or ngx.null
         )
         primary_push_action = 'create'
@@ -208,11 +220,11 @@ function file_mt:save()
     else
         res = database.get_shared():query_single(
             'UPDATE files \
-                SET name = %s, owner = %s, size = %s, mimetype = %s, thumbnail_mimetype = %s, expires_at = %s \
-                updated_at = (now() at time zone \'utc\') \
+                SET name = %s, owner = %s, size = %s, mimetype = %s, thumbnail_mimetype = %s, uploaded = %s, \
+                expires_at = %s, updated_at = (now() at time zone \'utc\') \
                 WHERE id = %s \
                 RETURNING ' .. database.TIME_COLUMNS_EXPIRING,
-            self.name, self.owner, self.size, self.mimetype, self.thumbnail_mimetype or "",
+            self.name, self.owner, self.size, self.mimetype, self.thumbnail_mimetype or "", self.uploaded,
             self.expires_at or ngx.null, self.id
         )
         primary_push_action = 'update'
@@ -224,9 +236,11 @@ function file_mt:save()
         self.expires_at = nil
     end
 
-    local owner = user_model.get_by_id(self.owner)
-    owner:send_event(primary_push_action, 'file', self:get_private())
-    owner:send_self_event()
+    if self.uploaded == 1 then
+        local owner = user_model.get_by_id(self.owner)
+        owner:send_event(primary_push_action, 'file', self:get_private())
+        owner:send_self_event()
+    end
 end
 
 function file_mt:get_extension()

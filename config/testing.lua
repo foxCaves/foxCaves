@@ -21,7 +21,8 @@ return {
         main_url = "http://main.foxcaves",
         enable_acme = false,
         redirect_www = false,
-        upstream_ips = {},
+        force_plaintext = true,
+        upstream_ips = {"127.0.0.1"},
     },
     sentry = {
         dsn = nil,

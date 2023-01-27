@@ -1,9 +1,14 @@
+local upload = require("resty.upload")
 local lfs = require("lfs")
 local utils = require("foxcaves.utils")
 local expiry_utils = require("foxcaves.expiry_utils")
 local file_model = require("foxcaves.models.file")
 local ngx = ngx
 local io = io
+local math_min = math.min
+local tonumber = tonumber
+
+local UPLOAD_CHUNK_SIZE = 4096
 
 R.register_route("/api/v1/files", "POST", R.make_route_opts(), function()
     if not ngx.ctx.user:can_perform_write() then
@@ -26,32 +31,31 @@ R.register_route("/api/v1/files", "POST", R.make_route_opts(), function()
         return utils.api_error("Invalid name")
     end
 
-    expiry_utils.parse_expiry(ngx.var, file, "arg_")
-
-    ngx.req.read_body()
-    local filetmp = ngx.req.get_body_file()
-    local filedata = ngx.req.get_body_data()
-    if (not filetmp) and (not filedata) then
-        return utils.api_error("No body")
-    end
-
-    local filesize = filetmp and lfs.attributes(filetmp, "size") or filedata:len()
-    if (not filesize) or filesize <= 0 then
-        return utils.api_error("Empty body")
-    end
+    local filesize = tonumber(ngx.req.get_headers()["Content-Length"])
 
     if not user:has_free_storage_for(filesize) then
         return utils.api_error("Over quota", 402)
     end
 
-    if not filetmp then
-        filetmp =  file_model.paths.temp .. "file_" .. file.id .. ".tmp"
-        local f = io.open(filetmp, "wb")
-        f:write(filedata)
-        f:close()
-    end
-    file:move_upload_data(filetmp)
+    expiry_utils.parse_expiry(ngx.var, file, "arg_")
+    file.size = filesize
+    file:save()
+    file:upload_begin()
 
+    local remaining = filesize
+    local sock = ngx.req.socket()
+    sock:settimeout(1000)
+    while remaining > 0 do
+        local data, err = sock:receive(math_min(UPLOAD_CHUNK_SIZE, remaining))
+        remaining = remaining - data:len()
+        if not data then
+            file:upload_abort()
+            return utils.api_error("Error receiving data")
+        end
+        file:upload_chunk(data)
+    end
+
+    file:upload_finish()
     file:save()
 
     return file:get_private()

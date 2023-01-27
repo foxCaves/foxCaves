@@ -5,12 +5,13 @@ dofile(root .. "/init.lua")
 local config = require("foxcaves.config")
 
 local function url_to_domain(url)
-    return url:gsub("https?://", "")
+    return url:gsub("^https?://", ""):gsub(":.*$", "")
 end
 
 local short_domain = url_to_domain(config.http.short_url)
 local main_domain = url_to_domain(config.http.main_url)
 local upstream_ips_str = table.concat(config.http.upstream_ips, " ")
+local listener_config = "/etc/nginx/listener.conf"
 
 local nginx_configs = {
     "/etc/nginx/conf.d/foxcaves.conf",
@@ -18,6 +19,11 @@ local nginx_configs = {
     "/etc/nginx/listener.conf"
 }
 local domains = {short_domain, main_domain}
+
+if config.http.force_plaintext then
+    listener_config = "/etc/nginx/listener-plaintext.conf"
+    table.insert(nginx_configs, "/etc/nginx/listener-plaintext.conf")
+end
 
 if config.http.redirect_www then
     table.insert(nginx_configs, "/etc/nginx/conf.d/www-foxcaves.conf")
@@ -37,6 +43,7 @@ for _, nginx_config in pairs(nginx_configs) do
     data = data:gsub("__SHORT_URL__", config.http.short_url)
     data = data:gsub("__SHORT_DOMAIN__", short_domain)
     data = data:gsub("__UPSTREAM_IPS__", upstream_ips_str)
+    data = data:gsub("__LISTENER_CONFIG__", listener_config)
 
     fh = io.open(nginx_config, "w")
     fh:write(data)

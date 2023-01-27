@@ -6,7 +6,7 @@ set_real_ip_from __UPSTREAM_IPS__;
 real_ip_header proxy_protocol;
 
 server {
-    include /etc/nginx/listener.conf;
+    include __LISTENER_CONFIG__;
 
     root /var/www/foxcaves/html;
 
@@ -30,7 +30,7 @@ server {
 }
 
 server {
-    include /etc/nginx/listener.conf;
+    include __LISTENER_CONFIG__;
 
     server_name __SHORT_DOMAIN__;
 

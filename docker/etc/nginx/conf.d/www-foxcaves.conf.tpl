@@ -1,5 +1,5 @@
 server {
-    include /etc/nginx/listener.conf;
+    include __LISTENER_CONFIG__;
 
     server_name www.__SHORT_DOMAIN__ www.__MAIN_DOMAIN__;
 

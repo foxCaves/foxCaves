@@ -19,7 +19,7 @@ ENV AWS_EC2_METADATA_DISABLED=true
 
 RUN apk update && apk add s6 imagemagick git argon2-libs argon2-dev argon2 runuser libuuid openssl-dev certbot certbot-nginx
 RUN mkdir -p /usr/local/share/lua/5.1
-RUN /usr/local/openresty/bin/opm get openresty/lua-resty-redis openresty/lua-resty-websocket openresty/lua-resty-upload thibaultcha/lua-argon2-ffi GUI/lua-resty-mail
+RUN /usr/local/openresty/bin/opm get openresty/lua-resty-redis openresty/lua-resty-websocket thibaultcha/lua-argon2-ffi GUI/lua-resty-mail
 RUN /usr/local/openresty/luajit/bin/luarocks install luasocket
 RUN /usr/local/openresty/luajit/bin/luarocks install luafilesystem
 RUN /usr/local/openresty/luajit/bin/luarocks install pgmoon
