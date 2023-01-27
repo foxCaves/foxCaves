@@ -11,6 +11,42 @@ local string_format = string.format
 local ngx = ngx
 local unpack = unpack
 
+local EVENT_WIDTH = "w"
+local EVENT_COLOR = "c"
+local EVENT_BRUSH = "b"
+
+local EVENT_MOUSE_UP = "u"
+local EVENT_MOUSE_DOWN = "d"
+local EVENT_MOUSE_MOVE = "m"
+local EVENT_MOUSE_CURSOR = "p"
+local EVENT_MOUSE_DOUBLE_CLICK = "F"
+
+local EVENT_RESET = "r"
+
+local EVENT_CUSTOM = "x"
+
+local EVENT_JOIN = "j"
+local EVENT_JOINDIRECT = "J"
+local EVENT_LEAVE = "l"
+local EVENT_ERROR = "e"
+--local EVENT_IMGBURST = "i"
+
+local cEVENT_JOIN = EVENT_JOIN:byte()
+local cEVENT_JOINDIRECT = EVENT_JOINDIRECT:byte()
+local cEVENT_LEAVE = EVENT_LEAVE:byte()
+--local cEVENT_MOUSE_CURSOR = EVENT_MOUSE_CURSOR:byte()
+
+local VALID_BRUSHES = {
+    brush = true,
+    circle = true,
+    rectangle = true,
+    line = true,
+    erase = true,
+    text = true,
+    restore = true,
+    polygon = true
+}
+
 R.register_route("/api/v1/ws/livedraw", "GET", R.make_route_opts({ allow_guest = true }), function()
     local main_redis = redis.get_shared()
     local sub_redis = redis.make(true)
@@ -23,32 +59,9 @@ R.register_route("/api/v1/ws/livedraw", "GET", R.make_route_opts({ allow_guest =
         return utils.api_error("WebSocket requests only")
     end
 
-    local EVENT_WIDTH = "w"
-    local EVENT_COLOR = "c"
-    local EVENT_BRUSH = "b"
-
-    local EVENT_MOUSE_UP = "u"
-    local EVENT_MOUSE_DOWN = "d"
-    local EVENT_MOUSE_MOVE = "m"
-    local EVENT_MOUSE_CURSOR = "p"
-    local EVENT_MOUSE_DOUBLE_CLICK = "F"
-
-    local EVENT_RESET = "r"
-
-    local EVENT_CUSTOM = "x"
-
-    local EVENT_JOIN = "j"
-    local EVENT_JOINDIRECT = "J"
-    local EVENT_LEAVE = "l"
-    local EVENT_ERROR = "e"
-    --local EVENT_IMGBURST = "i"
-
-    local cEVENT_JOIN = EVENT_JOIN:byte()
-    local cEVENT_JOINDIRECT = EVENT_JOINDIRECT:byte()
-    local cEVENT_LEAVE = EVENT_LEAVE:byte()
-    --local cEVENT_MOUSE_CURSOR = EVENT_MOUSE_CURSOR:byte()
-
     local should_run = true
+
+    sub_redis:set_timeout(5000)
 
     local function close()
         ws:send_close()
@@ -73,22 +86,11 @@ R.register_route("/api/v1/ws/livedraw", "GET", R.make_route_opts({ allow_guest =
         return unpack(tbl)
     end
 
-    local valid_brushes = {
-        brush = true,
-        circle = true,
-        rectangle = true,
-        line = true,
-        erase = true,
-        text = true,
-        restore = true,
-        polygon = true
-    }
-
     local event_handlers = {
         [EVENT_BRUSH] = function(user, data)
             if #data ~= 1 then error("Invalid payload") end
             data = data[1]
-            if not valid_brushes[data] then error("Invalid brush") end
+            if not VALID_BRUSHES[data] then error("Invalid brush") end
             user.brush = data
         end,
         [EVENT_COLOR] = function(user, data)
