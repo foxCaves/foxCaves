@@ -35,7 +35,7 @@ export const App: React.FC = () => {
         const user = await UserDetailsModel.getById('self');
         setUser(user);
         setUserLoaded(true);
-    }, []);
+    }, [setUser, setUserLoaded]);
 
     const context: AppContextClass = {
         user,

@@ -153,7 +153,7 @@ export const LiveLoadingContainer: React.FC<LiveLoadingContainerInterface> = ({ 
     );
 
     useEffect(() => {
-        if (!user) {
+        if (!curUserId) {
             wsRef.current?.close();
             wsRef.current = undefined;
             return;
@@ -172,8 +172,11 @@ export const LiveLoadingContainer: React.FC<LiveLoadingContainerInterface> = ({ 
 
         return () => {
             thisWs?.close();
+            if (wsRef.current === thisWs) {
+                wsRef.current = undefined;
+            }
         };
-    }, [user]);
+    }, [curUserId]);
 
     useEffect(() => {
         if (!user) {
