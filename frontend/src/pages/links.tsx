@@ -59,8 +59,11 @@ export const LinksPage: React.FC<{}> = () => {
                         },
                     },
                 });
-                delete models![link.id];
-                set(models!);
+
+
+                const modelsCopy = { ...models };
+                delete modelsCopy[link.id];
+                set(modelsCopy);
             } catch {}
         }
         setDeleteLink(undefined);
@@ -78,8 +81,10 @@ export const LinksPage: React.FC<{}> = () => {
                     },
                 },
             });
-            models![link.id] = link;
-            set(models!);
+
+            const modelsCopy = { ...models };
+            modelsCopy[link.id] = link;
+            set(modelsCopy);
         } catch {}
         setShowCreateLink(false);
     }, [createLinkUrl, models, set]);

@@ -123,11 +123,11 @@ export const FilesPage: React.FC<{}> = () => {
             for (const file of acceptedFiles) {
                 try {
                     const fileObj = await uploadFile(file);
-                    models![fileObj.id] = fileObj;
-                    set(models!);
-                } catch (e) {
-                    console.error('Error uploading file', file, e);
-                }
+
+                    const modelsCopy = { ...models };
+                    modelsCopy[fileObj.id] = fileObj;
+                    set(modelsCopy);
+                } catch {}
             }
         },
         [models, set],
@@ -151,8 +151,9 @@ export const FilesPage: React.FC<{}> = () => {
                         },
                     },
                 });
-                delete models![file.id];
-                set(models!);
+                const modelsCopy = { ...models };
+                delete modelsCopy[file.id];
+                set(modelsCopy);
             } catch {}
         }
         setDeleteFile(undefined);
