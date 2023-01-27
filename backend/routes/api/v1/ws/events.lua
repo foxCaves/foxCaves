@@ -2,6 +2,7 @@ local cjson = require("cjson")
 local redis = require("foxcaves.redis")
 local utils = require("foxcaves.utils")
 local server = require("resty.websocket.server")
+local tostring = tostring
 local ngx = ngx
 
 R.register_route("/api/v1/ws/events", "GET", R.make_route_opts(), function()
