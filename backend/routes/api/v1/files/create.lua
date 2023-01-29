@@ -5,7 +5,8 @@ local ngx = ngx
 local math_min = math.min
 local tonumber = tonumber
 
-local UPLOAD_CHUNK_SIZE = 4096
+local UPLOAD_CHUNK_SIZE = 5 * 1024 * 1024
+local THUMBNAIL_MAX_FILE_SIZE = 50 * 1024 * 1024
 
 R.register_route("/api/v1/files", "POST", R.make_route_opts(), function()
     if not ngx.ctx.user:can_perform_write() then
@@ -37,18 +38,18 @@ R.register_route("/api/v1/files", "POST", R.make_route_opts(), function()
     expiry_utils.parse_expiry(ngx.var, file, "arg_")
     file.size = filesize
     file:save()
-    file:upload_begin()
+    file:upload_begin(filesize <= THUMBNAIL_MAX_FILE_SIZE)
 
     local remaining = filesize
     local sock = ngx.req.socket()
     sock:settimeout(1000)
     while remaining > 0 do
         local data, _ = sock:receive(math_min(UPLOAD_CHUNK_SIZE, remaining))
-        remaining = remaining - data:len()
         if not data then
             file:upload_abort()
             return utils.api_error("Error receiving data")
         end
+        remaining = remaining - data:len()
         file:upload_chunk(data)
     end
 

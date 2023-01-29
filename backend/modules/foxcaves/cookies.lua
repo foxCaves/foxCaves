@@ -1,3 +1,4 @@
+local config = require("foxcaves.config").cookies
 local resty_cookie = require("resty.cookie")
 
 local ngx = ngx
@@ -10,12 +11,7 @@ function M.get_instance()
         return ngx.ctx.__cookies
     end
 
-    local cookies = resty_cookie:new({
-        path = "/",
-        httponly = true,
-        secure = true,
-    })
-
+    local cookies = resty_cookie:new(config)
     ngx.ctx.__cookies = cookies
     return cookies
 end

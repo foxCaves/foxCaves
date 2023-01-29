@@ -8,6 +8,7 @@ local ROOT = require("foxcaves.consts").ROOT
 local exec = require("foxcaves.exec")
 local mimetypes = require("foxcaves.mimetypes")
 local utils = require("foxcaves.utils")
+local storage = require("foxcaves.storage.default")
 
 local io = io
 local os = os
@@ -18,15 +19,13 @@ local setmetatable = setmetatable
 local file_mt = {}
 
 local file_model = {
-    paths = {
-        storage = path.abs(ROOT .. "/storage/"),
-        temp = path.abs(ROOT .. "/tmp/"),
-    },
     consts = {
         NAME_MAX_LEN = 255,
         EXT_MAX_LEN = 32,
     }
 }
+
+local UPLOAD_CHUNK_SIZE = 5 * 1024 * 1024
 
 require("foxcaves.module_helper").setmodenv()
 
@@ -117,25 +116,15 @@ function file_model.extract_name_and_extension(name)
     return res[1], (res[2] and res[2]:sub(2):lower())
 end
 
-local function file_storage_delete(file)
-    local base = file_model.paths.storage .. file.id
-    os.remove(base .. "/file")
-    os.remove(base .. "/thumb")
-    lfs.rmdir(base)
-end
-
 function file_mt:delete()
-    file_storage_delete(self)
+    storage:delete(self.id, "file")
+    storage:delete(self.id, "thumb")
 
     database.get_shared():query('DELETE FROM files WHERE id = %s', self.id)
 
     local owner = user_model.get_by_id(self.owner)
     owner:send_event('delete', 'file', self:get_private())
     owner:send_self_event()
-end
-
-function file_mt:make_local_path()
-    return file_model.paths.storage .. self.id .. "/file"
 end
 
 function file_mt:set_owner(user)
@@ -173,36 +162,88 @@ function file_mt:compute_mimetype()
     return true
 end
 
-function file_mt:upload_begin()
+function file_mt:upload_begin(allow_thumbnail)
     self.uploaded = 0
 
-    lfs.mkdir(file_model.paths.storage .. self.id)
-    self._fh = io.open(self:make_local_path(), "wb")
-    self._fhsize = 0
+    self._upload = storage:open(self.id, "file", self.mimetype)
+    self._upload_size = 0
+
+    if allow_thumbnail then
+        self._file_temp = os.tmpname()
+        self._fh_tmp = io.open(self._file_temp, "wb")
+    end
 end
 
 function file_mt:upload_chunk(chunk)
-    self._fh:write(chunk)
-    self._fhsize = self._fhsize + chunk:len()
+    self._upload:chunk(chunk)
+    self._upload_size = self._upload_size + chunk:len()
+    if self._fh_tmp then
+        self._fh_tmp:write(chunk)
+    end
 end
 
-function file_mt:upload_finish()
-    self._fh:close()
-    self._fh = nil
-    self._fhsize = nil
+local function file_thumbnail_thread(self)
+    if not self._fh_tmp then
+        return
+    end
+
+    self._fh_tmp:close()
+    self._fh_tmp = nil
+
+    self._thumb_temp = os.tmpname()
 
     local prefix, suffix = self.mimetype:match("([a-z]+)/([a-z]+)")
     local handler = mimeHandlers[prefix]
     if handler then
-        self.thumbnail_mimetype = handler(self:make_local_path(), file_model.paths.storage .. self.id .. "/thumb", suffix)
+        self.thumbnail_mimetype = handler(self._file_temp, self._thumb_temp, suffix)
     end
+
+    local thumb_fh = io.open(self._thumb_temp, "rb")
+    local thumb_upload = storage:open(self.id, "thumb", self.thumbnail_mimetype)
+    local thumb_has_data = false
+    while true do
+        local chunk = thumb_fh:read(UPLOAD_CHUNK_SIZE)
+        if not chunk then
+            break
+        end
+        thumb_upload:chunk(chunk)
+        thumb_has_data = true
+    end
+    thumb_fh:close()
+
+    os.remove(self._thumb_temp)
+    os.remove(self._file_temp)
+
+    self._thumb_temp = nil
+    self._file_temp = nil
+
+    if thumb_has_data then
+        thumb_upload:finish()
+    else
+        thumb_upload:abort()
+        self.thumbnail_mimetype = nil
+    end
+end
+
+function file_mt:upload_finish()
+    local thumb_thread = ngx.thread.spawn(file_thumbnail_thread, self)
+
+    self._upload:finish()
+    self.size = self._upload_size
+    self._upload = nil
+    self._upload_size = nil
+
+    ngx.thread.wait(thumb_thread)
 
     self.uploaded = 1
 end
 
+function file_mt:send_to_client(ftype)
+    return storage:send_to_client(self.id, ftype)
+end
+
 function file_mt:upload_abort()
-    self:upload_finish()
-    file_storage_delete(self)
+    self._upload:abort()
 end
 
 function file_mt:save(force_push_action)

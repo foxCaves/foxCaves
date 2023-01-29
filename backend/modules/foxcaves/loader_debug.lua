@@ -228,6 +228,7 @@ function M.run()
     if not isok then
         ngx.status = 500
         ngx.log(ngx.ERR, "Lua error: " .. err)
+        ngx.write(err)
     end
     utils.__on_shutdown()
     ngx.eof()

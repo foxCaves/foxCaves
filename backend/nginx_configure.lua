@@ -44,6 +44,7 @@ for _, nginx_config in pairs(nginx_configs) do
     data = data:gsub("__SHORT_DOMAIN__", short_domain)
     data = data:gsub("__UPSTREAM_IPS__", upstream_ips_str)
     data = data:gsub("__LISTENER_CONFIG__", listener_config)
+    data = data:gsub("__STORAGE_SERVICE_HOST__", (config.storage.args and config.storage.args.host) or "s3.amazonaws.com")
 
     fh = io.open(nginx_config, "w")
     fh:write(data)

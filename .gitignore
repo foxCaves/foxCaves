@@ -1,4 +1,4 @@
 /config
-/storage
+/data
 /frontend/build
 node_modules

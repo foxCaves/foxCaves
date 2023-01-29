@@ -1,3 +1,7 @@
+in_nginx = ngx ~= nil
+
+_G.dns_query_timeout = 10 * 1000
+
 -- Protect global table
 setmetatable(_G, {
     __index = function(_, k)
@@ -14,7 +18,7 @@ setmetatable(_G, {
 -- Load module path
 local path = require("path")
 local root = path.abs(debug.getinfo(1, "S").source:sub(2):match("(.*/)"))
-package.path = package.path .. ";" .. path.abs(root .. "/modules"):gsub("//+", "/") .. "/?.lua"
+package.path = package.path .. ";" .. path.abs(root .. "/modules"):gsub("//+", "/") .. "/?.lua;"
 
 -- Secure cjson
 local cjson = require("cjson")
@@ -28,4 +32,3 @@ rawset(_G, 'OSENV', {
 for k, _ in pairs(OSENV) do
     rawset(OSENV, k, os.getenv(k))
 end
-

@@ -26,7 +26,7 @@ R.register_route("/fcv-cdn/sendfile/f/{file}", "GET", R.make_route_opts_anon(), 
 
     ngx.header["Content-Disposition"] = disposition_type .. "; filename=\"" .. file.name .. "\""
     ngx.header["Content-Type"] = file.mimetype
-    ngx.req.set_uri("/fcv-rawget/" .. file.id .. "/file", true)
+    file:send_to_client("file")
 end)
 
 R.register_route("/fcv-cdn/sendfile/t/{file}", "GET", R.make_route_opts_anon(), function(route_vars)
@@ -42,5 +42,5 @@ R.register_route("/fcv-cdn/sendfile/t/{file}", "GET", R.make_route_opts_anon(), 
     end
 
     ngx.header["Content-Type"] = file.thumbnail_mimetype
-    ngx.req.set_uri("/fcv-rawget/" .. file.id .. "/thumb", true)
+    file:send_to_client("thumb")
 end)

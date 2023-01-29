@@ -1,5 +1,6 @@
 local config = require("foxcaves.config").email
 local resty_mail = require("resty.mail").new(config)
+local error = error
 
 local M = {}
 require("foxcaves.module_helper").setmodenv()
