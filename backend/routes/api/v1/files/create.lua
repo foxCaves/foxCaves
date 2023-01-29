@@ -42,7 +42,7 @@ R.register_route("/api/v1/files", "POST", R.make_route_opts(), function()
 
     local remaining = filesize
     local sock = ngx.req.socket()
-    sock:settimeout(1000)
+    sock:settimeout(10000)
     while remaining > 0 do
         local data, _ = sock:receive(math_min(UPLOAD_CHUNK_SIZE, remaining))
         if not data then

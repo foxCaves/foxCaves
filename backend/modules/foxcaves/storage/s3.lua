@@ -62,7 +62,7 @@ local function s3_request(method, path, query, body, rawHeaders)
     end
 
     local resp_body = resp:read_body()
-    if resp.status ~= 200 then
+    if (not resp.status) or (resp.status < 200) or (resp.status > 299) then
         error("S3API request " .. method .. " " .. path .. "?" .. query .. " failed! Status: " .. tostring(resp.status) .. " Body: " .. tostring(resp_body))
     end
 
