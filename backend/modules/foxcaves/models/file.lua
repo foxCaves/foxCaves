@@ -1,10 +1,8 @@
 local lfs = require("lfs")
-local path = require("path")
 local database = require("foxcaves.database")
 local random = require("foxcaves.random")
 local user_model = require("foxcaves.models.user")
 local short_url = require("foxcaves.config").http.short_url
-local ROOT = require("foxcaves.consts").ROOT
 local exec = require("foxcaves.exec")
 local mimetypes = require("foxcaves.mimetypes")
 local utils = require("foxcaves.utils")
@@ -117,8 +115,8 @@ function file_model.extract_name_and_extension(name)
 end
 
 function file_mt:delete()
-    storage:delete(self.id, "file")
-    storage:delete(self.id, "thumb")
+    storage.delete(self.id, "file")
+    storage.delete(self.id, "thumb")
 
     database.get_shared():query('DELETE FROM files WHERE id = %s', self.id)
 
@@ -165,7 +163,7 @@ end
 function file_mt:upload_begin(allow_thumbnail)
     self.uploaded = 0
 
-    self._upload = storage:open(self.id, "file", self.mimetype)
+    self._upload = storage.open(self.id, "file", self.mimetype)
 
     if allow_thumbnail then
         self._file_temp = os.tmpname()
@@ -197,7 +195,7 @@ local function file_thumbnail_process(self)
     end
 
     local thumb_fh = io.open(self._thumb_temp, "rb")
-    local thumb_upload = storage:open(self.id, "thumb", self.thumbnail_mimetype)
+    local thumb_upload = storage.open(self.id, "thumb", self.thumbnail_mimetype)
     local thumb_has_data = false
     while true do
         local chunk = thumb_fh:read(UPLOAD_CHUNK_SIZE)
@@ -240,7 +238,7 @@ function file_mt:upload_finish()
 end
 
 function file_mt:send_to_client(ftype)
-    return storage:send_to_client(self.id, ftype)
+    return storage.send_to_client(self.id, ftype)
 end
 
 function file_mt:upload_abort()

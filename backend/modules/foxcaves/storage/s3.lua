@@ -1,5 +1,4 @@
 local config = require("foxcaves.config").storage
-local signature = require("resty.aws-signature")
 local http = require("resty.http")
 
 local setmetatable = setmetatable
@@ -7,7 +6,6 @@ local error = error
 local ngx = ngx
 local pairs = pairs
 local tostring = tostring
-local tonumber = tonumber
 local table = table
 
 local awssig = require("resty.aws-signature").new({
@@ -50,7 +48,7 @@ local function s3_request(method, path, query, body, rawHeaders)
         error("S3API connection failed! Error: " .. tostring(err))
     end
 
-    local resp, err = httpc:request({
+    local resp, req_err = httpc:request({
         path = path,
         query = query,
         method = method,
@@ -59,7 +57,7 @@ local function s3_request(method, path, query, body, rawHeaders)
     })
     if not resp then
         resp:close()
-        error("S3API request " .. method .. " " .. path .. "?" .. query .. " failed! Error: " .. tostring(err))
+        error("S3API request " .. method .. " " .. path .. "?" .. query .. " failed! Error: " .. tostring(req_err))
     end
 
     local resp_body = resp:read_body()
@@ -71,13 +69,14 @@ local function s3_request(method, path, query, body, rawHeaders)
     end
 
     if (not resp.status) or (resp.status < 200) or (resp.status > 299) then
-        error("S3API request " .. method .. " " .. path .. "?" .. query .. " failed! Status: " .. tostring(resp.status) .. " Body: " .. tostring(resp_body))
+        error("S3API request " .. method .. " " .. path .. "?" .. query .. " failed! " ..
+              "Status: " .. tostring(resp.status) .. " Body: " .. tostring(resp_body))
     end
 
     return resp, resp_body
 end
 
-function M:open(id, ftype, mimeType)
+function M.open(id, ftype, mimeType)
     local function makeHeaders()
         return {
             ["content-type"] = mimeType,
@@ -104,18 +103,19 @@ function M:open(id, ftype, mimeType)
     }, UPLOAD)
 end
 
-function M:send_to_client(id, ftype)
+function M.send_to_client(id, ftype)
     local key = build_key(id, ftype)
     awssig:aws_set_headers(host, key, "", {
+        method = "GET",
         body = "",
         region = region,
         service = "s3",
     })
-    ngx.var.fcv_proxy_url = key
-    ngx.req.set_uri("/fcv-proxyget", true)
+    ngx.req.set_uri_args({})
+    ngx.req.set_uri("/fcv-proxyget" .. key, true)
 end
 
-function M:delete(id, ftype)
+function M.delete(id, ftype)
     s3_request("DELETE", build_key(id, ftype))
 end
 

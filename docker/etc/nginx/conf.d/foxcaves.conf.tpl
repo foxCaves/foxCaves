@@ -70,11 +70,6 @@ server {
 }
 
 server {
-    set $fcv_proxy_authorization "";
-    set $fcv_proxy_url "";
-    set $fcv_proxy_x_amz_date "";
-    set $fcv_proxy_x_amz_content_sha256 "";
-
     include __LISTENER_CONFIG__;
     server_name __SHORT_DOMAIN__;
 
@@ -96,17 +91,18 @@ server {
         rewrite_by_lua_file /var/www/foxcaves/lua/nginx_run.lua;
     }
 
-    location = /fcv-proxyget {
+    location /fcv-proxyget/ {
         internal;
 
         proxy_set_header host "__STORAGE_SERVICE_HOST__";
         proxy_set_header authorization $http_authorization;
         proxy_set_header x-amz-date $http_x_amz_date;
         proxy_set_header x-amz-content-sha256 $http_x_amz_content_sha256;
+        proxy_set_header content-length 0;
 
         proxy_http_version 1.1;
         proxy_buffering off;
-        proxy_pass https://storage_service$fcv_proxy_url;
+        proxy_pass https://storage_service/;
         proxy_pass_request_body off;
         proxy_pass_request_headers off;
     }

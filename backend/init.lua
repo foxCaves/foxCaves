@@ -1,5 +1,3 @@
-in_nginx = ngx ~= nil
-
 _G.dns_query_timeout = 10 * 1000
 
 -- Protect global table

@@ -10,7 +10,7 @@ local UPLOAD = {}
 UPLOAD.__index = UPLOAD
 require("foxcaves.module_helper").setmodenv()
 
-function M:open(id, ftype, mimeType)
+function M.open(id, ftype)
     local dir = config.root_folder .. "/" .. id
     lfs.mkdir(dir)
     local filename = dir .. "/" .. ftype
@@ -22,14 +22,15 @@ function M:open(id, ftype, mimeType)
     }, UPLOAD)
 end
 
-function M:delete(id, ftype)
+function M.delete(id, ftype)
     local dir = config.root_folder .. "/" .. id
     os.remove(dir .. "/" .. ftype)
     lfs.rmdir(dir)
 end
 
-function M:send_to_client(id, ftype)
-    ngx.req.set_uri("/fcv-rawget/" .. file.id .. "/" .. ftype, true)
+function M.send_to_client(id, ftype)
+    ngx.req.set_uri_args({})
+    ngx.req.set_uri("/fcv-rawget/" .. id .. "/" .. ftype, true)
 end
 
 function UPLOAD:chunk(chunk)
