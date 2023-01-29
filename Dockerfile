@@ -29,7 +29,7 @@ RUN luarocks install lpath
 RUN luarocks install luaossl
 RUN git clone --depth 1 --branch v1.0.1 https://github.com/foxCaves/raven-lua.git /tmp/raven-lua && mv /tmp/raven-lua/raven /usr/local/share/lua/5.1/ && rm -rf /tmp/raven-lua
 RUN git clone --depth 1 --branch v0.1.2 https://github.com/foxCaves/lua-resty-cookie.git /tmp/lua-resty-cookie && cp -r /tmp/lua-resty-cookie/lib/* /usr/local/share/lua/5.1/ && rm -rf /tmp/lua-resty-cookie
-RUN git clone --branch main https://github.com/foxCaves/lua-resty-aws-signature.git /tmp/lua-resty-aws-signature && git -C /tmp/lua-resty-aws-signature reset --hard b83e369cef2114742972b20d30ca1971e1da1cbf && cp -r /tmp/lua-resty-aws-signature/lib/* /usr/local/share/lua/5.1/ && rm -rf /tmp/lua-resty-aws-signature
+RUN git clone --depth 1 --branch v0.2.0 https://github.com/foxCaves/lua-resty-aws-signature.git /tmp/lua-resty-aws-signature && cp -r /tmp/lua-resty-aws-signature/lib/* /usr/local/share/lua/5.1/ && rm -rf /tmp/lua-resty-aws-signature
 
 RUN adduser -u 1337 --disabled-password foxcaves
 
