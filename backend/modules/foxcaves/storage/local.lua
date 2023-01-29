@@ -1,6 +1,7 @@
 local config = require("foxcaves.config").storage
 local lfs = require("lfs")
 
+local ngx = ngx
 local os = os
 local io = io
 local setmetatable = setmetatable
