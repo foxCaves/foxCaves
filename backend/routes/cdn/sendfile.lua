@@ -20,6 +20,7 @@ R.register_route_multi_method("/fcv-cdn/sendfile/f/{file}", {"GET", "HEAD"}, R.m
 
     if not disposition_type then
         ngx.status = 302
+        utils.add_cdn_cache_control()
         ngx.redirect(main_url .. "/view/" .. file.id)
         return
     end
@@ -27,6 +28,10 @@ R.register_route_multi_method("/fcv-cdn/sendfile/f/{file}", {"GET", "HEAD"}, R.m
     ngx.header["Content-Disposition"] = disposition_type .. "; filename=\"" .. file.name .. "\""
     ngx.header["Content-Type"] = file.mimetype
     utils.add_cdn_cache_control()
+    if ngx.var.request_method == "HEAD" then
+        ngx.header["Content-Length"] = file.size
+        return
+    end
     file:send_to_client("file")
 end)
 
@@ -44,5 +49,8 @@ R.register_route_multi_method("/fcv-cdn/sendfile/t/{file}", {"GET", "HEAD"}, R.m
 
     ngx.header["Content-Type"] = file.thumbnail_mimetype
     utils.add_cdn_cache_control()
+    if ngx.var.request_method == "HEAD" then
+        return
+    end
     file:send_to_client("thumb")
 end)
