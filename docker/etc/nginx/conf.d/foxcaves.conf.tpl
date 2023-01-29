@@ -12,7 +12,7 @@ set_real_ip_from unix:;
 real_ip_header proxy_protocol;
 
 server {
-    listen unix:/run/nginx-lua-http11.sock default;
+    listen unix:/run/nginx-lua-api.sock default;
     server_name __MAIN_DOMAIN__;
 
     client_max_body_size 100M;
@@ -56,7 +56,7 @@ server {
         proxy_request_buffering off;
 
         if ($request_method = POST) {
-            proxy_pass http://unix:/run/nginx-lua-http11.sock;
+            proxy_pass http://unix:/run/nginx-lua-api.sock;
         }
         if ($request_method != POST) {
             content_by_lua_file /var/www/foxcaves/lua/nginx_run.lua;
