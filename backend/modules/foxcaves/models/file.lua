@@ -6,8 +6,8 @@ local short_url = require("foxcaves.config").http.short_url
 local exec = require("foxcaves.exec")
 local mimetypes = require("foxcaves.mimetypes")
 local utils = require("foxcaves.utils")
-local storage = require("foxcaves.storage.default")
 local storage_config = require("foxcaves.config").storage
+local storage_drivers = require("foxcaves.storage.all")
 
 local io = io
 local os = os
@@ -43,13 +43,17 @@ local mimeHandlers = {
     end
 }
 
+local function file_get_storage_driver(file)
+    return storage_drivers[file.storage_driver]
+end
+
 local function makefilemt(file)
     file.not_in_db = nil
     setmetatable(file, file_mt)
     return file
 end
 
-local file_select = 'id, name, owner, size, mimetype, thumbnail_mimetype, ' .. database.TIME_COLUMNS_EXPIRING
+local file_select = 'id, name, owner, size, mimetype, thumbnail_mimetype, uploaded, storage_driver, ' .. database.TIME_COLUMNS_EXPIRING
 
 function file_model.get_by_query(query, ...)
     return file_model.get_by_query_raw('(expires_at IS NULL OR expires_at >= NOW()) AND uploaded = 1 AND (' .. query .. ')' , ...)
@@ -93,6 +97,7 @@ function file_model.new()
         not_in_db = true,
         id = random.string(10),
         uploaded = 0,
+        storage_driver = storage_config.driver,
     }
     setmetatable(file, file_mt)
     return file
@@ -116,6 +121,7 @@ function file_model.extract_name_and_extension(name)
 end
 
 function file_mt:delete()
+    local storage = file_get_storage_driver(self)
     storage.delete(self.id, "file")
     storage.delete(self.id, "thumb")
 
@@ -162,6 +168,7 @@ function file_mt:compute_mimetype()
 end
 
 function file_mt:upload_begin(allow_thumbnail)
+    local storage = file_get_storage_driver(self)
     self.uploaded = 0
 
     self._upload = storage.open(self.id, "file", self.mimetype)
@@ -186,6 +193,8 @@ local function file_thumbnail_process(self)
 
     self._fh_tmp:close()
     self._fh_tmp = nil
+
+    local storage = file_get_storage_driver(self)
 
     self._thumb_temp = os.tmpname()
 
@@ -239,6 +248,7 @@ function file_mt:upload_finish()
 end
 
 function file_mt:send_to_client(ftype)
+    local storage = file_get_storage_driver(self)
     return storage.send_to_client(self.id, ftype)
 end
 
@@ -251,9 +261,9 @@ function file_mt:save(force_push_action)
     if self.not_in_db then
         res = database.get_shared():query_single(
             'INSERT INTO files \
-                (id, name, owner, size, mimetype, thumbnail_mimetype, uploaded, expires_at) VALUES (%s, %s, %s, %s, %s, %s, %s, %s) \
+                (id, name, owner, size, mimetype, thumbnail_mimetype, uploaded, storage_driver, expires_at) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s) \
                 RETURNING ' .. database.TIME_COLUMNS_EXPIRING,
-            self.id, self.name, self.owner, self.size, self.mimetype, self.thumbnail_mimetype or "", self.uploaded,
+            self.id, self.name, self.owner, self.size, self.mimetype, self.thumbnail_mimetype or "", self.uploaded, self.storage_driver,
             self.expires_at or ngx.null
         )
         primary_push_action = 'create'
@@ -261,11 +271,11 @@ function file_mt:save(force_push_action)
     else
         res = database.get_shared():query_single(
             'UPDATE files \
-                SET name = %s, owner = %s, size = %s, mimetype = %s, thumbnail_mimetype = %s, uploaded = %s, \
+                SET name = %s, owner = %s, size = %s, mimetype = %s, thumbnail_mimetype = %s, uploaded = %s, storage_driver = %s, \
                 expires_at = %s, updated_at = (now() at time zone \'utc\') \
                 WHERE id = %s \
                 RETURNING ' .. database.TIME_COLUMNS_EXPIRING,
-            self.name, self.owner, self.size, self.mimetype, self.thumbnail_mimetype or "", self.uploaded,
+            self.name, self.owner, self.size, self.mimetype, self.thumbnail_mimetype or "", self.uploaded,  self.storage_driver,
             self.expires_at or ngx.null, self.id
         )
         primary_push_action = 'update'
