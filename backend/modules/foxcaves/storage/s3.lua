@@ -148,7 +148,7 @@ end
 
 function M:send_to_client(id, ftype)
     local key = build_key(self, id, ftype)
-    s3_request_stream(self, "GET", key, "", "")
+    s3_request_stream(self, ngx.var.request_method:upper(), key, "", "")
 end
 
 function M:delete(id, ftype)

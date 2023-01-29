@@ -69,6 +69,13 @@ end
 
 local c_open, c_close, c_star = ('{}*'):byte(1,3)
 
+
+function ROUTE_REG_MT.register_route_multi_method(url, methods, options, func, descriptor)
+    for _, method in next, methods do
+        ROUTE_REG_MT.register_route(url, method, options, func, descriptor)
+    end
+end
+
 function ROUTE_REG_MT.register_route(url, method, options, func, descriptor)
     method = method:upper()
     local urlsplit = explode("/", url:sub(2))

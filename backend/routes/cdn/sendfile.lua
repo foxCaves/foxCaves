@@ -3,7 +3,7 @@ local file_model = require("foxcaves.models.file")
 local main_url = require("foxcaves.config").http.main_url
 local ngx = ngx
 
-R.register_route("/fcv-cdn/sendfile/f/{file}", "GET", R.make_route_opts_anon(), function(route_vars)
+R.register_route_multi_method("/fcv-cdn/sendfile/f/{file}", {"GET", "HEAD"}, R.make_route_opts_anon(), function(route_vars)
     local id = file_model.extract_name_and_extension(route_vars.file)
 
     local file = file_model.get_by_id(id)
@@ -30,7 +30,7 @@ R.register_route("/fcv-cdn/sendfile/f/{file}", "GET", R.make_route_opts_anon(), 
     file:send_to_client("file")
 end)
 
-R.register_route("/fcv-cdn/sendfile/t/{file}", "GET", R.make_route_opts_anon(), function(route_vars)
+R.register_route("/fcv-cdn/sendfile/t/{file}", {"GET", "HEAD"}, R.make_route_opts_anon(), function(route_vars)
     local id = file_model.extract_name_and_extension(route_vars.file)
 
     local file = file_model.get_by_id(id)
