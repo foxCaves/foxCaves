@@ -237,7 +237,7 @@ function file_mt:upload_finish()
 
     self._upload:finish()
 
-    local thumb_ok, err = ngx.thread.wait(thumb_thread)
+    local thumb_ok, _ = ngx.thread.wait(thumb_thread)
     if not thumb_ok then
         self.thumbnail_mimetype = nil
     end

@@ -1,5 +1,4 @@
 local utils = require("foxcaves.utils")
-local storage_config = require("foxcaves.config").storage
 local expiry_utils = require("foxcaves.expiry_utils")
 local file_model = require("foxcaves.models.file")
 local ngx = ngx
