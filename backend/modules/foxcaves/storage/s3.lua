@@ -1,82 +1,152 @@
 local config = require("foxcaves.config").storage
-local awss3 = require("resty.s3")
-local awss3_util = require("resty.s3_util")
+local signature = require("resty.aws-signature")
+local http = require("resty.http")
 
 local setmetatable = setmetatable
 local error = error
 local ngx = ngx
 local pairs = pairs
+local tostring = tostring
+local tonumber = tonumber
+local table = table
 
-local s3 = awss3:new(config.access_key, config.secret_key, config.bucket, config.args)
+local awssig = require("resty.aws-signature").new({
+    access_key = config.access_key,
+    secret_key = config.secret_key,
+})
+local host = config.host or "s3.amazonaws.com"
+local region = config.region or "us-east-1"
 
 local M = {}
 local UPLOAD = {}
 UPLOAD.__index = UPLOAD
 require("foxcaves.module_helper").setmodenv()
 
-function M:open(id, ftype, mimeType)
-    local key = id .. "/" .. ftype
+local function build_key(id, ftype)
+    return "/" .. config.bucket .. "/" .. id .. "/" .. ftype
+end
 
-	local headers = awss3_util.new_headers()
-    headers["Content-Type"] = mimeType
-	local ok, uploader = s3:start_multi_upload(key, headers)
+local function s3_request(method, path, query, body, rawHeaders)
+    local headers = rawHeaders or {}
+    query = query or ""
+    headers["content-length"] = body and tostring(#body) or "0"
+
+    awssig:aws_set_headers(host, path, query, {
+        body = body or "",
+        method = method,
+        region = region,
+        service = "s3",
+        set_header_func = function(key, value)
+            headers[key] = value
+        end,
+    })
+
+    local httpc = http.new()
+    local ok, err = httpc:connect({
+        scheme = "unix",
+        host = "unix:/run/nginx-lua-storage-proxy.sock",
+    })
     if not ok then
-        error("Could not start upload: " .. uploader)
+        error("S3API connection failed! Error: " .. tostring(err))
+    end
+
+    for k,v in pairs(headers) do
+        ngx.log(ngx.ERR, k .. ": " .. v)
+    end
+
+    local resp, err = httpc:request({
+        path = path,
+        query = query,
+        method = method,
+        body = body or "",
+        headers = headers,
+    })
+    if not resp then
+        error("S3API request " .. method .. " " .. path .. "?" .. query .. " failed! Error: " .. tostring(err))
+    end
+
+    local resp_body = resp:read_body()
+    if resp.status ~= 200 then
+        error("S3API request " .. method .. " " .. path .. "?" .. query .. " failed! Status: " .. tostring(resp.status) .. " Body: " .. tostring(resp_body))
+    end
+
+    return resp, resp_body
+end
+
+function M:open(id, ftype, mimeType)
+    local function makeHeaders()
+        return {
+            ["content-type"] = mimeType,
+        }
+    end
+
+    local key = build_key(id, ftype)
+    local _, resp_body = s3_request("POST", key, "uploads=1", "", makeHeaders())
+
+    local m = ngx.re.match(resp_body, "<UploadId>([^<>]+)</UploadId>", "o")
+    if not m then
+        error("Invalid response from S3API: " .. resp_body)
     end
 
     return setmetatable({
         id = id,
         part_number = 1,
         ftype = ftype,
-        uploader = uploader,
+        key = key,
+        uploadId = m[1],
+        headers = makeHeaders,
+
+        parts = {},
     }, UPLOAD)
 end
 
 function M:send_to_client(id, ftype)
-    local key = id .. "/" .. ftype
-
-    local host = (config.args and config.args.host) or "s3.amazonaws.com"
-    ngx.var.fcv_proxy_host = host
-
-    local short_uri = s3:get_short_uri(key)
-    local headers = awss3_util.new_headers()
-    headers["host"] = host
-    local authorization = s3.auth:authorization_v4("GET", short_uri, headers, nil)
-
-    ngx.var.fcv_proxy_x_amz_date = headers["x-amz-date"]
-    ngx.var.fcv_proxy_x_amz_content_sha256 = headers["x-amz-content-sha256"]
-
-    ngx.var.fcv_proxy_authorization = authorization
-    ngx.var.fcv_proxy_url = short_uri
+    local key = build_key(id, ftype)
+    awssig:aws_set_headers(host, key, "", {
+        body = "",
+        region = region,
+        service = "s3",
+    })
+    ngx.var.fcv_proxy_url = key
     ngx.req.set_uri("/fcv-proxyget", true)
 end
 
 function M:delete(id, ftype)
-    local key = id .. "/" .. ftype
-    s3:delete(key)
+    s3_request("DELETE", build_key(id, ftype))
 end
 
 function UPLOAD:chunk(chunk)
-    local ok, resp = self.uploader:upload(self.part_number, chunk, awss3_util.new_headers())
+    if not chunk then
+        error("Invalid chunk!")
+    end
+
+    local part_number = self.part_number
     self.part_number = self.part_number + 1
 
-    if not ok then
-        self:abort()
-        error("Uploading " .. tostring(self.ftype) .. " ID " .. tostring(self.id) .. " failed! Error: " .. tostring(resp))
+    local resp, _ = s3_request("PUT", self.key, "partNumber="  .. tostring(part_number) .. "&uploadId=" .. self.uploadId, chunk, self.headers())
+    local etag = resp.headers["ETag"]
+
+    if (not etag) or etag == "error" then
+        error("Invalid ETag from S3API: " .. tostring(etag))
     end
+    self.parts[part_number] = etag
 end
 
 function UPLOAD:finish()
-	local ok, resp = self.uploader:complete()
-	if not ok then
-        self:abort()
-		error("Finishing upload failed! Error: " .. tostring(resp))
-	end
+    local body = {"<CompleteMultipartUpload>"}
+    for part_number, etag in pairs(self.parts) do
+        table.insert(body, "<Part><PartNumber>" .. tostring(part_number) .. "</PartNumber><ETag>" .. etag .. "</ETag></Part>")
+    end
+    table.insert(body, "</CompleteMultipartUpload>")
+
+    s3_request("POST", self.key, "uploadId=" .. self.uploadId, table.concat(body, ""), {
+        ["content-type"] = "text/xml",
+    })
 end
 
 function UPLOAD:abort()
-    self.uploader:abort()
-    M:delete(self.id, self.ftype)
+    s3_request("DELETE", self.key, "uploadId=" .. self.uploadId)
+    s3_request("DELETE", self.key)
 end
 
 return M

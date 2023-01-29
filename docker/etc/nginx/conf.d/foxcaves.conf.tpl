@@ -17,7 +17,7 @@ upstream storage_service {
 }
 
 server {
-    listen unix:/run/nginx-lua-http11.sock;
+    listen unix:/run/nginx-lua-http11.sock default;
     server_name __MAIN_DOMAIN__;
 
     client_max_body_size 100M;
@@ -28,6 +28,24 @@ server {
         default_type application/json;
         types { }
         content_by_lua_file /var/www/foxcaves/lua/nginx_run.lua;
+    }
+}
+
+server {
+    listen unix:/run/nginx-lua-storage-proxy.sock default;
+    server_name __STORAGE_SERVICE_HOST__;
+
+    location / {
+        proxy_http_version 1.1;
+        proxy_request_buffering off;
+        proxy_buffering off;
+
+        proxy_set_header host "__STORAGE_SERVICE_HOST__";
+    
+        proxy_pass_request_body on;
+        proxy_pass_request_headers on;
+    
+        proxy_pass https://storage_service;
     }
 }
 
@@ -72,7 +90,6 @@ server {
 server {
     set $fcv_proxy_authorization "";
     set $fcv_proxy_url "";
-    set $fcv_proxy_host "";
     set $fcv_proxy_x_amz_date "";
     set $fcv_proxy_x_amz_content_sha256 "";
 
@@ -100,10 +117,10 @@ server {
     location = /fcv-proxyget {
         internal;
 
-        proxy_set_header host $fcv_proxy_host;
-        proxy_set_header authorization $fcv_proxy_authorization;
-        proxy_set_header x-amz-date $fcv_proxy_x_amz_date;
-        proxy_set_header x-amz-content-sha256 $fcv_proxy_x_amz_content_sha256;
+        proxy_set_header host "__STORAGE_SERVICE_HOST__";
+        proxy_set_header authorization $http_authorization;
+        proxy_set_header x-amz-date $http_x_amz_date;
+        proxy_set_header x-amz-content-sha256 $http_x_amz_content_sha256;
 
         proxy_http_version 1.1;
         proxy_buffering off;

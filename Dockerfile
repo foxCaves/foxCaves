@@ -19,7 +19,8 @@ ENV AWS_EC2_METADATA_DISABLED=true
 
 RUN apk update && apk add s6 imagemagick git argon2-libs argon2-dev argon2 runuser libuuid openssl openssl-dev certbot certbot-nginx ca-certificates
 RUN mkdir -p /usr/local/share/lua/5.1
-RUN opm get openresty/lua-resty-redis openresty/lua-resty-websocket thibaultcha/lua-argon2-ffi GUI/lua-resty-mail ledgetech/lua-resty-http jkeys089/lua-resty-hmac billythedummy/SLAXML
+RUN opm get openresty/lua-resty-redis openresty/lua-resty-websocket thibaultcha/lua-argon2-ffi GUI/lua-resty-mail openresty/lua-resty-string jkeys089/lua-resty-hmac ledgetech/lua-resty-http
+
 RUN luarocks install luasocket
 RUN luarocks install luafilesystem
 RUN luarocks install pgmoon
@@ -28,7 +29,7 @@ RUN luarocks install lpath
 RUN luarocks install luaossl
 RUN git clone --depth 1 --branch v1.0.1 https://github.com/foxCaves/raven-lua.git /tmp/raven-lua && mv /tmp/raven-lua/raven /usr/local/share/lua/5.1/ && rm -rf /tmp/raven-lua
 RUN git clone --depth 1 --branch v0.1.2 https://github.com/foxCaves/lua-resty-cookie.git /tmp/lua-resty-cookie && cp -r /tmp/lua-resty-cookie/lib/* /usr/local/share/lua/5.1/ && rm -rf /tmp/lua-resty-cookie
-RUN git clone --depth 1 --branch v1.0.0 https://github.com/foxCaves/lua-resty-s3.git /tmp/lua-resty-s3 && cp -r /tmp/lua-resty-s3/lib/* /usr/local/share/lua/5.1/ && rm -rf /tmp/lua-resty-s3
+RUN git clone --branch main https://github.com/foxCaves/lua-resty-aws-signature.git /tmp/lua-resty-aws-signature && git -C /tmp/lua-resty-aws-signature reset --hard ea373a2498c9d71c441b960f2782b1d60adda49c && cp -r /tmp/lua-resty-aws-signature/lib/* /usr/local/share/lua/5.1/ && rm -rf /tmp/lua-resty-aws-signature
 
 RUN adduser -u 1337 --disabled-password foxcaves
 

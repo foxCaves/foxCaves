@@ -31,16 +31,7 @@ return {
         access_key = "",
         secret_key = "",
         bucket = "example",
-        args = {
-            ssl = true,
-            ssl_verify = true,
-            host = "s3.us-west-001.backblazeb2.com",
-            timeout = 1000*10,
-            keepalive = {
-                pool_size = 32,
-                idle_timeout = 10*60*1000,
-            },
-        },
+        host = "s3.us-west-001.backblazeb2.com",
     },
     http = {
         short_url = "http://short.foxcaves",
