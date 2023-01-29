@@ -11,11 +11,6 @@ set_real_ip_from 127.0.0.0/8;
 set_real_ip_from unix:;
 real_ip_header proxy_protocol;
 
-upstream storage_service {
-    server __STORAGE_SERVICE_HOST__:443;
-    keepalive 32;
-}
-
 server {
     listen unix:/run/nginx-lua-http11.sock default;
     server_name __MAIN_DOMAIN__;
@@ -94,7 +89,7 @@ server {
     location /fcv-proxyget/ {
         internal;
 
-        proxy_set_header host "__STORAGE_SERVICE_HOST__";
+        proxy_set_header host $http_host;
         proxy_set_header authorization $http_authorization;
         proxy_set_header x-amz-date $http_x_amz_date;
         proxy_set_header x-amz-content-sha256 $http_x_amz_content_sha256;
@@ -102,14 +97,14 @@ server {
 
         proxy_http_version 1.1;
         proxy_buffering off;
-        proxy_pass https://storage_service/;
+        proxy_pass https://$http_host/;
         proxy_pass_request_body off;
         proxy_pass_request_headers off;
     }
 
     location /fcv-rawget/ {
         internal;
-        alias /var/www/foxcaves/storage/;
+        alias /;
     }
 
     location /f/ {

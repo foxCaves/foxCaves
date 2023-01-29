@@ -6,7 +6,7 @@ local short_url = require("foxcaves.config").http.short_url
 local exec = require("foxcaves.exec")
 local mimetypes = require("foxcaves.mimetypes")
 local utils = require("foxcaves.utils")
-local storage_config = require("foxcaves.config").storage
+local storage_default = require("foxcaves.config").storage.default
 local storage_drivers = require("foxcaves.storage.all")
 
 local io = io
@@ -21,10 +21,9 @@ local file_model = {
     consts = {
         NAME_MAX_LEN = 255,
         EXT_MAX_LEN = 32,
+        THUMBNAIL_MAX_SIZE = require("foxcaves.config").files.thumbnail_max_size,
     }
 }
-
-local UPLOAD_CHUNK_SIZE = storage_config.upload_chunk_size
 
 require("foxcaves.module_helper").setmodenv()
 
@@ -44,7 +43,7 @@ local mimeHandlers = {
 }
 
 local function file_get_storage_driver(file)
-    return storage_drivers[file.storage_driver]
+    return storage_drivers[file.storage]
 end
 
 local function makefilemt(file)
@@ -53,7 +52,7 @@ local function makefilemt(file)
     return file
 end
 
-local file_select = 'id, name, owner, size, mimetype, thumbnail_mimetype, uploaded, storage_driver, ' .. database.TIME_COLUMNS_EXPIRING
+local file_select = 'id, name, owner, size, mimetype, thumbnail_mimetype, uploaded, storage, ' .. database.TIME_COLUMNS_EXPIRING
 
 function file_model.get_by_query(query, ...)
     return file_model.get_by_query_raw('(expires_at IS NULL OR expires_at >= NOW()) AND uploaded = 1 AND (' .. query .. ')' , ...)
@@ -97,7 +96,7 @@ function file_model.new()
         not_in_db = true,
         id = random.string(10),
         uploaded = 0,
-        storage_driver = storage_config.driver,
+        storage = storage_default,
     }
     setmetatable(file, file_mt)
     return file
@@ -122,8 +121,8 @@ end
 
 function file_mt:delete()
     local storage = file_get_storage_driver(self)
-    storage.delete(self.id, "file")
-    storage.delete(self.id, "thumb")
+    storage:delete(self.id, "file")
+    storage:delete(self.id, "thumb")
 
     database.get_shared():query('DELETE FROM files WHERE id = %s', self.id)
 
@@ -167,16 +166,18 @@ function file_mt:compute_mimetype()
     return true
 end
 
-function file_mt:upload_begin(allow_thumbnail)
+function file_mt:upload_begin()
     local storage = file_get_storage_driver(self)
     self.uploaded = 0
 
-    self._upload = storage.open(self.id, "file", self.mimetype)
+    self._upload = storage:open(self.id, "file", self.mimetype)
 
-    if allow_thumbnail then
+    if self.size <= file_model.consts.THUMBNAIL_MAX_SIZE then
         self._file_temp = os.tmpname()
         self._fh_tmp = io.open(self._file_temp, "wb")
     end
+
+    return storage.config.chunk_size
 end
 
 function file_mt:upload_chunk(chunk)
@@ -205,10 +206,10 @@ local function file_thumbnail_process(self)
     end
 
     local thumb_fh = io.open(self._thumb_temp, "rb")
-    local thumb_upload = storage.open(self.id, "thumb", self.thumbnail_mimetype)
+    local thumb_upload = storage:open(self.id, "thumb", self.thumbnail_mimetype)
     local thumb_has_data = false
     while true do
-        local chunk = thumb_fh:read(UPLOAD_CHUNK_SIZE)
+        local chunk = thumb_fh:read(storage.config.chunk_size)
         if not chunk then
             break
         end
@@ -235,21 +236,19 @@ function file_mt:upload_finish()
     local thumb_thread = ngx.thread.spawn(file_thumbnail_process, self)
 
     self._upload:finish()
-    self._upload = nil
 
     local thumb_ok, err = ngx.thread.wait(thumb_thread)
     if not thumb_ok then
         self.thumbnail_mimetype = nil
-        self._upload:abort()
-        error(err)
     end
 
+    self._upload = nil
     self.uploaded = 1
 end
 
 function file_mt:send_to_client(ftype)
     local storage = file_get_storage_driver(self)
-    return storage.send_to_client(self.id, ftype)
+    return storage:send_to_client(self.id, ftype)
 end
 
 function file_mt:upload_abort()
@@ -261,9 +260,9 @@ function file_mt:save(force_push_action)
     if self.not_in_db then
         res = database.get_shared():query_single(
             'INSERT INTO files \
-                (id, name, owner, size, mimetype, thumbnail_mimetype, uploaded, storage_driver, expires_at) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s) \
+                (id, name, owner, size, mimetype, thumbnail_mimetype, uploaded, storage, expires_at) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s) \
                 RETURNING ' .. database.TIME_COLUMNS_EXPIRING,
-            self.id, self.name, self.owner, self.size, self.mimetype, self.thumbnail_mimetype or "", self.uploaded, self.storage_driver,
+            self.id, self.name, self.owner, self.size, self.mimetype, self.thumbnail_mimetype or "", self.uploaded, self.storage,
             self.expires_at or ngx.null
         )
         primary_push_action = 'create'
@@ -271,11 +270,11 @@ function file_mt:save(force_push_action)
     else
         res = database.get_shared():query_single(
             'UPDATE files \
-                SET name = %s, owner = %s, size = %s, mimetype = %s, thumbnail_mimetype = %s, uploaded = %s, storage_driver = %s, \
+                SET name = %s, owner = %s, size = %s, mimetype = %s, thumbnail_mimetype = %s, uploaded = %s, storage = %s, \
                 expires_at = %s, updated_at = (now() at time zone \'utc\') \
                 WHERE id = %s \
                 RETURNING ' .. database.TIME_COLUMNS_EXPIRING,
-            self.name, self.owner, self.size, self.mimetype, self.thumbnail_mimetype or "", self.uploaded,  self.storage_driver,
+            self.name, self.owner, self.size, self.mimetype, self.thumbnail_mimetype or "", self.uploaded,  self.storage,
             self.expires_at or ngx.null, self.id
         )
         primary_push_action = 'update'

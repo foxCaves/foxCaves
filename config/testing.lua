@@ -21,17 +21,31 @@ return {
         httponly = true,
         secure = false,
     },
+    files = {
+        thumbnail_max_size = 50 * 1024 * 1024,
+    },
     storage = {
-        driver = "s3",
+        default = "fs",
 
-        access_key = "",
-        secret_key = "",
-        bucket = "example",
-        host = "s3.us-west-001.backblazeb2.com",
+        fs = {
+            driver = "local",
+            chunk_size = 8192,
+            root_folder = "/var/www/foxcaves/storage",
+        },
 
-        keepalive = {
-            pool_size = 100,
-            idle_timeout = 60,
+        s3 = {
+            driver = "s3",
+            chunk_size = 5 * 1024 * 1024,
+
+            access_key = "",
+            secret_key = "",
+            bucket = "example",
+            host = "s3.us-west-001.backblazeb2.com",
+
+            keepalive = {
+                pool_size = 100,
+                idle_timeout = 60,
+            },
         },
     },
     http = {

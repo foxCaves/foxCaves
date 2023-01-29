@@ -6,9 +6,6 @@ local ngx = ngx
 local math_min = math.min
 local tonumber = tonumber
 
-local UPLOAD_CHUNK_SIZE = storage_config.upload_chunk_size
-local LOCAL_PROCESSING_MAX_FILE_SIZE = storage_config.local_processing_max_file_size
-
 R.register_route("/api/v1/files", "POST", R.make_route_opts(), function()
     if not ngx.ctx.user:can_perform_write() then
         return utils.api_error("You cannot create files", 403)
@@ -39,13 +36,13 @@ R.register_route("/api/v1/files", "POST", R.make_route_opts(), function()
     expiry_utils.parse_expiry(ngx.var, file, "arg_")
     file.size = filesize
     file:save()
-    file:upload_begin(filesize <= LOCAL_PROCESSING_MAX_FILE_SIZE)
+    local chunk_size = file:upload_begin()
 
     local remaining = filesize
     local sock = ngx.req.socket()
     sock:settimeout(10000)
     while remaining > 0 do
-        local data, _ = sock:receive(math_min(UPLOAD_CHUNK_SIZE, remaining))
+        local data, _ = sock:receive(math_min(chunk_size, remaining))
         if not data then
             file:upload_abort()
             return utils.api_error("Error receiving data")
