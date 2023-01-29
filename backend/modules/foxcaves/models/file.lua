@@ -22,7 +22,8 @@ local file_model = {
         NAME_MAX_LEN = 255,
         EXT_MAX_LEN = 32,
         THUMBNAIL_MAX_SIZE = require("foxcaves.config").files.thumbnail_max_size,
-    }
+    },
+    expired_query = "uploaded = 0 AND created_at < ((now() - (INTERVAL '1 day')) at time zone 'utc')",
 }
 
 require("foxcaves.module_helper").setmodenv()
