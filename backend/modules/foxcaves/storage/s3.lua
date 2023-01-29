@@ -127,7 +127,10 @@ function UPLOAD:chunk(chunk)
     local part_number = self.part_number
     self.part_number = self.part_number + 1
 
-    local resp, _ = s3_request("PUT", self.key, "partNumber="  .. tostring(part_number) .. "&uploadId=" .. self.uploadId, chunk, self.headers())
+    local resp, _ = s3_request(
+        "PUT", self.key,
+        "partNumber="  .. tostring(part_number) .. "&uploadId=" .. self.uploadId,
+        chunk, self.headers())
     local etag = resp.headers["ETag"]
 
     if (not etag) or etag == "error" then
