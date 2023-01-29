@@ -50,10 +50,6 @@ local function s3_request(method, path, query, body, rawHeaders)
         error("S3API connection failed! Error: " .. tostring(err))
     end
 
-    for k,v in pairs(headers) do
-        ngx.log(ngx.ERR, k .. ": " .. v)
-    end
-
     local resp, err = httpc:request({
         path = path,
         query = query,
