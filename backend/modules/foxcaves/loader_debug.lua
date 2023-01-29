@@ -227,9 +227,10 @@ function M.run()
     ngx.req.discard_body()
     if not isok then
         ngx.status = 500
-        ngx.log(ngx.ERR, "Lua error: " .. err)
+        ngx.header["Cache-Control"] = "no-cache, no-store"
         ngx.header["Content-Type"] = "text/html"
-        ngx.say(err)
+        ngx.print(err)
+        ngx.log(ngx.ERR, "Lua error: " .. err)
     end
     utils.__on_shutdown()
     ngx.eof()

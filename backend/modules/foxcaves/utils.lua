@@ -99,4 +99,8 @@ function M.shorten_string(str, len)
     return str:sub(1, len), len
 end
 
+function M.add_cdn_cache_control()
+    ngx.header["Cache-Control"] = "public, max-age=86400, immutable"
+end
+
 return M

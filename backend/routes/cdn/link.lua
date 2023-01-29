@@ -11,6 +11,7 @@ R.register_route("/fcv-cdn/link/{*link}", "GET", R.make_route_opts_anon(), funct
         return utils.api_error("Link not found: " .. route_vars.link, 404)
     end
 
+    utils.add_cdn_cache_control()
     ngx.status = 302
     ngx.redirect(link.url)
 end)
