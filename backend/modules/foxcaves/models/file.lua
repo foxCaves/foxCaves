@@ -7,6 +7,7 @@ local exec = require("foxcaves.exec")
 local mimetypes = require("foxcaves.mimetypes")
 local utils = require("foxcaves.utils")
 local storage = require("foxcaves.storage.default")
+local storage_config = require("foxcaves.config").storage
 
 local io = io
 local os = os
@@ -23,7 +24,7 @@ local file_model = {
     }
 }
 
-local UPLOAD_CHUNK_SIZE = 5 * 1024 * 1024
+local UPLOAD_CHUNK_SIZE = storage_config.upload_chunk_size
 
 require("foxcaves.module_helper").setmodenv()
 

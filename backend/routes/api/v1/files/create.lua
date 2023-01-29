@@ -1,12 +1,13 @@
 local utils = require("foxcaves.utils")
+local storage_config = require("foxcaves.config").storage
 local expiry_utils = require("foxcaves.expiry_utils")
 local file_model = require("foxcaves.models.file")
 local ngx = ngx
 local math_min = math.min
 local tonumber = tonumber
 
-local UPLOAD_CHUNK_SIZE = 5 * 1024 * 1024
-local THUMBNAIL_MAX_FILE_SIZE = 50 * 1024 * 1024
+local UPLOAD_CHUNK_SIZE = storage_config.upload_chunk_size
+local LOCAL_PROCESSING_MAX_FILE_SIZE = storage_config.local_processing_max_file_size
 
 R.register_route("/api/v1/files", "POST", R.make_route_opts(), function()
     if not ngx.ctx.user:can_perform_write() then
@@ -38,7 +39,7 @@ R.register_route("/api/v1/files", "POST", R.make_route_opts(), function()
     expiry_utils.parse_expiry(ngx.var, file, "arg_")
     file.size = filesize
     file:save()
-    file:upload_begin(filesize <= THUMBNAIL_MAX_FILE_SIZE)
+    file:upload_begin(filesize <= LOCAL_PROCESSING_MAX_FILE_SIZE)
 
     local remaining = filesize
     local sock = ngx.req.socket()
