@@ -166,7 +166,6 @@ function file_mt:upload_begin(allow_thumbnail)
     self.uploaded = 0
 
     self._upload = storage:open(self.id, "file", self.mimetype)
-    self._upload_size = 0
 
     if allow_thumbnail then
         self._file_temp = os.tmpname()
@@ -176,13 +175,12 @@ end
 
 function file_mt:upload_chunk(chunk)
     self._upload:chunk(chunk)
-    self._upload_size = self._upload_size + chunk:len()
     if self._fh_tmp then
         self._fh_tmp:write(chunk)
     end
 end
 
-local function file_thumbnail_thread(self)
+local function file_thumbnail_process(self)
     if not self._fh_tmp then
         return
     end
@@ -226,14 +224,17 @@ local function file_thumbnail_thread(self)
 end
 
 function file_mt:upload_finish()
-    local thumb_thread = ngx.thread.spawn(file_thumbnail_thread, self)
+    local thumb_thread = ngx.thread.spawn(file_thumbnail_process, self)
 
     self._upload:finish()
-    self.size = self._upload_size
     self._upload = nil
-    self._upload_size = nil
 
-    ngx.thread.wait(thumb_thread)
+    local thumb_ok, err = ngx.thread.wait(thumb_thread)
+    if not thumb_ok then
+        self.thumbnail_mimetype = nil
+        self._upload:abort()
+        error(err)
+    end
 
     self.uploaded = 1
 end

@@ -32,24 +32,6 @@ server {
 }
 
 server {
-    listen unix:/run/nginx-lua-storage-proxy.sock default;
-    server_name __STORAGE_SERVICE_HOST__;
-
-    location / {
-        proxy_http_version 1.1;
-        proxy_request_buffering off;
-        proxy_buffering off;
-
-        proxy_set_header host "__STORAGE_SERVICE_HOST__";
-    
-        proxy_pass_request_body on;
-        proxy_pass_request_headers on;
-    
-        proxy_pass https://storage_service;
-    }
-}
-
-server {
     include __LISTENER_CONFIG__;
     server_name __MAIN_DOMAIN__;
 

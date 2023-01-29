@@ -32,6 +32,11 @@ return {
         secret_key = "",
         bucket = "example",
         host = "s3.us-west-001.backblazeb2.com",
+
+        keepalive = {
+            pool_size = 100,
+            idle_timeout = 60,
+        },
     },
     http = {
         short_url = "http://short.foxcaves",

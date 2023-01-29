@@ -43,8 +43,8 @@ local function s3_request(method, path, query, body, rawHeaders)
 
     local httpc = http.new()
     local ok, err = httpc:connect({
-        scheme = "unix",
-        host = "unix:/run/nginx-lua-storage-proxy.sock",
+        scheme = "https",
+        host = host,
     })
     if not ok then
         error("S3API connection failed! Error: " .. tostring(err))
@@ -58,10 +58,18 @@ local function s3_request(method, path, query, body, rawHeaders)
         headers = headers,
     })
     if not resp then
+        resp:close()
         error("S3API request " .. method .. " " .. path .. "?" .. query .. " failed! Error: " .. tostring(err))
     end
 
     local resp_body = resp:read_body()
+
+    if config.keepalive then
+        httpc:set_keepalive(config.keepalive.idle_timeout, config.keepalive.pool_size)
+    else
+        httpc:close()
+    end
+
     if (not resp.status) or (resp.status < 200) or (resp.status > 299) then
         error("S3API request " .. method .. " " .. path .. "?" .. query .. " failed! Status: " .. tostring(resp.status) .. " Body: " .. tostring(resp_body))
     end
