@@ -91,6 +91,7 @@ end
 
 local function s3_request(self, method, path, query, body, rawHeaders, opts)
     opts = opts or {}
+    query = query or ""
     local resp, done = s3_request_raw(self, method, path, query, body, rawHeaders, opts)
     local resp_body = resp:read_body()
     done()
@@ -130,7 +131,8 @@ function M.new(name, config)
     return inst 
 end
 
-function M:open(id, size, ftype, mimeType)
+function M:open(id, size, ftype, mimeType, opts)
+    opts = opts or {}
     local function make_headers()
         return {
             ["content-type"] = mimeType,
@@ -156,6 +158,7 @@ function M:open(id, size, ftype, mimeType)
         module = self,
         parts = {},
         done = false,
+        on_abort = opts.on_abort,
     }, UPLOAD)
 
     utils.register_shutdown(function()
@@ -267,6 +270,9 @@ function UPLOAD:abort()
     s3_request(self.module, "DELETE", self.key, nil, nil, nil, {
         status_checker = accept_404_status_checker,
     })
+    if self.on_abort then
+        self.on_abort()
+    end
 end
 
 return M

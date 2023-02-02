@@ -125,7 +125,7 @@ function file_mt:delete()
     database.get_shared():query('DELETE FROM files WHERE id = %s', self.id)
 
     local owner = user_model.get_by_id(self.owner)
-    owner:send_event('delete', 'file', self:get_private())
+    owner:send_event("delete", "file", self:get_private())
     owner:send_self_event()
 end
 
@@ -168,11 +168,19 @@ function file_mt:upload_begin()
     local storage = file_get_storage_driver(self)
     self.uploaded = 0
 
-    self._upload = storage:open(self.id, self.size, "file", self.mimetype)
+    self._upload = storage:open(self.id, self.size, "file", self.mimetype, {
+        on_abort = function()
+            self:delete()
+        end,
+    })
 
     if self.size <= file_model.consts.THUMBNAIL_MAX_SIZE then
-        self._file_temp = os.tmpname()
-        self._fh_tmp = io.open(self._file_temp, "wb")
+        local file_temp = os.tmpname()
+        self._file_temp = file_temp
+        utils.register_shutdown(function()
+            os.remove(file_temp)
+        end)
+        self._fh_tmp = io.open(file_temp, "wb")
     end
 
     return storage.config.chunk_size
@@ -201,26 +209,29 @@ function file_mt:upload_from_callback(cb)
 end
 
 local function file_thumbnail_process(self)
-    if not self._fh_tmp then
+    local file_temp = self._file_temp
+    if not file_temp then
         return
     end
-
-    self._fh_tmp:close()
-    self._fh_tmp = nil
+    self._file_temp = nil
 
     local storage = file_get_storage_driver(self)
 
-    self._thumb_temp = os.tmpname()
+    local thumb_temp = os.tmpname()
+    self._thumb_temp = thumb_temp
+    utils.register_shutdown(function()
+        os.remove(thumb_temp)
+    end)
 
     local prefix, suffix = self.mimetype:match("([a-z]+)/([a-z]+)")
     local handler = mimeHandlers[prefix]
     if handler then
-        self.thumbnail_mimetype = handler(self._file_temp, self._thumb_temp, suffix)
+        self.thumbnail_mimetype = handler(file_temp, thumb_temp, suffix)
     end
 
-    local thumb_size = lfs.attributes(self._thumb_temp, "size")
+    local thumb_size = lfs.attributes(thumb_temp, "size")
     if thumb_size > 0 then
-        local thumb_fh = io.open(self._thumb_temp, "rb")
+        local thumb_fh = io.open(thumb_temp, "rb")
         local thumb_upload = storage:open(self.id, thumb_size, "thumb", self.thumbnail_mimetype)
         thumb_upload:from_callback(function(chunk_size)
             return thumb_fh:read(chunk_size)
@@ -231,17 +242,18 @@ local function file_thumbnail_process(self)
         self.thumbnail_mimetype = nil
     end
 
-    os.remove(self._thumb_temp)
-    os.remove(self._file_temp)
-
     self._thumb_temp = nil
-    self._file_temp = nil
 end
 
 function file_mt:upload_finish()
     local thumb_thread = ngx.thread.spawn(file_thumbnail_process, self)
 
     self._upload:finish()
+
+    if self._fh_tmp then
+        self._fh_tmp:close()
+        self._fh_tmp = nil
+    end
 
     local thumb_ok, _ = ngx.thread.wait(thumb_thread)
     if not thumb_ok then
