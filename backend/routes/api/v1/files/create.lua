@@ -2,7 +2,6 @@ local utils = require("foxcaves.utils")
 local expiry_utils = require("foxcaves.expiry_utils")
 local file_model = require("foxcaves.models.file")
 local ngx = ngx
-local math_min = math.min
 local tonumber = tonumber
 
 R.register_route("/api/v1/files", "POST", R.make_route_opts(), function()

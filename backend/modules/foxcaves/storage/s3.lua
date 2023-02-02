@@ -128,7 +128,7 @@ function M.new(name, config)
     else
         inst.no_bucket_in_path = false
     end
-    return inst 
+    return inst
 end
 
 function M:open(id, size, ftype, mimeType, opts)
