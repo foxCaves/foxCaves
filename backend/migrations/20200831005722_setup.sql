@@ -17,7 +17,6 @@ CREATE TABLE files (
     id VARCHAR(32) PRIMARY KEY,
     "user" UUID REFERENCES users (id),
     name VARCHAR(255),
-    extension VARCHAR(255),
     size BIGINT,
     thumbnail_mimetype VARCHAR(255),
     mimetype VARCHAR(255),
