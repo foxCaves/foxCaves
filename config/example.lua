@@ -45,6 +45,8 @@ return {
             keepalive = {
                 pool_size = 100,
                 idle_timeout = 60,
+                max_time = 60 * 60,
+                max_requests = 1000,
             },
         },
     },

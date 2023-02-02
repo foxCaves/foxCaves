@@ -11,8 +11,9 @@ local UPLOAD = {}
 UPLOAD.__index = UPLOAD
 require("foxcaves.module_helper").setmodenv()
 
-function M.new(config)
+function M.new(name, config)
     return setmetatable({
+        name = name,
         config = config,
     }, M)
 end

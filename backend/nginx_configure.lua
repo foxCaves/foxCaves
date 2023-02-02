@@ -1,3 +1,11 @@
+package.loaded["resty.http"] = {}
+package.loaded["resty.aws-signature"] = {
+    new = function()
+        return {}
+    end,
+}
+ngx = {}
+
 local path = require("path")
 local root = path.abs(debug.getinfo(1, "S").source:sub(2):match("(.*/)"))
 dofile(root .. "/init.lua")
@@ -57,3 +65,14 @@ if config.http.enable_acme and not path.exists("/etc/letsencrypt/live/" .. main_
     end
     os.execute(cmd)
 end
+
+local fh = io.open("/etc/nginx/conf.d/dynamic.conf", "w")
+local storage_map = require("foxcaves.storage.all")
+for name, storage in pairs(storage_map) do
+    if storage.build_nginx_config then
+        fh:write("# Storage config for " .. name .. "\n")
+        fh:write(storage:build_nginx_config())
+        fh:write("\n\n")
+    end
+end
+fh:close()

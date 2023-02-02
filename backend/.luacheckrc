@@ -1,6 +1,6 @@
 std = "luajit"
 new_read_globals = {"OSENV", "R", "ngx"}
-new_globals = {"ngx.header", "ngx.ctx", "ngx.status"}
+new_globals = {"ngx.header", "ngx.ctx", "ngx.status", "ngx.var.fcv_proxy_host", "ngx.var.fcv_proxy_uri"}
 max_line_length = 180
 max_string_line_length = 180
 max_code_line_length = 140

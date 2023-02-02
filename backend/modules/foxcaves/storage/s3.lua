@@ -1,5 +1,6 @@
 local http = require("resty.http")
 local awssig = require("resty.aws-signature")
+local utils = require("foxcaves.utils")
 
 local setmetatable = setmetatable
 local error = error
@@ -78,37 +79,9 @@ local function s3_request(self, method, path, query, body, rawHeaders)
     return resp, resp_body
 end
 
-local function s3_request_stream(self, method, path, query, body, rawHeaders)
-    local resp, done = s3_request_raw(self, method, path, query, body, rawHeaders)
-
-    if (not resp.status) or (resp.status < 200) or (resp.status > 299) then
-        local resp_body = resp:read_body()
-        done()
-        error("S3API request " .. method .. " " .. path .. "?" .. query .. " failed! " ..
-              "Status: " .. tostring(resp.status) .. " Body: " .. tostring(resp_body))
-    end
-
-    ngx.header["Content-Length"] = resp.headers["Content-Length"]
-
-    while true do
-        local buffer, err = resp.body_reader(8192)
-        if err then
-            error(err)
-            break
-        end
-
-        if not buffer then
-            break
-        end
-
-        ngx.print(buffer)
-    end
-
-    done()
-end
-
-function M.new(config)
+function M.new(name, config)
     return setmetatable({
+        name = name,
         config = config,
         awssig = awssig.new({
             access_key = config.access_key,
@@ -148,11 +121,30 @@ end
 
 function M:send_to_client(id, ftype)
     local key = build_key(self, id, ftype)
-    s3_request_stream(self, ngx.var.request_method:upper(), key, "", "")
+    ngx.var.fcv_proxy_host = "storage-s3-" .. self.name
+    ngx.var.fcv_proxy_uri = key
+
+    ngx.req.set_uri_args({})
+    self.awssig:aws_set_headers(self.host, key, "", {
+        body = "",
+        region = self.region,
+        service = "s3",
+    })
+    ngx.req.set_uri("/fcv-s3get", true)
 end
 
 function M:delete(id, ftype)
     s3_request(self, "DELETE", build_key(self, id, ftype))
+end
+
+function M:build_nginx_config()
+    return [[upstream storage-s3-]] .. self.name .. [[ {
+        server ]] .. self.host .. [[:443;
+        keepalive ]] .. tostring(self.config.keepalive.pool_size) .. [[;
+        keepalive_requests ]] .. tostring(self.config.keepalive.max_requests) .. [[;
+        keepalive_time ]] .. tostring(self.config.keepalive.max_time) .. [[s;
+        keepalive_timeout ]] ..tostring(self.config.keepalive.idle_timeout) .. [[s;
+}]]
 end
 
 function UPLOAD:chunk(chunk)

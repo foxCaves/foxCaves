@@ -5,6 +5,7 @@ local table = table
 local type = type
 local next = next
 local pcall = pcall
+local tostring = tostring
 
 local M = {}
 require("foxcaves.module_helper").setmodenv()
@@ -101,6 +102,17 @@ end
 
 function M.add_cdn_cache_control()
     ngx.header["Cache-Control"] = "public, max-age=86400, immutable"
+end
+
+function M.get_or_default(val, default)
+    if M.is_falsy_or_null(val) then
+        return default
+    end
+    return val
+end
+
+function M.get_or_default_str(val, default)
+    return tostring(M.get_or_default(val, default))
 end
 
 return M

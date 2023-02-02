@@ -68,6 +68,9 @@ server {
     include __LISTENER_CONFIG__;
     server_name __SHORT_DOMAIN__;
 
+    set $fcv_proxy_host "";
+    set $fcv_proxy_uri "";
+
     add_header Access-Control-Allow-Origin "*" always;
     add_header Access-Control-Allow-Methods "GET, OPTIONS, HEAD" always;
     add_header Access-Control-Allow-Headers "Origin, Accept, Range, Content-Type, If-Modified-Since" always;
@@ -86,18 +89,17 @@ server {
         rewrite_by_lua_file /var/www/foxcaves/lua/nginx_run.lua;
     }
 
-    location /fcv-proxyget/ {
+    location = /fcv-s3get {
         internal;
 
         proxy_set_header host $http_host;
         proxy_set_header authorization $http_authorization;
         proxy_set_header x-amz-date $http_x_amz_date;
         proxy_set_header x-amz-content-sha256 $http_x_amz_content_sha256;
-        proxy_set_header content-length 0;
 
         proxy_http_version 1.1;
         proxy_buffering off;
-        proxy_pass https://$http_host/;
+        proxy_pass https://$fcv_proxy_host$fcv_proxy_uri;
         proxy_pass_request_body off;
         proxy_pass_request_headers off;
     }
