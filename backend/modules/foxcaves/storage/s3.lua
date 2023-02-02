@@ -1,5 +1,6 @@
 local http = require("resty.http")
 local awssig = require("resty.aws-signature")
+local utils = require("foxcaves.utils")
 
 local setmetatable = setmetatable
 local error = error
@@ -7,6 +8,9 @@ local ngx = ngx
 local pairs = pairs
 local tostring = tostring
 local table = table
+local math_min = math.min
+local coroutine_yield = coroutine.yield
+local coroutine_wrap = coroutine.wrap
 
 local M = {}
 M.__index = M
@@ -15,19 +19,28 @@ UPLOAD.__index = UPLOAD
 require("foxcaves.module_helper").setmodenv()
 
 local function build_key(self, id, ftype)
+    if self.no_bucket_in_path then
+        return "/" .. id .. "/" .. ftype
+    end
     return "/" .. self.config.bucket .. "/" .. id .. "/" .. ftype
 end
 
-local function s3_request_raw(self, method, path, query, body, rawHeaders)
+local function s3_request_raw(self, method, path, query, body, rawHeaders, opts)
     local headers = rawHeaders or {}
+    opts = opts or {}
     query = query or ""
-    headers["content-length"] = body and tostring(#body) or "0"
+
+    if not opts.content_length then
+        opts.content_length = body and #body or 0
+    end
+    headers["content-length"] = tostring(opts.content_length)
 
     self.awssig:aws_set_headers(self.host, path, query, {
         body = body or "",
         method = method,
         region = self.region,
         service = "s3",
+        unsigned_payload = opts.unsigned_payload,
         set_header_func = function(key, value)
             headers[key] = value
         end,
@@ -65,12 +78,28 @@ local function s3_request_raw(self, method, path, query, body, rawHeaders)
     return resp, done
 end
 
-local function s3_request(self, method, path, query, body, rawHeaders)
-    local resp, done = s3_request_raw(self, method, path, query, body, rawHeaders)
+local function default_status_checker(status)
+    return (status >= 200) and (status <= 299)
+end
+
+local function accept_404_status_checker(status)
+    if status == 404 then
+        return true
+    end
+    return default_status_checker(status)
+end
+
+local function s3_request(self, method, path, query, body, rawHeaders, opts)
+    opts = opts or {}
+    local resp, done = s3_request_raw(self, method, path, query, body, rawHeaders, opts)
     local resp_body = resp:read_body()
     done()
 
-    if (not resp.status) or (resp.status < 200) or (resp.status > 299) then
+    if not opts.status_checker then
+        opts.status_checker = default_status_checker
+    end
+
+    if (not resp.status) or (not opts.status_checker(resp.status)) then
         error("S3API request " .. method .. " " .. path .. "?" .. query .. " failed! " ..
               "Status: " .. tostring(resp.status) .. " Body: " .. tostring(resp_body))
     end
@@ -79,7 +108,7 @@ local function s3_request(self, method, path, query, body, rawHeaders)
 end
 
 function M.new(name, config)
-    return setmetatable({
+    local inst = setmetatable({
         name = name,
         config = config,
         awssig = awssig.new({
@@ -89,9 +118,19 @@ function M.new(name, config)
         host = config.host or "s3.amazonaws.com",
         region = config.region or "us-east-1",
     }, M)
+    if inst.host == "s3.amazonaws.com" then
+        if inst.region ~= "us-east-1" then
+            inst.host = "s3." .. inst.region .. ".amazonaws.com"
+        end
+        inst.host = inst.config.bucket .. "." .. inst.host
+        inst.no_bucket_in_path = true
+    else
+        inst.no_bucket_in_path = false
+    end
+    return inst 
 end
 
-function M:open(id, ftype, mimeType)
+function M:open(id, size, ftype, mimeType)
     local function make_headers()
         return {
             ["content-type"] = mimeType,
@@ -106,16 +145,24 @@ function M:open(id, ftype, mimeType)
         error("Invalid response from S3API: " .. resp_body)
     end
 
-    return setmetatable({
+    local upload = setmetatable({
         id = id,
-        part_number = 1,
+        size = size,
         ftype = ftype,
+        part_number = 1,
         key = key,
         uploadId = m[1],
         headers = make_headers,
         module = self,
         parts = {},
+        done = false,
     }, UPLOAD)
+
+    utils.register_shutdown(function()
+        upload:abort_if_not_done()
+    end)
+
+    return upload
 end
 
 function M:send_to_client(id, ftype)
@@ -146,7 +193,33 @@ function M:build_nginx_config()
 }]]
 end
 
-function UPLOAD:chunk(chunk)
+function UPLOAD:from_callback(cb)
+    local remaining = self.size
+    local read_chunk_max = self.module.config.read_chunk_size
+    while remaining > 0 do
+        local chunk_size = math_min(self.module.config.chunk_size, remaining)
+        local function chunk_cb()
+            local chunk_remaining = chunk_size
+            while chunk_remaining > 0 do
+                local data = cb(math_min(read_chunk_max, chunk_remaining))
+                if not data then
+                    error("Expected data, got none")
+                end
+                local len = data:len()
+                chunk_remaining = chunk_remaining - len
+                remaining = remaining - len
+                coroutine_yield(data)
+            end
+            coroutine_yield(nil)
+        end
+        self:chunk(coroutine_wrap(chunk_cb), {
+            unsigned_payload = true,
+            content_length = chunk_size,
+        })
+    end
+end
+
+function UPLOAD:chunk(chunk, opts)
     if not chunk then
         error("Invalid chunk!")
     end
@@ -158,7 +231,7 @@ function UPLOAD:chunk(chunk)
         self.module,
         "PUT", self.key,
         "partNumber="  .. tostring(part_number) .. "&uploadId=" .. self.uploadId,
-        chunk, self.headers())
+        chunk, self.headers(), opts)
     local etag = resp.headers["ETag"]
 
     if (not etag) or etag == "error" then
@@ -177,11 +250,23 @@ function UPLOAD:finish()
     s3_request(self.module, "POST", self.key, "uploadId=" .. self.uploadId, table.concat(body, ""), {
         ["content-type"] = "text/xml",
     })
+    self.done = true
+end
+
+function UPLOAD:abort_if_not_done()
+    if self.done then
+        return
+    end
+    self:abort()
 end
 
 function UPLOAD:abort()
-    s3_request(self.module, "DELETE", self.key, "uploadId=" .. self.uploadId)
-    s3_request(self.module, "DELETE", self.key)
+    s3_request(self.module, "DELETE", self.key, "uploadId=" .. self.uploadId, nil, nil, {
+        status_checker = accept_404_status_checker,
+    })
+    s3_request(self.module, "DELETE", self.key, nil, nil, nil, {
+        status_checker = accept_404_status_checker,
+    })
 end
 
 return M

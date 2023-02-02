@@ -36,6 +36,7 @@ return {
         s3 = {
             driver = "s3",
             chunk_size = 5 * 1024 * 1024,
+            read_chunk_size = 8192,
 
             access_key = "",
             secret_key = "",

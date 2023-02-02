@@ -148,7 +148,7 @@ end
 
 function user_mt:calculate_storage_used()
     local db = database.get_shared()
-    local res = db:query_single('SELECT SUM(size) AS storage_used FROM files WHERE owner = %s', self.id)
+    local res = db:query_single('SELECT SUM(size) AS storage_used FROM files WHERE uploaded = 1 AND owner = %s', self.id)
     return res and res.storage_used or 0
 end
 

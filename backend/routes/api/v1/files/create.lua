@@ -27,7 +27,9 @@ R.register_route("/api/v1/files", "POST", R.make_route_opts(), function()
     end
 
     local filesize = tonumber(ngx.req.get_headers()["Content-Length"])
-
+    if filesize < 1 then
+        return utils.api_error("Invalid Content-Length", 400)
+    end
     if not user:has_free_storage_for(filesize) then
         return utils.api_error("Over quota", 402)
     end
@@ -35,20 +37,13 @@ R.register_route("/api/v1/files", "POST", R.make_route_opts(), function()
     expiry_utils.parse_expiry(ngx.var, file, "arg_")
     file.size = filesize
     file:save()
-    local chunk_size = file:upload_begin()
+    file:upload_begin()
 
-    local remaining = filesize
     local sock = ngx.req.socket()
     sock:settimeout(10000)
-    while remaining > 0 do
-        local data, _ = sock:receive(math_min(chunk_size, remaining))
-        if not data then
-            file:upload_abort()
-            return utils.api_error("Error receiving data")
-        end
-        remaining = remaining - data:len()
-        file:upload_chunk(data)
-    end
+    file:upload_from_callback(function(size)
+        return sock:receive(size)
+    end)
 
     file:upload_finish()
     file:save("create")

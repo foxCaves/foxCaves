@@ -36,9 +36,6 @@ local mimeHandlers = {
             "-resize", "50%", "-gravity", "center", "-crop", "150x150+0+0",
             "+repage", "-format", "png", dest
         )
-        if not lfs.attributes(dest, "size") then
-            return nil
-        end
         return "image/png"
     end
 }
@@ -171,7 +168,7 @@ function file_mt:upload_begin()
     local storage = file_get_storage_driver(self)
     self.uploaded = 0
 
-    self._upload = storage:open(self.id, "file", self.mimetype)
+    self._upload = storage:open(self.id, self.size, "file", self.mimetype)
 
     if self.size <= file_model.consts.THUMBNAIL_MAX_SIZE then
         self._file_temp = os.tmpname()
@@ -186,6 +183,21 @@ function file_mt:upload_chunk(chunk)
     if self._fh_tmp then
         self._fh_tmp:write(chunk)
     end
+end
+
+function file_mt:upload_from_callback(cb)
+    if not self._fh_tmp then
+        self._upload:from_callback(cb)
+        return
+    end
+
+    local cb_local = cb
+    local function file_bridge_cb(chunk_size)
+        local data = cb_local(chunk_size)
+        self._fh_tmp:write(data)
+        return data
+    end
+    self._upload:from_callback(file_bridge_cb)
 end
 
 local function file_thumbnail_process(self)
@@ -206,31 +218,24 @@ local function file_thumbnail_process(self)
         self.thumbnail_mimetype = handler(self._file_temp, self._thumb_temp, suffix)
     end
 
-    local thumb_fh = io.open(self._thumb_temp, "rb")
-    local thumb_upload = storage:open(self.id, "thumb", self.thumbnail_mimetype)
-    local thumb_has_data = false
-    while true do
-        local chunk = thumb_fh:read(storage.config.chunk_size)
-        if not chunk then
-            break
-        end
-        thumb_upload:chunk(chunk)
-        thumb_has_data = true
+    local thumb_size = lfs.attributes(self._thumb_temp, "size")
+    if thumb_size > 0 then
+        local thumb_fh = io.open(self._thumb_temp, "rb")
+        local thumb_upload = storage:open(self.id, thumb_size, "thumb", self.thumbnail_mimetype)
+        thumb_upload:from_callback(function(chunk_size)
+            return thumb_fh:read(chunk_size)
+        end)
+        thumb_fh:close()
+        thumb_upload:finish()
+    else
+        self.thumbnail_mimetype = nil
     end
-    thumb_fh:close()
 
     os.remove(self._thumb_temp)
     os.remove(self._file_temp)
 
     self._thumb_temp = nil
     self._file_temp = nil
-
-    if thumb_has_data then
-        thumb_upload:finish()
-    else
-        thumb_upload:abort()
-        self.thumbnail_mimetype = nil
-    end
 end
 
 function file_mt:upload_finish()
