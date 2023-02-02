@@ -17,15 +17,15 @@ local function makelinkmt(link)
     return link
 end
 
-local link_select = 'id, owner, url, expires_at, ' .. database.TIME_COLUMNS_EXPIRING
+local link_select = "id, owner, url, expires_at, " .. database.TIME_COLUMNS_EXPIRING
 
 function link_model.get_by_query(query, ...)
-    return link_model.get_by_query_raw('(expires_at IS NULL OR expires_at >= NOW()) AND (' .. query .. ')' , ...)
+    return link_model.get_by_query_raw("(expires_at IS NULL OR expires_at >= NOW()) AND (" .. query .. ")" , ...)
 end
 
 function link_model.get_by_query_raw(query, ...)
-    local links = database.get_shared():query('SELECT ' .. link_select .. ' FROM links ' ..
-                                              'WHERE ' .. query, ...)
+    local links = database.get_shared():query("SELECT " .. link_select .. " FROM links " ..
+                                              "WHERE " .. query, ...)
     for k,v in next, links do
         links[k] = makelinkmt(v)
     end
@@ -41,7 +41,7 @@ function link_model.get_by_user(user)
         user = user.id
     end
 
-    return link_model.get_by_query('owner = %s', user)
+    return link_model.get_by_query("owner = %s", user)
 end
 
 function link_model.get_by_id(id)
@@ -49,7 +49,7 @@ function link_model.get_by_id(id)
         return nil
     end
 
-    local links = link_model.get_by_query('id = %s', id)
+    local links = link_model.get_by_query("id = %s", id)
     if links and links[1] then
         return makelinkmt(links[1])
     end
@@ -66,10 +66,10 @@ function link_model.new()
 end
 
 function link_mt:delete()
-    database.get_shared():query('DELETE FROM links WHERE id = %s', self.id)
+    database.get_shared():query("DELETE FROM links WHERE id = %s", self.id)
 
     local owner = user_model.get_by_id(self.owner)
-    owner:send_event('delete', 'link', self:get_private())
+    owner:send_event("delete", "link", self:get_private())
 end
 
 function link_mt:set_owner(user)
@@ -85,22 +85,22 @@ function link_mt:save()
     local res, primary_push_action
     if self.not_in_db then
         res = database.get_shared():query_single(
-            'INSERT INTO links (id, owner, url, expires_at) VALUES (%s, %s, %s, %s)' ..
-            ' RETURNING ' .. database.TIME_COLUMNS_EXPIRING,
+            "INSERT INTO links (id, owner, url, expires_at) VALUES (%s, %s, %s, %s)" ..
+            " RETURNING " .. database.TIME_COLUMNS_EXPIRING,
             self.id, self.owner, self.url, self.expires_at or ngx.null
         )
-        primary_push_action = 'create'
+        primary_push_action = "create"
         self.not_in_db = nil
     else
         res = database.get_shared():query_single(
-            'UPDATE links \
+            "UPDATE links \
                 SET owner = %s, url = %s, \
-                expires_at = %s, updated_at = (now() at time zone \'utc\') \
+                expires_at = %s, updated_at = (now() at time zone 'utc') \
                 WHERE id = %s \
-                RETURNING ' .. database.TIME_COLUMNS_EXPIRING,
+                RETURNING " .. database.TIME_COLUMNS_EXPIRING,
             self.owner, self.url, self.expires_at or ngx.null, self.id
         )
-        primary_push_action = 'update'
+        primary_push_action = "update"
     end
     self.created_at = res.created_at
     self.updated_at = res.updated_at
@@ -110,7 +110,7 @@ function link_mt:save()
     end
 
     local owner = user_model.get_by_id(self.owner)
-    owner:send_event(primary_push_action, 'link', self:get_private())
+    owner:send_event(primary_push_action, "link", self:get_private())
 end
 
 function link_mt:get_public()

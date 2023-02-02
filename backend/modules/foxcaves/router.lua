@@ -67,7 +67,7 @@ function ROUTE_REG_MT.make_route_opts_anon()
     return BASE_OPTS_ANON
 end
 
-local c_open, c_close, c_star = ('{}*'):byte(1,3)
+local c_open, c_close, c_star = ("{}*"):byte(1,3)
 
 
 function ROUTE_REG_MT.register_route_multi_method(url, methods, options, func, descriptor)
@@ -90,10 +90,10 @@ function ROUTE_REG_MT.register_route(url, method, options, func, descriptor)
         if rawseg:byte(1) == c_open and rawseg:byte(rawseg_len) == c_close then
             local rawseg_off
             if rawseg:byte(2) == c_star then
-                seg = '**'
+                seg = "**"
                 rawseg_off = 3
             else
-                seg = '*'
+                seg = "*"
                 rawseg_off = 2
             end
             mappings[i] = rawseg:sub(rawseg_off, rawseg_len - 1)
@@ -167,9 +167,9 @@ local function route_execute()
 
     for i, seg in next, urlsplit do
         local old_candidate = candidate
-        candidate = old_candidate.children[seg] or old_candidate.children['*']
+        candidate = old_candidate.children[seg] or old_candidate.children["*"]
         if not candidate then
-            candidate = old_candidate.children['**']
+            candidate = old_candidate.children["**"]
             if candidate then
                 wildcard_i = i
                 break
@@ -233,7 +233,7 @@ function M.execute()
     else
         ngx.header["Content-Type"] = "application/json"
         if opts.empty_is_array and not next(res) then
-            ngx.print('[]')
+            ngx.print("[]")
         else
             ngx.print(cjson.encode(res))
         end

@@ -24,7 +24,7 @@ cjson.decode_max_depth(10)
 cjson.decode_invalid_numbers(false)
 
 -- Load environment vars
-rawset(_G, 'OSENV', {
+rawset(_G, "OSENV", {
     ENVIRONMENT = true
 })
 for k, _ in pairs(OSENV) do

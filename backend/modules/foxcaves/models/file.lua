@@ -50,15 +50,15 @@ local function makefilemt(file)
     return file
 end
 
-local file_select = 'id, name, owner, size, mimetype, thumbnail_mimetype, uploaded, storage, ' .. database.TIME_COLUMNS_EXPIRING
+local file_select = "id, name, owner, size, mimetype, thumbnail_mimetype, uploaded, storage, " .. database.TIME_COLUMNS_EXPIRING
 
 function file_model.get_by_query(query, ...)
-    return file_model.get_by_query_raw('(expires_at IS NULL OR expires_at >= NOW()) AND uploaded = 1 AND (' .. query .. ')' , ...)
+    return file_model.get_by_query_raw("(expires_at IS NULL OR expires_at >= NOW()) AND uploaded = 1 AND (" .. query .. ")" , ...)
 end
 
 function file_model.get_by_query_raw(query, ...)
-    local files = database.get_shared():query('SELECT ' .. file_select .. ' FROM files ' ..
-                                              'WHERE ' .. query, ...)
+    local files = database.get_shared():query("SELECT " .. file_select .. " FROM files " ..
+                                              "WHERE " .. query, ...)
     for k,v in next, files do
         files[k] = makefilemt(v)
     end
@@ -74,7 +74,7 @@ function file_model.get_by_user(user)
         user = user.id
     end
 
-    return file_model.get_by_query('owner = %s', user)
+    return file_model.get_by_query("owner = %s", user)
 end
 
 function file_model.get_by_id(id)
@@ -82,7 +82,7 @@ function file_model.get_by_id(id)
         return nil
     end
 
-    local files = file_model.get_by_query('id = %s', id)
+    local files = file_model.get_by_query("id = %s", id)
     if files and files[1] then
         return makefilemt(files[1])
     end
@@ -122,7 +122,7 @@ function file_mt:delete()
     storage:delete(self.id, "file")
     storage:delete(self.id, "thumb")
 
-    database.get_shared():query('DELETE FROM files WHERE id = %s', self.id)
+    database.get_shared():query("DELETE FROM files WHERE id = %s", self.id)
 
     local owner = user_model.get_by_id(self.owner)
     owner:send_event("delete", "file", self:get_private())
@@ -277,25 +277,25 @@ function file_mt:save(force_push_action)
     local res, primary_push_action
     if self.not_in_db then
         res = database.get_shared():query_single(
-            'INSERT INTO files \
+            "INSERT INTO files \
                 (id, name, owner, size, mimetype, thumbnail_mimetype, uploaded, storage, expires_at) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s) \
-                RETURNING ' .. database.TIME_COLUMNS_EXPIRING,
+                RETURNING " .. database.TIME_COLUMNS_EXPIRING,
             self.id, self.name, self.owner, self.size, self.mimetype, self.thumbnail_mimetype or "", self.uploaded, self.storage,
             self.expires_at or ngx.null
         )
-        primary_push_action = 'create'
+        primary_push_action = "create"
         self.not_in_db = nil
     else
         res = database.get_shared():query_single(
-            'UPDATE files \
+            "UPDATE files \
                 SET name = %s, owner = %s, size = %s, mimetype = %s, thumbnail_mimetype = %s, uploaded = %s, storage = %s, \
-                expires_at = %s, updated_at = (now() at time zone \'utc\') \
+                expires_at = %s, updated_at = (now() at time zone 'utc') \
                 WHERE id = %s \
-                RETURNING ' .. database.TIME_COLUMNS_EXPIRING,
+                RETURNING " .. database.TIME_COLUMNS_EXPIRING,
             self.name, self.owner, self.size, self.mimetype, self.thumbnail_mimetype or "", self.uploaded,  self.storage,
             self.expires_at or ngx.null, self.id
         )
-        primary_push_action = 'update'
+        primary_push_action = "update"
     end
     self.created_at = res.created_at
     self.updated_at = res.updated_at
@@ -309,7 +309,7 @@ function file_mt:save(force_push_action)
             primary_push_action = force_push_action
         end
         local owner = user_model.get_by_id(self.owner)
-        owner:send_event(primary_push_action, 'file', self:get_private())
+        owner:send_event(primary_push_action, "file", self:get_private())
         owner:send_self_event()
     end
 end

@@ -29,7 +29,7 @@ local function makeusermt(user)
     return user
 end
 
-local user_select = 'id, username, email, password, loginkey, apikey, active, storage_quota, ' .. database.TIME_COLUMNS
+local user_select = "id, username, email, password, loginkey, apikey, active, storage_quota, " .. database.TIME_COLUMNS
 
 function user_model.get_by_id(id)
     if (not id) or (not uuid.is_valid(id)) then
@@ -42,7 +42,7 @@ function user_model.get_by_id(id)
         return ngx.ctx.user
     end
 
-    local user = database.get_shared():query_single('SELECT ' .. user_select .. ' FROM users WHERE id = %s', id)
+    local user = database.get_shared():query_single("SELECT " .. user_select .. " FROM users WHERE id = %s", id)
 
     if not user then
         return nil
@@ -63,7 +63,7 @@ function user_model.get_by_username(username)
     end
 
     local user = database.get_shared():query_single(
-        'SELECT ' .. user_select .. ' FROM users WHERE lower(username) = %s',
+        "SELECT " .. user_select .. " FROM users WHERE lower(username) = %s",
         username
     )
 
@@ -91,7 +91,7 @@ function user_mt:set_email(email)
     end
 
     if (not self.email) or email:lower() ~= self.email:lower() then
-        local res = database.get_shared():query_single('SELECT id FROM users WHERE lower(email) = %s', email:lower())
+        local res = database.get_shared():query_single("SELECT id FROM users WHERE lower(email) = %s", email:lower())
         if res then
             return consts.VALIDATION_STATE_TAKEN
         end
@@ -108,7 +108,7 @@ function user_mt:set_username(username)
         return consts.VALIDATION_STATE_INVALID
     end
 
-    local res = database.get_shared():query_single('SELECT id FROM users WHERE lower(username) = %s', username:lower())
+    local res = database.get_shared():query_single("SELECT id FROM users WHERE lower(username) = %s", username:lower())
     if res then
         return consts.VALIDATION_STATE_TAKEN
     end
@@ -148,7 +148,7 @@ end
 
 function user_mt:calculate_storage_used()
     local db = database.get_shared()
-    local res = db:query_single('SELECT SUM(size) AS storage_used FROM files WHERE uploaded = 1 AND owner = %s', self.id)
+    local res = db:query_single("SELECT SUM(size) AS storage_used FROM files WHERE uploaded = 1 AND owner = %s", self.id)
     return res and res.storage_used or 0
 end
 
@@ -160,12 +160,12 @@ function user_mt:has_free_storage_for(size)
 end
 
 function user_mt:send_event_raw(data)
-    events.push_raw('user:' .. self.id, data)
+    events.push_raw("user:" .. self.id, data)
 end
 
 function user_mt:send_event(action, model, data)
     self:send_event_raw({
-        type = 'liveloading',
+        type = "liveloading",
         action = action,
         model = model,
         data = data,
@@ -173,34 +173,34 @@ function user_mt:send_event(action, model, data)
 end
 
 function user_mt:send_self_event(action)
-    action = action or 'update'
-    self:send_event(action, 'user', self:get_private())
+    action = action or "update"
+    self:send_event(action, "user", self:get_private())
 end
 
 function user_mt:save()
     local res, primary_push_action
     if self.not_in_db then
         res = database.get_shared():query_single(
-            'INSERT INTO users \
+            "INSERT INTO users \
                 (id, username, email, password, loginkey, apikey, active, storage_quota) VALUES \
                 (%s, %s, %s, %s, %s, %s, %s, %s) \
-                RETURNING ' .. database.TIME_COLUMNS,
+                RETURNING " .. database.TIME_COLUMNS,
             self.id, self.username, self.email, self.password, self.loginkey, self.apikey, self.active,
             self.storage_quota
         )
-        primary_push_action = 'create'
+        primary_push_action = "create"
         self.not_in_db = nil
     else
         res = database.get_shared():query_single(
-            'UPDATE users \
+            "UPDATE users \
                 SET username = %s, email = %s, password = %s, loginkey = %s, apikey = %s, active = %s, storage_quota = %s, \
-                    updated_at = (now() at time zone \'utc\') \
+                    updated_at = (now() at time zone 'utc') \
                 WHERE id = %s \
-                RETURNING ' .. database.TIME_COLUMNS,
+                RETURNING " .. database.TIME_COLUMNS,
             self.username, self.email, self.password, self.loginkey, self.apikey, self.active, self.storage_quota,
             self.id
         )
-        primary_push_action = 'update'
+        primary_push_action = "update"
     end
     self.created_at = res.created_at
     self.updated_at = res.updated_at
@@ -247,8 +247,8 @@ function user_mt:make_new_api_key()
 end
 
 function user_mt:delete()
-    database.get_shared():query('DELETE FROM users WHERE id = %s', self.id)
-    self:send_self_event('delete')
+    database.get_shared():query("DELETE FROM users WHERE id = %s", self.id)
+    self:send_self_event("delete")
 end
 
 function user_mt:can_perform_write()
