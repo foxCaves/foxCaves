@@ -18,7 +18,7 @@ server {
     real_ip_header X-Real-IP;
 
     location /api/v1 {
-        client_max_body_size 10G;
+        client_max_body_size 0;
         default_type application/json;
         types { }
         content_by_lua_file /var/www/foxcaves/lua/nginx_run.lua;
@@ -54,14 +54,13 @@ server {
         proxy_http_version 1.1;
         proxy_request_buffering off;
         proxy_buffering off;
-        client_max_body_size 10G;
 
-        if ($request_method = POST) {
-            proxy_pass http://unix:/run/nginx-lua-api.sock;
+        client_max_body_size 0;
+        limit_except POST {
+            deny all;
         }
-        if ($request_method != POST) {
-            content_by_lua_file /var/www/foxcaves/lua/nginx_run.lua;
-        }
+        proxy_pass http://unix:/run/nginx-lua-api.sock;
+
     }
 }
 
