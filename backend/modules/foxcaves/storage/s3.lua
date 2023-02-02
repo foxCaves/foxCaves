@@ -1,6 +1,5 @@
 local http = require("resty.http")
 local awssig = require("resty.aws-signature")
-local utils = require("foxcaves.utils")
 
 local setmetatable = setmetatable
 local error = error

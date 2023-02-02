@@ -4,7 +4,7 @@ package.loaded["resty.aws-signature"] = {
         return {}
     end,
 }
-ngx = {}
+rawset(_G, "ngx", {})
 
 local path = require("path")
 local root = path.abs(debug.getinfo(1, "S").source:sub(2):match("(.*/)"))
