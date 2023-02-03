@@ -97,6 +97,16 @@ server {
         proxy_set_header x-amz-date $http_x_amz_date;
         proxy_set_header x-amz-content-sha256 $http_x_amz_content_sha256;
 
+        proxy_hide_header strict-transport-security;
+        proxy_hide_header x-amz-meta-s3cmd-attrs;
+        proxy_hide_header access-control-allow-headers;
+        proxy_hide_header access-control-allow-methods;
+        proxy_hide_header access-control-allow-origin;
+        proxy_hide_header access-control-expose-headers;
+        proxy_hide_header pragma;
+        proxy_hide_header cache-control;
+        proxy_hide_header expires;
+
         proxy_http_version 1.1;
         proxy_buffering off;
         proxy_pass https://$fcv_proxy_host$fcv_proxy_uri;
