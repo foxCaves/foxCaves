@@ -94,6 +94,7 @@ server {
 
         proxy_set_header host $http_host;
         proxy_set_header authorization $http_authorization;
+        proxy_set_header range $http_range;
         proxy_set_header x-amz-date $http_x_amz_date;
         proxy_set_header x-amz-content-sha256 $http_x_amz_content_sha256;
 
