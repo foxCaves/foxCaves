@@ -6,6 +6,8 @@ lua_socket_log_errors off;
 lua_ssl_trusted_certificate /etc/ssl/certs/ca-certificates.crt;
 lua_ssl_verify_depth 10;
 
+lua_shared_dict foxcaves 1m;
+
 set_real_ip_from __UPSTREAM_IPS__;
 set_real_ip_from 127.0.0.0/8;
 set_real_ip_from unix:;

@@ -108,6 +108,14 @@ local function s3_request(self, method, path, query, body, rawHeaders, opts)
     return resp, resp_body
 end
 
+local function _cache_get(key)
+    return ngx.shared.foxcaves["storage_s3_" .. key]
+end
+
+local function _cache_set(key, val)
+    ngx.shared.foxcaves["storage_s3_" .. key] = val
+end
+
 function M.new(name, config)
     local inst = setmetatable({
         name = name,
@@ -115,7 +123,7 @@ function M.new(name, config)
         awssig = awssig.new({
             access_key = config.access_key,
             secret_key = config.secret_key,
-        }),
+        }, _cache_get, _cache_set),
         host = config.host or "s3.amazonaws.com",
         region = config.region or "us-east-1",
     }, M)
