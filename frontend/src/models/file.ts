@@ -1,58 +1,59 @@
-import { HttpError, fetchAPI, fetchAPIRaw } from '../utils/api';
-
+import { fetchAPI, fetchAPIRaw, HttpError } from '../utils/api';
+import { formatSize } from '../utils/formatting';
 import { BaseModel } from './base';
 import { UserModel } from './user';
-import { formatSize } from '../utils/formatting';
 
 export class FileModel extends BaseModel {
-    public id: string = '';
-    public name: string = '';
-    public size: number = 0;
-    public owner: string = '';
-    public mimetype: string = '';
+    public id = '';
+    public name = '';
+    public size = 0;
+    public owner = '';
+    public mimetype = '';
 
     public thumbnail_url?: string;
 
-    public download_url: string = '';
-    public direct_url: string = '';
-    public view_url: string = '';
+    public download_url = '';
+    public direct_url = '';
+    public view_url = '';
 
-    static async getById(id: string): Promise<FileModel | undefined> {
+    public static async getById(id: string): Promise<FileModel | undefined> {
         try {
             const api = await fetchAPI(`/api/v1/files/${encodeURIComponent(id)}`);
             return FileModel.wrapNew(api);
-        } catch (e) {
-            if (e instanceof HttpError && (e.status === 404 || e.status === 403)) {
+        } catch (error) {
+            if (error instanceof HttpError && (error.status === 404 || error.status === 403)) {
                 return undefined;
             }
-            throw e;
+
+            throw error;
         }
     }
 
-    static async getByUser(user: UserModel): Promise<FileModel[]> {
+    public static async getByUser(user: UserModel): Promise<FileModel[]> {
         const res = await fetchAPI(`/api/v1/users/${encodeURIComponent(user.id)}/files`);
         return res.map(FileModel.wrapNew);
     }
 
-    async delete() {
+    private static wrapNew(obj: unknown) {
+        return new FileModel().wrap(obj);
+    }
+
+    public async delete(): Promise<void> {
         await fetchAPIRaw(`/api/v1/files/${encodeURIComponent(this.id)}`, {
             method: 'DELETE',
         });
     }
 
-    async rename(name: string) {
+    public async rename(name: string): Promise<void> {
         await fetchAPIRaw(`/api/v1/files/${encodeURIComponent(this.id)}`, {
             method: 'PATCH',
             data: { name },
         });
+
         this.name = name;
     }
 
-    static wrapNew(obj: unknown) {
-        return new FileModel().wrap(obj);
-    }
-
-    getFormattedSize() {
+    public getFormattedSize(): string {
         return formatSize(this.size);
     }
 }

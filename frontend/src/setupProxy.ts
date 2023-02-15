@@ -1,11 +1,14 @@
-const { createProxyMiddleware } = require('http-proxy-middleware');
+import type { Application } from 'express';
+import { createProxyMiddleware } from 'http-proxy-middleware';
 
-// DO NOT CHANGE THIS FILE TO .TS
-// webpack-dev-server / create-react-app do not support .ts files currently
+/*
+ * DO NOT CHANGE THIS FILE TO .TS
+ * webpack-dev-server / create-react-app do not support .ts files currently
+ */
 
 const foxCavesURL = 'https://foxcav.es';
 
-module.exports = function (app) {
+module.exports = function main(app: Application) {
     app.use(
         createProxyMiddleware('/api/v1/ws', {
             target: foxCavesURL,
@@ -13,6 +16,7 @@ module.exports = function (app) {
             changeOrigin: true,
         }),
     );
+
     app.use(
         createProxyMiddleware('/api', {
             target: foxCavesURL,

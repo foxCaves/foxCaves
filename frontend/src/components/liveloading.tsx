@@ -1,22 +1,21 @@
 import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
-
-import { AppContext } from '../utils/context';
 import { FileModel } from '../models/file';
 import { LinkModel } from '../models/link';
-import { ReconnectingWebSocket } from '../utils/websocket_autoreconnect';
 import { UserDetailsModel } from '../models/user';
+import { AppContext } from '../utils/context';
+import { ReconnectingWebSocket } from '../utils/websocket_autoreconnect';
 
-type ModelMap<T> = { [key: string]: T };
+type ModelMap<T> = Record<string, T>;
 
 interface ModelContext<T> {
     models: ModelMap<T> | undefined;
-    set(arr: ModelMap<T>): void;
-    refresh(): Promise<void>;
+    set: (arr: ModelMap<T>) => void;
+    refresh: () => Promise<void>;
 }
 
 interface LiveLoadingPayload {
-    action: 'update' | 'create' | 'delete';
-    model: 'user' | 'file' | 'link';
+    action: 'create' | 'delete' | 'update';
+    model: 'file' | 'link' | 'user';
     data: unknown;
 }
 
@@ -39,11 +38,13 @@ export const LiveLoadingContainer: React.FC<LiveLoadingContainerInterface> = ({ 
             setFiles({});
             return;
         }
+
         const files = await FileModel.getByUser(user);
         const fileMap: ModelMap<FileModel> = {};
         for (const file of files) {
             fileMap[file.id] = file;
         }
+
         setFiles(fileMap);
     }, [user]);
 
@@ -52,11 +53,13 @@ export const LiveLoadingContainer: React.FC<LiveLoadingContainerInterface> = ({ 
             setLinks({});
             return;
         }
+
         const links = await LinkModel.getByUser(user);
         const linkMap: ModelMap<LinkModel> = {};
         for (const link of links) {
             linkMap[link.id] = link;
         }
+
         setLinks(linkMap);
     }, [user]);
 
@@ -67,6 +70,7 @@ export const LiveLoadingContainer: React.FC<LiveLoadingContainerInterface> = ({ 
                     if (!files) {
                         break;
                     }
+
                     const file = data.data as FileModel;
                     const fileMapCopy = { ...files };
                     switch (data.action) {
@@ -75,6 +79,7 @@ export const LiveLoadingContainer: React.FC<LiveLoadingContainerInterface> = ({ 
                             if (!oldFile) {
                                 break;
                             }
+
                             oldFile.wrap(file);
                             setFiles(fileMapCopy);
                             break;
@@ -82,6 +87,7 @@ export const LiveLoadingContainer: React.FC<LiveLoadingContainerInterface> = ({ 
                             if (fileMapCopy[file.id]) {
                                 break;
                             }
+
                             fileMapCopy[file.id] = FileModel.wrapNew(file);
                             setFiles(fileMapCopy);
                             break;
@@ -89,15 +95,18 @@ export const LiveLoadingContainer: React.FC<LiveLoadingContainerInterface> = ({ 
                             if (!fileMapCopy[file.id]) {
                                 break;
                             }
+
                             delete fileMapCopy[file.id];
                             setFiles(fileMapCopy);
                             break;
                     }
+
                     break;
                 case 'link':
                     if (!links) {
                         break;
                     }
+
                     const link = data.data as LinkModel;
                     const linkMapCopy = { ...links };
                     switch (data.action) {
@@ -106,6 +115,7 @@ export const LiveLoadingContainer: React.FC<LiveLoadingContainerInterface> = ({ 
                             if (!oldModel) {
                                 break;
                             }
+
                             oldModel.wrap(link);
                             setLinks(linkMapCopy);
                             break;
@@ -113,6 +123,7 @@ export const LiveLoadingContainer: React.FC<LiveLoadingContainerInterface> = ({ 
                             if (linkMapCopy[link.id]) {
                                 break;
                             }
+
                             linkMapCopy[link.id] = LinkModel.wrapNew(link);
                             setLinks(linkMapCopy);
                             break;
@@ -120,19 +131,23 @@ export const LiveLoadingContainer: React.FC<LiveLoadingContainerInterface> = ({ 
                             if (!linkMapCopy[link.id]) {
                                 break;
                             }
+
                             delete linkMapCopy[link.id];
                             setLinks(linkMapCopy);
                             break;
                     }
+
                     break;
                 case 'user':
                     if (data.action !== 'update') {
                         break;
                     }
+
                     const newUser = data.data as UserDetailsModel;
                     if (!user || newUser.id !== user.id) {
                         break;
                     }
+
                     const mergedNewUser = UserDetailsModel.wrapNew(user.wrap(newUser));
                     setUser(mergedNewUser);
                     break;
@@ -142,11 +157,12 @@ export const LiveLoadingContainer: React.FC<LiveLoadingContainerInterface> = ({ 
     );
 
     const handleWebSocketMessage = useCallback(
-        (event: MessageEvent<any>) => {
+        (event: MessageEvent) => {
             const data = JSON.parse(event.data);
             if (data.type !== 'liveloading') {
                 return;
             }
+
             handleLiveLoadMessage(data as LiveLoadingPayload);
         },
         [handleLiveLoadMessage],
@@ -171,7 +187,7 @@ export const LiveLoadingContainer: React.FC<LiveLoadingContainerInterface> = ({ 
         wsRef.current = thisWs;
 
         return () => {
-            thisWs?.close();
+            thisWs.close();
             if (wsRef.current === thisWs) {
                 wsRef.current = undefined;
             }
@@ -191,6 +207,7 @@ export const LiveLoadingContainer: React.FC<LiveLoadingContainerInterface> = ({ 
         if (newUserId === curUserId) {
             return;
         }
+
         setCurUserId(newUserId);
         setFiles(undefined);
         setLinks(undefined);
@@ -215,10 +232,8 @@ export const LiveLoadingContainer: React.FC<LiveLoadingContainerInterface> = ({ 
     );
 
     return (
-        <>
-            <LinksContext.Provider value={linksContext}>
-                <FilesContext.Provider value={filesContext}>{children}</FilesContext.Provider>
-            </LinksContext.Provider>
-        </>
+        <LinksContext.Provider value={linksContext}>
+            <FilesContext.Provider value={filesContext}>{children}</FilesContext.Provider>
+        </LinksContext.Provider>
     );
 };

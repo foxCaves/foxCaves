@@ -1,17 +1,20 @@
+import { logError } from './misc';
+
 export class HttpError extends Error {
-    constructor(public status: number, public message: string) {
+    public constructor(public status: number, public message: string) {
         super(`HTTP Error: ${status} ${message}`);
+        this.name = 'HttpError';
     }
 }
 
-export interface APIRequestInfo {
+interface APIRequestInfo {
     method?: string;
     data?: any;
     body?: BodyInit;
     headers?: Record<string, string>;
 }
 
-export async function fetchAPIRaw(url: string, info?: APIRequestInfo) {
+export async function fetchAPIRaw(url: string, info?: APIRequestInfo): Promise<Response> {
     const init: RequestInit = {};
     if (info) {
         init.headers = info.headers;
@@ -21,24 +24,30 @@ export async function fetchAPIRaw(url: string, info?: APIRequestInfo) {
             if (!init.headers) {
                 init.headers = {};
             }
+
             init.headers['Content-Type'] = 'application/json';
         } else if (info.body) {
             init.body = info.body;
         }
     }
+
     const res = await fetch(url, init);
     if (res.status < 200 || res.status > 299) {
-        let desc = undefined;
+        let desc;
         try {
             const data = await res.json();
             desc = data.error;
-        } catch {}
-        throw new HttpError(res.status, desc || res.statusText);
+        } catch (error) {
+            logError(error as Error);
+        }
+
+        throw new HttpError(res.status, desc ?? res.statusText);
     }
+
     return res;
 }
 
-export async function fetchAPI(url: string, info?: APIRequestInfo) {
+export async function fetchAPI(url: string, info?: APIRequestInfo): Promise<unknown> {
     const res = await fetchAPIRaw(url, info);
-    return await res.json();
+    return res.json();
 }

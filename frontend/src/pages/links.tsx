@@ -1,15 +1,13 @@
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { Button, Form, Table } from 'react-bootstrap';
-import React, { useContext, useState } from 'react';
-
-import { LinkModel } from '../models/link';
-import { LinksContext } from '../components/liveloading';
 import Modal from 'react-bootstrap/Modal';
 import { toast } from 'react-toastify';
-import { useCallback } from 'react';
-import { useEffect } from 'react';
+import { LinksContext } from '../components/liveloading';
+import { LinkModel } from '../models/link';
 import { useInputFieldSetter } from '../utils/hooks';
+import { logError } from '../utils/misc';
 
-export const LinkView: React.FC<{
+const LinkView: React.FC<{
     link: LinkModel;
     setDeleteLink: (link: LinkModel | undefined) => void;
 }> = ({ link, setDeleteLink }) => {
@@ -20,17 +18,17 @@ export const LinkView: React.FC<{
     return (
         <tr>
             <td>
-                <a rel="noreferrer" target="_blank" href={link.short_url}>
+                <a href={link.short_url} rel="noreferrer" target="_blank">
                     {link.short_url}
                 </a>
             </td>
             <td>
-                <a rel="noreferrer" target="_blank" href={link.url}>
+                <a href={link.url} rel="noreferrer" target="_blank">
                     {link.url}
                 </a>
             </td>
             <td>
-                <Button variant="danger" onClick={setDeleteLinkCB}>
+                <Button onClick={setDeleteLinkCB} variant="danger">
                     Delete
                 </Button>
             </td>
@@ -38,39 +36,42 @@ export const LinkView: React.FC<{
     );
 };
 
-export const LinksPage: React.FC<{}> = () => {
+export const LinksPage: React.FC = () => {
     const { refresh, set, models } = useContext(LinksContext);
     const [loading, setLoading] = useState(false);
     const [deleteLink, setDeleteLink] = useState<LinkModel | undefined>(undefined);
     const [showCreateLink, setShowCreateLink] = useState<boolean>(false);
     const [createLinkUrl, setCreateLinkUrlCB, setCreateLinkUrl] = useInputFieldSetter('https://');
 
-    const handleDeleteLink = useCallback(async () => {
-        const link = deleteLink;
-        if (link) {
-            try {
-                await toast.promise(link.delete(), {
-                    success: `Link "${link.short_url}" deleted`,
-                    pending: `Deleting link "${link.short_url}"...`,
-                    error: {
-                        render({ data }) {
-                            const err = data as Error;
-                            return `Error deleting link: ${err.message}`;
-                        },
-                    },
-                });
-
-                const modelsCopy = { ...models };
-                delete modelsCopy[link.id];
-                set(modelsCopy);
-            } catch {}
+    const handleDeleteLink = useCallback(() => {
+        if (!deleteLink) {
+            return;
         }
-        setDeleteLink(undefined);
+
+        toast
+            .promise(deleteLink.delete(), {
+                success: `Link "${deleteLink.short_url}" deleted`,
+                pending: `Deleting link "${deleteLink.short_url}"...`,
+                error: {
+                    render({ data }) {
+                        const err = data as Error;
+                        return `Error deleting link: ${err.message}`;
+                    },
+                },
+            })
+            .then(() => {
+                const modelsCopy = { ...models };
+                delete modelsCopy[deleteLink.id];
+                set(modelsCopy);
+            }, logError)
+            .finally(() => {
+                setDeleteLink(undefined);
+            });
     }, [deleteLink, models, set]);
 
-    const handleCreateLink = useCallback(async () => {
-        try {
-            const link = await toast.promise(LinkModel.create(createLinkUrl), {
+    const handleCreateLink = useCallback(() => {
+        toast
+            .promise(LinkModel.create(createLinkUrl), {
                 success: `Link "${createLinkUrl}" created!`,
                 pending: `Creating link "${createLinkUrl}"...`,
                 error: {
@@ -79,13 +80,15 @@ export const LinksPage: React.FC<{}> = () => {
                         return `Error creating link "${createLinkUrl}": ${err.message}`;
                     },
                 },
+            })
+            .then((link) => {
+                const modelsCopy = { ...models };
+                modelsCopy[link.id] = link;
+                set(modelsCopy);
+            }, logError)
+            .finally(() => {
+                setShowCreateLink(false);
             });
-
-            const modelsCopy = { ...models };
-            modelsCopy[link.id] = link;
-            set(modelsCopy);
-        } catch {}
-        setShowCreateLink(false);
     }, [createLinkUrl, models, set]);
 
     const showCreateLinkDialog = useCallback(() => {
@@ -105,13 +108,16 @@ export const LinksPage: React.FC<{}> = () => {
         if (loading || models) {
             return;
         }
+
         setLoading(true);
-        refresh().then(() => setLoading(false));
+        refresh().then(() => {
+            setLoading(false);
+        }, logError);
     }, [refresh, loading, models]);
 
-    const refreshButton = useCallback(async () => {
-        try {
-            await toast.promise(refresh(), {
+    const refreshButton = useCallback(() => {
+        toast
+            .promise(refresh(), {
                 success: 'Links refreshed!',
                 pending: 'Refreshing links...',
                 error: {
@@ -120,8 +126,8 @@ export const LinksPage: React.FC<{}> = () => {
                         return `Error refreshing links: ${err.message}`;
                     },
                 },
-            });
-        } catch {}
+            })
+            .catch(logError);
     }, [refresh]);
 
     if (loading || !models) {
@@ -136,7 +142,7 @@ export const LinksPage: React.FC<{}> = () => {
 
     return (
         <>
-            <Modal show={!!deleteLink} onHide={hideDeleteLinkDialog}>
+            <Modal onHide={hideDeleteLinkDialog} show={!!deleteLink}>
                 <Modal.Header closeButton>
                     <Modal.Title>Delete file?</Modal.Title>
                 </Modal.Header>
@@ -146,15 +152,15 @@ export const LinksPage: React.FC<{}> = () => {
                 </Modal.Body>
 
                 <Modal.Footer>
-                    <Button variant="secondary" onClick={hideDeleteLinkDialog}>
+                    <Button onClick={hideDeleteLinkDialog} variant="secondary">
                         No
                     </Button>
-                    <Button variant="primary" onClick={handleDeleteLink}>
+                    <Button onClick={handleDeleteLink} variant="primary">
                         Yes
                     </Button>
                 </Modal.Footer>
             </Modal>
-            <Modal show={showCreateLink} onHide={hideCreateLinkDialog}>
+            <Modal onHide={hideCreateLinkDialog} show={showCreateLink}>
                 <Modal.Header closeButton>
                     <Modal.Title>Shorten link</Modal.Title>
                 </Modal.Header>
@@ -163,36 +169,36 @@ export const LinksPage: React.FC<{}> = () => {
                     <p>
                         Please enter the link you would like to shorten:
                         <Form.Control
-                            type="text"
                             name="createLink"
-                            value={createLinkUrl}
                             onChange={setCreateLinkUrlCB}
+                            type="text"
+                            value={createLinkUrl}
                         />
                     </p>
                 </Modal.Body>
 
                 <Modal.Footer>
-                    <Button variant="secondary" onClick={hideCreateLinkDialog}>
+                    <Button onClick={hideCreateLinkDialog} variant="secondary">
                         Cancel
                     </Button>
-                    <Button variant="primary" onClick={handleCreateLink}>
+                    <Button onClick={handleCreateLink} variant="primary">
                         Shorten
                     </Button>
                 </Modal.Footer>
             </Modal>
             <h1>
                 Manage links
-                <span className="p-3"></span>
-                <Button variant="primary" onClick={showCreateLinkDialog}>
+                <span className="p-3" />
+                <Button onClick={showCreateLinkDialog} variant="primary">
                     Create new link
                 </Button>
-                <span className="p-3"></span>
-                <Button variant="secondary" onClick={refreshButton}>
+                <span className="p-3" />
+                <Button onClick={refreshButton} variant="secondary">
                     Refresh
                 </Button>
             </h1>
             <br />
-            <Table striped bordered>
+            <Table bordered striped>
                 <thead>
                     <tr>
                         <th>Short link</th>
@@ -202,7 +208,7 @@ export const LinksPage: React.FC<{}> = () => {
                 </thead>
                 <tbody>
                     {Object.values(models).map((link) => (
-                        <LinkView key={link.id} setDeleteLink={setDeleteLink} link={link} />
+                        <LinkView key={link.id} link={link} setDeleteLink={setDeleteLink} />
                     ))}
                 </tbody>
             </Table>
