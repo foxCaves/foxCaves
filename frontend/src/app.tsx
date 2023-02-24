@@ -18,7 +18,7 @@ import { ForgotPasswordPage } from './pages/email/forgot_password';
 import { FilesPage } from './pages/files';
 import { HomePage } from './pages/home';
 import { LinksPage } from './pages/links';
-import { LiveDrawPage, LiveDrawRedirectPage } from './pages/livedraw/page';
+import { LiveDrawPage, LiveDrawRedirectPage } from './pages/live_draw/page';
 import { LoginPage } from './pages/login';
 import { LogoutPage } from './pages/logout';
 import { RegistrationPage } from './pages/register';
