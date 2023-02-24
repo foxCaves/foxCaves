@@ -18,7 +18,7 @@ import { ForgotPasswordPage } from './pages/email/forgot_password';
 import { FilesPage } from './pages/files';
 import { HomePage } from './pages/home';
 import { LinksPage } from './pages/links';
-import { LiveDrawPage, LiveDrawRedirectPage } from './pages/livedraw/page';
+import { LiveDrawPage, LiveDrawRedirectPage } from './pages/live_draw/page';
 import { LoginPage } from './pages/login';
 import { LogoutPage } from './pages/logout';
 import { RegistrationPage } from './pages/register';
@@ -119,8 +119,8 @@ const Routing: FC<{ user?: UserDetailsModel }> = ({ user }) => {
                     />
                     <Route element={<LogoutPage />} path="/logout" />
                     <Route element={<ViewPage />} path="/view/:id" />
-                    <Route element={<LiveDrawPage />} path="/livedraw/:id/:sid" />
-                    <Route element={<LiveDrawRedirectPage />} path="/livedraw/:id" />
+                    <Route element={<LiveDrawPage />} path="/live_draw/:id/:sid" />
+                    <Route element={<LiveDrawRedirectPage />} path="/live_draw/:id" />
                     <Route element={<ForgotPasswordPage />} path="/email/forgot_password" />
                     <Route element={<EmailCodePage />} path="/email/code/:code" />
                     <Route element={<HomePage />} path="/" />

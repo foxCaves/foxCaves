@@ -47,7 +47,7 @@ local VALID_BRUSHES = {
     polygon = true
 }
 
-R.register_route("/api/v1/ws/livedraw", "GET", R.make_route_opts({ allow_guest = true }), function()
+R.register_route("/api/v1/ws/live_draw", "GET", R.make_route_opts({ allow_guest = true }), function()
     local main_redis = redis.get_shared()
     local sub_redis = redis.make(true)
 
@@ -73,7 +73,7 @@ R.register_route("/api/v1/ws/livedraw", "GET", R.make_route_opts({ allow_guest =
     end
 
     local function internal_error(str)
-        ngx.log(ngx.ERR, "Livedraw lua error: " .. str)
+        ngx.log(ngx.ERR, "LiveDraw lua error: " .. str)
         error("Internal error")
     end
 
@@ -171,7 +171,7 @@ R.register_route("/api/v1/ws/livedraw", "GET", R.make_route_opts({ allow_guest =
         self.id = nil
     end
     function USERMETA:publish(evid, data)
-        main_redis:publish("livedraw:" .. self.channel, string_format("%c%s|%s", evid, self.id, data or ""))
+        main_redis:publish("live_draw:" .. self.channel, string_format("%c%s|%s", evid, self.id, data or ""))
     end
     function USERMETA:event_received(rawdata)
         local evid = rawdata:byte(1)
@@ -264,7 +264,7 @@ R.register_route("/api/v1/ws/livedraw", "GET", R.make_route_opts({ allow_guest =
     end
     user.id = wsid
 
-    sub_redis:subscribe("livedraw:" .. user.channel)
+    sub_redis:subscribe("live_draw:" .. user.channel)
 
     user:send_data()
     user:publish(cEVENT_JOINDIRECT)
