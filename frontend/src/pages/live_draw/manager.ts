@@ -35,7 +35,7 @@ interface CursorData {
 interface BrushData {
     width: number;
     color: string;
-    brush: Brush;
+    brush?: Brush;
     customData: Record<string, Record<string, unknown>>;
 }
 
@@ -483,7 +483,7 @@ function makeLocalUser(manager: LiveDrawManager): LocalUser {
                 manager.sendDrawEvent(PaintEvent.COLOR, bColor);
             },
             setBrush(brush: string) {
-                this.brush.unselectLocal?.();
+                this.brush?.unselectLocal?.();
 
                 this.brush = paintBrushes[brush]!;
                 manager.backgroundCanvasCTX.globalCompositeOperation = 'source-over';
@@ -502,7 +502,7 @@ function makeLocalUser(manager: LiveDrawManager): LocalUser {
             },
             setBrushAttribsLocal() {
                 manager.backgroundCanvasCTX.lineWidth = this.width * manager.scaleFactor;
-                if (localUser.brushData.brush.keepBackgroundStrokeStyle !== true) {
+                if (localUser.brushData.brush?.keepBackgroundStrokeStyle !== true) {
                     manager.backgroundCanvasCTX.strokeStyle = this.color;
                 }
 
@@ -510,7 +510,7 @@ function makeLocalUser(manager: LiveDrawManager): LocalUser {
 
                 manager.foregroundCanvasCTX.strokeStyle = this.color;
                 manager.foregroundCanvasCTX.fillStyle = this.color;
-                if (localUser.brushData.brush.keepLineWidth !== true) {
+                if (localUser.brushData.brush?.keepLineWidth !== true) {
                     manager.foregroundCanvasCTX.lineWidth = this.width * manager.scaleFactor;
                 }
             },
@@ -638,7 +638,7 @@ export class LiveDrawManager {
     public destroy(): void {
         this.shouldConnect = false;
         try {
-            this.socket!.close();
+            this.socket?.close();
         } catch {
             // noop
         }
@@ -682,7 +682,7 @@ export class LiveDrawManager {
         const sendX = offsetX / this.scaleFactor;
         const sendY = offsetY / this.scaleFactor;
 
-        this.localUser.brushData.brush.down(this, offsetX, offsetY, this.localUser);
+        this.localUser.brushData.brush?.down(this, offsetX, offsetY, this.localUser);
         this.sendBrushEvent(PaintEvent.MOUSE_DOWN, sendX, sendY);
     }
 
@@ -704,7 +704,7 @@ export class LiveDrawManager {
         const sendX = offsetX / this.scaleFactor;
         const sendY = offsetY / this.scaleFactor;
 
-        this.localUser.brushData.brush.up(this, offsetX, offsetY, this.localUser, backgroundCanvasCTX);
+        this.localUser.brushData.brush?.up(this, offsetX, offsetY, this.localUser, backgroundCanvasCTX);
         this.sendBrushEvent(PaintEvent.MOUSE_UP, sendX, sendY);
 
         this.localUser.cursorData.lastX = 0;
@@ -727,7 +727,7 @@ export class LiveDrawManager {
             return;
         }
 
-        if (this.localUser.brushData.brush.move(this, offsetX, offsetY, this.localUser, backgroundCanvasCTX)) {
+        if (this.localUser.brushData.brush?.move(this, offsetX, offsetY, this.localUser, backgroundCanvasCTX)) {
             this.sendBrushEvent(PaintEvent.MOUSE_CURSOR, sendX, sendY);
         } else {
             this.sendBrushEvent(PaintEvent.MOUSE_MOVE, sendX, sendY);
@@ -742,15 +742,7 @@ export class LiveDrawManager {
     private doubleClick(event: MouseEvent) {
         event.preventDefault();
         const [offsetX, offsetY] = this.calcOffsets(event);
-        if (this.localUser.brushData.brush.doubleClick) {
-            this.localUser.brushData.brush.doubleClick(
-                this,
-                offsetX,
-                offsetY,
-                this.localUser,
-                this.backgroundCanvasCTX,
-            );
-        }
+        this.localUser.brushData.brush?.doubleClick?.(this, offsetX, offsetY, this.localUser, this.backgroundCanvasCTX);
 
         this.cursorX = offsetX;
         this.cursorY = offsetY;
@@ -893,20 +885,20 @@ export class LiveDrawManager {
         this.backgroundCanvasCTX.strokeStyle = color;
         this.backgroundCanvasCTX.fillStyle = color;
 
-        brush.select(this, from, this.foregroundCanvasCTX, this.backgroundCanvasCTX);
+        brush?.select(this, from, this.foregroundCanvasCTX, this.backgroundCanvasCTX);
 
         switch (eventType) {
             case PaintEvent.MOUSE_DOWN:
-                brush.down(this, x, y, from);
+                brush?.down(this, x, y, from);
                 break;
             case PaintEvent.MOUSE_UP:
-                brush.up(this, x, y, from, this.backgroundCanvasCTX);
+                brush?.up(this, x, y, from, this.backgroundCanvasCTX);
                 break;
             case PaintEvent.MOUSE_MOVE:
-                brush.move(this, x, y, from, this.backgroundCanvasCTX);
+                brush?.move(this, x, y, from, this.backgroundCanvasCTX);
                 break;
             case PaintEvent.MOUSE_DOUBLE_CLICK:
-                brush.doubleClick!(this, x, y, from, this.backgroundCanvasCTX);
+                brush?.doubleClick!(this, x, y, from, this.backgroundCanvasCTX);
                 break;
             case PaintEvent.WIDTH:
             case PaintEvent.COLOR:
@@ -923,7 +915,7 @@ export class LiveDrawManager {
 
         this.localUser.brushData.setBrushAttribsLocal();
 
-        this.localUser.brushData.brush.select(this, from, this.foregroundCanvasCTX, this.backgroundCanvasCTX);
+        this.localUser.brushData.brush?.select(this, from, this.foregroundCanvasCTX, this.backgroundCanvasCTX);
     }
     /*
      *private sendBrushPacket(brushName: string, key: string, val: string) {
@@ -990,7 +982,7 @@ export class LiveDrawManager {
         }
 
         try {
-            this.socket!.send(msg);
+            this.socket?.send(msg);
         } catch (error: unknown) {
             logError(error as Error);
         }
@@ -1004,6 +996,10 @@ export class LiveDrawManager {
         requestAnimationFrame(() => {
             this.paintCanvas();
         });
+
+        if (!this.localUser.brushData.brush) {
+            return;
+        }
 
         this.foregroundCanvasCTX.clearRect(0, 0, this.foregroundCanvas.width, this.foregroundCanvas.height);
 
@@ -1020,8 +1016,8 @@ export class LiveDrawManager {
         this.foregroundCanvasCTX.textBaseline = 'top';
 
         for (const user of paintUsers.values()) {
-            user.brushData.brush.select(this, user, this.foregroundCanvasCTX, this.backgroundCanvasCTX);
-            user.brushData.brush.preview(this, user.cursorData.x, user.cursorData.y, user, this.foregroundCanvasCTX);
+            user.brushData.brush?.select(this, user, this.foregroundCanvasCTX, this.backgroundCanvasCTX);
+            user.brushData.brush?.preview(this, user.cursorData.x, user.cursorData.y, user, this.foregroundCanvasCTX);
 
             this.foregroundCanvasCTX.font = this.defaultFont;
             this.foregroundCanvasCTX.fillText(
