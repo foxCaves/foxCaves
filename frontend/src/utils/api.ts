@@ -9,7 +9,7 @@ export class HttpError extends Error {
 
 interface APIRequestInfo {
     method?: string;
-    data?: any;
+    data?: unknown;
     body?: BodyInit;
     headers?: Record<string, string>;
 }
@@ -35,7 +35,7 @@ export async function fetchAPIRaw(url: string, info?: APIRequestInfo): Promise<R
     if (res.status < 200 || res.status > 299) {
         let desc;
         try {
-            const data = await res.json();
+            const data = (await res.json()) as { error: string };
             desc = data.error;
         } catch (error) {
             logError(error as Error);

@@ -10,13 +10,13 @@ export const EmailCodePage: React.FC = () => {
 
     const sendCode = useCallback(async () => {
         try {
-            const res = await fetchAPI('/api/v1/users/emails/code', {
+            const res = (await fetchAPI('/api/v1/users/emails/code', {
                 method: 'POST',
                 data: { code },
-            });
+            })) as { action: string };
 
             switch (res.action) {
-                case 'forgotpwd':
+                case 'forgot_password':
                     setStatus('E-Mail with new temporary password sent!');
                     break;
                 case 'activation':
@@ -26,8 +26,8 @@ export const EmailCodePage: React.FC = () => {
                     setStatus('Done!');
                     break;
             }
-        } catch (error: any) {
-            setStatus(`Error: ${error.message}`);
+        } catch (error: unknown) {
+            setStatus(`Error: ${(error as Error).message}`);
         }
     }, [code]);
 

@@ -1,6 +1,7 @@
 {
-    "eslint.workingDirectories": [
-        "frontend"
-    ],
-    "editor.formatOnSave": true
+    "eslint.workingDirectories": ["frontend"],
+    "editor.formatOnSave": true,
+    "eslint.format.enable": true,
+    "typescript.format.enable": false,
+    "javascript.format.enable": false
 }

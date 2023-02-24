@@ -14,7 +14,7 @@ import { LiveDrawManager } from './manager';
 export const LiveDrawRedirectPage: React.FC = () => {
     const { id } = useParams<{ id: string }>();
 
-    return <Navigate to={`/livedraw/${id}/${randomString(12)}`} />;
+    return <Navigate to={`/livedraw/${id!}/${randomString(12)}`} />;
 };
 
 export const LiveDrawPage: React.FC = () => {
@@ -27,7 +27,7 @@ export const LiveDrawPage: React.FC = () => {
     const managerRef = useRef<LiveDrawManager | undefined>(undefined);
     const [brushWidth, setBrushWidth] = useState(10);
 
-    const fileName = file ? file.name : `ID_${id}`;
+    const fileName = file ? file.name : `ID_${id!}`;
 
     useEffect(() => {
         FileModel.getById(id!).then(setFile, logError);

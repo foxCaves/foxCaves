@@ -1,6 +1,7 @@
 import { toast } from 'react-toastify';
 import { FileModel } from '../models/file';
 import { HttpError } from './api';
+import { logError } from './misc';
 
 export interface BlobWithName extends Blob {
     name: string;
@@ -26,11 +27,13 @@ async function uploadFileInternal(file: FileLike, onProgress: (e: ProgressEvent<
             if (xhr.status < 200 || xhr.status > 299) {
                 let errorMessage;
                 try {
-                    const data = JSON.parse(xhr.responseText);
+                    const data = JSON.parse(xhr.responseText) as { error: string };
                     errorMessage = data.error;
-                } catch {}
+                } catch (error: unknown) {
+                    logError(error as Error);
+                }
 
-                reject(new HttpError(xhr.status, errorMessage || xhr.responseText));
+                reject(new HttpError(xhr.status, errorMessage ?? xhr.responseText));
                 return;
             }
 

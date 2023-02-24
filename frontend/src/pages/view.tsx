@@ -42,7 +42,9 @@ const FileContentView: React.FC<{ file: FileModel }> = ({ file }) => {
             return <audio controls src={file.direct_url} />;
         case 'application':
             if (mimeSplit[2] === 'pdf') {
-                return <iframe className="mw-100 preview-iframe" src={file.direct_url} title="PDF preview" />;
+                return (
+                    <iframe className="mw-100 preview-iframe" sandbox="" src={file.direct_url} title="PDF preview" />
+                );
             }
 
             break;
@@ -73,7 +75,7 @@ export const ViewPage: React.FC = () => {
                 setFileError('File not found');
             }
         } catch (error: unknown) {
-            setFileError(error.message);
+            setFileError((error as Error).message);
         }
 
         setFileLoading(false);
@@ -86,7 +88,7 @@ export const ViewPage: React.FC = () => {
         }
 
         setFileLoading(true);
-        loadFile();
+        loadFile().catch(logError);
     }, [fileLoading, fileLoadDone, loadFile]);
 
     if (!fileLoadDone) {

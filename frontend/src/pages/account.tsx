@@ -8,6 +8,7 @@ import { toast } from 'react-toastify';
 import { fetchAPIRaw } from '../utils/api';
 import { AppContext } from '../utils/context';
 import { useInputFieldSetter } from '../utils/hooks';
+import { logError } from '../utils/misc';
 
 export const AccountPage: React.FC = () => {
     const { user, refreshUser } = useContext(AppContext);
@@ -43,44 +44,49 @@ export const AccountPage: React.FC = () => {
                         },
                     },
                 );
-            } catch {}
+            } catch (error: unknown) {
+                logError(error as Error);
+            }
 
             await refreshUser();
         },
         [currentPassword, refreshUser, user],
     );
 
-    const handleAPIKeyRegen = useCallback(
-        async (event: FormEvent) => {
+    const handleAPIKeyRegenerate = useCallback(
+        (event: FormEvent) => {
             event.preventDefault();
-            await sendUserChange({
-                apikey: 'CHANGE',
-            });
+            sendUserChange({
+                api_key: 'CHANGE',
+            }).catch(logError);
         },
         [sendUserChange],
     );
 
     const handleDeleteAccount = useCallback(
-        async (event: FormEvent) => {
+        (event: FormEvent) => {
             event.preventDefault();
-            await sendUserChange({}, 'DELETE');
-            setShowDeleteAccountModal(false);
+            sendUserChange({}, 'DELETE')
+                .then(() => {
+                    setShowDeleteAccountModal(false);
+                })
+                .catch(logError);
         },
         [sendUserChange],
     );
 
     const handleKillSessions = useCallback(
-        async (event: FormEvent) => {
+        (event: FormEvent) => {
             event.preventDefault();
-            await sendUserChange({
-                loginkey: 'CHANGE',
-            });
+            sendUserChange({
+                login_key: 'CHANGE',
+            }).catch(logError);
         },
         [sendUserChange],
     );
 
     const handleSubmit = useCallback(
-        async (event: FormEvent<HTMLFormElement>) => {
+        (event: FormEvent<HTMLFormElement>) => {
             event.preventDefault();
             if (newPassword !== newPasswordConfirm) {
                 toast('New passwords do not match', {
@@ -91,10 +97,10 @@ export const AccountPage: React.FC = () => {
                 return;
             }
 
-            await sendUserChange({
+            sendUserChange({
                 password: newPassword,
                 email,
-            });
+            }).catch(logError);
         },
         [sendUserChange, newPassword, newPasswordConfirm, email],
     );
@@ -141,7 +147,7 @@ export const AccountPage: React.FC = () => {
                     />
                 </FloatingLabel>
                 <FloatingLabel className="mb-3" label="Username">
-                    <Form.Control name="username" placeholder="testuser" readOnly type="text" value={user!.username} />
+                    <Form.Control name="username" placeholder="test_user" readOnly type="text" value={user!.username} />
                 </FloatingLabel>
                 <FloatingLabel className="mb-3" label="New password">
                     <Form.Control
@@ -175,17 +181,17 @@ export const AccountPage: React.FC = () => {
                     <Col>
                         <FloatingLabel className="mb-3" label="API key">
                             <Form.Control
-                                name="apikey"
+                                name="api_key"
                                 placeholder="ABCDefgh"
                                 readOnly
                                 type="text"
-                                value={user!.apikey}
+                                value={user!.api_key}
                             />
                             <Form.Label>API key</Form.Label>
                         </FloatingLabel>
                     </Col>
                     <Col xs="auto">
-                        <Button onClick={handleAPIKeyRegen} size="lg" type="button" variant="primary">
+                        <Button onClick={handleAPIKeyRegenerate} size="lg" type="button" variant="primary">
                             Regenerate
                         </Button>
                     </Col>

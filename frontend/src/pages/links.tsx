@@ -60,8 +60,8 @@ export const LinksPage: React.FC = () => {
                 },
             })
             .then(() => {
-                const modelsCopy = { ...models };
-                delete modelsCopy[deleteLink.id];
+                const modelsCopy = new Map(models);
+                modelsCopy.delete(deleteLink.id);
                 set(modelsCopy);
             }, logError)
             .finally(() => {
@@ -82,8 +82,8 @@ export const LinksPage: React.FC = () => {
                 },
             })
             .then((link) => {
-                const modelsCopy = { ...models };
-                modelsCopy[link.id] = link;
+                const modelsCopy = new Map(models);
+                modelsCopy.set(link.id, link);
                 set(modelsCopy);
             }, logError)
             .finally(() => {
@@ -207,7 +207,7 @@ export const LinksPage: React.FC = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {Object.values(models).map((link) => (
+                    {Array.from(models.values()).map((link) => (
                         <LinkView key={link.id} link={link} setDeleteLink={setDeleteLink} />
                     ))}
                 </tbody>

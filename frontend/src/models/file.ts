@@ -30,11 +30,11 @@ export class FileModel extends BaseModel {
     }
 
     public static async getByUser(user: UserModel): Promise<FileModel[]> {
-        const res = await fetchAPI(`/api/v1/users/${encodeURIComponent(user.id)}/files`);
-        return res.map(FileModel.wrapNew);
+        const res = (await fetchAPI(`/api/v1/users/${encodeURIComponent(user.id)}/files`)) as unknown[];
+        return res.map((i) => FileModel.wrapNew(i));
     }
 
-    private static wrapNew(obj: unknown) {
+    public static wrapNew(obj: unknown): FileModel {
         return new FileModel().wrap(obj);
     }
 

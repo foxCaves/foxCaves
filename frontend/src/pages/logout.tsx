@@ -28,7 +28,9 @@ export const LogoutPage: React.FC = () => {
                     },
                 },
             );
-        } catch {}
+        } catch (error: unknown) {
+            logError(error as Error);
+        }
 
         await refreshUser();
         setLogoutDone(true);

@@ -31,7 +31,7 @@ const FileView: React.FC<{
     const isImage = file.mimetype.startsWith('image/');
 
     const onKeyDownEdit = useCallback(
-        async (e: KeyboardEvent) => {
+        (e: KeyboardEvent) => {
             if (e.key === 'Enter') {
                 const oldName = file.name;
                 const newName = editFileName;
@@ -40,8 +40,8 @@ const FileView: React.FC<{
                     return;
                 }
 
-                try {
-                    await toast.promise(file.rename(editFileName), {
+                toast
+                    .promise(file.rename(editFileName), {
                         success: `File "${oldName}" renamed to "${newName}"`,
                         pending: `Renaming file "${oldName}" to "${newName}"...`,
                         error: {
@@ -50,10 +50,12 @@ const FileView: React.FC<{
                                 return `Error renaming file "${oldName}" to "${newName}": ${err.message}`;
                             },
                         },
-                    });
-                } catch {}
-
-                setEditFile(undefined);
+                    })
+                    .catch(logError)
+                    .then(() => {
+                        setEditFile(undefined);
+                    })
+                    .catch(logError);
             } else if (e.key === 'Escape') {
                 setEditFile(undefined);
             }
@@ -86,7 +88,7 @@ const FileView: React.FC<{
             <Card.Body>
                 <Ratio aspectRatio="1x1">
                     <Link to={`/view/${file.id}`}>
-                        <Card.Img src={file.thumbnail_url || noThumbnail} variant="top" />
+                        <Card.Img src={file.thumbnail_url ?? noThumbnail} variant="top" />
                     </Link>
                 </Ratio>
             </Card.Body>
@@ -120,16 +122,20 @@ export const FilesPage: React.FC = () => {
     const [editFile, setEditFile] = useState<FileModel | undefined>(undefined);
 
     const onDrop = useCallback(
-        async (acceptedFiles: File[]) => {
-            for (const file of acceptedFiles) {
-                try {
-                    const fileObj = await uploadFile(file);
+        (acceptedFiles: File[]) => {
+            const modelsCopy = new Map(models);
 
-                    const modelsCopy = { ...models };
-                    modelsCopy[fileObj.id] = fileObj;
+            Promise.all(
+                acceptedFiles.map(async (file: File) => {
+                    const fileObj = await uploadFile(file);
+                    modelsCopy.set(fileObj.id, fileObj);
+                }),
+            )
+                .catch(logError)
+                .then(() => {
                     set(modelsCopy);
-                } catch {}
-            }
+                })
+                .catch(logError);
         },
         [models, set],
     );
@@ -155,8 +161,8 @@ export const FilesPage: React.FC = () => {
                 },
             })
             .then(() => {
-                const modelsCopy = { ...models };
-                delete modelsCopy[deleteFile.id];
+                const modelsCopy = new Map(models);
+                modelsCopy.delete(deleteFile.id);
                 set(modelsCopy);
             })
             .finally(() => {
@@ -250,7 +256,7 @@ export const FilesPage: React.FC = () => {
             </Container>
             <Container className="mt-2 justify-content-center">
                 <Row>
-                    {Object.values(models).map((file) => {
+                    {Array.from(models.values()).map((file) => {
                         return (
                             <Col className="col-auto mb-3" key={file.id}>
                                 <FileView

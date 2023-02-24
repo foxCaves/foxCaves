@@ -7,7 +7,7 @@ export class BaseModel {
         this.updated_at = new Date(this.updated_at);
     }
 
-    protected wrap(obj: unknown): this {
+    public wrap(obj: unknown): this {
         Object.assign(this, obj);
         this.convertDates();
         return this;

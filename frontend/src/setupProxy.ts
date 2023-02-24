@@ -8,6 +8,7 @@ import { createProxyMiddleware } from 'http-proxy-middleware';
 
 const foxCavesURL = 'https://foxcav.es';
 
+// eslint-disable-next-line unicorn/prefer-module
 module.exports = function main(app: Application) {
     app.use(
         createProxyMiddleware('/api/v1/ws', {

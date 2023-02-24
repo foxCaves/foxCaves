@@ -18,7 +18,7 @@ export const ForgotPasswordPage: React.FC = () => {
                 data: {
                     username,
                     email,
-                    action: 'forgotpwd',
+                    action: 'forgot_password',
                 },
             }),
             {
@@ -38,7 +38,7 @@ export const ForgotPasswordPage: React.FC = () => {
             data: {
                 username,
                 email,
-                action: 'forgotpwd',
+                action: 'forgot_password',
             },
         });
     }, [username, email]);

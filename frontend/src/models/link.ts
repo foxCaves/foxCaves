@@ -22,8 +22,8 @@ export class LinkModel extends BaseModel {
     }
 
     public static async getByUser(user: UserModel): Promise<LinkModel[]> {
-        const res = await fetchAPI(`/api/v1/users/${encodeURIComponent(user.id)}/links`);
-        return res.map(LinkModel.wrapNew);
+        const res = (await fetchAPI(`/api/v1/users/${encodeURIComponent(user.id)}/links`)) as unknown[];
+        return res.map((link) => LinkModel.wrapNew(link));
     }
 
     public static async create(url: string): Promise<LinkModel> {
@@ -34,7 +34,8 @@ export class LinkModel extends BaseModel {
 
         return LinkModel.wrapNew(api);
     }
-    private static wrapNew(obj: unknown): LinkModel {
+
+    public static wrapNew(obj: unknown): LinkModel {
         return new LinkModel().wrap(obj);
     }
 

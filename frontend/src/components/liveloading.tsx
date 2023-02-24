@@ -5,7 +5,7 @@ import { UserDetailsModel } from '../models/user';
 import { AppContext } from '../utils/context';
 import { ReconnectingWebSocket } from '../utils/websocket_autoreconnect';
 
-type ModelMap<T> = Record<string, T>;
+type ModelMap<T> = Map<string, T>;
 
 interface ModelContext<T> {
     models: ModelMap<T> | undefined;
@@ -35,14 +35,14 @@ export const LiveLoadingContainer: React.FC<LiveLoadingContainerInterface> = ({ 
 
     const refreshFiles = useCallback(async () => {
         if (!user) {
-            setFiles({});
+            setFiles(new Map());
             return;
         }
 
-        const files = await FileModel.getByUser(user);
-        const fileMap: ModelMap<FileModel> = {};
-        for (const file of files) {
-            fileMap[file.id] = file;
+        const fileArray = await FileModel.getByUser(user);
+        const fileMap: ModelMap<FileModel> = new Map();
+        for (const file of fileArray) {
+            fileMap.set(file.id, file);
         }
 
         setFiles(fileMap);
@@ -50,32 +50,33 @@ export const LiveLoadingContainer: React.FC<LiveLoadingContainerInterface> = ({ 
 
     const refreshLinks = useCallback(async () => {
         if (!user) {
-            setLinks({});
+            setLinks(new Map());
             return;
         }
 
-        const links = await LinkModel.getByUser(user);
-        const linkMap: ModelMap<LinkModel> = {};
-        for (const link of links) {
-            linkMap[link.id] = link;
+        const linkArray = await LinkModel.getByUser(user);
+        const linkMap: ModelMap<LinkModel> = new Map();
+        for (const link of linkArray) {
+            linkMap.set(link.id, link);
         }
 
         setLinks(linkMap);
     }, [user]);
 
     const handleLiveLoadMessage = useCallback(
+        // eslint-disable-next-line complexity
         (data: LiveLoadingPayload) => {
             switch (data.model) {
-                case 'file':
+                case 'file': {
                     if (!files) {
                         break;
                     }
 
                     const file = data.data as FileModel;
-                    const fileMapCopy = { ...files };
+                    const fileMapCopy = new Map(files);
                     switch (data.action) {
-                        case 'update':
-                            const oldFile = fileMapCopy[file.id];
+                        case 'update': {
+                            const oldFile = fileMapCopy.get(file.id);
                             if (!oldFile) {
                                 break;
                             }
@@ -83,35 +84,42 @@ export const LiveLoadingContainer: React.FC<LiveLoadingContainerInterface> = ({ 
                             oldFile.wrap(file);
                             setFiles(fileMapCopy);
                             break;
-                        case 'create':
-                            if (fileMapCopy[file.id]) {
+                        }
+
+                        case 'create': {
+                            if (fileMapCopy.has(file.id)) {
                                 break;
                             }
 
-                            fileMapCopy[file.id] = FileModel.wrapNew(file);
+                            fileMapCopy.set(file.id, FileModel.wrapNew(file));
                             setFiles(fileMapCopy);
                             break;
-                        case 'delete':
-                            if (!fileMapCopy[file.id]) {
+                        }
+
+                        case 'delete': {
+                            if (!fileMapCopy.has(file.id)) {
                                 break;
                             }
 
-                            delete fileMapCopy[file.id];
+                            fileMapCopy.delete(file.id);
                             setFiles(fileMapCopy);
                             break;
+                        }
                     }
 
                     break;
-                case 'link':
+                }
+
+                case 'link': {
                     if (!links) {
                         break;
                     }
 
                     const link = data.data as LinkModel;
-                    const linkMapCopy = { ...links };
+                    const linkMapCopy = new Map(links);
                     switch (data.action) {
-                        case 'update':
-                            const oldModel = linkMapCopy[link.id];
+                        case 'update': {
+                            const oldModel = linkMapCopy.get(link.id);
                             if (!oldModel) {
                                 break;
                             }
@@ -119,26 +127,33 @@ export const LiveLoadingContainer: React.FC<LiveLoadingContainerInterface> = ({ 
                             oldModel.wrap(link);
                             setLinks(linkMapCopy);
                             break;
-                        case 'create':
-                            if (linkMapCopy[link.id]) {
+                        }
+
+                        case 'create': {
+                            if (linkMapCopy.has(link.id)) {
                                 break;
                             }
 
-                            linkMapCopy[link.id] = LinkModel.wrapNew(link);
+                            linkMapCopy.set(link.id, LinkModel.wrapNew(link));
                             setLinks(linkMapCopy);
                             break;
-                        case 'delete':
-                            if (!linkMapCopy[link.id]) {
+                        }
+
+                        case 'delete': {
+                            if (linkMapCopy.has(link.id)) {
                                 break;
                             }
 
-                            delete linkMapCopy[link.id];
+                            linkMapCopy.delete(link.id);
                             setLinks(linkMapCopy);
                             break;
+                        }
                     }
 
                     break;
-                case 'user':
+                }
+
+                case 'user': {
                     if (data.action !== 'update') {
                         break;
                     }
@@ -151,6 +166,7 @@ export const LiveLoadingContainer: React.FC<LiveLoadingContainerInterface> = ({ 
                     const mergedNewUser = UserDetailsModel.wrapNew(user.wrap(newUser));
                     setUser(mergedNewUser);
                     break;
+                }
             }
         },
         [files, links, setUser, user],
@@ -158,8 +174,8 @@ export const LiveLoadingContainer: React.FC<LiveLoadingContainerInterface> = ({ 
 
     const handleWebSocketMessage = useCallback(
         (event: MessageEvent) => {
-            const data = JSON.parse(event.data);
-            if (data.type !== 'liveloading') {
+            const data = JSON.parse(event.data as string) as unknown;
+            if ((data as { type: string }).type !== 'liveLoading') {
                 return;
             }
 

@@ -8,8 +8,8 @@ require("foxcaves.module_helper").setmodenv()
 
 local LOGIN_KEY_MAX_AGE = 30 * 24 * 60 * 60
 
-function M.hash_login_key(loginkey)
-    return ngx.hmac_sha1(loginkey or ngx.ctx.user.loginkey, ngx.var.http_user_agent or ngx.var.remote_addr)
+function M.hash_login_key(login_key)
+    return ngx.hmac_sha1(login_key or ngx.ctx.user.login_key, ngx.var.http_user_agent or ngx.var.remote_addr)
 end
 
 function M.send_login_key()
@@ -19,7 +19,7 @@ function M.send_login_key()
 
     local cookie = cookies:get_instance()
     cookie:set({
-        key = "loginkey",
+        key = "login_key",
         value = ngx.ctx.user.id .. "." .. b64.encode_base64url(M.hash_login_key()),
         max_age = LOGIN_KEY_MAX_AGE,
     })

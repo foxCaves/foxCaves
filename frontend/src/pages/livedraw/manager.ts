@@ -218,7 +218,7 @@ const paintBrushes: Record<string, Brush> = {
 
             this.move(manager, x, y, user, backgroundCanvasCTX);
         },
-        move(_manager, x, y, user, backgroundCanvasCTX) {
+        move(_manager, x, y, user, backgroundCanvasCTX): undefined {
             backgroundCanvasCTX.lineCap = 'round';
             backgroundCanvasCTX.strokeStyle = user.brushData.color;
 
@@ -228,6 +228,7 @@ const paintBrushes: Record<string, Brush> = {
             backgroundCanvasCTX.stroke();
             user.cursorData.lastX = x;
             user.cursorData.lastY = y;
+            return undefined;
         },
         preview(manager, x, y, user, foregroundCanvasCTX) {
             foregroundCanvasCTX.beginPath();
@@ -263,6 +264,7 @@ const paintBrushes: Record<string, Brush> = {
             backgroundCanvasCTX.stroke();
             user.cursorData.lastX = x;
             user.cursorData.lastY = y;
+            return undefined;
         },
         preview(manager, x, y, user, foregroundCanvasCTX) {
             foregroundCanvasCTX.beginPath();
@@ -300,6 +302,7 @@ const paintBrushes: Record<string, Brush> = {
             backgroundCanvasCTX.stroke();
             user.cursorData.lastX = x;
             user.cursorData.lastY = y;
+            return undefined;
         },
         preview(manager, x, y, user, foregroundCanvasCTX) {
             foregroundCanvasCTX.beginPath();
@@ -553,7 +556,7 @@ export class LiveDrawManager {
         canvas: HTMLCanvasElement,
         private readonly backgroundCanvas: HTMLCanvasElement,
         private readonly foregroundCanvas: HTMLCanvasElement,
-        private readonly sliderSetBrushWidth: (val: number) => void,
+        public readonly sliderSetBrushWidth: (val: number) => void,
     ) {
         this.sliderSetBrushWidth = sliderSetBrushWidth;
 
@@ -623,18 +626,20 @@ export class LiveDrawManager {
         this.localUser.brushData.setWidth(width);
     }
 
-    public setup(file: FileModel, sessionId: string): void {
+    public setup(file: FileModel, session_id: string): void {
         this.shouldConnect = true;
         this.setupColorSelector();
         this.setupBrushes();
-        this.loadImage(file, sessionId);
+        this.loadImage(file, session_id);
     }
 
     public destroy(): void {
         this.shouldConnect = false;
         try {
             this.socket!.close();
-        } catch {}
+        } catch {
+            // noop
+        }
     }
 
     private sendBrushEvent(eventType: PaintEvent, x: number, y: number): void {
@@ -910,7 +915,7 @@ export class LiveDrawManager {
      *    this.sendRaw(`${PaintEvent.CUSTOM + brushName}|${key}|${val}`);
      *}
      */
-    private async netConnect(oldSocket: WebSocket | undefined, file: FileModel, sessionId: string) {
+    private async netConnect(oldSocket: WebSocket | undefined, file: FileModel, session_id: string) {
         if (!this.shouldConnect) {
             return;
         }
@@ -923,7 +928,7 @@ export class LiveDrawManager {
 
         try {
             const res = await fetch(
-                `/api/v1/files/${encodeURIComponent(file.id)}/livedraw?session=${encodeURIComponent(sessionId)}`,
+                `/api/v1/files/${encodeURIComponent(file.id)}/livedraw?session=${encodeURIComponent(session_id)}`,
             );
 
             const data = await res.json();
@@ -944,7 +949,7 @@ export class LiveDrawManager {
                     return;
                 }
 
-                window.setTimeout(async () => this.netConnect(webSocket, file, sessionId), 1000);
+                window.setTimeout(async () => this.netConnect(webSocket, file, session_id), 1000);
                 webSocket.close();
             });
 
@@ -1015,7 +1020,7 @@ export class LiveDrawManager {
         this.localUser.brushData.brush.select(this, this.localUser, this.foregroundCanvasCTX, this.backgroundCanvasCTX);
     }
 
-    private loadImage(file: FileModel, sessionId: string) {
+    private loadImage(file: FileModel, session_id: string) {
         const baseImage = new Image();
         baseImage.crossOrigin = 'anonymous';
 
@@ -1026,7 +1031,7 @@ export class LiveDrawManager {
 
             this.defaultFont = `${12 / this.scaleFactor}px Verdana`;
 
-            this.netConnect(undefined, file, sessionId);
+            this.netConnect(undefined, file, session_id);
 
             // eslint-disable-next-line no-multi-assign
             this.backgroundCanvas.width = this.foregroundCanvas.width = this.finalCanvas.width = baseImage.width;

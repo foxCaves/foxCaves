@@ -18,14 +18,14 @@ export class UserModel extends BaseModel {
         }
     }
 
-    protected static wrapNew(obj: unknown): UserModel {
+    public static wrapNew(obj: unknown): UserModel {
         return new UserModel().wrap(obj);
     }
 }
 
 export class UserDetailsModel extends UserModel {
     public email = '';
-    public apikey = '';
+    public api_key = '';
     public storage_quota = 0;
     public storage_used = 0;
     public active = 0;
@@ -43,7 +43,7 @@ export class UserDetailsModel extends UserModel {
         }
     }
 
-    private static wrapNew(obj: unknown): UserDetailsModel {
+    public static wrapNew(obj: unknown): UserDetailsModel {
         return new UserDetailsModel().wrap(obj);
     }
 
