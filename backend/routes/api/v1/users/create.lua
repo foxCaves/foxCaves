@@ -9,8 +9,8 @@ R.register_route("/api/v1/users", "POST", R.make_route_opts_anon(), function()
     local email = args.email or ""
     local password = args.password or ""
 
-    if args.agreetos ~= true and args.agreetos ~= "true" then
-        return utils.api_error("agreetos required")
+    if args.agreeTos ~= true and args.agreeTos ~= "true" then
+        return utils.api_error("agreeTos required")
     end
     if username == "" then
         return utils.api_error("username required")

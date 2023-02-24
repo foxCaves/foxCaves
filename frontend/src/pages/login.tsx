@@ -1,14 +1,13 @@
-import React, { FormEvent, useContext } from 'react';
-import { useCheckboxFieldSetter, useInputFieldSetter } from '../utils/hooks';
-
-import { AppContext } from '../utils/context';
+import React, { FormEvent, useCallback, useContext } from 'react';
 import Button from 'react-bootstrap/Button';
 import FloatingLabel from 'react-bootstrap/FloatingLabel';
 import Form from 'react-bootstrap/Form';
 import { Link } from 'react-router-dom';
-import { fetchAPIRaw } from '../utils/api';
 import { toast } from 'react-toastify';
-import { useCallback } from 'react';
+import { fetchAPIRaw } from '../utils/api';
+import { AppContext } from '../utils/context';
+import { useCheckboxFieldSetter, useInputFieldSetter } from '../utils/hooks';
+import { logError } from '../utils/misc';
 
 export const LoginPage: React.FC = () => {
     const [username, setUsernameCB] = useInputFieldSetter('');
@@ -39,14 +38,17 @@ export const LoginPage: React.FC = () => {
                     },
                 },
             );
-        } catch {}
+        } catch (error: unknown) {
+            logError(error as Error);
+        }
+
         await refreshUser();
     }, [username, password, remember, refreshUser]);
 
     const submitLoginForm = useCallback(
         (event: FormEvent<HTMLFormElement>) => {
             event.preventDefault();
-            submitLoginFormAsync();
+            submitLoginFormAsync().catch(logError);
         },
         [submitLoginFormAsync],
     );
@@ -59,21 +61,21 @@ export const LoginPage: React.FC = () => {
                 <FloatingLabel className="mb-3" label="Username">
                     <Form.Control
                         name="username"
-                        type="text"
-                        placeholder="testuser"
-                        required
-                        value={username}
                         onChange={setUsernameCB}
+                        placeholder="test user"
+                        required
+                        type="text"
+                        value={username}
                     />
                 </FloatingLabel>
                 <FloatingLabel className="mb-3" label="Password">
                     <Form.Control
                         name="password"
-                        type="password"
+                        onChange={setPasswordCB}
                         placeholder="password"
                         required
+                        type="password"
                         value={password}
-                        onChange={setPasswordCB}
                     />
                 </FloatingLabel>
                 <p>
@@ -81,16 +83,16 @@ export const LoginPage: React.FC = () => {
                 </p>
                 <Form.Group className="mb-3">
                     <Form.Check
-                        type="checkbox"
-                        name="remember"
-                        label="Remember me"
-                        id="remember"
-                        value="true"
                         checked={remember}
+                        id="remember"
+                        label="Remember me"
+                        name="remember"
                         onChange={setRememberCB}
+                        type="checkbox"
+                        value="true"
                     />
                 </Form.Group>
-                <Button variant="primary" type="submit" size="lg">
+                <Button size="lg" type="submit" variant="primary">
                     Login
                 </Button>
             </Form>

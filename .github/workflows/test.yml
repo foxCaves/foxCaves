@@ -25,7 +25,7 @@ jobs:
         uses: wearerequired/lint-action@v2
         with:
           eslint: true
-          eslint_dir: frontend/src
+          eslint_dir: frontend
           eslint_extensions: js,jsx,ts,tsx
           prettier: true
           prettier_dir: frontend/src

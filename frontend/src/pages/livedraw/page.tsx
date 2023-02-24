@@ -1,20 +1,20 @@
 import '../../resources/livedraw.css';
 
-import { BlobWithName, uploadFile } from '../../utils/file_uploader';
-import { Navigate, useParams } from 'react-router-dom';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-
-import Button from 'react-bootstrap/Button';
-import { FileModel } from '../../models/file';
 import { Form } from 'react-bootstrap';
-import { LiveDrawManager } from './manager';
+import Button from 'react-bootstrap/Button';
 import RangeSlider from 'react-bootstrap-range-slider';
+import { Navigate, useParams } from 'react-router-dom';
+import { FileModel } from '../../models/file';
+import { BlobWithName, uploadFile } from '../../utils/file_uploader';
+import { logError } from '../../utils/misc';
 import { randomString } from '../../utils/random';
+import { LiveDrawManager } from './manager';
 
 export const LiveDrawRedirectPage: React.FC = () => {
     const { id } = useParams<{ id: string }>();
 
-    return <Navigate to={`/livedraw/${id}/${randomString(12)}`} />;
+    return <Navigate to={`/livedraw/${id!}/${randomString(12)}`} />;
 };
 
 export const LiveDrawPage: React.FC = () => {
@@ -27,10 +27,10 @@ export const LiveDrawPage: React.FC = () => {
     const managerRef = useRef<LiveDrawManager | undefined>(undefined);
     const [brushWidth, setBrushWidth] = useState(10);
 
-    const fileName = file ? file.name : `ID_${id}`;
+    const fileName = file ? file.name : `ID_${id!}`;
 
     useEffect(() => {
-        FileModel.getById(id!).then(setFile, console.error);
+        FileModel.getById(id!).then(setFile, logError);
     }, [id]);
 
     const getFileName = useCallback(() => {
@@ -42,7 +42,7 @@ export const LiveDrawPage: React.FC = () => {
     }, []);
 
     const selectBrushWidth = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-        const v = parseInt(e.target.value, 10);
+        const v = Number.parseInt(e.target.value, 10);
         managerRef.current?.setBrushWidth(v);
         setBrushWidth(v);
     }, []);
@@ -52,16 +52,16 @@ export const LiveDrawPage: React.FC = () => {
         const link = document.createElement('a');
         link.download = getFileName();
         link.href = data;
-        document.body.appendChild(link);
+        document.body.append(link);
         link.click();
-        document.body.removeChild(link);
+        link.remove();
     }, [getFileName]);
 
     const saveImage = useCallback(() => {
-        canvasRef.current!.toBlob(async (blob) => {
+        canvasRef.current!.toBlob((blob) => {
             const namedBlob = blob as BlobWithName;
             namedBlob.name = getFileName();
-            await uploadFile(namedBlob);
+            uploadFile(namedBlob).catch(logError);
         }, 'image/png');
     }, [getFileName]);
 
@@ -72,6 +72,7 @@ export const LiveDrawPage: React.FC = () => {
             backgroundCanvasRef.current!,
             setBrushWidth,
         );
+
         managerRef.current = manager;
         return () => {
             manager.destroy();
@@ -92,11 +93,11 @@ export const LiveDrawPage: React.FC = () => {
             <br />
 
             <div id="livedraw-wrapper">
-                <canvas ref={canvasRef} id="livedraw"></canvas>
+                <canvas id="livedraw" ref={canvasRef} />
             </div>
 
-            <canvas ref={backgroundCanvasRef} id="livedraw-background"></canvas>
-            <canvas ref={foregroundCanvasRef} id="livedraw-foreground"></canvas>
+            <canvas id="livedraw-background" ref={backgroundCanvasRef} />
+            <canvas id="livedraw-foreground" ref={foregroundCanvasRef} />
 
             <div id="live-draw-options">
                 <fieldset>
@@ -110,39 +111,39 @@ export const LiveDrawPage: React.FC = () => {
                         <option>restore</option>
                         <option>polygon</option>
                     </Form.Select>
-                    <input id="live-draw-text-input" type="text" placeholder="drawtext" />
-                    <input id="live-draw-font-input" type="text" defaultValue="Verdana" placeholder="font" />
+                    <input id="live-draw-text-input" placeholder="draw text" type="text" />
+                    <input defaultValue="Verdana" id="live-draw-font-input" placeholder="font" type="text" />
                     <br />
                     <RangeSlider
                         id="brush-width-slider"
-                        ref={brushWidthSliderRef}
-                        value={brushWidth}
-                        min={1}
                         max={200}
-                        step={0.1}
+                        min={1}
                         onChange={selectBrushWidth}
+                        ref={brushWidthSliderRef}
+                        step={0.1}
+                        value={brushWidth}
                     />
                     <br />
                     <div id="color-selector">
-                        <svg id="color-selector-inner" xmlns="http://www.w3.org/2000/svg" version="1.1">
-                            <line x1="0" y1="5" x2="10" y2="5" />
-                            <line x1="5" y1="0" x2="5" y2="10" />
+                        <svg id="color-selector-inner" version="1.1" xmlns="http://www.w3.org/2000/svg">
+                            <line x1="0" x2="10" y1="5" y2="5" />
+                            <line x1="5" x2="5" y1="0" y2="10" />
                         </svg>
                     </div>
-                    <div id="saturisation-selector">
-                        <div id="saturisation-selector-inner"></div>
+                    <div id="saturation-selector">
+                        <div id="saturation-selector-inner" />
                     </div>
                     <div id="opacity-selector">
-                        <div id="opacity-selector-inner"></div>
+                        <div id="opacity-selector-inner" />
                     </div>
                 </fieldset>
                 <fieldset>
                     <legend>Utils</legend>
-                    <Button variant="primary" onClick={saveImage}>
+                    <Button onClick={saveImage} variant="primary">
                         Save Image
                     </Button>
-                    <> </>
-                    <Button variant="secondary" onClick={downloadImage}>
+
+                    <Button onClick={downloadImage} variant="secondary">
                         Download
                     </Button>
                 </fieldset>

@@ -1,21 +1,22 @@
 export class ReconnectingWebSocket {
     private ws?: WebSocket;
     private shouldReconnect = true;
-    private onmessage?: (data: MessageEvent<any>) => void;
+    private messageHook?: (data: MessageEvent) => void;
 
-    constructor(private url: string) {
+    public constructor(private readonly url: string) {
         this.connect();
     }
 
-    close() {
+    public close(): void {
         this.shouldReconnect = false;
         if (!this.ws) {
             return;
         }
+
         this.ws.close();
     }
 
-    connect(oldWs?: WebSocket) {
+    public connect(oldWs?: WebSocket): void {
         if (!this.shouldReconnect) {
             return;
         }
@@ -25,40 +26,43 @@ export class ReconnectingWebSocket {
         }
 
         if (oldWs) {
-            oldWs.onclose = null;
-            oldWs.onerror = null;
             oldWs.close();
         }
 
         const ws = new WebSocket(this.url);
-        if (this.onmessage) {
-            ws.onmessage = this.onmessage;
+        if (this.messageHook) {
+            ws.addEventListener('message', this.messageHook);
         }
 
         const doReconnect = () => this.doReconnect(ws);
 
-        ws.onclose = doReconnect;
-        ws.onerror = doReconnect;
+        ws.addEventListener('close', doReconnect);
+        ws.addEventListener('error', doReconnect);
 
-        const reconnectTimeout = this.doReconnect(ws, 10000);
+        const reconnectTimeout = this.doReconnect(ws, 10_000);
 
-        ws.onopen = () => {
+        ws.addEventListener('open', () => {
             clearTimeout(reconnectTimeout);
-        };
+        });
 
         this.ws = ws;
     }
 
-    doReconnect(oldWs: WebSocket, timeout = 500): NodeJS.Timeout {
+    public setOnMessage(callback: (data: MessageEvent) => void): void {
+        if (this.messageHook && this.ws) {
+            this.ws.removeEventListener('message', this.messageHook);
+        }
+
+        this.messageHook = callback;
+
+        if (this.ws) {
+            this.ws.addEventListener('message', callback);
+        }
+    }
+
+    private doReconnect(oldWs: WebSocket, timeout = 500): NodeJS.Timeout {
         return setTimeout(() => {
             this.connect(oldWs);
         }, timeout);
-    }
-
-    setOnMessage(callback: (data: MessageEvent<any>) => void) {
-        this.onmessage = callback;
-        if (this.ws) {
-            this.ws.onmessage = callback;
-        }
     }
 }

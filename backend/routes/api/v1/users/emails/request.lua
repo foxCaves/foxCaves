@@ -35,7 +35,7 @@ R.register_route("/api/v1/users/emails/request", "POST", R.make_route_opts_anon(
     if action == "activation" then
         emailstr = emailstr .. "have your activation E-Mail resent. To activate your user account"
         subject = "Activate your account"
-    elseif action == "forgotpwd" then
+    elseif action == "forgot_password" then
         emailstr = emailstr .. "reset your password. To have a random password sent to you E-Mail"
         subject = "Reset your password"
     else

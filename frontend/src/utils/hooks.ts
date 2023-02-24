@@ -7,6 +7,7 @@ export function useInputFieldSetter(
     const setter = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
         setValue(event.currentTarget.value);
     }, []);
+
     return [value, setter, setValue];
 }
 
@@ -17,5 +18,6 @@ export function useCheckboxFieldSetter(
     const setter = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
         setValue(event.currentTarget.checked);
     }, []);
+
     return [value, setter, setValue];
 }

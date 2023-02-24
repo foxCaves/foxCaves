@@ -1,23 +1,23 @@
 import React, { FormEvent, useCallback, useState } from 'react';
-import { useCheckboxFieldSetter, useInputFieldSetter } from '../utils/hooks';
-
 import Button from 'react-bootstrap/Button';
 import FloatingLabel from 'react-bootstrap/FloatingLabel';
 import Form from 'react-bootstrap/Form';
 import { Navigate } from 'react-router-dom';
-import { fetchAPI } from '../utils/api';
 import { toast } from 'react-toastify';
+import { fetchAPI } from '../utils/api';
+import { useCheckboxFieldSetter, useInputFieldSetter } from '../utils/hooks';
+import { logError } from '../utils/misc';
 
 export const RegistrationPage: React.FC = () => {
     const [username, setUsernameCB] = useInputFieldSetter('');
     const [password, setPasswordCB] = useInputFieldSetter('');
     const [passwordConfirm, setPasswordConfirmCB] = useInputFieldSetter('');
     const [email, setEmailCB] = useInputFieldSetter('');
-    const [agreetos, setAgreetosCB] = useCheckboxFieldSetter(false);
+    const [agreeTos, setAgreeTosCallback] = useCheckboxFieldSetter(false);
     const [registrationDone, setRegistrationDone] = useState(false);
 
     const handleSubmit = useCallback(
-        async (event: FormEvent<HTMLFormElement>) => {
+        (event: FormEvent<HTMLFormElement>) => {
             event.preventDefault();
 
             if (password !== passwordConfirm) {
@@ -25,18 +25,19 @@ export const RegistrationPage: React.FC = () => {
                     type: 'error',
                     autoClose: 5000,
                 });
+
                 return;
             }
 
-            try {
-                await toast.promise(
+            toast
+                .promise(
                     fetchAPI('/api/v1/users', {
                         method: 'POST',
                         data: {
                             username,
                             password,
                             email,
-                            agreetos,
+                            agreeTos,
                         },
                     }),
                     {
@@ -49,13 +50,13 @@ export const RegistrationPage: React.FC = () => {
                             },
                         },
                     },
-                );
-            } catch {
-                return;
-            }
-            setRegistrationDone(true);
+                )
+                .catch(logError)
+                .finally(() => {
+                    setRegistrationDone(true);
+                });
         },
-        [username, password, passwordConfirm, email, agreetos],
+        [username, password, passwordConfirm, email, agreeTos],
     );
 
     if (registrationDone) {
@@ -70,55 +71,55 @@ export const RegistrationPage: React.FC = () => {
                 <FloatingLabel className="mb-3" label="Username">
                     <Form.Control
                         name="username"
-                        type="text"
-                        placeholder="testuser"
-                        required
-                        value={username}
                         onChange={setUsernameCB}
+                        placeholder="test user"
+                        required
+                        type="text"
+                        value={username}
                     />
                 </FloatingLabel>
                 <FloatingLabel className="mb-3" label="Password">
                     <Form.Control
                         name="password"
-                        type="password"
+                        onChange={setPasswordCB}
                         placeholder="password"
                         required
+                        type="password"
                         value={password}
-                        onChange={setPasswordCB}
                     />
                 </FloatingLabel>
                 <FloatingLabel className="mb-3" label="Confirm password">
                     <Form.Control
                         name="passwordConfirm"
-                        type="password"
+                        onChange={setPasswordConfirmCB}
                         placeholder="password"
                         required
+                        type="password"
                         value={passwordConfirm}
-                        onChange={setPasswordConfirmCB}
                     />
                 </FloatingLabel>
                 <FloatingLabel className="mb-3" label="E-Mail">
                     <Form.Control
                         name="email"
-                        type="email"
+                        onChange={setEmailCB}
                         placeholder="test@example.com"
                         required
+                        type="email"
                         value={email}
-                        onChange={setEmailCB}
                     />
                 </FloatingLabel>
                 <Form.Group className="mb-3">
                     <Form.Check
-                        type="checkbox"
-                        name="agreetos"
-                        id="agreetos"
+                        checked={agreeTos}
+                        id="agreeTos"
                         label="I agree to the Terms of Service and Privacy Policy"
+                        name="agreeTos"
+                        onChange={setAgreeTosCallback}
+                        type="checkbox"
                         value="true"
-                        checked={agreetos}
-                        onChange={setAgreetosCB}
                     />
                 </Form.Group>
-                <Button variant="primary" type="submit" size="lg">
+                <Button size="lg" type="submit" variant="primary">
                     Register
                 </Button>
             </Form>

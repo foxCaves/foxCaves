@@ -1,21 +1,20 @@
-import React, { useContext } from 'react';
-
+import React, { useCallback, useContext } from 'react';
 import Alert from 'react-bootstrap/Alert';
-import { AppContext } from '../utils/context';
-import { fetchAPIRaw } from '../utils/api';
 import { toast } from 'react-toastify';
-import { useCallback } from 'react';
+import { fetchAPIRaw } from '../utils/api';
+import { AppContext } from '../utils/context';
+import { logError } from '../utils/misc';
 
 export const UserInactiveAlert: React.FC = () => {
     const { user } = useContext(AppContext);
 
-    const requestActivationEmail = useCallback(async () => {
+    const requestActivationEmail = useCallback(() => {
         if (!user) {
             return;
         }
 
-        try {
-            await toast.promise(
+        toast
+            .promise(
                 fetchAPIRaw('/api/v1/users/emails/request', {
                     method: 'POST',
                     data: {
@@ -34,8 +33,8 @@ export const UserInactiveAlert: React.FC = () => {
                         },
                     },
                 },
-            );
-        } catch {}
+            )
+            .catch(logError);
     }, [user]);
 
     if (!user || user.isActive()) {

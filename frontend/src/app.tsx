@@ -1,30 +1,135 @@
 import './resources/app.css';
 
-import { AppContext, AppContextClass } from './utils/context';
-import { CustomDropDownItem, CustomNavLink, CustomRouteHandler, LoginState } from './components/route';
-import { LiveDrawPage, LiveDrawRedirectPage } from './pages/livedraw/page';
-import React, { useCallback, useEffect, useState } from 'react';
-import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
-
-import { AccountPage } from './pages/account';
+import React, { FC, useCallback, useEffect, useMemo, useState } from 'react';
 import Container from 'react-bootstrap/Container';
 import Dropdown from 'react-bootstrap/Dropdown';
-import { EmailCodePage } from './pages/email/code';
-import { FilesPage } from './pages/files';
-import { ForgotPasswordPage } from './pages/email/forgot_password';
-import { HomePage } from './pages/home';
-import { LinkContainer } from 'react-router-bootstrap';
-import { LinksPage } from './pages/links';
-import { LiveLoadingContainer } from './components/liveloading';
-import { LoginPage } from './pages/login';
-import { LogoutPage } from './pages/logout';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
-import { RegistrationPage } from './pages/register';
+import { LinkContainer } from 'react-router-bootstrap';
+import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
-import { UserDetailsModel } from './models/user';
+import { LiveLoadingContainer } from './components/liveloading';
+import { CustomDropDownItem, CustomNavLink, CustomRouteHandler, LoginState } from './components/route';
 import { UserInactiveAlert } from './components/user_inactive_alert';
+import { UserDetailsModel } from './models/user';
+import { AccountPage } from './pages/account';
+import { EmailCodePage } from './pages/email/code';
+import { ForgotPasswordPage } from './pages/email/forgot_password';
+import { FilesPage } from './pages/files';
+import { HomePage } from './pages/home';
+import { LinksPage } from './pages/links';
+import { LiveDrawPage, LiveDrawRedirectPage } from './pages/livedraw/page';
+import { LoginPage } from './pages/login';
+import { LogoutPage } from './pages/logout';
+import { RegistrationPage } from './pages/register';
 import { ViewPage } from './pages/view';
+import { AppContext, AppContextData } from './utils/context';
+import { logError } from './utils/misc';
+
+const Routing: FC<{ user?: UserDetailsModel }> = ({ user }) => {
+    return (
+        <Router>
+            <Navbar bg="primary" fixed="top" variant="dark">
+                <Container>
+                    <LinkContainer to="/">
+                        <Navbar.Brand>foxCaves</Navbar.Brand>
+                    </LinkContainer>
+                    <Navbar.Toggle aria-controls="navbar-nav" />
+                    <Navbar.Collapse id="navbar-nav">
+                        <Nav className="me-auto">
+                            <CustomNavLink login={LoginState.LoggedIn} to="/files">
+                                <span>Files</span>
+                            </CustomNavLink>
+                            <CustomNavLink login={LoginState.LoggedIn} to="/links">
+                                <span>Links</span>
+                            </CustomNavLink>
+                            <CustomNavLink login={LoginState.LoggedOut} to="/login">
+                                <span>Login</span>
+                            </CustomNavLink>
+                            <CustomNavLink login={LoginState.LoggedOut} to="/register">
+                                <span>Register</span>
+                            </CustomNavLink>
+                        </Nav>
+                        <Nav>
+                            <Dropdown as={Nav.Item}>
+                                <Dropdown.Toggle as={Nav.Link}>
+                                    Welcome, {user ? user.username : 'Guest'}!
+                                </Dropdown.Toggle>
+                                <Dropdown.Menu>
+                                    <CustomDropDownItem login={LoginState.LoggedIn} to="/account">
+                                        <span>Account</span>
+                                    </CustomDropDownItem>
+                                    <CustomDropDownItem login={LoginState.LoggedIn} to="/logout">
+                                        <span>Logout</span>
+                                    </CustomDropDownItem>
+                                    <CustomDropDownItem login={LoginState.LoggedOut} to="/login">
+                                        <span>Login</span>
+                                    </CustomDropDownItem>
+                                    <CustomDropDownItem login={LoginState.LoggedOut} to="/register">
+                                        <span>Register</span>
+                                    </CustomDropDownItem>
+                                </Dropdown.Menu>
+                            </Dropdown>
+                        </Nav>
+                    </Navbar.Collapse>
+                </Container>
+            </Navbar>
+            <Container>
+                <UserInactiveAlert />
+                <Routes>
+                    <Route
+                        element={
+                            <CustomRouteHandler login={LoginState.LoggedOut}>
+                                <LoginPage />
+                            </CustomRouteHandler>
+                        }
+                        path="/login"
+                    />
+                    <Route
+                        element={
+                            <CustomRouteHandler login={LoginState.LoggedOut}>
+                                <RegistrationPage />
+                            </CustomRouteHandler>
+                        }
+                        path="/register"
+                    />
+                    <Route
+                        element={
+                            <CustomRouteHandler login={LoginState.LoggedIn}>
+                                <FilesPage />
+                            </CustomRouteHandler>
+                        }
+                        path="/files"
+                    />
+                    <Route
+                        element={
+                            <CustomRouteHandler login={LoginState.LoggedIn}>
+                                <LinksPage />
+                            </CustomRouteHandler>
+                        }
+                        path="/links"
+                    />
+                    <Route
+                        element={
+                            <CustomRouteHandler login={LoginState.LoggedIn}>
+                                <AccountPage />
+                            </CustomRouteHandler>
+                        }
+                        path="/account"
+                    />
+                    <Route element={<LogoutPage />} path="/logout" />
+                    <Route element={<ViewPage />} path="/view/:id" />
+                    <Route element={<LiveDrawPage />} path="/livedraw/:id/:sid" />
+                    <Route element={<LiveDrawRedirectPage />} path="/livedraw/:id" />
+                    <Route element={<ForgotPasswordPage />} path="/email/forgot_password" />
+                    <Route element={<EmailCodePage />} path="/email/code/:code" />
+                    <Route element={<HomePage />} path="/" />
+                    <Route element={<h3>404 - Page not found</h3>} path="/*" />
+                </Routes>
+            </Container>
+        </Router>
+    );
+};
 
 export const App: React.FC = () => {
     const [user, setUser] = useState<UserDetailsModel | undefined>(undefined);
@@ -32,130 +137,37 @@ export const App: React.FC = () => {
     const [userLoadStarted, setUserLoadStarted] = useState(false);
 
     const refreshUser = useCallback(async () => {
-        const user = await UserDetailsModel.getById('self');
-        setUser(user);
+        const newUser = await UserDetailsModel.getById('self');
+        setUser(newUser);
         setUserLoaded(true);
     }, [setUser, setUserLoaded]);
 
-    const context: AppContextClass = {
-        user,
-        setUser,
-        userLoaded,
-        refreshUser,
-    };
+    const context: AppContextData = useMemo(
+        () => ({
+            user,
+            setUser,
+            userLoaded,
+            refreshUser,
+        }),
+        [refreshUser, user, userLoaded],
+    );
 
     useEffect(() => {
         if (userLoadStarted || userLoaded) {
             return;
         }
+
         setUserLoadStarted(true);
-        refreshUser().then(() => setUserLoadStarted(false));
+        refreshUser().then(() => {
+            setUserLoadStarted(false);
+        }, logError);
     }, [userLoadStarted, userLoaded, refreshUser]);
 
     return (
         <AppContext.Provider value={context}>
             <LiveLoadingContainer>
-                <Router>
-                    <Navbar variant="dark" bg="primary" fixed="top">
-                        <Container>
-                            <LinkContainer to="/">
-                                <Navbar.Brand>foxCaves</Navbar.Brand>
-                            </LinkContainer>
-                            <Navbar.Toggle aria-controls="navbar-nav" />
-                            <Navbar.Collapse id="navbar-nav">
-                                <Nav className="me-auto">
-                                    <CustomNavLink login={LoginState.LoggedIn} to="/files">
-                                        Files
-                                    </CustomNavLink>
-                                    <CustomNavLink login={LoginState.LoggedIn} to="/links">
-                                        Links
-                                    </CustomNavLink>
-                                    <CustomNavLink login={LoginState.LoggedOut} to="/login">
-                                        Login
-                                    </CustomNavLink>
-                                    <CustomNavLink login={LoginState.LoggedOut} to="/register">
-                                        Register
-                                    </CustomNavLink>
-                                </Nav>
-                                <Nav>
-                                    <Dropdown as={Nav.Item}>
-                                        <Dropdown.Toggle as={Nav.Link}>
-                                            Welcome, {user ? user.username : 'Guest'}!
-                                        </Dropdown.Toggle>
-                                        <Dropdown.Menu>
-                                            <CustomDropDownItem login={LoginState.LoggedIn} to="/account">
-                                                Account
-                                            </CustomDropDownItem>
-                                            <CustomDropDownItem login={LoginState.LoggedIn} to="/logout">
-                                                Logout
-                                            </CustomDropDownItem>
-                                            <CustomDropDownItem login={LoginState.LoggedOut} to="/login">
-                                                Login
-                                            </CustomDropDownItem>
-                                            <CustomDropDownItem login={LoginState.LoggedOut} to="/register">
-                                                Register
-                                            </CustomDropDownItem>
-                                        </Dropdown.Menu>
-                                    </Dropdown>
-                                </Nav>
-                            </Navbar.Collapse>
-                        </Container>
-                    </Navbar>
-                    <Container>
-                        <UserInactiveAlert />
-                        <Routes>
-                            <Route
-                                path="/login"
-                                element={
-                                    <CustomRouteHandler login={LoginState.LoggedOut}>
-                                        <LoginPage />
-                                    </CustomRouteHandler>
-                                }
-                            ></Route>
-                            <Route
-                                path="/register"
-                                element={
-                                    <CustomRouteHandler login={LoginState.LoggedOut}>
-                                        <RegistrationPage />
-                                    </CustomRouteHandler>
-                                }
-                            ></Route>
-                            <Route
-                                path="/files"
-                                element={
-                                    <CustomRouteHandler login={LoginState.LoggedIn}>
-                                        <FilesPage />
-                                    </CustomRouteHandler>
-                                }
-                            ></Route>
-                            <Route
-                                path="/links"
-                                element={
-                                    <CustomRouteHandler login={LoginState.LoggedIn}>
-                                        <LinksPage />
-                                    </CustomRouteHandler>
-                                }
-                            ></Route>
-                            <Route
-                                path="/account"
-                                element={
-                                    <CustomRouteHandler login={LoginState.LoggedIn}>
-                                        <AccountPage />
-                                    </CustomRouteHandler>
-                                }
-                            ></Route>
-                            <Route path="/logout" element={<LogoutPage />}></Route>
-                            <Route path="/view/:id" element={<ViewPage />}></Route>
-                            <Route path="/livedraw/:id/:sid" element={<LiveDrawPage />}></Route>
-                            <Route path="/livedraw/:id" element={<LiveDrawRedirectPage />}></Route>
-                            <Route path="/email/forgot_password" element={<ForgotPasswordPage />}></Route>
-                            <Route path="/email/code/:code" element={<EmailCodePage />}></Route>
-                            <Route path="/" element={<HomePage />}></Route>
-                            <Route path="/*" element={<h3>404 - Page not found</h3>}></Route>
-                        </Routes>
-                    </Container>
-                </Router>
-                <ToastContainer theme="colored" position="bottom-right" />
+                <Routing user={user} />
+                <ToastContainer position="bottom-right" theme="colored" />
             </LiveLoadingContainer>
         </AppContext.Provider>
     );

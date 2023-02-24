@@ -1,9 +1,9 @@
 import React, { useCallback, useContext, useEffect, useState } from 'react';
-
-import { AppContext } from '../utils/context';
 import { Navigate } from 'react-router-dom';
-import { fetchAPIRaw } from '../utils/api';
 import { toast } from 'react-toastify';
+import { fetchAPIRaw } from '../utils/api';
+import { AppContext } from '../utils/context';
+import { logError } from '../utils/misc';
 
 export const LogoutPage: React.FC = () => {
     const { refreshUser } = useContext(AppContext);
@@ -28,7 +28,10 @@ export const LogoutPage: React.FC = () => {
                     },
                 },
             );
-        } catch {}
+        } catch (error: unknown) {
+            logError(error as Error);
+        }
+
         await refreshUser();
         setLogoutDone(true);
         setLogoutStarted(false);
@@ -39,7 +42,7 @@ export const LogoutPage: React.FC = () => {
             return;
         }
 
-        logout();
+        logout().catch(logError);
     }, [logoutDone, logoutStarted, logout]);
 
     if (logoutDone) {

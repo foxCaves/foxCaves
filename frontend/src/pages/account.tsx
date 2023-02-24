@@ -1,18 +1,18 @@
-import { Col, Row } from 'react-bootstrap';
 import React, { FormEvent, useCallback, useContext, useEffect, useState } from 'react';
-
-import { AppContext } from '../utils/context';
+import { Col, Row } from 'react-bootstrap';
 import Button from 'react-bootstrap/Button';
 import FloatingLabel from 'react-bootstrap/FloatingLabel';
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
-import { fetchAPIRaw } from '../utils/api';
 import { toast } from 'react-toastify';
+import { fetchAPIRaw } from '../utils/api';
+import { AppContext } from '../utils/context';
 import { useInputFieldSetter } from '../utils/hooks';
+import { logError } from '../utils/misc';
 
 export const AccountPage: React.FC = () => {
     const { user, refreshUser } = useContext(AppContext);
-    const userEmail = user!.email!;
+    const userEmail = user!.email;
 
     const [showDeleteAccountModal, setShowDeleteAccountModal] = useState(false);
     const [currentPassword, setCurrentPasswordCB] = useInputFieldSetter('');
@@ -21,11 +21,11 @@ export const AccountPage: React.FC = () => {
     const [email, setEmailCB, setEmail] = useInputFieldSetter(userEmail);
 
     useEffect(() => {
-        setEmail(userEmail!);
+        setEmail(userEmail);
     }, [userEmail, setEmail]);
 
     const sendUserChange = useCallback(
-        async (body: { [key: string]: string }, method: string = 'PATCH') => {
+        async (body: Record<string, string>, method = 'PATCH') => {
             body.current_password = currentPassword;
             try {
                 await toast.promise(
@@ -44,56 +44,63 @@ export const AccountPage: React.FC = () => {
                         },
                     },
                 );
-            } catch {}
+            } catch (error: unknown) {
+                logError(error as Error);
+            }
+
             await refreshUser();
         },
         [currentPassword, refreshUser, user],
     );
 
-    const handleAPIKeyRegen = useCallback(
-        async (event: FormEvent) => {
+    const handleAPIKeyRegenerate = useCallback(
+        (event: FormEvent) => {
             event.preventDefault();
-            await sendUserChange({
-                apikey: 'CHANGE',
-            });
+            sendUserChange({
+                api_key: 'CHANGE',
+            }).catch(logError);
         },
         [sendUserChange],
     );
 
     const handleDeleteAccount = useCallback(
-        async (event: FormEvent) => {
+        (event: FormEvent) => {
             event.preventDefault();
-            await sendUserChange({}, 'DELETE');
-            setShowDeleteAccountModal(false);
+            sendUserChange({}, 'DELETE')
+                .then(() => {
+                    setShowDeleteAccountModal(false);
+                })
+                .catch(logError);
         },
         [sendUserChange],
     );
 
     const handleKillSessions = useCallback(
-        async (event: FormEvent) => {
+        (event: FormEvent) => {
             event.preventDefault();
-            await sendUserChange({
-                loginkey: 'CHANGE',
-            });
+            sendUserChange({
+                login_key: 'CHANGE',
+            }).catch(logError);
         },
         [sendUserChange],
     );
 
     const handleSubmit = useCallback(
-        async (event: FormEvent<HTMLFormElement>) => {
+        (event: FormEvent<HTMLFormElement>) => {
             event.preventDefault();
             if (newPassword !== newPasswordConfirm) {
                 toast('New passwords do not match', {
                     type: 'error',
                     autoClose: 5000,
                 });
+
                 return;
             }
 
-            await sendUserChange({
+            sendUserChange({
                 password: newPassword,
-                email: email,
-            });
+                email,
+            }).catch(logError);
         },
         [sendUserChange, newPassword, newPasswordConfirm, email],
     );
@@ -108,7 +115,7 @@ export const AccountPage: React.FC = () => {
 
     return (
         <>
-            <Modal show={showDeleteAccountModal} onHide={doHideDeleteAccountModal}>
+            <Modal onHide={doHideDeleteAccountModal} show={showDeleteAccountModal}>
                 <Modal.Header closeButton>
                     <Modal.Title>Delete account</Modal.Title>
                 </Modal.Header>
@@ -118,10 +125,10 @@ export const AccountPage: React.FC = () => {
                 </Modal.Body>
 
                 <Modal.Footer>
-                    <Button variant="secondary" onClick={doHideDeleteAccountModal}>
+                    <Button onClick={doHideDeleteAccountModal} variant="secondary">
                         No
                     </Button>
-                    <Button variant="danger" onClick={handleDeleteAccount}>
+                    <Button onClick={handleDeleteAccount} variant="danger">
                         Yes, delete all my data
                     </Button>
                 </Modal.Footer>
@@ -132,41 +139,41 @@ export const AccountPage: React.FC = () => {
                 <FloatingLabel className="mb-3" label="Current password">
                     <Form.Control
                         name="currentPassword"
-                        type="password"
+                        onChange={setCurrentPasswordCB}
                         placeholder="password"
                         required
+                        type="password"
                         value={currentPassword}
-                        onChange={setCurrentPasswordCB}
                     />
                 </FloatingLabel>
                 <FloatingLabel className="mb-3" label="Username">
-                    <Form.Control readOnly name="username" type="text" placeholder="testuser" value={user!.username} />
+                    <Form.Control name="username" placeholder="test_user" readOnly type="text" value={user!.username} />
                 </FloatingLabel>
                 <FloatingLabel className="mb-3" label="New password">
                     <Form.Control
                         name="newPassword"
-                        type="password"
-                        placeholder="password"
-                        value={newPassword}
                         onChange={setNewPasswordCB}
+                        placeholder="password"
+                        type="password"
+                        value={newPassword}
                     />
                 </FloatingLabel>
                 <FloatingLabel className="mb-3" label="Confirm new password">
                     <Form.Control
                         name="newPasswordConfirm"
-                        type="password"
-                        placeholder="password"
-                        value={newPasswordConfirm}
                         onChange={setNewPasswordConfirmCB}
+                        placeholder="password"
+                        type="password"
+                        value={newPasswordConfirm}
                     />
                 </FloatingLabel>
                 <FloatingLabel className="mb-3" label="E-Mail">
                     <Form.Control
                         name="email"
-                        type="email"
-                        placeholder="test@example.com"
-                        value={email}
                         onChange={setEmailCB}
+                        placeholder="test@example.com"
+                        type="email"
+                        value={email}
                     />
                     <Form.Label>E-Mail</Form.Label>
                 </FloatingLabel>
@@ -174,34 +181,34 @@ export const AccountPage: React.FC = () => {
                     <Col>
                         <FloatingLabel className="mb-3" label="API key">
                             <Form.Control
-                                readOnly
-                                name="apikey"
-                                type="text"
+                                name="api_key"
                                 placeholder="ABCDefgh"
-                                value={user!.apikey!}
+                                readOnly
+                                type="text"
+                                value={user!.api_key}
                             />
                             <Form.Label>API key</Form.Label>
                         </FloatingLabel>
                     </Col>
                     <Col xs="auto">
-                        <Button variant="primary" type="button" size="lg" onClick={handleAPIKeyRegen}>
+                        <Button onClick={handleAPIKeyRegenerate} size="lg" type="button" variant="primary">
                             Regenerate
                         </Button>
                     </Col>
                 </Row>
                 <Row>
                     <Col>
-                        <Button variant="primary" type="submit" size="lg">
+                        <Button size="lg" type="submit" variant="primary">
                             Change password / E-Mail
                         </Button>
                     </Col>
                     <Col>
-                        <Button variant="warning" type="button" size="lg" onClick={handleKillSessions}>
+                        <Button onClick={handleKillSessions} size="lg" type="button" variant="warning">
                             Kill all sessions
                         </Button>
                     </Col>
                     <Col>
-                        <Button variant="danger" type="button" size="lg" onClick={doShowDeleteAccountModal}>
+                        <Button onClick={doShowDeleteAccountModal} size="lg" type="button" variant="danger">
                             Delete account
                         </Button>
                     </Col>

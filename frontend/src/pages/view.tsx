@@ -1,13 +1,11 @@
 import '../resources/view.css';
 
-import React, { useState } from 'react';
-
+import React, { useCallback, useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import { FileModel } from '../models/file';
 import { UserModel } from '../models/user';
 import { formatDate } from '../utils/formatting';
-import { useCallback } from 'react';
-import { useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { logError } from '../utils/misc';
 
 const TextView: React.FC<{ src: string }> = ({ src }) => {
     const [dataLoading, setDataLoading] = useState(false);
@@ -17,13 +15,15 @@ const TextView: React.FC<{ src: string }> = ({ src }) => {
         if (dataLoading || data !== undefined) {
             return;
         }
+
         setDataLoading(true);
         fetch(src)
-            .then((response) => response.text())
-            .then((data) => {
-                setData(data);
+            .then(async (response) => response.text())
+            .then((newData) => {
+                setData(newData);
                 setDataLoading(false);
-            });
+            })
+            .catch(logError);
     }, [src, data, dataLoading]);
 
     return <pre>{data}</pre>;
@@ -35,16 +35,24 @@ const FileContentView: React.FC<{ file: FileModel }> = ({ file }) => {
         case 'text':
             return <TextView src={file.direct_url} />;
         case 'image':
-            return <img src={file.direct_url} alt={file.name} className="mw-100" />;
+            return <img alt={file.name} className="mw-100" src={file.direct_url} />;
         case 'video':
-            return <video src={file.direct_url} controls className="mw-100" />;
+            return <video className="mw-100" controls src={file.direct_url} />;
         case 'audio':
-            return <audio src={file.direct_url} controls />;
+            return <audio controls src={file.direct_url} />;
         case 'application':
             if (mimeSplit[2] === 'pdf') {
-                return <iframe title="PDF preview" src={file.direct_url} className="mw-100 preview-iframe" />;
+                return (
+                    <iframe className="mw-100 preview-iframe" sandbox="" src={file.direct_url} title="PDF preview" />
+                );
             }
+
+            break;
+
+        default:
+        // noop
     }
+
     return <h3>No preview available</h3>;
 };
 
@@ -58,17 +66,18 @@ export const ViewPage: React.FC = () => {
 
     const loadFile = useCallback(async () => {
         try {
-            const file = await FileModel.getById(id!);
-            if (!file) {
-                setFileError('File not found');
+            const newFile = await FileModel.getById(id!);
+            if (newFile) {
+                setFile(newFile);
+                const newOwner = await UserModel.getById(newFile.owner);
+                setOwner(newOwner);
             } else {
-                setFile(file);
-                const owner = await UserModel.getById(file.owner);
-                setOwner(owner);
+                setFileError('File not found');
             }
-        } catch (err: any) {
-            setFileError(err.message);
+        } catch (error: unknown) {
+            setFileError((error as Error).message);
         }
+
         setFileLoading(false);
         setFileLoadDone(true);
     }, [id]);
@@ -77,8 +86,9 @@ export const ViewPage: React.FC = () => {
         if (fileLoading || fileLoadDone) {
             return;
         }
+
         setFileLoading(true);
-        loadFile();
+        loadFile().catch(logError);
     }, [fileLoading, fileLoadDone, loadFile]);
 
     if (!fileLoadDone) {

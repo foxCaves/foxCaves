@@ -29,7 +29,7 @@ local function makeusermt(user)
     return user
 end
 
-local user_select = "id, username, email, password, loginkey, apikey, active, storage_quota, " .. database.TIME_COLUMNS
+local user_select = "id, username, email, password, login_key, api_key, active, storage_quota, " .. database.TIME_COLUMNS
 
 function user_model.get_by_id(id)
     if (not id) or (not uuid.is_valid(id)) then
@@ -165,7 +165,7 @@ end
 
 function user_mt:send_event(action, model, data)
     self:send_event_raw({
-        type = "liveloading",
+        type = "liveLoading",
         action = action,
         model = model,
         data = data,
@@ -182,10 +182,10 @@ function user_mt:save()
     if self.not_in_db then
         res = database.get_shared():query_single(
             "INSERT INTO users \
-                (id, username, email, password, loginkey, apikey, active, storage_quota) VALUES \
+                (id, username, email, password, login_key, api_key, active, storage_quota) VALUES \
                 (%s, %s, %s, %s, %s, %s, %s, %s) \
                 RETURNING " .. database.TIME_COLUMNS,
-            self.id, self.username, self.email, self.password, self.loginkey, self.apikey, self.active,
+            self.id, self.username, self.email, self.password, self.login_key, self.api_key, self.active,
             self.storage_quota
         )
         primary_push_action = "create"
@@ -193,11 +193,11 @@ function user_mt:save()
     else
         res = database.get_shared():query_single(
             "UPDATE users \
-                SET username = %s, email = %s, password = %s, loginkey = %s, apikey = %s, active = %s, storage_quota = %s, \
+                SET username = %s, email = %s, password = %s, login_key = %s, api_key = %s, active = %s, storage_quota = %s, \
                     updated_at = (now() at time zone 'utc') \
                 WHERE id = %s \
                 RETURNING " .. database.TIME_COLUMNS,
-            self.username, self.email, self.password, self.loginkey, self.apikey, self.active, self.storage_quota,
+            self.username, self.email, self.password, self.login_key, self.api_key, self.active, self.storage_quota,
             self.id
         )
         primary_push_action = "update"
@@ -234,7 +234,7 @@ function user_mt:save()
 end
 
 function user_mt:make_new_login_key()
-    self.loginkey = random.string(64)
+    self.login_key = random.string(64)
     self.kick_user = true
     if ngx.ctx.user and self.id == ngx.ctx.user.id then
         ngx.ctx.user = self
@@ -243,7 +243,7 @@ function user_mt:make_new_login_key()
 end
 
 function user_mt:make_new_api_key()
-    self.apikey = random.string(64)
+    self.api_key = random.string(64)
 end
 
 function user_mt:delete()
@@ -260,7 +260,7 @@ function user_mt:get_private()
         id = self.id,
         username = self.username,
         email = self.email,
-        apikey = self.apikey,
+        api_key = self.api_key,
         active = self.active,
         storage_used = self:calculate_storage_used(),
         storage_quota = self.storage_quota,
@@ -283,7 +283,7 @@ function user_model.get_private_fields()
             type = "string",
             required = true,
         },
-        apikey = {
+        api_key = {
             type = "string",
             required = true,
         },

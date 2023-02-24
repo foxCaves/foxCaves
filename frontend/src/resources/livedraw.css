@@ -27,7 +27,7 @@
 }
 
 #color-selector,
-#saturisation-selector,
+#saturation-selector,
 #opacity-selector {
     -webkit-touch-callout: none;
     -webkit-user-select: none;
@@ -55,13 +55,13 @@
     pointer-events: none;
 }
 
-#saturisation-selector,
+#saturation-selector,
 #opacity-selector {
     width: 20px;
     background-image: -webkit-linear-gradient(top, hsl(0, 100%, 50%), transparent);
 }
 
-#saturisation-selector-inner,
+#saturation-selector-inner,
 #opacity-selector-inner {
     width: 20px;
     height: 1px;

@@ -1,52 +1,53 @@
-import { HttpError, fetchAPI } from '../utils/api';
-
+import { fetchAPI, HttpError } from '../utils/api';
 import { BaseModel } from './base';
 
 export class UserModel extends BaseModel {
-    public id: string = '';
-    public username: string = '';
+    public id = '';
+    public username = '';
 
-    static async getById(id: string): Promise<UserModel | undefined> {
+    public static async getById(id: string): Promise<UserModel | undefined> {
         try {
             const api = await fetchAPI(`/api/v1/users/${encodeURIComponent(id)}`);
             return UserModel.wrapNew(api);
-        } catch (e) {
-            if (e instanceof HttpError && (e.status === 404 || e.status === 403)) {
+        } catch (error) {
+            if (error instanceof HttpError && (error.status === 404 || error.status === 403)) {
                 return undefined;
             }
-            throw e;
+
+            throw error;
         }
     }
 
-    static wrapNew(obj: unknown) {
+    public static wrapNew(obj: unknown): UserModel {
         return new UserModel().wrap(obj);
     }
 }
 
 export class UserDetailsModel extends UserModel {
-    public email: string = '';
-    public apikey: string = '';
-    public storage_quota: number = 0;
-    public storage_used: number = 0;
-    public active: number = 0;
+    public email = '';
+    public api_key = '';
+    public storage_quota = 0;
+    public storage_used = 0;
+    public active = 0;
 
-    isActive() {
-        return this.active > 0;
-    }
-
-    static async getById(id: string): Promise<UserDetailsModel | undefined> {
+    public static async getById(id: string): Promise<UserDetailsModel | undefined> {
         try {
             const api = await fetchAPI(`/api/v1/users/${encodeURIComponent(id)}/details`);
             return UserDetailsModel.wrapNew(api);
-        } catch (e) {
-            if (e instanceof HttpError && (e.status === 404 || e.status === 403)) {
+        } catch (error) {
+            if (error instanceof HttpError && (error.status === 404 || error.status === 403)) {
                 return undefined;
             }
-            throw e;
+
+            throw error;
         }
     }
 
-    static wrapNew(obj: unknown) {
+    public static wrapNew(obj: unknown): UserDetailsModel {
         return new UserDetailsModel().wrap(obj);
+    }
+
+    public isActive(): boolean {
+        return this.active > 0;
     }
 }

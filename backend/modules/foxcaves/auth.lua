@@ -16,11 +16,11 @@ local SESSION_EXPIRE_DELAY = 7200
 function M.LOGIN_METHOD_PASSWORD(userdata, password)
     return userdata:check_password(password)
 end
-function M.LOGIN_METHOD_APIKEY(userdata, apikey)
-    return userdata.apikey == apikey
+function M.LOGIN_METHOD_API_KEY(userdata, api_key)
+    return userdata.api_key == api_key
 end
-function M.LOGIN_METHOD_LOGINKEY(userdata, loginkey)
-    return auth_utils.hash_login_key(userdata.loginkey) == b64.decode_base64url(loginkey)
+function M.LOGIN_METHOD_LOGIN_KEY(userdata, login_key)
+    return auth_utils.hash_login_key(userdata.login_key) == b64.decode_base64url(login_key)
 end
 
 function M.login(username_or_id, credential, options)
@@ -49,20 +49,20 @@ function M.login(username_or_id, credential, options)
     end
 
     if not nosession then
-        local sessionid = random.string(32)
+        local session_id = random.string(32)
         local cookie = cookies.get_instance()
         cookie:set({
-            key = "sessionid",
-            value = sessionid,
+            key = "session_id",
+            value = session_id,
         })
-        ngx.ctx.sessionid = sessionid
+        ngx.ctx.session_id = session_id
 
-        sessionid = "sessions:" .. sessionid
+        session_id = "sessions:" .. session_id
 
         local redis_inst = redis.get_shared()
-        redis_inst:hmset(sessionid, "id", user.id, "loginkey",
-                            b64.encode_base64url(auth_utils.hash_login_key(user.loginkey)))
-        redis_inst:expire(sessionid, SESSION_EXPIRE_DELAY)
+        redis_inst:hmset(session_id, "id", user.id, "login_key",
+                            b64.encode_base64url(auth_utils.hash_login_key(user.login_key)))
+        redis_inst:expire(session_id, SESSION_EXPIRE_DELAY)
     end
 
     ngx.ctx.user = user
@@ -73,13 +73,13 @@ end
 function M.logout()
     local cookie = cookies.get_instance()
     cookie:delete({
-        key = "sessionid",
+        key = "session_id",
     })
     cookie:delete({
-        key = "loginkey",
+        key = "login_key",
     })
-    if ngx.ctx.sessionid then
-        redis.get_shared():del("sessions:" .. ngx.ctx.sessionid)
+    if ngx.ctx.session_id then
+        redis.get_shared():del("sessions:" .. ngx.ctx.session_id)
     end
     ngx.ctx.user = nil
 end
@@ -103,10 +103,10 @@ local function parse_authorization_header(auth)
 end
 
 function M.check()
-    local user, apikey = parse_authorization_header(ngx.var.http_authorization)
-    if user and apikey then
-        local success = M.login(user, apikey, {
-                            nosession = true, login_method = M.LOGIN_METHOD_APIKEY
+    local user, api_key = parse_authorization_header(ngx.var.http_authorization)
+    if user and api_key then
+        local success = M.login(user, api_key, {
+                            nosession = true, login_method = M.LOGIN_METHOD_API_KEY
                         })
         if not success then
             return utils.api_error("Invalid username or API key", 401)
@@ -119,31 +119,31 @@ function M.check()
         return
     end
 
-    local sessionid = cookie:get("sessionid")
-    if sessionid then
+    local session_id = cookie:get("session_id")
+    if session_id then
         local redis_inst = redis.get_shared()
-        local sessionKey = "sessions:" .. sessionid
-        local result = redis_inst:hmget(sessionKey, "id", "loginkey")
+        local sessionKey = "sessions:" .. session_id
+        local result = redis_inst:hmget(sessionKey, "id", "login_key")
         if (not utils.is_falsy_or_null(result)) and
                 M.login(result[1], result[2], {
-                    nosession = true, login_with_id = true, login_method = M.LOGIN_METHOD_LOGINKEY
+                    nosession = true, login_with_id = true, login_method = M.LOGIN_METHOD_LOGIN_KEY
                 }) then
-            ngx.ctx.sessionid = sessionid
+            ngx.ctx.session_id = session_id
             cookie:set({
-                key = "sessionid",
-                value = sessionid,
+                key = "session_id",
+                value = session_id,
             })
             redis_inst:expire(sessionKey, SESSION_EXPIRE_DELAY)
         end
     end
 
-    local loginkey = cookie:get("loginkey")
-    if loginkey then
+    local login_key = cookie:get("login_key")
+    if login_key then
         if not ngx.ctx.user then
-            local loginkey_match = ngx.re.match(loginkey, "^([0-9a-f-]+)\\.([a-zA-Z0-9_-]+)$", "o")
-            if loginkey_match then
-                M.login(loginkey_match[1], loginkey_match[2], {
-                    login_with_id = true, login_method = M.LOGIN_METHOD_LOGINKEY
+            local login_key_match = ngx.re.match(login_key, "^([0-9a-f-]+)\\.([a-zA-Z0-9_-]+)$", "o")
+            if login_key_match then
+                M.login(login_key_match[1], login_key_match[2], {
+                    login_with_id = true, login_method = M.LOGIN_METHOD_LOGIN_KEY
                 })
             end
         end
@@ -154,7 +154,7 @@ function M.check()
         end
     end
 
-    if (sessionid or loginkey) and not ngx.ctx.user then
+    if (session_id or login_key) and not ngx.ctx.user then
         M.logout()
     end
 end

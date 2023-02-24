@@ -1,9 +1,7 @@
-import React, { useState } from 'react';
-
-import { fetchAPI } from '../../utils/api';
-import { useCallback } from 'react';
-import { useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import { fetchAPI } from '../../utils/api';
+import { logError } from '../../utils/misc';
 
 export const EmailCodePage: React.FC = () => {
     const { code } = useParams<{ code: string }>();
@@ -12,13 +10,13 @@ export const EmailCodePage: React.FC = () => {
 
     const sendCode = useCallback(async () => {
         try {
-            const res = await fetchAPI('/api/v1/users/emails/code', {
+            const res = (await fetchAPI('/api/v1/users/emails/code', {
                 method: 'POST',
                 data: { code },
-            });
+            })) as { action: string };
 
             switch (res.action) {
-                case 'forgotpwd':
+                case 'forgot_password':
                     setStatus('E-Mail with new temporary password sent!');
                     break;
                 case 'activation':
@@ -28,8 +26,8 @@ export const EmailCodePage: React.FC = () => {
                     setStatus('Done!');
                     break;
             }
-        } catch (err: any) {
-            setStatus(`Error: ${err.message}`);
+        } catch (error: unknown) {
+            setStatus(`Error: ${(error as Error).message}`);
         }
     }, [code]);
 
@@ -37,8 +35,9 @@ export const EmailCodePage: React.FC = () => {
         if (loading) {
             return;
         }
+
         setLoading(true);
-        sendCode();
+        sendCode().catch(logError);
     }, [loading, sendCode]);
 
     return (

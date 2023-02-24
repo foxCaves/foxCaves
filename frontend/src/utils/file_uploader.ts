@@ -1,18 +1,21 @@
+import { toast } from 'react-toastify';
 import { FileModel } from '../models/file';
 import { HttpError } from './api';
-import { toast } from 'react-toastify';
+import { logError } from './misc';
 
 export interface BlobWithName extends Blob {
     name: string;
 }
-export type FileLike = File | BlobWithName;
+type FileLike = BlobWithName | File;
 
-function uploadFileInternal(file: FileLike, onProgress: (e: ProgressEvent<XMLHttpRequestEventTarget>) => void) {
+async function uploadFileInternal(file: FileLike, onProgress: (e: ProgressEvent<XMLHttpRequestEventTarget>) => void) {
     return new Promise<FileModel>((resolve, reject) => {
         const xhr = new XMLHttpRequest();
         xhr.open('POST', `/api/v1/files?name=${encodeURIComponent(file.name)}`);
-        //xhr.setRequestHeader('Content-Type', file.type);
-        //xhr.setRequestHeader('Content-Length', file.size.toString());
+        /*
+         * xhr.setRequestHeader('Content-Type', file.type);
+         * xhr.setRequestHeader('Content-Length', file.size.toString());
+         */
 
         xhr.upload.addEventListener('progress', onProgress);
 
@@ -22,14 +25,18 @@ function uploadFileInternal(file: FileLike, onProgress: (e: ProgressEvent<XMLHtt
 
         xhr.addEventListener('load', () => {
             if (xhr.status < 200 || xhr.status > 299) {
-                let errorMessage = undefined;
+                let errorMessage;
                 try {
-                    const data = JSON.parse(xhr.responseText);
+                    const data = JSON.parse(xhr.responseText) as { error: string };
                     errorMessage = data.error;
-                } catch {}
-                reject(new HttpError(xhr.status, errorMessage || xhr.responseText));
+                } catch (error: unknown) {
+                    logError(error as Error);
+                }
+
+                reject(new HttpError(xhr.status, errorMessage ?? xhr.responseText));
                 return;
             }
+
             resolve(FileModel.wrapNew(JSON.parse(xhr.responseText)));
         });
 
@@ -53,8 +60,10 @@ export async function uploadFile(file: FileLike): Promise<FileModel> {
                 progress: 0.9999,
                 render: `File "${file.name}" is being processed by the server...`,
             });
+
             return;
         }
+
         toast.update(toastId, {
             progress: e.loaded / e.total,
         });
@@ -66,14 +75,16 @@ export async function uploadFile(file: FileLike): Promise<FileModel> {
             type: 'success',
             autoClose: 3000,
         });
+
         toast.done(toastId);
         return fileObj;
-    } catch (err: any) {
-        toast(`Error uploading file "${file.name}": ${err.message}`, {
+    } catch (error: unknown) {
+        toast(`Error uploading file "${file.name}": ${(error as Error).message}`, {
             type: 'error',
             autoClose: 3000,
         });
+
         toast.done(toastId);
-        throw err;
+        throw error;
     }
 }
