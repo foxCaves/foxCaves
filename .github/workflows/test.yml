@@ -28,4 +28,4 @@ jobs:
           eslint_dir: frontend
           eslint_extensions: js,jsx,ts,tsx
           prettier: true
-          prettier_dir: frontend
+          prettier_dir: frontend/src
