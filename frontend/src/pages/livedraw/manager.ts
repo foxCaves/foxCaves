@@ -1,6 +1,8 @@
+/* eslint-disable no-alert */
 /* eslint-disable no-case-declarations */
 /* eslint-disable max-lines */
 import { FileModel } from '../../models/file';
+import { logError } from '../../utils/misc';
 
 const MathPIDouble = Math.PI * 2;
 
@@ -59,7 +61,7 @@ interface RemotePaintUser extends User {
     name: string;
 }
 
-const paintUsers: Record<string, RemotePaintUser> = {};
+const paintUsers = new Map<string, RemotePaintUser>();
 
 interface Brush {
     active?: boolean;
@@ -772,7 +774,7 @@ export class LiveDrawManager {
         const commands = payload.split('|');
         if (eventType === PaintEvent.ERROR) {
             this.destroy();
-            alert(`Network error: ${commands}\nPlease refresh this page to rejoin!`);
+            alert(`Network error: ${commands.join('|')}\nPlease refresh this page to rejoin!`);
             return;
         }
 
@@ -789,18 +791,18 @@ export class LiveDrawManager {
                         customData: {},
                     },
                     cursorData: {
-                        x: Number.parseFloat(commands[5] || '0') * this.scaleFactor,
-                        y: Number.parseFloat(commands[6] || '0') * this.scaleFactor,
+                        x: Number.parseFloat(commands[5] ?? '0') * this.scaleFactor,
+                        y: Number.parseFloat(commands[6] ?? '0') * this.scaleFactor,
                         lastX: 0,
                         lastY: 0,
                     },
                 };
 
-                paintUsers[id!] = from;
+                paintUsers.set(id!, from);
 
-                for (const [brush, pBrush] of Object.entries(paintBrushes)) {
+                for (const [iBrush, pBrush] of Object.entries(paintBrushes)) {
                     if (pBrush.usesCustomData) {
-                        from.brushData.customData[brush] = { ...pBrush.defaultCustomData };
+                        from.brushData.customData[iBrush] = { ...pBrush.defaultCustomData };
                     }
 
                     if (pBrush.setup) {
@@ -810,13 +812,14 @@ export class LiveDrawManager {
 
                 break;
             case PaintEvent.LEAVE:
-                delete paintUsers[commands[0]!];
+                paintUsers.delete(commands[0]!);
                 break;
             case PaintEvent.IMG_BURST:
                 if (commands[1] === 'r') {
                     this.sendDrawEvent(
                         PaintEvent.IMG_BURST,
-                        `${commands[2]}|${this.finalCanvas.toDataURL('image/png').replaceAll(/[\n\r]/g, '')}|`,
+                        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions, @typescript-eslint/no-unsafe-call
+                        `${commands[2]!}|${this.finalCanvas.toDataURL('image/png').replaceAll(/[\n\r]/g, '')}|`,
                     );
                 } else if (commands[1] === 'a') {
                     const toSet = new Image();
@@ -841,7 +844,7 @@ export class LiveDrawManager {
     }
 
     private recvDrawEvent(eventType: PaintEvent, payload: string[]) {
-        const from = paintUsers[payload[0]!]!;
+        const from = paintUsers.get(payload[0]!)!;
         switch (eventType) {
             case PaintEvent.MOUSE_CURSOR:
                 from.cursorData.x = Number.parseFloat(payload[1]!) * this.scaleFactor;
@@ -866,7 +869,7 @@ export class LiveDrawManager {
                     customData[brush!] = {};
                 }
 
-                from.brushData.customData[brush!]![key!] = value!;
+                customData[brush!]![key!] = value!;
                 break;
             case PaintEvent.BRUSH:
                 from.brushData.brush = paintBrushes[payload[1]!]!;
@@ -884,10 +887,11 @@ export class LiveDrawManager {
         from.cursorData.x = x;
         from.cursorData.y = y;
 
-        const { brush } = from.brushData;
-        this.backgroundCanvasCTX.lineWidth = from.brushData.width * this.scaleFactor; // Needed in order to draw correctly
-        this.backgroundCanvasCTX.strokeStyle = from.brushData.color;
-        this.backgroundCanvasCTX.fillStyle = from.brushData.color;
+        const { brush, width, color } = from.brushData;
+        // Needed in order to draw correctly
+        this.backgroundCanvasCTX.lineWidth = width * this.scaleFactor;
+        this.backgroundCanvasCTX.strokeStyle = color;
+        this.backgroundCanvasCTX.fillStyle = color;
 
         brush.select(this, from, this.foregroundCanvasCTX, this.backgroundCanvasCTX);
 
@@ -903,6 +907,17 @@ export class LiveDrawManager {
                 break;
             case PaintEvent.MOUSE_DOUBLE_CLICK:
                 brush.doubleClick!(this, x, y, from, this.backgroundCanvasCTX);
+                break;
+            case PaintEvent.WIDTH:
+            case PaintEvent.COLOR:
+            case PaintEvent.BRUSH:
+            case PaintEvent.MOUSE_CURSOR:
+            case PaintEvent.CUSTOM:
+            case PaintEvent.RESET:
+            case PaintEvent.JOIN:
+            case PaintEvent.LEAVE:
+            case PaintEvent.ERROR:
+            case PaintEvent.IMG_BURST:
                 break;
         }
 
@@ -931,17 +946,17 @@ export class LiveDrawManager {
                 `/api/v1/files/${encodeURIComponent(file.id)}/livedraw?session=${encodeURIComponent(session_id)}`,
             );
 
-            const data = await res.json();
+            const data = (await res.json()) as { url: string };
             const webSocket = new WebSocket(data.url);
 
-            webSocket.onmessage = (event) => {
+            webSocket.addEventListener('message', (event) => {
                 if (!this.shouldConnect) {
                     webSocket.close();
                     return;
                 }
 
-                this.recvRaw(event.data);
-            };
+                this.recvRaw(event.data as string);
+            });
 
             webSocket.addEventListener('close', () => {
                 // Unwanted disconnect
@@ -949,7 +964,10 @@ export class LiveDrawManager {
                     return;
                 }
 
-                window.setTimeout(async () => this.netConnect(webSocket, file, session_id), 1000);
+                window.setTimeout(() => {
+                    this.netConnect(webSocket, file, session_id).catch(logError);
+                }, 1000);
+
                 webSocket.close();
             });
 
@@ -960,8 +978,8 @@ export class LiveDrawManager {
             });
 
             this.socket = webSocket;
-        } catch (error) {
-            console.error(error);
+        } catch (error: unknown) {
+            logError(error as Error);
         }
     }
 
@@ -973,7 +991,9 @@ export class LiveDrawManager {
 
         try {
             this.socket!.send(msg);
-        } catch {}
+        } catch (error: unknown) {
+            logError(error as Error);
+        }
     }
 
     private paintCanvas() {
@@ -981,10 +1001,9 @@ export class LiveDrawManager {
             return;
         }
 
-        requestAnimationFrame(this.paintCanvas);
-        if (!this.localUser.brushData.brush) {
-            return;
-        }
+        requestAnimationFrame(() => {
+            this.paintCanvas();
+        });
 
         this.foregroundCanvasCTX.clearRect(0, 0, this.foregroundCanvas.width, this.foregroundCanvas.height);
 
@@ -1000,7 +1019,7 @@ export class LiveDrawManager {
         this.foregroundCanvasCTX.textAlign = 'left';
         this.foregroundCanvasCTX.textBaseline = 'top';
 
-        for (const user of Object.values(paintUsers)) {
+        for (const user of paintUsers.values()) {
             user.brushData.brush.select(this, user, this.foregroundCanvasCTX, this.backgroundCanvasCTX);
             user.brushData.brush.preview(this, user.cursorData.x, user.cursorData.y, user, this.foregroundCanvasCTX);
 
@@ -1031,7 +1050,7 @@ export class LiveDrawManager {
 
             this.defaultFont = `${12 / this.scaleFactor}px Verdana`;
 
-            this.netConnect(undefined, file, session_id);
+            this.netConnect(undefined, file, session_id).catch(logError);
 
             // eslint-disable-next-line no-multi-assign
             this.backgroundCanvas.width = this.foregroundCanvas.width = this.finalCanvas.width = baseImage.width;
@@ -1047,7 +1066,9 @@ export class LiveDrawManager {
 
             this.imagePattern = this.backgroundCanvasCTX.createPattern(baseImage, 'no-repeat')!;
 
-            requestAnimationFrame(this.paintCanvas);
+            requestAnimationFrame(() => {
+                this.paintCanvas();
+            });
         });
 
         baseImage.src = file.direct_url;
@@ -1073,7 +1094,9 @@ export class LiveDrawManager {
         const setHSLColor = (h: number, s: number, l: number, o: number) => {
             this.localUser.brushData.setColor(
                 (hlSelector.style.outlineColor =
+                    // eslint-disable-next-line no-multi-assign
                     sSelector.style.outlineColor =
+                    // eslint-disable-next-line no-multi-assign
                     oSelector.style.outlineColor =
                         `hsla(${h}, ${s}%, ${l}%, ${o})`),
             );
