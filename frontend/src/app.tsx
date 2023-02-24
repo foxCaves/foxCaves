@@ -38,16 +38,16 @@ const Routing: FC<{ user?: UserDetailsModel }> = ({ user }) => {
                     <Navbar.Collapse id="navbar-nav">
                         <Nav className="me-auto">
                             <CustomNavLink login={LoginState.LoggedIn} to="/files">
-                                Files
+                                <span>Files</span>
                             </CustomNavLink>
                             <CustomNavLink login={LoginState.LoggedIn} to="/links">
-                                Links
+                                <span>Links</span>
                             </CustomNavLink>
                             <CustomNavLink login={LoginState.LoggedOut} to="/login">
-                                Login
+                                <span>Login</span>
                             </CustomNavLink>
                             <CustomNavLink login={LoginState.LoggedOut} to="/register">
-                                Register
+                                <span>Register</span>
                             </CustomNavLink>
                         </Nav>
                         <Nav>
@@ -57,16 +57,16 @@ const Routing: FC<{ user?: UserDetailsModel }> = ({ user }) => {
                                 </Dropdown.Toggle>
                                 <Dropdown.Menu>
                                     <CustomDropDownItem login={LoginState.LoggedIn} to="/account">
-                                        Account
+                                        <span>Account</span>
                                     </CustomDropDownItem>
                                     <CustomDropDownItem login={LoginState.LoggedIn} to="/logout">
-                                        Logout
+                                        <span>Logout</span>
                                     </CustomDropDownItem>
                                     <CustomDropDownItem login={LoginState.LoggedOut} to="/login">
-                                        Login
+                                        <span>Login</span>
                                     </CustomDropDownItem>
                                     <CustomDropDownItem login={LoginState.LoggedOut} to="/register">
-                                        Register
+                                        <span>Register</span>
                                     </CustomDropDownItem>
                                 </Dropdown.Menu>
                             </Dropdown>

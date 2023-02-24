@@ -4,7 +4,7 @@ import 'react-bootstrap-range-slider/dist/react-bootstrap-range-slider.css';
 import 'react-toastify/dist/ReactToastify.css';
 
 import * as Sentry from '@sentry/react';
-import React, { StrictMode } from 'react';
+import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { App } from './app';
 
@@ -20,7 +20,7 @@ if (process.env.REACT_APP_SENTRY_DSN) {
 const root = createRoot(document.getElementById('root')!);
 
 root.render(
-    <StrictMode>
+    <React.StrictMode>
         <App />
-    </StrictMode>,
+    </React.StrictMode>,
 );
