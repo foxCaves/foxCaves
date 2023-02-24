@@ -1,4 +1,5 @@
 /config
 /data
 /frontend/build
+.eslintcache
 node_modules
