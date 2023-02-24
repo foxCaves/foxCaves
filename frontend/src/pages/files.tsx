@@ -101,7 +101,7 @@ const FileView: React.FC<{
                             <Dropdown.Item>View</Dropdown.Item>
                         </LinkContainer>
                         {isImage ? (
-                            <LinkContainer to={`/livedraw/${file.id}`}>
+                            <LinkContainer to={`/live_draw/${file.id}`}>
                                 <Dropdown.Item>Live draw</Dropdown.Item>
                             </LinkContainer>
                         ) : null}

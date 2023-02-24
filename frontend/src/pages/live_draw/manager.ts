@@ -943,7 +943,7 @@ export class LiveDrawManager {
 
         try {
             const res = await fetch(
-                `/api/v1/files/${encodeURIComponent(file.id)}/livedraw?session=${encodeURIComponent(session_id)}`,
+                `/api/v1/files/${encodeURIComponent(file.id)}/live_draw?session=${encodeURIComponent(session_id)}`,
             );
 
             const data = (await res.json()) as { url: string };
@@ -1044,7 +1044,7 @@ export class LiveDrawManager {
         baseImage.crossOrigin = 'anonymous';
 
         baseImage.addEventListener('load', () => {
-            const maxWidth = document.getElementById('livedraw-wrapper')!.getBoundingClientRect().width;
+            const maxWidth = document.getElementById('live-draw-wrapper')!.getBoundingClientRect().width;
 
             this.scaleFactor = baseImage.width > maxWidth ? maxWidth / baseImage.width : 1;
 

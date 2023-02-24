@@ -1,8 +1,8 @@
-#livedraw-wrapper {
+#live-draw-wrapper {
     text-align: center;
 }
 
-#livedraw {
+#live-draw {
     margin: auto;
 }
 
@@ -70,7 +70,7 @@
     pointer-events: none;
 }
 
-#livedraw-background,
-#livedraw-foreground {
+#live-draw-background,
+#live-draw-foreground {
     display: none;
 }

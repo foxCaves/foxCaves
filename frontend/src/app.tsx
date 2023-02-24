@@ -119,8 +119,8 @@ const Routing: FC<{ user?: UserDetailsModel }> = ({ user }) => {
                     />
                     <Route element={<LogoutPage />} path="/logout" />
                     <Route element={<ViewPage />} path="/view/:id" />
-                    <Route element={<LiveDrawPage />} path="/livedraw/:id/:sid" />
-                    <Route element={<LiveDrawRedirectPage />} path="/livedraw/:id" />
+                    <Route element={<LiveDrawPage />} path="/live_draw/:id/:sid" />
+                    <Route element={<LiveDrawRedirectPage />} path="/live_draw/:id" />
                     <Route element={<ForgotPasswordPage />} path="/email/forgot_password" />
                     <Route element={<EmailCodePage />} path="/email/code/:code" />
                     <Route element={<HomePage />} path="/" />

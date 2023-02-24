@@ -1,4 +1,4 @@
-import '../../resources/livedraw.css';
+import '../../resources/live_draw.css';
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Form } from 'react-bootstrap';
@@ -14,7 +14,7 @@ import { LiveDrawManager } from './manager';
 export const LiveDrawRedirectPage: React.FC = () => {
     const { id } = useParams<{ id: string }>();
 
-    return <Navigate to={`/livedraw/${id!}/${randomString(12)}`} />;
+    return <Navigate to={`/live_draw/${id!}/${randomString(12)}`} />;
 };
 
 export const LiveDrawPage: React.FC = () => {
@@ -92,12 +92,12 @@ export const LiveDrawPage: React.FC = () => {
             <h1>Edit file: {fileName}</h1>
             <br />
 
-            <div id="livedraw-wrapper">
-                <canvas id="livedraw" ref={canvasRef} />
+            <div id="live-draw-wrapper">
+                <canvas id="live-draw" ref={canvasRef} />
             </div>
 
-            <canvas id="livedraw-background" ref={backgroundCanvasRef} />
-            <canvas id="livedraw-foreground" ref={foregroundCanvasRef} />
+            <canvas id="live-draw-background" ref={backgroundCanvasRef} />
+            <canvas id="live-draw-foreground" ref={foregroundCanvasRef} />
 
             <div id="live-draw-options">
                 <fieldset>
