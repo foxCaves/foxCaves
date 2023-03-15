@@ -12,10 +12,6 @@ async function uploadFileInternal(file: FileLike, onProgress: (e: ProgressEvent<
     return new Promise<FileModel>((resolve, reject) => {
         const xhr = new XMLHttpRequest();
         xhr.open('POST', `/api/v1/files?name=${encodeURIComponent(file.name)}`);
-        /*
-         * xhr.setRequestHeader('Content-Type', file.type);
-         * xhr.setRequestHeader('Content-Length', file.size.toString());
-         */
 
         xhr.upload.addEventListener('progress', onProgress);
 
