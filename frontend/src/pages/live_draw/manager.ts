@@ -346,6 +346,7 @@ const paintBrushes: Record<string, Brush> = {
             return true;
         },
     },
+
     /*
      * TODO
      * text: {
@@ -917,6 +918,7 @@ export class LiveDrawManager {
 
         this.localUser.brushData.brush?.select(this, from, this.foregroundCanvasCTX, this.backgroundCanvasCTX);
     }
+
     /*
      *private sendBrushPacket(brushName: string, key: string, val: string) {
      *    this.sendRaw(`${PaintEvent.CUSTOM + brushName}|${key}|${val}`);
