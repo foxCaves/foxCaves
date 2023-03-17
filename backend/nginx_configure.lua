@@ -18,7 +18,11 @@ end
 
 local short_domain = url_to_domain(config.http.short_url)
 local main_domain = url_to_domain(config.http.main_url)
-local upstream_ips_str = table.concat(config.http.upstream_ips, " ")
+local upstream_ips_str = ""
+for _, upstream_ip in pairs(config.http.upstream_ips) do
+    upstream_ips_str = upstream_ips_str .. "set_real_ip_from " .. upstream_ip .. ";\n"
+end
+
 local listener_config = "/etc/nginx/listener.conf"
 
 local nginx_configs = {
