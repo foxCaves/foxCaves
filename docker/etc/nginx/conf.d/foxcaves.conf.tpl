@@ -35,7 +35,22 @@ server {
     client_max_body_size 10M;
 
     location / {
-        try_files $uri $uri/ /index.html;
+        try_files $uri $uri/ /static/index.html;
+    }
+
+    location = /favicon.ico {
+        expires 1h;
+        alias /static/favicon.ico;
+    }
+
+    location = /security.txt {
+        expires 1h;
+        alias /static/security.txt;
+    }
+
+    location = /.well-known/security.txt {
+        expires 1h;
+        alias /static/security.txt;
     }
 
     location /static {

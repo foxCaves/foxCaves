@@ -8,9 +8,11 @@ import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { App } from './app';
 
-if (process.env.REACT_APP_SENTRY_DSN) {
+declare const REACT_APP_SENTRY_DSN: string;
+
+if (REACT_APP_SENTRY_DSN) {
     Sentry.init({
-        dsn: process.env.REACT_APP_SENTRY_DSN,
+        dsn: REACT_APP_SENTRY_DSN,
     });
 } else {
     // eslint-disable-next-line no-console
