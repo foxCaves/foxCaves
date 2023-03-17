@@ -8,7 +8,7 @@ lua_ssl_verify_depth 10;
 
 lua_shared_dict foxcaves 1m;
 
-set_real_ip_from __UPSTREAM_IPS__;
+__UPSTREAM_IPS__
 set_real_ip_from 127.0.0.0/8;
 set_real_ip_from unix:;
 real_ip_header proxy_protocol;
