@@ -35,7 +35,7 @@ server {
     client_max_body_size 10M;
 
     location / {
-        try_files $uri $uri/ /static/index.html;
+        alias /static/index.html;
     }
 
     location = /favicon.ico {
@@ -46,6 +46,9 @@ server {
     location = /security.txt {
         expires 1h;
         alias /static/security.txt;
+    }
+
+    location /.well-known {
     }
 
     location = /.well-known/security.txt {
