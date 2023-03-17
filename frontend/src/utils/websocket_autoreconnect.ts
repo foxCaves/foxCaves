@@ -60,7 +60,7 @@ export class ReconnectingWebSocket {
         }
     }
 
-    private doReconnect(oldWs: WebSocket, timeout = 500): NodeJS.Timeout {
+    private doReconnect(oldWs: WebSocket, timeout = 500): number {
         return setTimeout(() => {
             this.connect(oldWs);
         }, timeout);
