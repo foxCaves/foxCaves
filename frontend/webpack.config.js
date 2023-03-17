@@ -1,7 +1,14 @@
+/* eslint-disable @cspell/spellchecker */
+/* eslint-disable unicorn/prefer-node-protocol */
+/* eslint-disable no-undef */
+/* eslint-disable @typescript-eslint/no-var-requires */
+/* eslint-disable @typescript-eslint/no-require-imports */
+/* eslint-disable unicorn/prefer-module */
+/* eslint-disable strict */
 'use strict';
-const webpack = require('webpack'); 
 const path = require('path');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
+const webpack = require('webpack');
 
 module.exports = {
     mode: process.env.NODE_ENV ?? 'development',
@@ -11,42 +18,40 @@ module.exports = {
         publicPath: '/static/',
     },
     module: {
-      rules: [
-        {
-            test: /\.tsx?$/,
-            use: 'ts-loader',
-            exclude: /node_modules/,
-        },
-        {
-            test: /\.css$/i,
-            use: ['style-loader', 'css-loader'],
-        },
-        {
-           test: /\.(png|svg|jpg|jpeg|gif)$/i,
-           type: 'asset/resource',
-        },
-      ],
+        rules: [
+            {
+                test: /\.tsx?$/,
+                use: 'ts-loader',
+                exclude: /node_modules/,
+            },
+            {
+                test: /\.css$/i,
+                use: ['style-loader', 'css-loader'],
+            },
+            {
+                test: /\.(png|svg|jpg|jpeg|gif)$/i,
+                type: 'asset/resource',
+            },
+        ],
     },
     plugins: [
         new webpack.DefinePlugin({
-            'REACT_APP_SENTRY_DSN': JSON.stringify(process.env.REACT_APP_SENTRY_DSN),
+            REACT_APP_SENTRY_DSN: JSON.stringify(process.env.REACT_APP_SENTRY_DSN),
         }),
         new CopyWebpackPlugin({
-            patterns: [
-                { from: 'public' }
-            ],
+            patterns: [{ from: 'public' }],
         }),
     ],
     devServer: {
         static: {
             directory: path.join(__dirname, 'public'),
-          },
+        },
         proxy: {
             '/api': {
                 target: 'https://foxcav.es:443',
                 changeOrigin: true,
                 headers: {
-                    'Host': 'foxcav.es',
+                    Host: 'foxcav.es',
                 },
             },
             '/api/v1/ws': {
@@ -54,12 +59,12 @@ module.exports = {
                 changeOrigin: true,
                 ws: true,
                 headers: {
-                    'Host': 'foxcav.es',
+                    Host: 'foxcav.es',
                 },
             },
         },
     },
     resolve: {
-      extensions: ['.tsx', '.ts', '.js'],
+        extensions: ['.tsx', '.ts', '.js'],
     },
 };

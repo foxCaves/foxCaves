@@ -30,6 +30,7 @@
     "noEmit": false
   },
   "include": [
-    "src"
+    "src",
+    "webpack.*.js",
   ]
 }
