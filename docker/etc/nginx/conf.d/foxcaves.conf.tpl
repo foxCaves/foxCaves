@@ -48,6 +48,9 @@ server {
         alias /static/security.txt;
     }
 
+    location /.well-known {
+    }
+
     location = /.well-known/security.txt {
         expires 1h;
         alias /static/security.txt;
