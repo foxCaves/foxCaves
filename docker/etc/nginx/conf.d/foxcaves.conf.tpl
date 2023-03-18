@@ -35,25 +35,22 @@ server {
     client_max_body_size 10M;
 
     location / {
-        try_files '' /static/index.html =404;
+        rewrite ^ /static/index.html break;
     }
 
     location = /favicon.ico {
         expires 1h;
-        rewrite ^ /static/favicon.ico break;=
+        alias /var/www/foxcaves/html/static/favicon.ico;
     }
 
     location = /security.txt {
         expires 1h;
-        rewrite ^ /static/security.txt break;
+        alias /var/www/foxcaves/html/static/.well-known/security.txt;
     }
 
     location /.well-known {
-    }
-
-    location = /.well-known/security.txt {
         expires 1h;
-        rewrite ^ /static/security.txt break;
+        root /var/www/foxcaves/html/static;
     }
 
     location /static {
@@ -95,6 +92,21 @@ server {
     add_header Access-Control-Allow-Methods "GET, OPTIONS, HEAD" always;
     add_header Access-Control-Allow-Headers "Origin, Accept, Range, Content-Type, If-Modified-Since" always;
     add_header Access-Control-Expose-Headers "Content-Type, Content-Length, Content-Range" always;
+
+    location = /favicon.ico {
+        expires 1h;
+        alias /var/www/foxcaves/html/static/favicon.ico;
+    }
+
+    location = /security.txt {
+        expires 1h;
+        alias /var/www/foxcaves/html/static/.well-known/security.txt;
+    }
+
+    location /.well-known {
+        expires 1h;
+        root /var/www/foxcaves/html/static;
+    }
 
     location = / {
         return 302 __MAIN_URL__;
