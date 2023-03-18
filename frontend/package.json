@@ -32,8 +32,8 @@
   "scripts": {
     "start": "webpack serve",
     "build": "rimraf build && NODE_ENV=production webpack build",
-    "lint": "eslint --cache --color ./src",
-    "fmt": "eslint --fix --ext .js,.jsx,.ts,.tsx src/ && prettier --write src/"
+    "lint": "eslint --cache --color ./src webpack.*.ts",
+    "fmt": "eslint --fix --ext .js,.jsx,.ts,.tsx src/ webpack.*.ts && prettier --write src/ webpack.*.ts"
   },
   "eslintConfig": {
     "rules": {

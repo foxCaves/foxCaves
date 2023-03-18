@@ -1,4 +1,5 @@
 import { join } from 'node:path';
+// eslint-disable-next-line import/default
 import CopyPlugin from 'copy-webpack-plugin';
 import webpack, { Configuration } from 'webpack';
 import 'webpack-dev-server';
