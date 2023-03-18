@@ -40,12 +40,12 @@ server {
 
     location = /favicon.ico {
         expires 1h;
-        alias /static/favicon.ico;
+        rewrite ^ /static/favicon.ico break;=
     }
 
     location = /security.txt {
         expires 1h;
-        alias /static/security.txt;
+        rewrite ^ /static/security.txt break;
     }
 
     location /.well-known {
@@ -53,7 +53,7 @@ server {
 
     location = /.well-known/security.txt {
         expires 1h;
-        alias /static/security.txt;
+        rewrite ^ /static/security.txt break;
     }
 
     location /static {
