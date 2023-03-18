@@ -50,17 +50,14 @@ const config: Configuration = {
                 target: 'https://foxcav.es:443',
                 changeOrigin: true,
                 headers: {
-                    // eslint-disable-next-line @cspell/spellchecker
                     Host: 'foxcav.es',
                 },
             },
             '/api/v1/ws': {
-                // eslint-disable-next-line @cspell/spellchecker
                 target: 'wss://foxcav.es:443',
                 changeOrigin: true,
                 ws: true,
                 headers: {
-                    // eslint-disable-next-line @cspell/spellchecker
                     Host: 'foxcav.es',
                 },
             },
