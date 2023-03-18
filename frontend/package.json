@@ -32,8 +32,8 @@
   "scripts": {
     "start": "webpack serve",
     "build": "rimraf build && NODE_ENV=production webpack build",
-    "lint": "eslint --cache --color ./src",
-    "fmt": "eslint --fix --ext .js,.jsx,.ts,.tsx src/ && prettier --write src/"
+    "lint": "eslint --cache --color ./src webpack.*.ts",
+    "fmt": "eslint --fix --ext .js,.jsx,.ts,.tsx src/ webpack.*.ts && prettier --write src/ webpack.*.ts"
   },
   "eslintConfig": {
     "rules": {
@@ -47,6 +47,7 @@
   "devDependencies": {
     "@cspell/eslint-plugin": "^6.25.0",
     "@types/node": "^18.15.3",
+    "@types/webpack-dev-server": "^4.7.2",
     "@typescript-eslint/eslint-plugin": "^5.52.0",
     "@typescript-eslint/parser": "^5.52.0",
     "copy-webpack-plugin": "^11.0.0",
@@ -58,6 +59,7 @@
     "eslint-plugin-react": "^7.32.2",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-unicorn": "^46.0.0",
+    "ts-node": "^10.9.1",
     "webpack-cli": "^5.0.1",
     "webpack-dev-server": "^4.12.0"
   }

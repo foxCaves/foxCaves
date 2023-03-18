@@ -1,20 +1,19 @@
-/* eslint-disable @cspell/spellchecker */
-/* eslint-disable unicorn/prefer-node-protocol */
-/* eslint-disable no-undef */
-/* eslint-disable @typescript-eslint/no-var-requires */
-/* eslint-disable @typescript-eslint/no-require-imports */
-/* eslint-disable unicorn/prefer-module */
-/* eslint-disable strict */
-'use strict';
-const path = require('path');
-const CopyWebpackPlugin = require('copy-webpack-plugin');
-const webpack = require('webpack');
+import { join } from 'node:path';
+// eslint-disable-next-line import/default
+import CopyPlugin from 'copy-webpack-plugin';
+import webpack, { Configuration } from 'webpack';
+import 'webpack-dev-server';
 
-module.exports = {
-    mode: process.env.NODE_ENV ?? 'development',
+// eslint-disable-next-line unicorn/prefer-module
+const PWD = __dirname;
+
+type NodeEnv = 'development' | 'production' | undefined;
+
+const config: Configuration = {
+    mode: (process.env.NODE_ENV as NodeEnv) ?? 'development',
     entry: './src/index.tsx',
     output: {
-        path: path.join(__dirname, '/build'),
+        path: join(PWD, 'build'),
         publicPath: '/static/',
     },
     module: {
@@ -38,27 +37,30 @@ module.exports = {
         new webpack.DefinePlugin({
             REACT_APP_SENTRY_DSN: JSON.stringify(process.env.REACT_APP_SENTRY_DSN),
         }),
-        new CopyWebpackPlugin({
+        new CopyPlugin({
             patterns: [{ from: 'public' }],
         }),
     ],
     devServer: {
         static: {
-            directory: path.join(__dirname, 'public'),
+            directory: join(PWD, 'public'),
         },
         proxy: {
             '/api': {
                 target: 'https://foxcav.es:443',
                 changeOrigin: true,
                 headers: {
+                    // eslint-disable-next-line @cspell/spellchecker
                     Host: 'foxcav.es',
                 },
             },
             '/api/v1/ws': {
+                // eslint-disable-next-line @cspell/spellchecker
                 target: 'wss://foxcav.es:443',
                 changeOrigin: true,
                 ws: true,
                 headers: {
+                    // eslint-disable-next-line @cspell/spellchecker
                     Host: 'foxcav.es',
                 },
             },
@@ -68,3 +70,6 @@ module.exports = {
         extensions: ['.tsx', '.ts', '.js'],
     },
 };
+
+// eslint-disable-next-line import/no-unused-modules, import/no-default-export
+export default config;
