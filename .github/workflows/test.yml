@@ -92,7 +92,7 @@ jobs:
       - name: Fix hostsfile
         run: sudo bash -c 'echo "127.0.0.1 main.foxcaves short.foxcaves" > /etc/hosts'
       - name: Run test container
-        run: docker run -p 80:127.0.0.1:80 -v "$(pwd)/config:/var/www/foxcaves/config:ro" -e ENVIRONMENT=testing -d foxcaves-container
+        run: docker run -p 127.0.0.1:80:80 -v "$(pwd)/config:/var/www/foxcaves/config:ro" -e ENVIRONMENT=testing -d foxcaves-container
       - name: Run some basic tests for now
         run: |
           set -e
