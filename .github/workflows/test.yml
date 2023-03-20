@@ -95,10 +95,10 @@ jobs:
         run: docker run -p 127.0.0.1:80:80 -v "$(pwd)/config:/var/www/foxcaves/config:ro" -e ENVIRONMENT=testing -d foxcaves-container
       - name: Run some basic tests for now
         run: |
-          set -e
-          curl -s -f http://main.foxcaves/static/main.js
-          curl -s -f http://main.foxcaves/files
-          curl -s -f http://main.foxcaves/api/v1/system/info
+          set -ex
+          curl -v http://main.foxcaves/static/main.js
+          curl -v http://main.foxcaves/files
+          curl -v http://main.foxcaves/api/v1/system/info
       # https://github.com/docker/build-push-action/issues/252 (prevent cache from growing indefinitely)
       - name: Move cache
         run: |
