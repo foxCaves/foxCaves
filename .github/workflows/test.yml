@@ -24,7 +24,7 @@ jobs:
         with:
           node-version: lts/*
           check-latest: true
-          cache: 'npm'
+          cache: "npm"
           cache-dependency-path: frontend/package-lock.json
       - name: Install Node.js dependencies
         run: npm ci
@@ -37,3 +37,47 @@ jobs:
           eslint_extensions: js,jsx,ts,tsx
           prettier: true
           prettier_dir: frontend/src
+  e2etests:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      checks: write
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      redis:
+        image: redis
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v3
+      - name: Build container image
+        uses: docker/build-push-action@v4
+        with:
+          push: true
+          build-args: |
+            GIT_REVISION=${{ github.sha }}
+          tags: |
+            foxcaves-container
+      - name: Fix hostsfile
+        run: sudo bash -c 'echo "127.0.0.1 main.foxcaves short.foxcaves" > /etc/hosts'
+      - name: Run test container
+        run: docker run -p 80:127.0.0.1:80 -v "$(pwd)/config:/var/www/foxcaves/config:ro" -e ENVIRONMENT=testing -d foxcaves-container
+      - name: Run some basic tests for now
+        run: |
+          set -e
+          curl -s -f http://main.foxcaves/static/main.js
+          curl -s -f http://main.foxcaves/files
+          curl -s -f http://main.foxcaves/api/v1/system/info
