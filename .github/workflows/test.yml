@@ -47,6 +47,8 @@ jobs:
         image: postgres
         env:
           POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -54,6 +56,8 @@ jobs:
           --health-retries 5
       redis:
         image: redis
+        ports:
+          - 6379:6379
         options: >-
           --health-cmd "redis-cli ping"
           --health-interval 10s
@@ -92,7 +96,7 @@ jobs:
       - name: Fix hostsfile
         run: sudo bash -c 'echo "127.0.0.1 main.foxcaves short.foxcaves" > /etc/hosts'
       - name: Run test container
-        run: docker run --name=foxcaves-${{ github.sha }} -p 127.0.0.1:80:80 -v "$(pwd)/config:/var/www/foxcaves/config:ro" -e ENVIRONMENT=testing -d foxcaves-container
+        run: docker run --name=foxcaves-${{ github.sha }} --add-host=postgres:host-gateway --add-host=redis:host-gateway -p 127.0.0.1:80:80 -v "$(pwd)/config:/var/www/foxcaves/config:ro" -e ENVIRONMENT=testing -d foxcaves-container
       - name: Run some basic tests for now
         run: |
           set -ex
