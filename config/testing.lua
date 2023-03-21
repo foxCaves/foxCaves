@@ -9,7 +9,7 @@ return {
         user = "postgres",
         database = "postgres",
         password = "postgres",
-        use_super = true,
+        use_super = false,
         use_migrations = true,
     },
     email = {
