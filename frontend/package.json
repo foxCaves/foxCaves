@@ -47,7 +47,6 @@
   "devDependencies": {
     "@cspell/eslint-plugin": "^6.25.0",
     "@types/node": "^18.15.3",
-    "@types/webpack-dev-server": "^4.7.2",
     "@typescript-eslint/eslint-plugin": "^5.52.0",
     "@typescript-eslint/parser": "^5.52.0",
     "copy-webpack-plugin": "^11.0.0",
