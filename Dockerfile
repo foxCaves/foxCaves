@@ -46,9 +46,5 @@ COPY --from=frontend_builder /opt/stage/build /var/www/foxcaves/html/static
 ARG GIT_REVISION=UNKNOWN
 RUN echo $GIT_REVISION > /var/www/foxcaves/.revision
 
-VOLUME /etc/letsencrypt
-VOLUME /var/www/foxcaves/storage
-VOLUME /var/www/foxcaves/config
-
 EXPOSE 80 443
 ENTRYPOINT ["s6-svscan", "/etc/s6"]
