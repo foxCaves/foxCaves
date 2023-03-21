@@ -96,11 +96,11 @@ jobs:
       - name: Fix hostsfile
         run: sudo bash -c 'echo "127.0.0.1 main.foxcaves short.foxcaves" > /etc/hosts'
       - name: Run test container
-        run: docker run --name=foxcaves-${{ github.sha }} --add-host=postgres:host-gateway --add-host=redis:host-gateway -p 127.0.0.1:80:80 -v "$(pwd)/config:/var/www/foxcaves/config:ro" -e ENVIRONMENT=testing -d foxcaves-container
+        run: docker run --name=foxcaves-${{ github.sha }} --add-host=postgres:host-gateway --add-host=redis:host-gateway -p 127.0.0.1:80:80 -e ENVIRONMENT=testing -d foxcaves-container
       - name: Run some basic tests for now
         run: |
           set -ex
-          timeout 30s bash -c 'until curl -m 5 -v http://main.foxcaves/api/v1/system/info; do sleep 1; done'
+          timeout 30s bash -c 'until curl -m 5 -s -f http://main.foxcaves/api/v1/system/info; do sleep 1; done' || true
           curl -m 5 -v http://main.foxcaves/static/main.js
           curl -m 5 -v http://main.foxcaves/files
           curl -m 5 -v http://main.foxcaves/api/v1/system/info

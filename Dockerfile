@@ -37,6 +37,9 @@ COPY docker /
 
 COPY docker/etc/nginx/main.conf /usr/local/openresty/nginx/conf/custom.conf
 
+COPY config/testing.lua /var/www/foxcaves/config/testing.lua
+COPY config/example.lua /var/www/foxcaves/config/example.lua
+
 COPY backend /var/www/foxcaves/lua
 COPY --from=frontend_builder /opt/stage/build /var/www/foxcaves/html/static
 
