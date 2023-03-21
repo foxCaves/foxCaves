@@ -3,18 +3,10 @@
     "extends": [
         "config:base"
     ],
+    "automergeType": "pr",
+    "platformAutomerge": true,
+    "automerge": true,
     "lockFileMaintenance": {
-        "enabled": true,
-        "automerge": true,
-        "automergeType": "pr",
-        "platformAutomerge": true
-    },
-    "packageRules": [
-        {
-            "matchPackagePatterns": ["*"],
-            "automerge": true,
-            "automergeType": "pr",
-            "platformAutomerge": true
-        }
-    ]
+        "enabled": true
+    }
 }
