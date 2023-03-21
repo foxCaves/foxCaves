@@ -3,29 +3,6 @@ local consts = require("foxcaves.consts")
 local pgmoon = require("pgmoon")
 local lfs = require("lfs")
 
-local function setup_super()
-    local super_config = {
-        user = "postgres",
-        database = "postgres",
-        host = config.host,
-        port = config.port,
-    }
-    local db = pgmoon.new(super_config)
-    local _, err = db:connect()
-    if err then
-        error(err)
-    end
-
-    local user_name = db:escape_identifier(config.user)
-    local database_name = db:escape_identifier(config.database)
-
-    db:query("CREATE USER " .. user_name .. ";")
-    db:query("CREATE DATABASE " .. database_name .. ";")
-    db:query("GRANT ALL PRIVILEGES ON DATABASE " .. database_name .. " TO " ..  user_name .. ";")
-
-    db:disconnect()
-end
-
 local function process_migration_dir(db, ran_migrations, dir)
     local file_array = {}
     for file in lfs.dir(dir) do
@@ -76,13 +53,6 @@ local function setup_db()
     process_migration_dir(db, ran_migrations, consts.LUA_ROOT .. "/migrations")
 
     db:disconnect()
-end
-
-
-if config.use_super then
-    print("Running super migrator...")
-    setup_super()
-    print("Super migrator done!")
 end
 
 if config.use_migrations then
