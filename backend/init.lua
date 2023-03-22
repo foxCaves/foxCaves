@@ -43,6 +43,7 @@ rawset(_G, "debug", {
     traceback = _debug.traceback,
 })
 
+rawset(_G, "rawget", nil)
 rawset(_G, "rawset", nil)
 
 protect_table(os)
