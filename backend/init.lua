@@ -1,4 +1,3 @@
-local debug = debug
 local error = error
 local tostring = tostring
 _G.dns_query_timeout = 10 * 1000
@@ -37,11 +36,13 @@ end
 
 rawset(os, "execute", nil)
 
+local _debug = debug
 rawset(_G, "debug", {
-    getlocal = debug.getlocal,
-    getinfo = debug.getinfo,
-    traceback = debug.traceback,
+    getlocal = _debug.getlocal,
+    getinfo = _debug.getinfo,
+    traceback = _debug.traceback,
 })
+_debug = nil
 
 rawset(_G, "rawget", nil)
 rawset(_G, "rawset", nil)
