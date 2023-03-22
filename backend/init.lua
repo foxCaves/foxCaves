@@ -42,7 +42,6 @@ rawset(_G, "debug", {
     getinfo = _debug.getinfo,
     traceback = _debug.traceback,
 })
-_debug = nil
 
 rawset(_G, "rawget", nil)
 rawset(_G, "rawset", nil)
