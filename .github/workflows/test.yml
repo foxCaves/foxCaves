@@ -100,15 +100,18 @@ jobs:
             foxcaves-container
       - name: Run test container
         run: docker run --name=foxcaves-${{ github.sha }} --add-host=postgres:host-gateway --add-host=redis:host-gateway -p 127.0.0.1:80:80 -e ENVIRONMENT=testing -d foxcaves-container
-      - name: Run some basic tests for now
+      - name: Run some basic tests
         run: |
           set -ex
-          alias http='curl -m 5 -s -f -I --resolve "main.foxcaves:80:127.0.0.1" --resolve "short.foxcaves:80:127.0.0.1"'
-          alias httpget='curlcmd -XGET'
+          alias httpreq='curl -m 5 -s -f -I --resolve "main.foxcaves:80:127.0.0.1" --resolve "short.foxcaves:80:127.0.0.1"'
+          alias httpget='httpreq -XGET'
           timeout 30s bash -c 'until httpget http://main.foxcaves/api/v1/system/info; do sleep 1; done' || true
-          httpget http://main.foxcaves/static/main.js
           httpget http://main.foxcaves/files
           httpget http://main.foxcaves/api/v1/system/info
+      - name: Install playwright browsers
+        run: npx playwright install chromium --with-deps
+      - name: Run browser tests
+        run: npx playwright test
       # https://github.com/docker/build-push-action/issues/252 (prevent cache from growing indefinitely)
       - name: Move cache
         run: |
