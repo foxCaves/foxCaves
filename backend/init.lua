@@ -26,24 +26,26 @@ local function protect_table(tbl)
     })
 end
 
+local _rawset = rawset
+
 -- Load environment vars
-rawset(_G, "OSENV", {
+_rawset(_G, "OSENV", {
     ENVIRONMENT = true
 })
 for k, _ in pairs(OSENV) do
-    rawset(OSENV, k, os.getenv(k))
+    _rawset(OSENV, k, os.getenv(k))
 end
 
-rawset(os, "execute", nil)
+_rawset(os, "execute", nil)
 
 local _debug = debug
-rawset(_G, "debug", {
+_rawset(_G, "debug", {
     getlocal = _debug.getlocal,
     getinfo = _debug.getinfo,
     traceback = _debug.traceback,
 })
 
-rawset(_G, "rawset", nil)
+_rawset(_G, "rawset", nil)
 
 protect_table(os)
 protect_table(debug)
