@@ -103,11 +103,10 @@ jobs:
       - name: Run some basic tests
         run: |
           set -ex
-          alias httpreq='curl -m 5 -s -f -I --resolve "main.foxcaves:80:127.0.0.1" --resolve "short.foxcaves:80:127.0.0.1"'
-          alias httpget='httpreq -XGET'
-          timeout 30s bash -c 'until httpget http://main.foxcaves/api/v1/system/info; do sleep 1; done' || true
-          httpget http://main.foxcaves/files
-          httpget http://main.foxcaves/api/v1/system/info
+          HTTP_GET='curl -XGET -m 5 -s -f -I --resolve "main.foxcaves:80:127.0.0.1" --resolve "short.foxcaves:80:127.0.0.1"'
+          timeout 30s bash -c "until $HTTP_GET http://main.foxcaves/api/v1/system/info; do sleep 1; done" || true
+          $HTTP_GET http://main.foxcaves/files
+          $HTTP_GET http://main.foxcaves/api/v1/system/info
       - name: Install playwright browsers
         run: npx playwright install chromium --with-deps
       - name: Run browser tests
