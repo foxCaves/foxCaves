@@ -1,8 +1,6 @@
 local error = error
 _G.dns_query_timeout = 10 * 1000
 
-local init_ran = _G.init_ran
-
 require("path")
 require("lfs")
 
