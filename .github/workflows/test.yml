@@ -98,12 +98,14 @@ jobs:
             GIT_REVISION=${{ github.sha }}
           tags: |
             foxcaves-container
+      - name: Add to hostsfile
+        run: sudo bash -c "echo '127.0.0.1 main.foxcaves short.foxcaves' >> /etc/hosts"
       - name: Run test container
         run: docker run --name=foxcaves-${{ github.sha }} --add-host=postgres:host-gateway --add-host=redis:host-gateway -p 127.0.0.1:80:80 -e ENVIRONMENT=testing -d foxcaves-container
       - name: Run some basic tests
         run: |
           set -ex
-          HTTP_GET='curl -XGET -m 5 -s -f -I --resolve main.foxcaves:80:127.0.0.1 --resolve short.foxcaves:80:127.0.0.1'
+          HTTP_GET='curl -XGET -m 5 -s -f -I'
           timeout 30s bash -c "until $HTTP_GET http://main.foxcaves/api/v1/system/info; do sleep 1; done" || true
           $HTTP_GET http://main.foxcaves/files
           $HTTP_GET http://main.foxcaves/api/v1/system/info
