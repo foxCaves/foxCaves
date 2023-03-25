@@ -36,6 +36,8 @@
   },
   "include": [
     "src",
+    "test",
     "webpack.*.ts",
+    "playwright.*.ts",
   ]
 }
