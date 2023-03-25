@@ -5,14 +5,14 @@ local next = next
 local M = {}
 require("foxcaves.module_helper").setmodenv()
 
-function M.chars(len)
+function M.bytes(len)
     local randomstream = io.open("/dev/urandom", "rb")
     local ret = randomstream:read(len)
     randomstream:close()
     return ret
 end
 
-function M.bytes(len)
+function M.numbers(len)
     local str = M.chars(len)
     return {str:byte(1, len)}
 end
@@ -24,7 +24,7 @@ local chars = {
 }
 local charcount = #chars
 function M.string(len)
-    local ret = M.bytes(len)
+    local ret = M.numbers(len)
     for k, v in next, ret do
         ret[k] = chars[(v % charcount) + 1]
     end

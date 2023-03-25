@@ -33,6 +33,7 @@ server {
 
     root /var/www/foxcaves/html;
     client_max_body_size 10M;
+    client_body_buffer_size 64k;
 
     location / {
         rewrite ^ /static/index.html break;

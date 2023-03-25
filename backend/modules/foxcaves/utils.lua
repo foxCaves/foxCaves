@@ -41,26 +41,12 @@ function M.escape_html(str)
     return str
 end
 
-function M.get_body_data()
-    ngx.req.read_body()
-    local data = ngx.req.get_body_data()
-    if not data then
-        local f = ngx.req.get_body_file()
-        if not f then
-            return
-        end
-        local fh, _ = io.open(f, "r")
-        data = fh:read("*a")
-        fh:close()
-    end
-    return data
-end
-
 function M.get_post_args()
+    ngx.req.read_body()
     local ctype = ngx.var.http_content_type
 
     if ctype and ctype:lower() == "application/json" then
-        local data = M.get_body_data()
+        local data = ngx.req.get_body_data()
         local ok, res = pcall(cjson.decode, data)
         if not ok then
             return {}
@@ -68,7 +54,6 @@ function M.get_post_args()
         return res or {}
     end
 
-    ngx.req.read_body()
     return ngx.req.get_post_args() or {}
 end
 
