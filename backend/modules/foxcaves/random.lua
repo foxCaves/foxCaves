@@ -1,6 +1,5 @@
 local io = io
 local table = table
-local next = next
 local math = math
 local ngx = ngx
 
@@ -18,7 +17,7 @@ function M.seed()
     local seed_str = M.bytes(4)
     local seed = 0
     for i = 1, 4 do
-        seed = 256 * seed + str:byte(i)
+        seed = 256 * seed + seed_str:byte(i)
     end
     if ngx.worker then
         seed = ngx.now() * 1000 + ngx.worker.pid()
@@ -34,7 +33,7 @@ local chars = {
 local charcount = #chars
 function M.string(len)
     local ret = {}
-    for i = 1, len do
+    for _ = 1, len do
         table.insert(ret, chars[math.random(1, charcount)])
     end
     return table.concat(ret)
