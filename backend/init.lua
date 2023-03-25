@@ -58,3 +58,5 @@ package.path = package.path .. ";" .. path.abs(root .. "/modules"):gsub("//+", "
 local cjson = require("cjson")
 cjson.decode_max_depth(10)
 cjson.decode_invalid_numbers(false)
+
+require("foxcaves.random").seed()
