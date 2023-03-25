@@ -25,7 +25,16 @@ for k, _ in pairs(OSENV) do
     rawset(OSENV, k, os.getenv(k))
 end
 
+rawset(os, "exit", nil)
 rawset(os, "execute", nil)
+
+local _jit = jit
+rawset(_G, "jit", {
+    version = _jit.version,
+    version_num = _jit.version_num,
+    arch = _jit.arch,
+    opt = {},
+})
 
 local _debug = debug
 rawset(_G, "debug", {
@@ -35,11 +44,10 @@ rawset(_G, "debug", {
 })
 
 for k, v in pairs(_G) do
-    if k:sub(1, 1) ~= "_" and not getmetatable(v) and type(v) == "table" then
+    if not getmetatable(v) and type(v) == "table" then
         protect_table(v, k)
     end
 end
-protect_table(_G, "_G")
 
 -- Load module path
 local path = require("path")
