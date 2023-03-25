@@ -1,5 +1,4 @@
 local error = error
-local tostring = tostring
 local pairs = pairs
 local rawset = rawset
 local os = os
@@ -14,10 +13,10 @@ require("lfs")
 -- Protect global table
 local function protect_table(tbl, name)
     setmetatable(tbl, {
-        __index = function(t, k)
+        __index = function(_, k)
             error("Attempt to read unknown from table " .. name .. ": " .. k)
         end,
-        __newindex = function(t, k)
+        __newindex = function(_, k)
             error("Attempt to write to _" .. name .. ": " .. k)
         end,
         __metatable = false,
