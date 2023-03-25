@@ -46,7 +46,7 @@ local function run_init()
         traceback = _debug.traceback,
     })
 
-    rawset(_G, "rawget", nil)
+    --rawset(_G, "rawget", nil)
     rawset(_G, "rawset", nil)
 
     for k, v in pairs(_G) do
