@@ -2,6 +2,8 @@ local error = error
 local pairs = pairs
 local os = os
 local type = type
+local getmetatable = getmetatable
+local setmetatable = setmetatable
 _G.dns_query_timeout = 10 * 1000
 
 local init_ran = _G.init_ran
@@ -50,7 +52,7 @@ local function run_init()
     rawset(_G, "rawset", nil)
 
     for k, v in pairs(_G) do
-        if k:sub(1, 1) ~= "_" and type(v) == "table" then
+        if k:sub(1, 1) ~= "_" and not getmetatable(v) and type(v) == "table" then
             protect_table(v, k)
         end
     end
