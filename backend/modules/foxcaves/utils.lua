@@ -1,5 +1,4 @@
 local cjson = require("cjson")
-local io = io
 local ngx = ngx
 local table = table
 local type = type
