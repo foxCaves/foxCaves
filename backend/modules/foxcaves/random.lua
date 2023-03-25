@@ -1,6 +1,8 @@
 local io = io
 local table = table
 local next = next
+local math = math
+local ngx = ngx
 
 local M = {}
 require("foxcaves.module_helper").setmodenv()
@@ -12,9 +14,16 @@ function M.bytes(len)
     return ret
 end
 
-function M.numbers(len)
-    local str = M.chars(len)
-    return {str:byte(1, len)}
+function M.seed()
+    local seed_str = M.bytes(4)
+    local seed = 0
+    for i = 1, 4 do
+        seed = 256 * seed + str:byte(i)
+    end
+    if ngx.worker then
+        seed = ngx.now() * 1000 + ngx.worker.pid()
+    end
+    math.randomseed(seed)
 end
 
 local chars = {
@@ -24,9 +33,9 @@ local chars = {
 }
 local charcount = #chars
 function M.string(len)
-    local ret = M.numbers(len)
-    for k, v in next, ret do
-        ret[k] = chars[(v % charcount) + 1]
+    local ret = {}
+    for i = 1, len do
+        table.insert(ret, chars[math.random(1, charcount)])
     end
     return table.concat(ret)
 end

@@ -8,6 +8,7 @@ package.loaded["resty.aws-signature"] = {
 }
 rawset(_G, "ngx", {
     ctx = {},
+    worker = false,
 })
 
 local path = require("path")
