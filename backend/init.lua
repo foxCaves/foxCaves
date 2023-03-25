@@ -1,6 +1,5 @@
 local error = error
 local pairs = pairs
-local rawset = rawset
 local os = os
 local type = type
 _G.dns_query_timeout = 10 * 1000
@@ -28,6 +27,7 @@ local function run_init()
         return
     end
     _G.init_ran = true
+    local rawset = rawset
 
     -- Load environment vars
     rawset(_G, "OSENV", {
