@@ -70,7 +70,10 @@ jobs:
           npx playwright install chromium --with-deps
           npx playwright test
       - name: Run browser tests
-        run: npx playwright test
+        run: |
+          set -ex
+          cd frontend
+          npx playwright test
       - name: Test container teardown
         if: always()
         run: |
