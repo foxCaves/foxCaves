@@ -106,7 +106,7 @@ function M.check()
     local user, api_key = parse_authorization_header(ngx.var.http_authorization)
     if user and api_key then
         local success = M.login(user, api_key, {
-                                no_session = true, login_method = M.LOGIN_METHOD_API_KEY
+                            no_session = true, login_method = M.LOGIN_METHOD_API_KEY
                         })
         if not success then
             return utils.api_error("Invalid username or API key", 401)
