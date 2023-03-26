@@ -1,12 +1,12 @@
 local error = error
+local setmetatable = setmetatable
 _G.dns_query_timeout = 10 * 1000
 
 require("path")
 require("lfs")
 
--- Protect global table
-local function protect_table(tbl, name)
-    setmetatable(tbl, {
+function protect_table(tbl, name)
+    return setmetatable(tbl, {
         __index = function(_, k)
             error("Attempt to read unknown from table " .. name .. ": " .. k)
         end,
@@ -28,6 +28,7 @@ end
 rawset(os, "exit", nil)
 rawset(os, "execute", nil)
 
+-- Remove not-to-be-used functions
 local _jit = jit
 rawset(_G, "jit", {
     version = _jit.version,
@@ -44,6 +45,7 @@ rawset(_G, "debug", {
     traceback = _debug.traceback,
 })
 
+-- Protect global table(s)
 for k, v in pairs(_G) do
     if not getmetatable(v) and type(v) == "table" then
         protect_table(v, k)
