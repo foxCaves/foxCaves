@@ -5,7 +5,7 @@ _G.dns_query_timeout = 10 * 1000
 require("path")
 require("lfs")
 
-function protect_table(tbl, name)
+local function protect_table(tbl, name)
     return setmetatable(tbl, {
         __index = function(_, k)
             error("Attempt to read unknown from table " .. name .. ": " .. k)
@@ -16,6 +16,7 @@ function protect_table(tbl, name)
         __metatable = false,
     })
 end
+rawset(_G, "protect_table", protect_table)
 
 -- Load environment vars
 rawset(_G, "OSENV", {
