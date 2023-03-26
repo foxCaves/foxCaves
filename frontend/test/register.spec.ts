@@ -1,7 +1,8 @@
+import { randomUUID } from 'node:crypto';
 import { test } from '@playwright/test';
 
 test('Registration page', async ({ page }) => {
-    const username = 'special_test_user';
+    const username = `special_test_user_${randomUUID()}`;
     const password = 'special_test_password';
 
     await page.goto('http://main.foxcaves:8080/register');
@@ -11,5 +12,5 @@ test('Registration page', async ({ page }) => {
     await page.locator('input[name="email"]').fill(`${username}@main.foxcaves`);
     await page.getByLabel('I agree to the Terms of Service and Privacy Policy').check();
     await page.getByRole('button').locator('text="Register"').click();
-    await (process.env.CI ? page.locator('.Toastify__toast--success').waitFor() : page.getByRole('alert').waitFor());
+    await page.locator('.Toastify__toast--success').waitFor();
 });
