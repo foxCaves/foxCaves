@@ -2,7 +2,7 @@ name: Run tests
 on:
   workflow_call: {}
 jobs:
-  lint:
+  frontend:
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -10,11 +10,6 @@ jobs:
     steps:
       - name: Check out the repo
         uses: actions/checkout@v3
-      - name: Lint backend
-        uses: nebularg/actions-luacheck@v1
-        with:
-          path: backend
-          annotate: error
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
@@ -33,3 +28,16 @@ jobs:
           eslint_extensions: js,jsx,ts,tsx
           prettier: true
           prettier_dir: frontend/src
+  backend:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      checks: write
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v3
+      - name: Lint backend
+        uses: nebularg/actions-luacheck@v1
+        with:
+          path: backend
+          annotate: error
