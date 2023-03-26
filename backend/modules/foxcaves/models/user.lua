@@ -207,23 +207,23 @@ function user_mt:save()
 
     if self.require_email_confirmation then
         self.require_email_confirmation = nil
-        if config.app.require_email_confirmation then
-            local emailid = random.string(32)
-
-            local email_text ="You have recently registered or changed your E-Mail on foxCaves." ..
-                            "\nPlease click the following link to activate your E-Mail:\n" ..
-                            config.http.main_url .. "/email/code/" .. emailid
-
-            local redis_inst = redis.get_shared()
-            local emailkey = "emailkeys:" .. emailid
-            redis_inst:hmset(emailkey, "user", self.id, "action", "activation")
-            redis_inst:expire(emailkey, 172800) --48 hours
-
-            mail.send(self, "Activation E-Mail", email_text)
-        else
+        if not config.app.require_email_confirmation then
             self.active = 1
             return self:save()
         end
+
+        local emailid = random.string(32)
+
+        local email_text ="You have recently registered or changed your E-Mail on foxCaves." ..
+                        "\nPlease click the following link to activate your E-Mail:\n" ..
+                        config.http.main_url .. "/email/code/" .. emailid
+
+        local redis_inst = redis.get_shared()
+        local emailkey = "emailkeys:" .. emailid
+        redis_inst:hmset(emailkey, "user", self.id, "action", "activation")
+        redis_inst:expire(emailkey, 172800) --48 hours
+
+        mail.send(self, "Activation E-Mail", email_text)
     end
 
     if self.kick_user then
