@@ -11,6 +11,5 @@ test('Registration page', async ({ page }) => {
     await page.locator('input[name="email"]').fill(`${username}@main.foxcaves`);
     await page.getByLabel('I agree to the Terms of Service and Privacy Policy').check();
     await page.getByRole('button').locator('text="Register"').click();
-    await page.getByRole('alert').waitFor();
-    // TODO: Check for success message
+    await (process.env.CI ? page.locator('.Toastify__toast--success').waitFor() : page.getByRole('alert').waitFor());
 });

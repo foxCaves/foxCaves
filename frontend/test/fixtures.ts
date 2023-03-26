@@ -27,30 +27,23 @@ export const test = baseTest.extend<object, { workerStorageState: string }>({
             const username = `test_user_${id}`;
             const password = `test_password_${id}`;
 
-            try {
-                await page.goto('http://main.foxcaves:8080/register');
-                await page.locator('input[name="username"]').fill(username);
-                await page.locator('input[name="password"]').fill(password);
-                await page.locator('input[name="passwordConfirm"]').fill(password);
-                await page.locator('input[name="email"]').fill(`${username}@main.foxcaves`);
-                await page.getByLabel('I agree to the Terms of Service and Privacy Policy').check();
-                await page.getByRole('button').locator('text="Register"').click();
-                await page.getByRole('alert').waitFor();
-                // TODO: Check for success message
-            } catch (error: unknown) {
-                // The user might already exist, that's fine if we're not in CI.
-                if (process.env.CI) {
-                    throw error;
-                }
-            }
+            await page.goto('http://main.foxcaves:8080/register');
+            await page.locator('input[name="username"]').fill(username);
+            await page.locator('input[name="password"]').fill(password);
+            await page.locator('input[name="passwordConfirm"]').fill(password);
+            await page.locator('input[name="email"]').fill(`${username}@main.foxcaves`);
+            await page.getByLabel('I agree to the Terms of Service and Privacy Policy').check();
+            await page.getByRole('button').locator('text="Register"').click();
+            await (process.env.CI
+                ? page.locator('.Toastify__toast--success').waitFor()
+                : page.getByRole('alert').waitFor());
 
             await page.goto('http://main.foxcaves:8080/login');
             await page.locator('input[name="username"]').fill(username);
             await page.locator('input[name="password"]').fill(password);
             await page.getByLabel('Remember me').check();
             await page.getByRole('button').locator('text="Login"').click();
-            await page.getByRole('alert').waitFor();
-            // TODO: Check for success message
+            await page.locator('.Toastify__toast--success').waitFor();
 
             await page.goto('http://main.foxcaves:8080/login');
             await page.locator('text="Home"').waitFor();
