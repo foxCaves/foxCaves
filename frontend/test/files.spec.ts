@@ -1,9 +1,9 @@
+import assert from 'node:assert';
 import { randomUUID } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 import { extname, join } from 'node:path';
 import { Page } from '@playwright/test';
 import { test } from './fixtures';
-import assert from 'node:assert';
 
 // eslint-disable-next-line unicorn/prefer-module
 const PWD = __dirname;
