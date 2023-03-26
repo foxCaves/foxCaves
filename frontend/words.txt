@@ -4,3 +4,4 @@ f0x
 foxcaves
 f0xes
 Toastify
+filechooser

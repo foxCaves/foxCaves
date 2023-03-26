@@ -13,7 +13,7 @@ R.register_route("/api/v1/users/{user}/links", "GET", R.make_route_opts({ empty_
         return utils.api_error("You are not list links for this user", 403)
     end
 
-    local res = link_model.get_by_user(user)
+    local res = link_model.get_by_owner(user)
     for k, v in next, res do
         res[k] = v:get_public()
     end

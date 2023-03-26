@@ -13,7 +13,7 @@ R.register_route("/api/v1/users/{user}/files", "GET", R.make_route_opts({ empty_
         return utils.api_error("You are not list files for this user", 403)
     end
 
-    local res = file_model.get_by_user(user)
+    local res = file_model.get_by_owner(user)
     for k, v in next, res do
         res[k] = v:get_private()
     end

@@ -3,6 +3,7 @@ local lfs = require("lfs")
 local ngx = ngx
 local os = os
 local io = io
+local error = error
 local setmetatable = setmetatable
 local math_min = math.min
 
@@ -24,11 +25,17 @@ function M:open(id, size, ftype)
     lfs.mkdir(dir)
     local filename = dir .. "/" .. ftype
 
+    local fh = io.open(filename, "wb")
+    if not fh then
+        error("Could not open file " .. filename .. " for writing")
+    end
+
     return setmetatable({
         id = id,
         size = size,
         ftype = ftype,
-        fh = io.open(filename, "wb"),
+        fh = fh,
+        config = self.config,
     }, UPLOAD)
 end
 
@@ -58,7 +65,9 @@ function UPLOAD:chunk(chunk)
 end
 
 function UPLOAD:finish()
-    self.fh:close()
+    if self.fh then
+        self.fh:close()
+    end
     self.fh = nil
 end
 

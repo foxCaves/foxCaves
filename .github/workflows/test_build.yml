@@ -69,12 +69,12 @@ jobs:
           timeout 30s bash -c "until $HTTP_GET http://main.foxcaves:8080/api/v1/system/info; do sleep 1; done" || true
           $HTTP_GET http://main.foxcaves:8080/files
           $HTTP_GET http://main.foxcaves:8080/api/v1/system/info
-      - name: Prepare browser tests
+      - name: Prepare tests
         working-directory: ./frontend
         run: npm ci && npx playwright install chromium --with-deps
-      - name: Run browser tests
+      - name: Run tests
         working-directory: ./frontend
-        run: npx playwright test
+        run: npm test
       - name: Test container teardown
         if: always()
         run: |

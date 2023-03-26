@@ -11,6 +11,7 @@ local auth_utils = require("foxcaves.auth_utils")
 
 local setmetatable = setmetatable
 local ngx = ngx
+local next = next
 
 local user_mt = {}
 local user_model = {}
@@ -30,6 +31,15 @@ local function makeusermt(user)
 end
 
 local user_select = "id, username, email, password, login_key, api_key, active, storage_quota, " .. database.TIME_COLUMNS
+
+function user_model.get_by_query(query, ...)
+    local users = database.get_shared():query("SELECT " .. user_select .. " FROM users " ..
+                                              "WHERE " .. query, ...)
+    for k,v in next, users do
+        users[k] = makeusermt(v)
+    end
+    return users
+end
 
 function user_model.get_by_id(id)
     if (not id) or (not uuid.is_valid(id)) then

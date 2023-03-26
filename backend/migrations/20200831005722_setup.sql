@@ -10,8 +10,10 @@ CREATE TABLE users (
     created_at timestamp without time zone DEFAULT (now() at time zone 'utc'),
     updated_at timestamp without time zone DEFAULT (now() at time zone 'utc')
 );
+
 CREATE UNIQUE INDEX ON users (lower(username));
 CREATE UNIQUE INDEX ON users (lower(email));
+
 
 CREATE TABLE files (
     id VARCHAR(32) PRIMARY KEY,
@@ -26,6 +28,7 @@ CREATE TABLE files (
     updated_at timestamp without time zone DEFAULT (now() at time zone 'utc'),
     expires_at timestamp without time zone DEFAULT NULL
 );
+
 CREATE INDEX ON files ("owner");
 
 CREATE INDEX ON files ("created_at");
@@ -45,6 +48,7 @@ CREATE TABLE links (
     updated_at timestamp without time zone DEFAULT (now() at time zone 'utc'),
     expires_at timestamp without time zone DEFAULT NULL
 );
+
 CREATE INDEX ON links ("owner");
 
 CREATE INDEX ON links ("created_at");
