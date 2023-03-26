@@ -25,7 +25,7 @@ end
 
 function M.login(username_or_id, credential, options)
     options = options or {}
-    local nosession = options.nosession
+    local no_session = options.no_session
     local login_with_id = options.login_with_id
 
     if utils.is_falsy_or_null(username_or_id) or utils.is_falsy_or_null(credential) then
@@ -48,7 +48,7 @@ function M.login(username_or_id, credential, options)
         return false
     end
 
-    if not nosession then
+    if not no_session then
         local session_id = random.string(32)
         local cookie = cookies.get_instance()
         cookie:set({
@@ -106,7 +106,7 @@ function M.check()
     local user, api_key = parse_authorization_header(ngx.var.http_authorization)
     if user and api_key then
         local success = M.login(user, api_key, {
-                            nosession = true, login_method = M.LOGIN_METHOD_API_KEY
+                                no_session = true, login_method = M.LOGIN_METHOD_API_KEY
                         })
         if not success then
             return utils.api_error("Invalid username or API key", 401)
@@ -126,7 +126,7 @@ function M.check()
         local result = redis_inst:hmget(sessionKey, "id", "login_key")
         if (not utils.is_falsy_or_null(result)) and
                 M.login(result[1], result[2], {
-                    nosession = true, login_with_id = true, login_method = M.LOGIN_METHOD_LOGIN_KEY
+                    no_session = true, login_with_id = true, login_method = M.LOGIN_METHOD_LOGIN_KEY
                 }) then
             ngx.ctx.session_id = session_id
             cookie:set({
