@@ -28,6 +28,7 @@ return {
         require_email_confirmation = false,
         insecure_login_keys = true,
         enable_test_error = true,
+        enable_test_reset = true,
     },
     storage = {
         default = "fs",

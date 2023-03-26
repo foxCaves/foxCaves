@@ -240,7 +240,7 @@ export const FilesPage: React.FC = () => {
             <Container>
                 <Row className="mt-2">
                     <Col
-                        className="pt-3 pb-3 border border-1 border-info rounded d-flex justify-content-center"
+                        className="pt-3 pb-3 border border-1 border-info rounded d-flex justify-content-center file-drop-zone"
                         {...dropzone.getRootProps()}
                     >
                         <input {...dropzone.getInputProps()} />
