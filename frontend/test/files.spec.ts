@@ -40,6 +40,11 @@ test('Upload image file', async ({ page }) => {
 
     const src = await file.locator('.card-img-top').getAttribute('src');
     assert(src?.includes('http://short.foxcaves:8080'));
+
+    /*
+     * TODO: Check thumbnail is valid image
+     * TODO: Check file actually exists and is correct
+     */
 });
 
 test('Upload non-image file', async ({ page }) => {
@@ -49,6 +54,8 @@ test('Upload non-image file', async ({ page }) => {
 
     const src = await file.locator('.card-img-top').getAttribute('src');
     assert(!src?.includes('http://short.foxcaves:8080'));
+
+    // TODO: Check file actually exists and is correct
 });
 
 test('Delete file', async ({ page }) => {
