@@ -47,27 +47,6 @@ jobs:
     permissions:
       contents: read
       checks: write
-    services:
-      postgres:
-        image: postgres
-        env:
-          POSTGRES_PASSWORD: postgres
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-      redis:
-        image: redis
-        ports:
-          - 6379:6379
-        options: >-
-          --health-cmd "redis-cli ping"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
 
     steps:
       - name: Check out the repo
@@ -101,7 +80,7 @@ jobs:
       - name: Add to hostsfile
         run: sudo bash -c "echo '127.0.0.1 main.foxcaves short.foxcaves' >> /etc/hosts"
       - name: Run test container
-        run: docker run --add-host=host.docker.internal:host-gateway --name=foxcaves-${{ github.sha }} -p 127.0.0.1:8080:80 -e ENVIRONMENT=testing -d foxcaves-container
+        run: docker-compose -f docker-compose.yml -f docker-compose.testing.yml up -d --build --remove-orphans
       - name: Run some basic tests
         run: |
           set -ex
@@ -124,6 +103,5 @@ jobs:
       - name: Test container teardown
         if: always()
         run: |
-          docker stop foxcaves-${{ github.sha }}
-          docker logs foxcaves-${{ github.sha }}
-          docker rm foxcaves-${{ github.sha }}
+          docker-compose -f docker-compose.yml -f docker-compose.testing.yml logs site
+          docker-compose -f docker-compose.yml -f docker-compose.testing.yml down
