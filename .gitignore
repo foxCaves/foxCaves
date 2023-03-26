@@ -2,5 +2,6 @@
 /config
 /data
 /frontend/build
+/frontend/test-results
 .eslintcache
 node_modules

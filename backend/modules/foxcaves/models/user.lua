@@ -2,12 +2,12 @@ local uuid = require("resty.uuid")
 local argon2 = require("argon2")
 local database = require("foxcaves.database")
 local redis = require("foxcaves.redis")
+local config = require("foxcaves.config")
 local events = require("foxcaves.events")
 local mail = require("foxcaves.mail")
 local random = require("foxcaves.random")
 local consts = require("foxcaves.consts")
 local auth_utils = require("foxcaves.auth_utils")
-local main_url = require("foxcaves.config").http.main_url
 
 local setmetatable = setmetatable
 local ngx = ngx
@@ -178,6 +178,11 @@ function user_mt:send_self_event(action)
 end
 
 function user_mt:save()
+    if self.require_email_confirmation and not config.app.require_email_confirmation then
+        self.require_email_confirmation = nil
+        self.active = 1
+    end
+
     local res, primary_push_action
     if self.not_in_db then
         res = database.get_shared():query_single(
@@ -209,8 +214,8 @@ function user_mt:save()
         local emailid = random.string(32)
 
         local email_text ="You have recently registered or changed your E-Mail on foxCaves." ..
-                          "\nPlease click the following link to activate your E-Mail:\n" ..
-                          main_url .. "/email/code/" .. emailid
+                        "\nPlease click the following link to activate your E-Mail:\n" ..
+                        config.http.main_url .. "/email/code/" .. emailid
 
         local redis_inst = redis.get_shared()
         local emailkey = "emailkeys:" .. emailid

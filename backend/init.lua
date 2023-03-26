@@ -38,6 +38,7 @@ rawset(_G, "jit", {
 
 local _debug = debug
 rawset(_G, "debug", {
+    getupvalue = _debug.getupvalue,
     getlocal = _debug.getlocal,
     getinfo = _debug.getinfo,
     traceback = _debug.traceback,

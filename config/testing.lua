@@ -24,6 +24,10 @@ return {
     files = {
         thumbnail_max_size = 50 * 1024 * 1024,
     },
+    app = {
+        require_email_confirmation = false,
+        insecure_login_keys = true,
+    },
     storage = {
         default = "fs",
 
