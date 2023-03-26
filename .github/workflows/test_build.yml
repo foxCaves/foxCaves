@@ -76,7 +76,7 @@ jobs:
       - name: Test container teardown
         if: always()
         run: |
-          docker-compose -f docker-compose.yml -f docker-compose.testing.yml logs site
+          docker-compose -f docker-compose.yml -f docker-compose.testing.yml logs
           docker-compose -f docker-compose.yml -f docker-compose.testing.yml down
 
       # Push if we are on main
