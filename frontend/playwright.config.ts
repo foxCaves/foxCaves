@@ -13,6 +13,7 @@ export default defineConfig({
     workers: process.env.CI ? 1 : undefined,
     // Reporter to use
     reporter: process.env.CI ? 'github' : 'list',
+    timeout: 5000,
     use: {
         // Base URL to use in actions like `await page.goto('/')`.
         baseURL: 'http://main.foxcaves:8080',

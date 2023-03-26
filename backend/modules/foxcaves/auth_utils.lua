@@ -1,5 +1,6 @@
 local b64 = require("ngx.base64")
 local cookies = require("foxcaves.cookies")
+local insecure_login_keys = require("foxcaves.config").app.insecure_login_keys
 
 local ngx = ngx
 
@@ -9,7 +10,11 @@ require("foxcaves.module_helper").setmodenv()
 local LOGIN_KEY_MAX_AGE = 30 * 24 * 60 * 60
 
 function M.hash_login_key(login_key)
-    return ngx.hmac_sha1(login_key or ngx.ctx.user.login_key, ngx.var.http_user_agent or ngx.var.remote_addr)
+    local login_key_hmac = ngx.var.http_user_agent or ngx.var.remote_addr
+    if insecure_login_keys then
+        login_key_hmac = "login_key_dummy"
+    end
+    return ngx.hmac_sha1(login_key or ngx.ctx.user.login_key, login_key_hmac)
 end
 
 function M.send_login_key()

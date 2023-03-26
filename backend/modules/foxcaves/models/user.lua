@@ -2,12 +2,12 @@ local uuid = require("resty.uuid")
 local argon2 = require("argon2")
 local database = require("foxcaves.database")
 local redis = require("foxcaves.redis")
+local config = require("foxcaves.config")
 local events = require("foxcaves.events")
 local mail = require("foxcaves.mail")
 local random = require("foxcaves.random")
 local consts = require("foxcaves.consts")
 local auth_utils = require("foxcaves.auth_utils")
-local main_url = require("foxcaves.config").http.main_url
 
 local setmetatable = setmetatable
 local ngx = ngx
@@ -206,20 +206,24 @@ function user_mt:save()
     self.updated_at = res.updated_at
 
     if self.require_email_confirmation then
-        local emailid = random.string(32)
-
-        local email_text ="You have recently registered or changed your E-Mail on foxCaves." ..
-                          "\nPlease click the following link to activate your E-Mail:\n" ..
-                          main_url .. "/email/code/" .. emailid
-
-        local redis_inst = redis.get_shared()
-        local emailkey = "emailkeys:" .. emailid
-        redis_inst:hmset(emailkey, "user", self.id, "action", "activation")
-        redis_inst:expire(emailkey, 172800) --48 hours
-
-        mail.send(self, "Activation E-Mail", email_text)
-
         self.require_email_confirmation = nil
+        if config.app.require_email_confirmation then
+            local emailid = random.string(32)
+
+            local email_text ="You have recently registered or changed your E-Mail on foxCaves." ..
+                            "\nPlease click the following link to activate your E-Mail:\n" ..
+                            config.http.main_url .. "/email/code/" .. emailid
+
+            local redis_inst = redis.get_shared()
+            local emailkey = "emailkeys:" .. emailid
+            redis_inst:hmset(emailkey, "user", self.id, "action", "activation")
+            redis_inst:expire(emailkey, 172800) --48 hours
+
+            mail.send(self, "Activation E-Mail", email_text)
+        else
+            self.active = 1
+            return self:save()
+        end
     end
 
     if self.kick_user then
