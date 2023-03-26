@@ -37,8 +37,11 @@ export const test = baseTest.extend<object, { workerStorageState: string }>({
                 await page.getByRole('button').locator('text="Register"').click();
                 await page.getByRole('alert').waitFor();
                 // TODO: Check for success message
-            } catch {
-                // The user might already exist, that's fine.
+            } catch (error: unknown) {
+                // The user might already exist, that's fine if we're not in CI.
+                if (process.env.CI) {
+                    throw error;
+                }
             }
 
             await page.goto('http://main.foxcaves:8080/login');
