@@ -3,6 +3,7 @@ local random = require("foxcaves.random")
 local short_url = require("foxcaves.config").http.short_url
 local user_model = require("foxcaves.models.user")
 
+local ngx = ngx
 local setmetatable = setmetatable
 local next = next
 
