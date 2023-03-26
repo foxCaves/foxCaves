@@ -25,7 +25,7 @@ async function uploadFile(file: string, page: Page) {
 
     await page.locator('.file-drop-zone').click();
     await page.locator('.Toastify__toast--success').waitFor();
-    await page.locator(`text="${filename}"`).waitFor();
+    await fileLocator(filename, page).waitFor();
     return filename;
 }
 
