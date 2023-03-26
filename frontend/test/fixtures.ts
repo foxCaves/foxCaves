@@ -50,7 +50,7 @@ export const test = baseTest.extend<object, { workerStorageState: string }>({
             // TODO: Check for success message
 
             await page.goto('http://main.foxcaves:8080/login');
-            await page.waitForURL('http://main.foxcaves:8080');
+            await page.locator('text="Home"').waitFor();
             // End of authentication steps.
 
             await page.context().storageState({ path: fileName });
