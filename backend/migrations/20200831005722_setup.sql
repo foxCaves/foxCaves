@@ -26,7 +26,7 @@ CREATE TABLE files (
     updated_at timestamp without time zone DEFAULT (now() at time zone 'utc'),
     expires_at timestamp without time zone DEFAULT NULL
 );
-CREATE INDEX ON files (owner);
+CREATE INDEX ON files ("owner");
 
 CREATE INDEX ON files ("uploaded");
 CREATE INDEX ON files ("created_at");
@@ -45,7 +45,7 @@ CREATE TABLE links (
     updated_at timestamp without time zone DEFAULT (now() at time zone 'utc'),
     expires_at timestamp without time zone DEFAULT NULL
 );
-CREATE INDEX ON links (owner);
+CREATE INDEX ON links ("owner");
 
 CREATE INDEX ON links ("created_at");
 CREATE INDEX ON links ("updated_at");
