@@ -2,3 +2,18 @@ services:
   site:
     environment:
       ENVIRONMENT: testing
+    volumes:
+      - site_config:/var/www/foxcaves/config
+      - site_storage:/var/www/foxcaves/storage
+  redis:
+    volumes:
+      - redis:/data
+  postgres:
+    volumes:
+      - postgres:/var/lib/postgresql/data
+
+volumes:
+  site_config: {}
+  site_storage: {}
+  redis: {}
+  postgres: {}
