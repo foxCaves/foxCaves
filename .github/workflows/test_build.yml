@@ -58,6 +58,8 @@ jobs:
             ghcr.io/foxcaves/site/foxcaves-site:latest
 
       # Run tests
+      - name: Add to hostsfile
+        run: sudo bash -c "echo '127.0.0.1 main.foxcaves short.foxcaves' >> /etc/hosts"
       - name: Run test container
         run: docker-compose -f docker-compose.yml -f docker-compose.testing.yml up -d --remove-orphans
       - name: Run some basic tests
