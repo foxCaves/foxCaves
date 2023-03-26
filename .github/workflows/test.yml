@@ -101,7 +101,7 @@ jobs:
       - name: Add to hostsfile
         run: sudo bash -c "echo '127.0.0.1 main.foxcaves short.foxcaves' >> /etc/hosts"
       - name: Run test container
-        run: docker run --name=foxcaves-${{ github.sha }} --add-host=postgres:host-gateway --add-host=redis:host-gateway -p 127.0.0.1:8080:80 -e ENVIRONMENT=testing -d foxcaves-container
+        run: docker run --add-host=host.docker.internal:host-gateway --name=foxcaves-${{ github.sha }} -p 127.0.0.1:8080:80 -e ENVIRONMENT=testing -d foxcaves-container
       - name: Run some basic tests
         run: |
           set -ex

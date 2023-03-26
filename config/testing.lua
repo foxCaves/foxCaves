@@ -1,10 +1,10 @@
 return {
     redis = {
-        host = "redis",
+        host = "host.docker.internal",
         port = 6379,
     },
     postgres = {
-        host = "postgres",
+        host = "host.docker.internal",
         port = 5432,
         user = "postgres",
         database = "postgres",
@@ -12,7 +12,7 @@ return {
         use_migrations = true,
     },
     email = {
-        host = "localhost",
+        host = "host.docker.internal",
         port = 25,
         from = "foxcaves@localhost",
     },
