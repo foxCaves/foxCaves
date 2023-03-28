@@ -133,6 +133,7 @@ test('Delete file', async ({ browser, page }) => {
         state: 'detached',
     });
 
+    // Verify thumbnail and file are both gone
     await checkFile('', filePage);
 
     await axios(thumbnailSrc, {
