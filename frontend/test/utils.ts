@@ -14,6 +14,8 @@ export async function doLoginPage(page: Page, user?: TestUser): Promise<TestUser
         };
     }
 
+    await page.context().storageState(undefined);
+
     await page.goto('http://main.foxcaves:8080/register');
     await page.locator('input[name="username"]').fill(user.username);
     await page.locator('input[name="password"]').fill(user.password);
@@ -31,7 +33,14 @@ export async function doLoginPage(page: Page, user?: TestUser): Promise<TestUser
     await page.locator('.Toastify__toast--success').waitFor();
 
     await page.goto('http://main.foxcaves:8080/login');
-    await page.locator('text="Home"').waitFor();
+    await page.locator(`text="Welcome, ${user.username}!"`).waitFor();
 
     return user;
+}
+
+export async function doLogoutPage(page: Page): Promise<void> {
+    await page.context().storageState(undefined);
+
+    await page.goto('http://main.foxcaves:8080/logout');
+    await page.locator('text="Welcome, Guest!"').waitFor();
 }
