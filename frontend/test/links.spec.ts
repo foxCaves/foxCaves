@@ -17,6 +17,11 @@ function linkLocator(linkUrl: string, page: Page) {
     return page.locator('tr', { has: page.locator('td', { has: page.locator(`a[href="${linkUrl}"]`) }) });
 }
 
+test('Links page', async ({ page }) => {
+    await page.goto('http://main.foxcaves:8080/links');
+    await page.waitForSelector('text="Refresh"');
+});
+
 test('Create link', async ({ page }) => {
     await page.goto('http://main.foxcaves:8080/links');
     const linkUrl = await createLink(page);

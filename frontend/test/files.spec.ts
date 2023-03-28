@@ -33,6 +33,11 @@ function fileLocator(filename: string, page: Page) {
     return page.locator('div.file-card', { has: page.locator(`text="${filename}"`) });
 }
 
+test('Files page', async ({ page }) => {
+    await page.goto('http://main.foxcaves:8080/files');
+    await page.waitForSelector('text="Refresh"');
+});
+
 test('Upload image file', async ({ page }) => {
     await page.goto('http://main.foxcaves:8080/files');
     const filename = await uploadFile('test.jpg', page);
