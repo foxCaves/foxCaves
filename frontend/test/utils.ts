@@ -2,9 +2,8 @@ import { randomUUID } from 'node:crypto';
 import { Browser, Page } from '@playwright/test';
 
 export async function doLoginPage(page: Page): Promise<void> {
-    const id = randomUUID();
-    const username = `test_user_${id}`;
-    const password = `test_password_${id}`;
+    const username = `test_user_${randomUUID()}`;
+    const password = `test_password_${randomUUID()}`;
 
     await page.goto('http://main.foxcaves:8080/register');
     await page.locator('input[name="username"]').fill(username);
