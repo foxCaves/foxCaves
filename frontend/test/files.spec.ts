@@ -118,12 +118,10 @@ test('Delete file', async ({ browser, page }) => {
     await page.goto('http://main.foxcaves:8080/files');
     await filePage.goto('http://main.foxcaves:8080/files');
     const filename = await uploadFile('test.jpg', page);
-
-    await viewAndCheckFile(filename, 'test.jpg', filePage);
-
     const file = fileLocator(filename, page);
 
-    // Verify thumbnail exists and is a valid image
+    // Verify file and thumbnail exist
+    await viewAndCheckFile(filename, 'test.jpg', filePage);
     const thumbnailSrc = (await file.locator('.card-img-top').getAttribute('src'))!;
     assert(thumbnailSrc.includes('http://short.foxcaves:8080'));
     await axios(thumbnailSrc, {
