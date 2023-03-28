@@ -1,21 +1,38 @@
-import fs from 'node:fs';
+import { existsSync } from 'node:fs';
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { test as baseTest } from '@playwright/test';
+import { doLoginPage, TestUser } from './utils';
 
-export const test = baseTest.extend<object, { workerStorageState: string }>({
+async function getStoragePath(suffix: 'storage' | 'user'): Promise<string> {
+    const basePath = path.resolve(test.info().project.outputDir, '.auth');
+    try {
+        await mkdir(basePath, { recursive: true });
+    } catch {
+        // Ignore errors.
+    }
+
+    // Use parallelIndex as a unique identifier for each worker.
+    const id = test.info().parallelIndex;
+    return path.resolve(basePath, `${id}_${suffix}.json`);
+}
+
+export const test = baseTest.extend<{ testUser: TestUser }, { workerStorageState: string }>({
     // Use the same storage state for all tests in this worker.
     storageState: async ({ workerStorageState }, use) => {
         await use(workerStorageState);
     },
 
+    testUser: async () => {
+        return JSON.parse(await readFile(await getStoragePath('user'), 'utf8')) as TestUser;
+    },
+
     // Authenticate once per worker with a worker-scoped fixture.
     workerStorageState: [
         async ({ browser }, use) => {
-            // Use parallelIndex as a unique identifier for each worker.
-            const id = test.info().parallelIndex;
-            const fileName = path.resolve(test.info().project.outputDir, `.auth/${id}.json`);
+            const fileName = await getStoragePath('storage');
 
-            if (fs.existsSync(fileName)) {
+            if (existsSync(fileName)) {
                 // Reuse existing authentication state if any.
                 await use(fileName);
                 return;
@@ -23,31 +40,9 @@ export const test = baseTest.extend<object, { workerStorageState: string }>({
 
             // Important: make sure we authenticate in a clean environment by unsetting storage state.
             const page = await browser.newPage({ storageState: undefined });
+            const user = await doLoginPage(page);
 
-            const username = `test_user_${id}`;
-            const password = `test_password_${id}`;
-
-            await page.goto('http://main.foxcaves:8080/register');
-            await page.locator('input[name="username"]').fill(username);
-            await page.locator('input[name="password"]').fill(password);
-            await page.locator('input[name="passwordConfirm"]').fill(password);
-            await page.locator('input[name="email"]').fill(`${username}@main.foxcaves`);
-            await page.getByLabel('I agree to the Terms of Service and Privacy Policy').check();
-            await page.getByRole('button').locator('text="Register"').click();
-            await (process.env.CI
-                ? page.locator('.Toastify__toast--success').waitFor()
-                : page.getByRole('alert').waitFor());
-
-            await page.goto('http://main.foxcaves:8080/login');
-            await page.locator('input[name="username"]').fill(username);
-            await page.locator('input[name="password"]').fill(password);
-            await page.getByLabel('Remember me').check();
-            await page.getByRole('button').locator('text="Login"').click();
-            await page.locator('.Toastify__toast--success').waitFor();
-
-            await page.goto('http://main.foxcaves:8080/login');
-            await page.locator('text="Home"').waitFor();
-            // End of authentication steps.
+            await writeFile(await getStoragePath('user'), JSON.stringify(user), 'utf8');
 
             await page.context().storageState({ path: fileName });
             await page.close();
