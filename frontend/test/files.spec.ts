@@ -32,6 +32,10 @@ async function uploadFile(file: string, page: Page) {
 }
 
 async function viewAndCheckFile(filename: string, src: string, page: Page): Promise<void> {
+    /*
+     * Find the file view page and go to it, then check the file
+     * Empty src == assume file is supposed to be gone
+     */
     const file = fileLocator(filename, page);
     await file.locator('.dropdown-toggle').click();
     await file.locator('.dropdown-item').getByText('View').click();
@@ -39,6 +43,10 @@ async function viewAndCheckFile(filename: string, src: string, page: Page): Prom
 }
 
 async function checkFile(src: string, page: Page): Promise<void> {
+    /*
+     * Assume we are on the file view page and check the file
+     * Empty src == assume file is supposed to be gone
+     */
     const href = (await page.locator('p', { hasText: 'Direct link' }).locator('a').getAttribute('href'))!;
     assert(href.includes('http://short.foxcaves:8080'));
 
