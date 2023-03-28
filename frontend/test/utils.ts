@@ -13,7 +13,7 @@ export async function doLoginPage(page: Page): Promise<void> {
     await page.locator('input[name="email"]').fill(`${username}@main.foxcaves`);
     await page.getByLabel('I agree to the Terms of Service and Privacy Policy').check();
     await page.getByRole('button').locator('text="Register"').click();
-    await (process.env.CI ? page.locator('.Toastify__toast--success').waitFor() : page.getByRole('alert').waitFor());
+    await page.locator('.Toastify__toast--success').waitFor();
 
     await page.goto('http://main.foxcaves:8080/login');
     await page.locator('input[name="username"]').fill(username);
