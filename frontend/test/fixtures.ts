@@ -23,8 +23,9 @@ export const test = baseTest.extend<{ testUser: TestUser }, { workerStorageState
         await use(workerStorageState);
     },
 
-    testUser: async () => {
-        return JSON.parse(await readFile(await getStoragePath('user'), 'utf8')) as TestUser;
+    // eslint-disable-next-line no-empty-pattern
+    testUser: async ({}, use) => {
+        await use(JSON.parse(await readFile(await getStoragePath('user'), 'utf8')) as TestUser);
     },
 
     // Authenticate once per worker with a worker-scoped fixture.
