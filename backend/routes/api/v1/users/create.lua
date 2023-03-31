@@ -39,8 +39,6 @@ R.register_route('/api/v1/users', 'POST', R.make_route_opts_anon(), function()
     end
 
     user:set_password(password)
-    user:make_new_api_key()
-    user.security_version = 1
 
     user:save()
 

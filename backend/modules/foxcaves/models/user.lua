@@ -88,10 +88,12 @@ function user_model.new()
     local user = {
         not_in_db = true,
         id = uuid.generate_random(),
+        security_version = 1,
         storage_quota = STORAGE_BASE,
         active = 0,
     }
     setmetatable(user, user_mt)
+    user:make_new_api_key()
     return user
 end
 
@@ -189,7 +191,7 @@ function user_mt:send_self_event(action)
 end
 
 function user_mt:save()
-    if self.require_email_confirmation and not config.app.require_email_confirmation then
+    if config.app.enable_user_always_active then
         self.require_email_confirmation = nil
         self.active = 1
     end

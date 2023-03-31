@@ -25,7 +25,7 @@ return {
         thumbnail_max_size = 50 * 1024 * 1024,
     },
     app = {
-        require_email_confirmation = false,
+        enable_user_always_active = true,
         enable_testing_routes = true,
     },
     storage = {
