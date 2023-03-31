@@ -1,4 +1,4 @@
-local cjson = require("cjson")
+local cjson = require('cjson')
 local ngx = ngx
 local table = table
 local type = type
@@ -7,7 +7,7 @@ local pcall = pcall
 local tostring = tostring
 
 local M = {}
-require("foxcaves.module_helper").setmodenv()
+require('foxcaves.module_helper').setmodenv()
 
 function M.register_shutdown(func)
     if not ngx.ctx.shutdown_funcs then
@@ -16,9 +16,7 @@ function M.register_shutdown(func)
     table.insert(ngx.ctx.shutdown_funcs, func)
 end
 function M.__on_shutdown()
-    if not ngx.ctx.shutdown_funcs then
-        return
-    end
+    if not ngx.ctx.shutdown_funcs then return end
 
     for _, v in next, ngx.ctx.shutdown_funcs do
         v()
@@ -27,16 +25,16 @@ function M.__on_shutdown()
 end
 
 local repTbl = {
-    ["&"] = "&amp;",
-    ["<"] = "&lt;",
-    [">"] = "&gt;",
+    ['&'] = '&amp;',
+    ['<'] = '&lt;',
+    ['>'] = '&gt;',
 }
 
 function M.escape_html(str)
-    if (not str) or type(str) ~= "string" then
+    if not str or type(str) ~= 'string' then
         return str
     end
-    str = str:gsub("[&<>]", repTbl)
+    str = str:gsub('[&<>]', repTbl)
     return str
 end
 
@@ -44,7 +42,7 @@ function M.get_post_args()
     ngx.req.read_body()
     local ctype = ngx.var.http_content_type
 
-    if ctype and ctype:lower() == "application/json" then
+    if ctype and ctype:lower() == 'application/json' then
         local data = ngx.req.get_body_data()
         local ok, res = pcall(cjson.decode, data)
         if not ok then
@@ -60,11 +58,18 @@ function M.api_error(error, code)
     return { error = error }, (code or 400)
 end
 
-function M.explode(div,str) -- credit: http://richard.warburton.it
+function M.explode(
+div,
+    str -- credit: http://richard.warburton.it
+)
     local pos, arr = 0, {}
     -- for each divider found
-    for st, sp in function() return str:find(div,pos,true) end do
-        table.insert(arr,str:sub(pos,st-1)) -- Attach chars left of current divider
+    for st, sp in
+        function()
+            return str:find(div, pos, true)
+        end
+    do
+        table.insert(arr, str:sub(pos, st - 1)) -- Attach chars left of current divider
         pos = sp + 1 -- Jump past current divider
     end
     table.insert(arr, str:sub(pos)) -- Attach chars right of last divider
@@ -72,7 +77,7 @@ function M.explode(div,str) -- credit: http://richard.warburton.it
 end
 
 function M.is_falsy_or_null(v)
-    return (not v) or v == ngx.null
+    return not v or v == ngx.null
 end
 
 function M.shorten_string(str, len)
@@ -85,7 +90,7 @@ function M.shorten_string(str, len)
 end
 
 function M.add_cdn_cache_control()
-    ngx.header["Cache-Control"] = "public, max-age=86400, immutable"
+    ngx.header['Cache-Control'] = 'public, max-age=86400, immutable'
 end
 
 function M.get_or_default(val, default)

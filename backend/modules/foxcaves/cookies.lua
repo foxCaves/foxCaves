@@ -1,10 +1,10 @@
-local config = require("foxcaves.config").cookies
-local resty_cookie = require("resty.cookie")
+local config = require('foxcaves.config').cookies
+local resty_cookie = require('resty.cookie')
 
 local ngx = ngx
 
 local M = {}
-require("foxcaves.module_helper").setmodenv()
+require('foxcaves.module_helper').setmodenv()
 
 function M.get_instance()
     if ngx.ctx.__cookies then

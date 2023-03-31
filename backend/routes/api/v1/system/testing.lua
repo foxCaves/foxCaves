@@ -1,19 +1,18 @@
 local error = error
 local next = next
-local user_model = require("foxcaves.models.user")
-local link_model = require("foxcaves.models.link")
-local file_model = require("foxcaves.models.file")
-local app_config = require("foxcaves.config").app
+local user_model = require('foxcaves.models.user')
+local link_model = require('foxcaves.models.link')
+local file_model = require('foxcaves.models.file')
+local app_config = require('foxcaves.config').app
 
 if app_config.enable_test_error then
-    R.register_route("/api/v1/system/error", "GET", R.make_route_opts_anon(), function()
-        error("test error")
+    R.register_route('/api/v1/system/error', 'GET', R.make_route_opts_anon(), function()
+        error('test error')
     end)
 end
 
-
 if app_config.enable_test_reset then
-    R.register_route("/api/v1/system/reset", "POST", R.make_route_opts_anon(), function()
+    R.register_route('/api/v1/system/reset', 'POST', R.make_route_opts_anon(), function()
         local users = user_model.get_by_query("lower(username) LIKE 'test_user_%%'")
 
         local deleted_users = #users

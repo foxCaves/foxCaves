@@ -1,23 +1,23 @@
-local resty_redis = require("resty.redis")
-local utils = require("foxcaves.utils")
-local config = require("foxcaves.config").redis
+local resty_redis = require('resty.redis')
+local utils = require('foxcaves.utils')
+local config = require('foxcaves.config').redis
 local error = error
 local ngx = ngx
 
 local M = {}
-require("foxcaves.module_helper").setmodenv()
+require('foxcaves.module_helper').setmodenv()
 
 function M.make(close_on_shutdown)
     local redis, err = resty_redis:new()
     if not redis then
-        error("Error initializing Redis: " .. err)
+        error('Error initializing Redis: ' .. err)
     end
     redis:set_timeout(60000)
 
     local ok
     ok, err = redis:connect(config.host, config.port)
     if not ok then
-        error("Error connecting to Redis: " .. err)
+        error('Error connecting to Redis: ' .. err)
     end
 
     if close_on_shutdown then

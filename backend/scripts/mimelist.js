@@ -17,13 +17,18 @@ function parseMimes(mimes) {
             continue;
         }
         for (const ext of extensions) {
-            extensionToMimeMap[ext] = mime;            
+            extensionToMimeMap[ext] = mime;
         }
     }
 
-    writeFileSync(outfile, 'return {\n' +
-        Object.entries(extensionToMimeMap).map(([key, value]) => `\t[${JSON.stringify(key)}] = ${JSON.stringify(value)}`).join(',\n') +
-    '\n}\n');
+    writeFileSync(
+        outfile,
+        'return {\n' +
+            Object.entries(extensionToMimeMap)
+                .map(([key, value]) => `\t[${JSON.stringify(key)}] = ${JSON.stringify(value)}`)
+                .join(',\n') +
+            '\n}\n',
+    );
 }
 
 get(URL, (res) => {

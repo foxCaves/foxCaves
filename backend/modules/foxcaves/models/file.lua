@@ -1,13 +1,13 @@
-local lfs = require("lfs")
-local database = require("foxcaves.database")
-local random = require("foxcaves.random")
-local user_model = require("foxcaves.models.user")
-local short_url = require("foxcaves.config").http.short_url
-local exec = require("foxcaves.exec")
-local mimetypes = require("foxcaves.mimetypes")
-local utils = require("foxcaves.utils")
-local storage_default = require("foxcaves.config").storage.default
-local storage_drivers = require("foxcaves.storage.all")
+local lfs = require('lfs')
+local database = require('foxcaves.database')
+local random = require('foxcaves.random')
+local user_model = require('foxcaves.models.user')
+local short_url = require('foxcaves.config').http.short_url
+local exec = require('foxcaves.exec')
+local mimetypes = require('foxcaves.mimetypes')
+local utils = require('foxcaves.utils')
+local storage_default = require('foxcaves.config').storage.default
+local storage_drivers = require('foxcaves.storage.all')
 
 local io = io
 local os = os
@@ -21,24 +21,34 @@ local file_model = {
     consts = {
         NAME_MAX_LEN = 255,
         EXT_MAX_LEN = 32,
-        THUMBNAIL_MAX_SIZE = require("foxcaves.config").files.thumbnail_max_size,
+        THUMBNAIL_MAX_SIZE = require('foxcaves.config').files.thumbnail_max_size,
     },
     expired_query = "uploaded = 0 AND created_at < ((now() - (INTERVAL '1 day')) at time zone 'utc')",
 }
 
-require("foxcaves.module_helper").setmodenv()
+require('foxcaves.module_helper').setmodenv()
 
-local mimeHandlers = {
-    image = function(src, dest)
-        exec.cmd(
-            "convert", src,
-            "-thumbnail", "x300", "-resize", "300x<",
-            "-resize", "50%", "-gravity", "center", "-crop", "150x150+0+0",
-            "+repage", "-format", "png", dest
-        )
-        return "image/png"
-    end
-}
+local mimeHandlers = { image = function(src, dest)
+    exec.cmd(
+        'convert',
+        src,
+        '-thumbnail',
+        'x300',
+        '-resize',
+        '300x<',
+        '-resize',
+        '50%',
+        '-gravity',
+        'center',
+        '-crop',
+        '150x150+0+0',
+        '+repage',
+        '-format',
+        'png',
+        dest
+    )
+    return 'image/png'
+end }
 
 local function file_get_storage_driver(file)
     return storage_drivers[file.storage]
@@ -50,16 +60,19 @@ local function makefilemt(file)
     return file
 end
 
-local file_select = "id, name, owner, size, mimetype, thumbnail_mimetype, uploaded, storage, " .. database.TIME_COLUMNS_EXPIRING
+local file_select =
+    'id, name, owner, size, mimetype, thumbnail_mimetype, uploaded, storage, ' .. database.TIME_COLUMNS_EXPIRING
 
 function file_model.get_by_query(query, ...)
-    return file_model.get_by_query_raw("(expires_at IS NULL OR expires_at >= NOW()) AND uploaded = 1 AND (" .. query .. ")" , ...)
+    return file_model.get_by_query_raw(
+        '(expires_at IS NULL OR expires_at >= NOW()) AND uploaded = 1 AND (' .. query .. ')',
+        ...
+    )
 end
 
 function file_model.get_by_query_raw(query, ...)
-    local files = database.get_shared():query("SELECT " .. file_select .. " FROM files " ..
-                                              "WHERE " .. query, ...)
-    for k,v in next, files do
+    local files = database.get_shared():query('SELECT ' .. file_select .. ' FROM files ' .. 'WHERE ' .. query, ...)
+    for k, v in next, files do
         files[k] = makefilemt(v)
     end
     return files
@@ -78,7 +91,7 @@ function file_model.get_by_owner(user, all)
     if all then
         query_func = file_model.get_by_query_raw
     end
-    return query_func("owner = %s", user)
+    return query_func('owner = %s', user)
 end
 
 function file_model.get_by_id(id)
@@ -86,7 +99,7 @@ function file_model.get_by_id(id)
         return nil
     end
 
-    local files = file_model.get_by_query("id = %s", id)
+    local files = file_model.get_by_query('id = %s', id)
     if files and files[1] then
         return makefilemt(files[1])
     end
@@ -105,7 +118,7 @@ function file_model.new()
 end
 
 function file_model.sanitize_filename(name)
-    return ngx.re.gsub(name, "[<>\r\n\t:/\\\\]+", "_", "o")
+    return ngx.re.gsub(name, '[<>\r\n\t:/\\\\]+', '_', 'o')
 end
 
 function file_model.extract_name_and_extension(name)
@@ -113,7 +126,7 @@ function file_model.extract_name_and_extension(name)
         return nil, nil
     end
 
-    local res = ngx.re.match(name, "^(.*?)(\\.[a-zA-Z0-9_-]+)?$", "o")
+    local res = ngx.re.match(name, '^(.*?)(\\.[a-zA-Z0-9_-]+)?$', 'o')
     if not res then
         return nil, nil
     end
@@ -123,13 +136,13 @@ end
 
 function file_mt:delete()
     local storage = file_get_storage_driver(self)
-    storage:delete(self.id, "file")
-    storage:delete(self.id, "thumb")
+    storage:delete(self.id, 'file')
+    storage:delete(self.id, 'thumb')
 
-    database.get_shared():query("DELETE FROM files WHERE id = %s", self.id)
+    database.get_shared():query('DELETE FROM files WHERE id = %s', self.id)
 
     local owner = user_model.get_by_id(self.owner)
-    owner:send_event("delete", "file", self:get_private())
+    owner:send_event('delete', 'file', self:get_private())
     owner:send_self_event()
 end
 
@@ -138,9 +151,7 @@ function file_mt:set_owner(user)
 end
 
 function file_mt:set_name(rawname)
-    local name, ext = file_model.extract_name_and_extension(
-        file_model.sanitize_filename(rawname)
-    )
+    local name, ext = file_model.extract_name_and_extension(file_model.sanitize_filename(rawname))
 
     if not name then
         return false
@@ -150,7 +161,7 @@ function file_mt:set_name(rawname)
     if ext then
         local extlen
         ext, extlen = utils.shorten_string(ext, file_model.consts.EXT_MAX_LEN)
-        fullname = utils.shorten_string(name, file_model.consts.NAME_MAX_LEN - (extlen + 1)) .. "." .. ext
+        fullname = utils.shorten_string(name, file_model.consts.NAME_MAX_LEN - (extlen + 1)) .. '.' .. ext
     else
         fullname = utils.shorten_string(name, file_model.consts.NAME_MAX_LEN)
     end
@@ -164,7 +175,7 @@ function file_mt:compute_mimetype()
     if not self.name then
         return false
     end
-    self.mimetype = mimetypes[self:get_extension()] or "application/octet-stream"
+    self.mimetype = mimetypes[self:get_extension()] or 'application/octet-stream'
     return true
 end
 
@@ -172,11 +183,9 @@ function file_mt:upload_begin()
     local storage = file_get_storage_driver(self)
     self.uploaded = 0
 
-    self._upload = storage:open(self.id, self.size, "file", self.mimetype, {
-        on_abort = function()
-            self:delete()
-        end,
-    })
+    self._upload = storage:open(self.id, self.size, 'file', self.mimetype, { on_abort = function()
+        self:delete()
+    end })
 
     if self.size <= file_model.consts.THUMBNAIL_MAX_SIZE then
         local file_temp = os.tmpname()
@@ -184,7 +193,7 @@ function file_mt:upload_begin()
         utils.register_shutdown(function()
             os.remove(file_temp)
         end)
-        self._fh_tmp = io.open(file_temp, "wb")
+        self._fh_tmp = io.open(file_temp, 'wb')
     end
 
     return storage.config.chunk_size
@@ -214,9 +223,7 @@ end
 
 local function file_thumbnail_process(self)
     local file_temp = self._file_temp
-    if not file_temp then
-        return
-    end
+    if not file_temp then return end
     self._file_temp = nil
 
     local storage = file_get_storage_driver(self)
@@ -227,16 +234,16 @@ local function file_thumbnail_process(self)
         os.remove(thumb_temp)
     end)
 
-    local prefix, suffix = self.mimetype:match("([a-z]+)/([a-z]+)")
+    local prefix, suffix = self.mimetype:match('([a-z]+)/([a-z]+)')
     local handler = mimeHandlers[prefix]
     if handler then
         self.thumbnail_mimetype = handler(file_temp, thumb_temp, suffix)
     end
 
-    local thumb_size = lfs.attributes(thumb_temp, "size")
+    local thumb_size = lfs.attributes(thumb_temp, 'size')
     if thumb_size > 0 then
-        local thumb_fh = io.open(thumb_temp, "rb")
-        local thumb_upload = storage:open(self.id, thumb_size, "thumb", self.thumbnail_mimetype)
+        local thumb_fh = io.open(thumb_temp, 'rb')
+        local thumb_upload = storage:open(self.id, thumb_size, 'thumb', self.thumbnail_mimetype)
         thumb_upload:from_callback(function(chunk_size)
             return thumb_fh:read(chunk_size)
         end)
@@ -280,26 +287,42 @@ end
 function file_mt:save(force_push_action)
     local res, primary_push_action
     if self.not_in_db then
-        res = database.get_shared():query_single(
-            "INSERT INTO files \
+        res =
+            database.get_shared():query_single(
+                'INSERT INTO files \
                 (id, name, owner, size, mimetype, thumbnail_mimetype, uploaded, storage, expires_at) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s) \
-                RETURNING " .. database.TIME_COLUMNS_EXPIRING,
-            self.id, self.name, self.owner, self.size, self.mimetype, self.thumbnail_mimetype or "", self.uploaded, self.storage,
-            self.expires_at or ngx.null
-        )
-        primary_push_action = "create"
+                RETURNING ' .. database.TIME_COLUMNS_EXPIRING,
+                self.id,
+                self.name,
+                self.owner,
+                self.size,
+                self.mimetype,
+                self.thumbnail_mimetype or '',
+                self.uploaded,
+                self.storage,
+                self.expires_at or ngx.null
+            )
+        primary_push_action = 'create'
         self.not_in_db = nil
     else
-        res = database.get_shared():query_single(
-            "UPDATE files \
+        res =
+            database.get_shared():query_single(
+                "UPDATE files \
                 SET name = %s, owner = %s, size = %s, mimetype = %s, thumbnail_mimetype = %s, uploaded = %s, storage = %s, \
                 expires_at = %s, updated_at = (now() at time zone 'utc') \
                 WHERE id = %s \
                 RETURNING " .. database.TIME_COLUMNS_EXPIRING,
-            self.name, self.owner, self.size, self.mimetype, self.thumbnail_mimetype or "", self.uploaded,  self.storage,
-            self.expires_at or ngx.null, self.id
-        )
-        primary_push_action = "update"
+                self.name,
+                self.owner,
+                self.size,
+                self.mimetype,
+                self.thumbnail_mimetype or '',
+                self.uploaded,
+                self.storage,
+                self.expires_at or ngx.null,
+                self.id
+            )
+        primary_push_action = 'update'
     end
     self.created_at = res.created_at
     self.updated_at = res.updated_at
@@ -313,7 +336,7 @@ function file_mt:save(force_push_action)
             primary_push_action = force_push_action
         end
         local owner = user_model.get_by_id(self.owner)
-        owner:send_event(primary_push_action, "file", self:get_private())
+        owner:send_event(primary_push_action, 'file', self:get_private())
         owner:send_self_event()
     end
 end
@@ -324,7 +347,7 @@ function file_mt:get_extension()
 end
 
 function file_mt:get_public()
-    local short_url_file = short_url .. "/f/" .. self.id
+    local short_url_file = short_url .. '/f/' .. self.id
 
     local res = {
         id = self.id,
@@ -335,13 +358,12 @@ function file_mt:get_public()
         updated_at = self.updated_at,
         expires_at = self.expires_at,
         mimetype = self.mimetype,
-
         view_url = short_url_file,
-        direct_url = short_url_file .. "?raw=1",
-        download_url = short_url_file .. "?dl=1",
+        direct_url = short_url_file .. '?raw=1',
+        download_url = short_url_file .. '?dl=1',
     }
-    if self.thumbnail_mimetype and self.thumbnail_mimetype ~= "" then
-        res.thumbnail_url = short_url .. "/t/" .. self.id
+    if self.thumbnail_mimetype and self.thumbnail_mimetype ~= '' then
+        res.thumbnail_url = short_url .. '/t/' .. self.id
     end
     return res
 end
@@ -350,51 +372,51 @@ file_mt.get_private = file_mt.get_public
 function file_model.get_public_fields()
     return {
         id = {
-            type = "string",
+            type = 'string',
             required = true,
         },
         name = {
-            type = "string",
+            type = 'string',
             required = true,
         },
         owner = {
-            type = "uuid",
+            type = 'uuid',
             required = true,
         },
         size = {
-            type = "integer",
+            type = 'integer',
             required = true,
         },
         created_at = {
-            type = "timestamp",
+            type = 'timestamp',
             required = true,
         },
         updated_at = {
-            type = "timestamp",
+            type = 'timestamp',
             required = true,
         },
         mimetype = {
-            type = "string",
+            type = 'string',
             required = true,
         },
         view_url = {
-            type = "string",
+            type = 'string',
             required = true,
         },
         direct_url = {
-            type = "string",
+            type = 'string',
             required = true,
         },
-        download_url ={
-            type = "string",
+        download_url = {
+            type = 'string',
             required = true,
         },
         thumbnail_url = {
-            type = "string",
+            type = 'string',
             required = false,
         },
         expires_at = {
-            type = "timestamp",
+            type = 'timestamp',
             required = false,
         },
     }

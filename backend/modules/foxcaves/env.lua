@@ -1,4 +1,4 @@
-local consts = require("foxcaves.consts")
+local consts = require('foxcaves.consts')
 
 local envtbl = {
     production = consts.ENV_PRODUCTION,
@@ -9,7 +9,7 @@ local envtbl = {
 local str = OSENV.ENVIRONMENT:lower()
 local id = envtbl[str]
 if not id then
-    error("Invalid environment: " .. str)
+    error('Invalid environment: ' .. str)
 end
 
 return {

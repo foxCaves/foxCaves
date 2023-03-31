@@ -1,10 +1,10 @@
-local ngx_pipe = require("ngx.pipe")
+local ngx_pipe = require('ngx.pipe')
 
 local M = {}
-require("foxcaves.module_helper").setmodenv()
+require('foxcaves.module_helper').setmodenv()
 
 function M.cmd(...)
-    local proc, err = ngx_pipe.spawn({...})
+    local proc, err = ngx_pipe.spawn({ ... })
     if err or not proc then
         return false, err, -1
     end

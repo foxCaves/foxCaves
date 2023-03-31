@@ -1,17 +1,17 @@
 local tonumber = tonumber
 local next = next
-local database = require("foxcaves.database")
+local database = require('foxcaves.database')
 
 local M = {}
-require("foxcaves.module_helper").setmodenv()
+require('foxcaves.module_helper').setmodenv()
 
 function M.parse_expiry(args, model, prefix)
-    prefix = prefix or ""
-    local expires_at = args[prefix .. "expires_at"]
-    local expires_in = args[prefix .. "expires_in"]
+    prefix = prefix or ''
+    local expires_at = args[prefix .. 'expires_at']
+    local expires_in = args[prefix .. 'expires_in']
 
     if expires_at then
-        if expires_at == "" then
+        if expires_at == '' then
             model.expires_at = nil
         else
             model.expires_at = expires_at
@@ -22,8 +22,11 @@ function M.parse_expiry(args, model, prefix)
     if expires_in then
         expires_in = tonumber(expires_in)
         if expires_in > 0 then
-            local res = database.get_shared():query_single(
-                "SELECT to_json((now() + %s * (INTERVAL '1 second')) at time zone 'utc') as expires_at", expires_in)
+            local res =
+                database.get_shared():query_single(
+                    "SELECT to_json((now() + %s * (INTERVAL '1 second')) at time zone 'utc') as expires_at",
+                    expires_in
+                )
             model.expires_at = res.expires_at
         elseif expires_in < 0 then
             model.expires_at = nil
@@ -33,9 +36,9 @@ function M.parse_expiry(args, model, prefix)
 end
 
 function M.delete_expired(model)
-    local query = "expires_at IS NOT NULL AND expires_at < now()"
+    local query = 'expires_at IS NOT NULL AND expires_at < now()'
     if model.expired_query then
-        query = query .. " OR (" .. model.expired_query .. ")"
+        query = query .. ' OR (' .. model.expired_query .. ')'
     end
     local objects = model.get_by_query_raw(query)
     for _, obj in next, objects do
