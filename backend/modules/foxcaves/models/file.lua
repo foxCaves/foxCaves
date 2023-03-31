@@ -63,15 +63,24 @@ end
 local file_select =
     'id, name, owner, size, mimetype, thumbnail_mimetype, uploaded, storage, ' .. database.TIME_COLUMNS_EXPIRING
 
-function file_model.get_by_query(query, ...)
+function file_model.get_by_query(query, options, ...)
     return file_model.get_by_query_raw(
         '(expires_at IS NULL OR expires_at >= NOW()) AND uploaded = 1 AND (' .. query .. ')',
+        options,
         ...
     )
 end
 
-function file_model.get_by_query_raw(query, ...)
-    local files = database.get_shared():query('SELECT ' .. file_select .. ' FROM files ' .. 'WHERE ' .. query, ...)
+function file_model.get_by_query_raw(query, options, ...)
+    options = options or {}
+    if not options.order_by then
+        options.order_by = {
+            column = 'created_at',
+            desc = true,
+        }
+    end
+
+    local files = database.get_shared():query('SELECT ' .. file_select .. ' FROM files WHERE ' .. query, options, ...)
     for k, v in next, files do
         files[k] = makefilemt(v)
     end
@@ -91,7 +100,7 @@ function file_model.get_by_owner(user, all)
     if all then
         query_func = file_model.get_by_query_raw
     end
-    return query_func('owner = %s', user)
+    return query_func('owner = %s', nil, user)
 end
 
 function file_model.get_by_id(id)
@@ -99,7 +108,7 @@ function file_model.get_by_id(id)
         return nil
     end
 
-    local files = file_model.get_by_query('id = %s', id)
+    local files = file_model.get_by_query('id = %s', nil, id)
     if files and files[1] then
         return makefilemt(files[1])
     end
@@ -139,7 +148,7 @@ function file_mt:delete()
     storage:delete(self.id, 'file')
     storage:delete(self.id, 'thumb')
 
-    database.get_shared():query('DELETE FROM files WHERE id = %s', self.id)
+    database.get_shared():query('DELETE FROM files WHERE id = %s', nil, self.id)
 
     local owner = user_model.get_by_id(self.owner)
     owner:send_event('delete', 'file', self:get_private())
@@ -292,6 +301,7 @@ function file_mt:save(force_push_action)
                 'INSERT INTO files \
                 (id, name, owner, size, mimetype, thumbnail_mimetype, uploaded, storage, expires_at) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s) \
                 RETURNING ' .. database.TIME_COLUMNS_EXPIRING,
+                nil,
                 self.id,
                 self.name,
                 self.owner,
@@ -312,6 +322,7 @@ function file_mt:save(force_push_action)
                 expires_at = %s, updated_at = (now() at time zone 'utc') \
                 WHERE id = %s \
                 RETURNING " .. database.TIME_COLUMNS_EXPIRING,
+                nil,
                 self.name,
                 self.owner,
                 self.size,
@@ -324,9 +335,9 @@ function file_mt:save(force_push_action)
             )
         primary_push_action = 'update'
     end
-    self.created_at = res.created_at
-    self.updated_at = res.updated_at
-    self.expires_at = res.expires_at
+    self.created_at = res.created_at_str
+    self.updated_at = res.updated_at_str
+    self.expires_at = res.expires_at_str
     if self.expires_at == ngx.null then
         self.expires_at = nil
     end

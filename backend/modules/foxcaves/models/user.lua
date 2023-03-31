@@ -32,8 +32,8 @@ end
 local user_select =
     'id, username, email, password, security_version, api_key, active, storage_quota, ' .. database.TIME_COLUMNS
 
-function user_model.get_by_query(query, ...)
-    local users = database.get_shared():query('SELECT ' .. user_select .. ' FROM users ' .. 'WHERE ' .. query, ...)
+function user_model.get_by_query(query, options, ...)
+    local users = database.get_shared():query('SELECT ' .. user_select .. ' FROM users WHERE ' .. query, options, ...)
     for k, v in next, users do
         users[k] = makeusermt(v)
     end
@@ -51,37 +51,47 @@ function user_model.get_by_id(id)
         return ngx.ctx.user
     end
 
-    local user = database.get_shared():query_single('SELECT ' .. user_select .. ' FROM users WHERE id = %s', id)
-
-    if not user then
-        return nil
+    local users = user_model.get_by_query('id = %s', nil, id)
+    if users and users[1] then
+        return makeusermt(users[1])
     end
-
-    return makeusermt(user)
+    return nil
 end
 
-function user_model.get_by_username(username)
+function user_model.get_by_username(username, always_query)
     if not username then
         return nil
     end
 
     username = username:lower()
 
-    if ngx.ctx.user and ngx.ctx.user.username:lower() == username then
+    if not always_query and ngx.ctx.user and ngx.ctx.user.username:lower() == username then
         return ngx.ctx.user
     end
 
-    local user =
-        database.get_shared():query_single(
-            'SELECT ' .. user_select .. ' FROM users WHERE lower(username) = %s',
-            username
-        )
+    local users = user_model.get_by_query('lower(username) = %s', nil, username)
+    if users and users[1] then
+        return makeusermt(users[1])
+    end
+    return nil
+end
 
-    if not user then
+function user_model.get_by_email(email, always_query)
+    if not email then
         return nil
     end
 
-    return makeusermt(user)
+    email = email:lower()
+
+    if not always_query and ngx.ctx.user and ngx.ctx.user.email:lower() == email then
+        return ngx.ctx.user
+    end
+
+    local users = user_model.get_by_query('lower(email) = %s', nil, email)
+    if users and users[1] then
+        return makeusermt(users[1])
+    end
+    return nil
 end
 
 function user_model.new()
@@ -103,13 +113,14 @@ function user_mt:set_email(email)
     end
 
     if not self.email or email:lower() ~= self.email:lower() then
-        local res = database.get_shared():query_single('SELECT id FROM users WHERE lower(email) = %s', email:lower())
+        local res = user_model.get_by_email(email, true)
         if res then
             return consts.VALIDATION_STATE_TAKEN
         end
         self.active = 0
         self.require_email_confirmation = true
     end
+
     self.email = email
 
     return consts.VALIDATION_STATE_OK
@@ -120,7 +131,7 @@ function user_mt:set_username(username)
         return consts.VALIDATION_STATE_INVALID
     end
 
-    local res = database.get_shared():query_single('SELECT id FROM users WHERE lower(username) = %s', username:lower())
+    local res = user_model.get_by_username(username, true)
     if res then
         return consts.VALIDATION_STATE_TAKEN
     end
@@ -159,9 +170,12 @@ function user_mt:check_password(password)
 end
 
 function user_mt:calculate_storage_used()
-    local db = database.get_shared()
     local res =
-        db:query_single('SELECT SUM(size) AS storage_used FROM files WHERE uploaded = 1 AND owner = %s', self.id)
+        database.get_shared():query_single(
+            'SELECT SUM(size) AS storage_used FROM files WHERE uploaded = 1 AND owner = %s',
+            nil,
+            self.id
+        )
     return res and res.storage_used or 0
 end
 
@@ -204,6 +218,7 @@ function user_mt:save()
                 (id, username, email, password, security_version, api_key, active, storage_quota) VALUES \
                 (%s, %s, %s, %s, %s, %s, %s, %s) \
                 RETURNING ' .. database.TIME_COLUMNS,
+                nil,
                 self.id,
                 self.username,
                 self.email,
@@ -223,6 +238,7 @@ function user_mt:save()
                     updated_at = (now() at time zone 'utc') \
                 WHERE id = %s \
                 RETURNING " .. database.TIME_COLUMNS,
+                nil,
                 self.username,
                 self.email,
                 self.password,
@@ -234,8 +250,8 @@ function user_mt:save()
             )
         primary_push_action = 'update'
     end
-    self.created_at = res.created_at
-    self.updated_at = res.updated_at
+    self.created_at = res.created_at_str
+    self.updated_at = res.updated_at_str
 
     if self.require_email_confirmation then
         local emailid = random.string(32)
@@ -274,7 +290,7 @@ function user_mt:make_new_api_key()
 end
 
 function user_mt:delete()
-    database.get_shared():query('DELETE FROM users WHERE id = %s', self.id)
+    database.get_shared():query('DELETE FROM users WHERE id = %s', nil, self.id)
     self:send_self_event('delete')
 end
 
