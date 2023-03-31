@@ -5,7 +5,7 @@ local server = require('resty.websocket.server')
 local tostring = tostring
 local ngx = ngx
 
-R.register_route('/api/v1/ws/events', 'GET', R.make_route_opts(), function()
+R.register_route('/api/v1/ws/events', 'GET', R.make_route_opts({ disable_set_cookies = true }), function()
     local redis_inst = redis.make(true)
 
     local ws, _ = server:new({
