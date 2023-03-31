@@ -37,11 +37,12 @@ function db_meta:query(query, options, ...)
                 ) .. ' ' .. (options.order_by.desc and 'DESC' or 'ASC')
         end
 
+        -- No need to escape these, Lua would error if they were not numbers
         if options.limit and options.limit > 0 then
-            query = query .. ' LIMIT ' .. self.db:escape_literal(options.limit)
+            query = query .. ' LIMIT ' .. options.limit
         end
         if options.offset and options.offset > 0 then
-            query = query .. ' OFFSET ' .. self.db:escape_literal(options.offset)
+            query = query .. ' OFFSET ' .. options.offset
         end
     end
 
