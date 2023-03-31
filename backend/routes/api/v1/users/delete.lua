@@ -20,8 +20,8 @@ R.register_route('/api/v1/users/{user}', 'DELETE', R.make_route_opts(), function
         return utils.api_error('current_password invalid', 403)
     end
 
-    local links = link_model.get_by_owner(user, nil, true)
-    local files = file_model.get_by_owner(user, nil, true)
+    local links = link_model.get_by_owner(user, { all = true })
+    local files = file_model.get_by_owner(user, { all = true })
     for _, link in next, links do
         link:delete()
     end

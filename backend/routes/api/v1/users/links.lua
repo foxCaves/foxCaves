@@ -3,6 +3,7 @@ local user_model = require('foxcaves.models.user')
 local utils = require('foxcaves.utils')
 local ngx = ngx
 local next = next
+local tonumber = tonumber
 
 R.register_route(
     '/api/v1/users/{user}/links',
@@ -17,7 +18,10 @@ R.register_route(
             return utils.api_error('You are not list links for this user', 403)
         end
 
-        local res = link_model.get_by_owner(user)
+        local res = link_model.get_by_owner(user, {
+            offset = tonumber(ngx.var.arg_offset or '0'),
+            limit = tonumber(ngx.var.arg_limit or '0'),
+        })
         for k, v in next, res do
             res[k] = v:get_private()
         end
@@ -27,10 +31,22 @@ R.register_route(
         description = 'Get a list of links of a user',
         authorization = { 'self' },
         request = {
+            query = {
+                offset = {
+                    description = 'The offset at which to begin listing links',
+                    type = 'integer',
+                    required = false,
+                },
+                limit = {
+                    description = 'The maximum number of links to list',
+                    type = 'integer',
+                    required = false,
+                },
+            },
             params = {
                 user = {
-                    type = 'uuid',
                     description = 'The id of the user',
+                    type = 'uuid',
                 },
             },
         },
