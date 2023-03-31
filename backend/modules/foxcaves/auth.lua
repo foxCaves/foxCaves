@@ -50,8 +50,7 @@ function M.login(username_or_id, credential, options)
 
     if not no_session then
         local session_id = random.string(32)
-        local cookie = cookies.get_instance()
-        cookie:set({
+        cookies.set({
             key = 'session_id',
             value = session_id,
         })
@@ -76,9 +75,8 @@ function M.login(username_or_id, credential, options)
 end
 
 function M.logout()
-    local cookie = cookies.get_instance()
-    cookie:delete({ key = 'session_id' })
-    cookie:delete({ key = 'login_key' })
+    cookies.delete({ key = 'session_id' })
+    cookies.delete({ key = 'login_key' })
     if ngx.ctx.session_id then
         redis.get_shared():del('sessions:' .. ngx.ctx.session_id)
     end
@@ -108,10 +106,7 @@ function M.check()
         return
     end
 
-    local cookie = cookies.get_instance()
-    if not cookie then return end
-
-    local session_id = cookie:get('session_id')
+    local session_id = cookies.get('session_id')
     if session_id then
         local redis_inst = redis.get_shared()
         local sessionKey = 'sessions:' .. session_id
@@ -122,7 +117,7 @@ function M.check()
             login_method = M.LOGIN_METHOD_LOGIN_KEY,
         }) then
             ngx.ctx.session_id = session_id
-            cookie:set({
+            cookies.set({
                 key = 'session_id',
                 value = session_id,
             })
@@ -130,7 +125,7 @@ function M.check()
         end
     end
 
-    local login_key = cookie:get('login_key')
+    local login_key = cookies.get('login_key')
     if login_key then
         if not ngx.ctx.user then
             local login_key_match = ngx.re.match(login_key, '^([0-9a-f-]+)\\.([a-zA-Z0-9_-]+)$', 'o')
