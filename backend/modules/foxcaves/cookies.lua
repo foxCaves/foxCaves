@@ -21,7 +21,7 @@ function M.get(cookie)
 end
 
 function M.set(cookie)
-    if ngx.ctx.disable_set_cookies then return end
+    if ngx.ctx.route_opts.disable_set_cookies then return end
     return get_instance():set(cookie)
 end
 
