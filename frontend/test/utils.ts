@@ -33,7 +33,6 @@ export async function doLoginPage(page: Page, user?: TestUser): Promise<TestUser
     await page.getByLabel('Remember me').check();
     await page.getByRole('button').locator('text="Login"').click();
     await waitForToast(page, 'Logged in');
-    await page.screenshot({ path: `tmp/test_{randomUUID()}.png` });
     await page.locator(`text="Welcome, ${user.username}!"`).waitFor();
 
     await page.goto('http://main.foxcaves:8080');
