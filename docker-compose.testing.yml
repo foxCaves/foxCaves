@@ -1,5 +1,6 @@
 services:
   site:
+    image: foxcaves-site-local:latest
     environment:
       ENVIRONMENT: testing
     volumes:
