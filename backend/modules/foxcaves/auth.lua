@@ -1,17 +1,17 @@
-local b64 = require('ngx.base64')
 local utils = require('foxcaves.utils')
-local auth_utils = require('foxcaves.auth_utils')
 local cookies = require('foxcaves.cookies')
 local redis = require('foxcaves.redis')
 local random = require('foxcaves.random')
 local user_model = require('foxcaves.models.user')
 
 local ngx = ngx
+local tostring = tostring
 
 local M = {}
 require('foxcaves.module_helper').setmodenv()
 
 local SESSION_EXPIRE_DELAY = 7200
+local SESSION_EXPIRE_DELAY_REMEMBER = 30 * 24 * 60 * 60
 
 function M.LOGIN_METHOD_PASSWORD(userdata, password)
     return userdata:check_password(password)
@@ -19,21 +19,19 @@ end
 function M.LOGIN_METHOD_API_KEY(userdata, api_key)
     return userdata.api_key == api_key
 end
-function M.LOGIN_METHOD_LOGIN_KEY(userdata, login_key)
-    return auth_utils.hash_login_key(userdata.login_key) == b64.decode_base64url(login_key)
+function M.LOGIN_METHOD_SECURITY_VERSION(userdata, security_version)
+    return tostring(userdata.security_version) == tostring(security_version)
 end
 
 function M.login(username_or_id, credential, options)
     options = options or {}
-    local no_session = options.no_session
-    local login_with_id = options.login_with_id
 
     if utils.is_falsy_or_null(username_or_id) or utils.is_falsy_or_null(credential) then
         return false
     end
 
     local user
-    if login_with_id then
+    if options.login_with_id then
         user = user_model.get_by_id(username_or_id)
     else
         user = user_model.get_by_username(username_or_id)
@@ -48,13 +46,19 @@ function M.login(username_or_id, credential, options)
         return false
     end
 
-    if not no_session then
+    if not options.no_session then
         local session_id = random.string(32)
-        cookies.set({
+        local session_id_cookie = {
             key = 'session_id',
             value = session_id,
-        })
+        }
         ngx.ctx.session_id = session_id
+
+        if options.remember then
+            session_id_cookie.max_age = SESSION_EXPIRE_DELAY_REMEMBER
+        end
+
+        cookies.set(session_id_cookie)
 
         session_id = 'sessions:' .. session_id
 
@@ -63,10 +67,12 @@ function M.login(username_or_id, credential, options)
             session_id,
             'id',
             user.id,
-            'login_key',
-            b64.encode_base64url(auth_utils.hash_login_key(user.login_key))
+            'security_version',
+            tostring(user.security_version),
+            'remember',
+            options.remember and '1' or '0'
         )
-        redis_inst:expire(session_id, SESSION_EXPIRE_DELAY)
+        redis_inst:expire(session_id, (session_id_cookie.max_age or 0) + SESSION_EXPIRE_DELAY)
     end
 
     ngx.ctx.user = user
@@ -76,7 +82,6 @@ end
 
 function M.logout()
     cookies.delete({ key = 'session_id' })
-    cookies.delete({ key = 'login_key' })
     if ngx.ctx.session_id then
         redis.get_shared():del('sessions:' .. ngx.ctx.session_id)
     end
@@ -110,40 +115,28 @@ function M.check()
     if session_id then
         local redis_inst = redis.get_shared()
         local sessionKey = 'sessions:' .. session_id
-        local result = redis_inst:hmget(sessionKey, 'id', 'login_key')
+        local result = redis_inst:hmget(sessionKey, 'id', 'security_version', 'remember')
+        local remember = result[3] == '1'
         if not utils.is_falsy_or_null(result) and M.login(result[1], result[2], {
             no_session = true,
             login_with_id = true,
-            login_method = M.LOGIN_METHOD_LOGIN_KEY,
+            login_method = M.LOGIN_METHOD_SECURITY_VERSION,
+            remember = remember,
         }) then
             ngx.ctx.session_id = session_id
-            cookies.set({
+            local session_id_cookie = {
                 key = 'session_id',
                 value = session_id,
-            })
-            redis_inst:expire(sessionKey, SESSION_EXPIRE_DELAY)
-        end
-    end
-
-    local login_key = cookies.get('login_key')
-    if login_key then
-        if not ngx.ctx.user then
-            local login_key_match = ngx.re.match(login_key, '^([0-9a-f-]+)\\.([a-zA-Z0-9_-]+)$', 'o')
-            if login_key_match then
-                M.login(login_key_match[1], login_key_match[2], {
-                    login_with_id = true,
-                    login_method = M.LOGIN_METHOD_LOGIN_KEY,
-                })
+            }
+            if remember then
+                session_id_cookie.max_age = SESSION_EXPIRE_DELAY_REMEMBER
             end
-        end
-
-        if ngx.ctx.user then
-            ngx.ctx.remember_me = true
-            auth_utils.send_login_key()
+            cookies.set(session_id_cookie)
+            redis_inst:expire(sessionKey, (session_id_cookie.max_age or 0) + SESSION_EXPIRE_DELAY)
         end
     end
 
-    if (session_id or login_key) and not ngx.ctx.user then
+    if session_id and not ngx.ctx.user then
         M.logout()
     end
 end

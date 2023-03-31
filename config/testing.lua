@@ -25,10 +25,8 @@ return {
         thumbnail_max_size = 50 * 1024 * 1024,
     },
     app = {
-        require_email_confirmation = false,
-        insecure_login_keys = true,
-        enable_test_error = true,
-        enable_test_reset = true,
+        enable_user_always_active = true,
+        enable_testing_routes = true,
     },
     storage = {
         default = "fs",

@@ -44,7 +44,7 @@ R.register_route('/api/v1/users/emails/code', 'POST', R.make_route_opts_anon(), 
         local newPassword = random.string(16)
 
         user:set_password(newPassword)
-        user:make_new_login_key()
+        user:make_new_security_version()
         user:save()
 
         local email =

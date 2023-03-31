@@ -67,7 +67,7 @@ export async function uploadFile(file: FileLike): Promise<FileModel> {
 
     try {
         const fileObj = await uploadFileInternal(file, progressHandler);
-        toast(`File "${file.name}" uploaded!`, {
+        toast(`Uploaded file "${file.name}"!`, {
             type: 'success',
             autoClose: 3000,
         });
