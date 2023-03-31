@@ -32,7 +32,7 @@ export async function doLoginPage(page: Page, user?: TestUser): Promise<TestUser
     await page.getByRole('button').locator('text="Login"').click();
     await page.locator('.Toastify__toast--success').waitFor();
 
-    await page.goto('http://main.foxcaves:8080/login');
+    await page.goto('http://main.foxcaves:8080');
     await page.locator(`text="Welcome, ${user.username}!"`).waitFor();
 
     return user;
@@ -42,5 +42,8 @@ export async function doLogoutPage(page: Page): Promise<void> {
     await page.context().storageState(undefined);
 
     await page.goto('http://main.foxcaves:8080/logout');
+    await page.locator('.Toastify__toast--success').waitFor();
+
+    await page.goto('http://main.foxcaves:8080');
     await page.locator('text="Welcome, Guest!"').waitFor();
 }
