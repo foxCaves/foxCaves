@@ -5,62 +5,62 @@ local function describe_api()
     local res = {
         routes = {},
         authorizations = {
-            anonymous = "Any or nonone",
-            self = "Must be the user for which data is being requested",
-            active = "Must be a user with user.active = 1",
-            owner = "Must be the owner of the resource (resource.owner == user.id)",
+            anonymous = 'Any or nonone',
+            self = 'Must be the user for which data is being requested',
+            active = 'Must be a user with user.active = 1',
+            owner = 'Must be the owner of the resource (resource.owner == user.id)',
         },
         types = {
-            ["string"] = {
-                type = "string",
-                description = "An arbitrary string",
+            string = {
+                type = 'string',
+                description = 'An arbitrary string',
             },
-            ["float"] = {
-                type = "number",
-                description = "A floating-point number",
+            float = {
+                type = 'number',
+                description = 'A floating-point number',
             },
-            ["integer"] = {
-                type = "number",
-                description = "An integer number",
+            integer = {
+                type = 'number',
+                description = 'An integer number',
             },
-            ["boolean"] = {
-                type = "boolean",
-                description = "A boolean value",
+            boolean = {
+                type = 'boolean',
+                description = 'A boolean value',
             },
-            ["uuid"] = {
-                type = "string",
-                description = "A UUID in string form",
+            uuid = {
+                type = 'string',
+                description = 'A UUID in string form',
             },
-            ["timestamp"] = {
-                type = "string",
-                description = "A timestamp in ISO-8601 format",
+            timestamp = {
+                type = 'string',
+                description = 'A timestamp in ISO-8601 format',
             },
-            ["object"] = {
-                type = "object",
-                description = "An arbitrary object, containing given fields",
+            object = {
+                type = 'object',
+                description = 'An arbitrary object, containing given fields',
                 fields = {},
             },
-            ["raw"] = {
-                type = "raw",
-                description = "A raw value, not encoded at all",
+            raw = {
+                type = 'raw',
+                description = 'A raw value, not encoded at all',
             },
-            ["array"] = {
-                type = "array",
-                description = "An array of arbitrary values, described by items",
+            array = {
+                type = 'array',
+                description = 'An array of arbitrary values, described by items',
                 items = {},
             },
         },
     }
 
-    for _, m in pairs({"user","file","link"}) do
-        local model = require("foxcaves.models." .. m)
-        res.types[m .. ".public"] = {
-            type = "object",
-            fields = model.get_public_fields()
+    for _, m in pairs({ 'user', 'file', 'link' }) do
+        local model = require('foxcaves.models.' .. m)
+        res.types[m .. '.public'] = {
+            type = 'object',
+            fields = model.get_public_fields(),
         }
-        res.types[m .. ".private"] = {
-            type = "object",
-            fields = model.get_private_fields()
+        res.types[m .. '.private'] = {
+            type = 'object',
+            fields = model.get_private_fields(),
         }
     end
 
@@ -79,7 +79,7 @@ local function describe_api()
 end
 
 local api_description_cache = nil
-R.register_route("/api/v1/system/describe", "GET", R.make_route_opts_anon({ empty_is_array = true }), function()
+R.register_route('/api/v1/system/describe', 'GET', R.make_route_opts_anon({ empty_is_array = true }), function()
     if not api_description_cache then
         api_description_cache = describe_api()
     end

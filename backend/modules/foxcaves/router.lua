@@ -1,9 +1,9 @@
-local lfs = require("lfs")
-local cjson = require("cjson")
-local utils = require("foxcaves.utils")
-local auth = require("foxcaves.auth")
-local consts = require("foxcaves.consts")
-local module_helper = require("foxcaves.module_helper")
+local lfs = require('lfs')
+local cjson = require('cjson')
+local utils = require('foxcaves.utils')
+local auth = require('foxcaves.auth')
+local consts = require('foxcaves.consts')
+local module_helper = require('foxcaves.module_helper')
 
 local explode = utils.explode
 local type = type
@@ -17,31 +17,32 @@ local table = table
 
 local G = _G
 
-local ROUTES_ROOT = require("path").abs(consts.LUA_ROOT .. "/routes")
+local ROUTES_ROOT = require('path').abs(consts.LUA_ROOT .. '/routes')
 
 local M = {}
-require("foxcaves.module_helper").setmodenv()
+require('foxcaves.module_helper').setmodenv()
 
 local ROUTE_REG_MT = {}
-local ROUTE_REG_TABLE = setmetatable({}, {
-    __index = function(_, k)
-        if k == "R" then
-            return ROUTE_REG_MT
-        end
-        return G[k] or error("Accessing on ROUTE table: " .. k)
-    end,
-    __newindex = function(_, k)
-        error("Assigning on ROUTE table: " .. k)
-    end,
-})
+local ROUTE_REG_TABLE = setmetatable(
+    {},
+    {
+        __index = function(_, k)
+            if k == 'R' then
+                return ROUTE_REG_MT
+            end
+            return G[k] or error('Accessing on ROUTE table: ' .. k)
+        end,
+        __newindex = function(_, k)
+            error('Assigning on ROUTE table: ' .. k)
+        end,
+    }
+)
 
 local ROUTE_TREE = {
     children = {},
     methods = {},
 }
-local ROUTE_TABLE = {
-    ["/"] = ROUTE_TREE.methods,
-}
+local ROUTE_TABLE = { ['/'] = ROUTE_TREE.methods }
 
 local BASE_OPTS = {
     check_login = true,
@@ -67,8 +68,7 @@ function ROUTE_REG_MT.make_route_opts_anon()
     return BASE_OPTS_ANON
 end
 
-local c_open, c_close, c_star = ("{}*"):byte(1,3)
-
+local c_open, c_close, c_star = ('{}*'):byte(1, 3)
 
 function ROUTE_REG_MT.register_route_multi_method(url, methods, options, func, descriptor)
     for _, method in next, methods do
@@ -78,9 +78,9 @@ end
 
 function ROUTE_REG_MT.register_route(url, method, options, func, descriptor)
     method = method:upper()
-    local urlsplit = explode("/", url:sub(2))
+    local urlsplit = explode('/', url:sub(2))
 
-    local route_id = method .. " " .. url
+    local route_id = method .. ' ' .. url
 
     local mappings = {}
     local route = ROUTE_TREE
@@ -90,10 +90,10 @@ function ROUTE_REG_MT.register_route(url, method, options, func, descriptor)
         if rawseg:byte(1) == c_open and rawseg:byte(rawseg_len) == c_close then
             local rawseg_off
             if rawseg:byte(2) == c_star then
-                seg = "**"
+                seg = '**'
                 rawseg_off = 3
             else
-                seg = "*"
+                seg = '*'
                 rawseg_off = 2
             end
             mappings[i] = rawseg:sub(rawseg_off, rawseg_len - 1)
@@ -110,7 +110,7 @@ function ROUTE_REG_MT.register_route(url, method, options, func, descriptor)
     end
 
     if route.methods[method] then
-        ngx.log(ngx.ERR, "Double registration for route handler for " .. route_id)
+        ngx.log(ngx.ERR, 'Double registration for route handler for ' .. route_id)
     end
 
     ROUTE_TABLE[url] = route.methods
@@ -119,7 +119,7 @@ function ROUTE_REG_MT.register_route(url, method, options, func, descriptor)
         mappings = mappings,
         id = route_id,
         url = url,
-        method =  method,
+        method = method,
         func = setfenv(func, module_helper.EMPTY_TABLE),
         options = options,
         descriptor = descriptor,
@@ -133,23 +133,23 @@ function ROUTE_REG_MT.get_table()
 end
 
 local function scan_route_file(file)
-    file = file:gsub("//+", "/")
+    file = file:gsub('//+', '/')
 
     local func, err = loadfile(file)
     if not func then
-        error("Error loading route: " .. err)
+        error('Error loading route: ' .. err)
     end
     setfenv(func, ROUTE_REG_TABLE)()
 end
 
 local function scan_route_dir(dir)
     for file in lfs.dir(dir) do
-        if file:sub(1, 1) ~= "." then
-            local absfile = dir .. "/" .. file
+        if file:sub(1, 1) ~= '.' then
+            local absfile = dir .. '/' .. file
             local attributes = lfs.attributes(absfile)
-            if attributes.mode == "file" then
+            if attributes.mode == 'file' then
                 scan_route_file(absfile)
-            elseif attributes.mode == "directory" then
+            elseif attributes.mode == 'directory' then
                 scan_route_dir(absfile)
             end
         end
@@ -159,7 +159,7 @@ end
 local function route_execute()
     local url = ngx.var.uri
     local method = ngx.var.request_method:upper()
-    local urlsplit = explode("/", url:sub(2))
+    local urlsplit = explode('/', url:sub(2))
 
     local candidate = ROUTE_TREE
 
@@ -167,20 +167,20 @@ local function route_execute()
 
     for i, seg in next, urlsplit do
         local old_candidate = candidate
-        candidate = old_candidate.children[seg] or old_candidate.children["*"]
+        candidate = old_candidate.children[seg] or old_candidate.children['*']
         if not candidate then
-            candidate = old_candidate.children["**"]
+            candidate = old_candidate.children['**']
             if candidate then
                 wildcard_i = i
                 break
             end
-            return {}, utils.api_error("Route not found", 404)
+            return {}, utils.api_error('Route not found', 404)
         end
     end
 
     local handler = candidate.methods[method]
     if not handler then
-        return {}, utils.api_error("Invalid method for route", 404)
+        return {}, utils.api_error('Invalid method for route', 404)
     end
 
     local route_vars = {}
@@ -195,10 +195,10 @@ local function route_execute()
         for i = wildcard_i, #urlsplit do
             table.insert(res, urlsplit[i])
         end
-        route_vars[wildcard_map] = table.concat(res, "/")
+        route_vars[wildcard_map] = table.concat(res, '/')
     end
 
-    ngx.header["FoxCaves-Route-ID"] = handler.id
+    ngx.header['FoxCaves-Route-ID'] = handler.id
 
     local opts = handler.options
 
@@ -209,8 +209,8 @@ local function route_execute()
         end
     end
 
-    if (not opts.allow_guest) and (not ngx.ctx.user) then
-        return opts, utils.api_error("Not logged in", 403)
+    if not opts.allow_guest and not ngx.ctx.user then
+        return opts, utils.api_error('Not logged in', 403)
     end
 
     return opts, handler.func(route_vars)
@@ -219,21 +219,19 @@ end
 function M.execute()
     local opts, res, code = route_execute()
 
-    if not res then
-        return
-    end
+    if not res then return end
 
     if code then
         ngx.status = code
     end
 
-    if type(res) == "string" then
-        ngx.header["Content-Type"] = "text/plain"
+    if type(res) == 'string' then
+        ngx.header['Content-Type'] = 'text/plain'
         ngx.print(res)
     else
-        ngx.header["Content-Type"] = "application/json"
+        ngx.header['Content-Type'] = 'application/json'
         if opts.empty_is_array and not next(res) then
-            ngx.print("[]")
+            ngx.print('[]')
         else
             ngx.print(cjson.encode(res))
         end

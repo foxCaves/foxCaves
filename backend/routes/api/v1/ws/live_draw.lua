@@ -1,7 +1,7 @@
-local redis = require("foxcaves.redis")
-local random = require("foxcaves.random")
-local utils = require("foxcaves.utils")
-local server = require("resty.websocket.server")
+local redis = require('foxcaves.redis')
+local random = require('foxcaves.random')
+local utils = require('foxcaves.utils')
+local server = require('resty.websocket.server')
 
 local next = next
 local tonumber = tonumber
@@ -11,24 +11,24 @@ local string_format = string.format
 local ngx = ngx
 local unpack = unpack
 
-local EVENT_WIDTH = "w"
-local EVENT_COLOR = "c"
-local EVENT_BRUSH = "b"
+local EVENT_WIDTH = 'w'
+local EVENT_COLOR = 'c'
+local EVENT_BRUSH = 'b'
 
-local EVENT_MOUSE_UP = "u"
-local EVENT_MOUSE_DOWN = "d"
-local EVENT_MOUSE_MOVE = "m"
-local EVENT_MOUSE_CURSOR = "p"
-local EVENT_MOUSE_DOUBLE_CLICK = "F"
+local EVENT_MOUSE_UP = 'u'
+local EVENT_MOUSE_DOWN = 'd'
+local EVENT_MOUSE_MOVE = 'm'
+local EVENT_MOUSE_CURSOR = 'p'
+local EVENT_MOUSE_DOUBLE_CLICK = 'F'
 
-local EVENT_RESET = "r"
+local EVENT_RESET = 'r'
 
-local EVENT_CUSTOM = "x"
+local EVENT_CUSTOM = 'x'
 
-local EVENT_JOIN = "j"
-local EVENT_JOINDIRECT = "J"
-local EVENT_LEAVE = "l"
-local EVENT_ERROR = "e"
+local EVENT_JOIN = 'j'
+local EVENT_JOINDIRECT = 'J'
+local EVENT_LEAVE = 'l'
+local EVENT_ERROR = 'e'
 --local EVENT_IMGBURST = "i"
 
 local cEVENT_JOIN = EVENT_JOIN:byte()
@@ -44,10 +44,10 @@ local VALID_BRUSHES = {
     erase = true,
     text = true,
     restore = true,
-    polygon = true
+    polygon = true,
 }
 
-R.register_route("/api/v1/ws/live_draw", "GET", R.make_route_opts({ allow_guest = true }), function()
+R.register_route('/api/v1/ws/live_draw', 'GET', R.make_route_opts({ allow_guest = true }), function()
     local main_redis = redis.get_shared()
     local sub_redis = redis.make(true)
 
@@ -56,7 +56,7 @@ R.register_route("/api/v1/ws/live_draw", "GET", R.make_route_opts({ allow_guest 
         max_payload_len = 65535,
     })
     if not ws then
-        return utils.api_error("WebSocket requests only")
+        return utils.api_error('WebSocket requests only')
     end
 
     local should_run = true
@@ -73,12 +73,12 @@ R.register_route("/api/v1/ws/live_draw", "GET", R.make_route_opts({ allow_guest 
     end
 
     local function internal_error(str)
-        ngx.log(ngx.ERR, "LiveDraw lua error: " .. str)
-        error("Internal error")
+        ngx.log(ngx.ERR, 'LiveDraw lua error: ' .. str)
+        error('Internal error')
     end
 
     local function pcall_internal(...)
-        local tbl = {pcall(...)}
+        local tbl = { pcall(...) }
         if not tbl[1] then
             internal_error(tbl[2])
             return
@@ -88,27 +88,43 @@ R.register_route("/api/v1/ws/live_draw", "GET", R.make_route_opts({ allow_guest 
 
     local event_handlers = {
         [EVENT_BRUSH] = function(user, data)
-            if #data ~= 1 then error("Invalid payload") end
+            if #data ~= 1 then
+                error('Invalid payload')
+            end
             data = data[1]
-            if not VALID_BRUSHES[data] then error("Invalid brush") end
+            if not VALID_BRUSHES[data] then
+                error('Invalid brush')
+            end
             user.brush = data
         end,
         [EVENT_COLOR] = function(user, data)
-            if #data ~= 1 then error("Invalid payload") end
+            if #data ~= 1 then
+                error('Invalid payload')
+            end
             user.color = data[1]:lower()
         end,
         [EVENT_WIDTH] = function(user, data)
-            if #data ~= 1 then error("Invalid payload") end
+            if #data ~= 1 then
+                error('Invalid payload')
+            end
             data = tonumber(data[1])
-            if (not data) or data <= 0 then error("Invalid width") end
+            if not data or data <= 0 then
+                error('Invalid width')
+            end
             user.width = data
         end,
         [EVENT_MOUSE_MOVE] = function(user, data)
-            if #data ~= 2 then error("Invalid payload") end
+            if #data ~= 2 then
+                error('Invalid payload')
+            end
             local x = tonumber(data[1])
             local y = tonumber(data[2])
-            if not x or x < 0 then error("Invalid X") end
-            if not y or y < 0 then error("Invalid Y") end
+            if not x or x < 0 then
+                error('Invalid X')
+            end
+            if not y or y < 0 then
+                error('Invalid Y')
+            end
             user.cursorX = x
             user.cursorY = y
         end,
@@ -116,11 +132,13 @@ R.register_route("/api/v1/ws/live_draw", "GET", R.make_route_opts({ allow_guest 
             return false
         end,
         [EVENT_CUSTOM] = function(_, data)
-            if #data ~= 3 then error("Invalid payload") end
+            if #data ~= 3 then
+                error('Invalid payload')
+            end
         end,
         [EVENT_RESET] = function(_, data)
-            if #data > 1 or (data[1] and data[1] ~= "") then
-                error("Invalid payload")
+            if #data > 1 or (data[1] and data[1] ~= '') then
+                error('Invalid payload')
             end
         end,
         [EVENT_LEAVE] = function(user)
@@ -146,16 +164,15 @@ R.register_route("/api/v1/ws/live_draw", "GET", R.make_route_opts({ allow_guest 
         end
     end
 
-
     local USERMETA = {}
     USERMETA.__index = USERMETA
     function USERMETA:serialize()
         return string_format(
-            "%s|%i|%s|%s|%i|%i",
+            '%s|%i|%s|%s|%i|%i',
             self.name,
             self.width or 0,
-            self.color or "000",
-            self.brush or "brush",
+            self.color or '000',
+            self.brush or 'brush',
             self.cursorX or 0,
             self.cursorY or 0
         )
@@ -165,34 +182,31 @@ R.register_route("/api/v1/ws/live_draw", "GET", R.make_route_opts({ allow_guest 
     end
     function USERMETA:kick()
         close()
-        if not self.id then
-            return
-        end
+        if not self.id then return end
         self.id = nil
     end
     function USERMETA:publish(evid, data)
-        main_redis:publish("live_draw:" .. self.channel, string_format("%c%s|%s", evid, self.id, data or ""))
+        main_redis:publish('live_draw:' .. self.channel, string_format('%c%s|%s', evid, self.id, data or ''))
     end
     function USERMETA:event_received(rawdata)
         local evid = rawdata:byte(1)
         local data = {}
         if rawdata:len() > 1 then
             rawdata = rawdata:sub(2)
-            data = utils.explode("|", rawdata)
+            data = utils.explode('|', rawdata)
         else
-            rawdata = ""
+            rawdata = ''
         end
 
         local evthandl = event_handlers[evid]
         if evthandl then
             local ret = evthandl(self, data)
-            if ret == false then
-                return
+            if ret == false then return
             elseif ret then
                 rawdata = ret
             end
         else
-            error("Invalid packet: " .. evid)
+            error('Invalid packet: ' .. evid)
         end
         if not self.id or not self.channel then return end
         self:publish(evid, rawdata)
@@ -207,15 +221,15 @@ R.register_route("/api/v1/ws/live_draw", "GET", R.make_route_opts({ allow_guest 
     local function websocket_read()
         while should_run do
             local data, typ, err = ws:recv_frame()
-            if ws.fatal or typ == "close" or typ == "error" then
+            if ws.fatal or typ == 'close' or typ == 'error' then
                 ws:send_close()
                 break
             end
             if err then
                 ws:send_ping()
-            elseif typ == "ping" then
+            elseif typ == 'ping' then
                 ws:send_pong(data)
-            elseif typ == "text" then
+            elseif typ == 'text' then
                 user:socket_onrecv(data)
             end
         end
@@ -224,13 +238,13 @@ R.register_route("/api/v1/ws/live_draw", "GET", R.make_route_opts({ allow_guest 
     end
 
     local function get_id_from_packet(str)
-        str = str:sub(2, str:find("|") - 1)
+        str = str:sub(2, str:find('|') - 1)
         return str
     end
     local function redis_read()
         while should_run do
             local res, err = sub_redis:read_reply()
-            if err and err ~= "timeout" then
+            if err and err ~= 'timeout' then
                 ws:send_close()
                 break
             end
@@ -253,18 +267,18 @@ R.register_route("/api/v1/ws/live_draw", "GET", R.make_route_opts({ allow_guest 
 
     user.image = ngx.var.arg_file
     user.drawingsession = ngx.var.arg_session
-    user.channel = string_format("%s:%s", user.image, user.drawingsession)
+    user.channel = string_format('%s:%s', user.image, user.drawingsession)
     if ngx.ctx.user then
         user.name = ngx.ctx.user.username
     end
 
     local wsid = random.string(16)
     if not user.name then
-        user.name = string_format("Guest %s", wsid)
+        user.name = string_format('Guest %s', wsid)
     end
     user.id = wsid
 
-    sub_redis:subscribe("live_draw:" .. user.channel)
+    sub_redis:subscribe('live_draw:' .. user.channel)
 
     user:send_data()
     user:publish(cEVENT_JOINDIRECT)

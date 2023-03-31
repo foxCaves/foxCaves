@@ -1,6 +1,6 @@
-local http = require("resty.http")
-local awssig = require("resty.aws-signature")
-local utils = require("foxcaves.utils")
+local http = require('resty.http')
+local awssig = require('resty.aws-signature')
+local utils = require('foxcaves.utils')
 
 local setmetatable = setmetatable
 local error = error
@@ -16,30 +16,30 @@ local M = {}
 M.__index = M
 local UPLOAD = {}
 UPLOAD.__index = UPLOAD
-require("foxcaves.module_helper").setmodenv()
+require('foxcaves.module_helper').setmodenv()
 
 local function build_key(self, id, ftype)
     if self.no_bucket_in_path then
-        return "/" .. id .. "/" .. ftype
+        return '/' .. id .. '/' .. ftype
     end
-    return "/" .. self.config.bucket .. "/" .. id .. "/" .. ftype
+    return '/' .. self.config.bucket .. '/' .. id .. '/' .. ftype
 end
 
 local function s3_request_raw(self, method, path, query, body, rawHeaders, opts)
     local headers = rawHeaders or {}
     opts = opts or {}
-    query = query or ""
+    query = query or ''
 
     if not opts.content_length then
         opts.content_length = body and #body or 0
     end
-    headers["content-length"] = tostring(opts.content_length)
+    headers['content-length'] = tostring(opts.content_length)
 
     self.awssig:aws_set_headers(self.host, path, query, {
-        body = body or "",
+        body = body or '',
         method = method,
         region = self.region,
-        service = "s3",
+        service = 's3',
         unsigned_payload = opts.unsigned_payload,
         set_header_func = function(key, value)
             headers[key] = value
@@ -48,23 +48,23 @@ local function s3_request_raw(self, method, path, query, body, rawHeaders, opts)
 
     local httpc = http.new()
     local ok, err = httpc:connect({
-        scheme = "https",
+        scheme = 'https',
         host = self.host,
     })
     if not ok then
-        error("S3API connection failed! Error: " .. tostring(err))
+        error('S3API connection failed! Error: ' .. tostring(err))
     end
 
     local resp, req_err = httpc:request({
         path = path,
         query = query,
         method = method,
-        body = body or "",
+        body = body or '',
         headers = headers,
     })
     if not resp then
         resp:close()
-        error("S3API request " .. method .. " " .. path .. "?" .. query .. " failed! Error: " .. tostring(req_err))
+        error('S3API request ' .. method .. ' ' .. path .. '?' .. query .. ' failed! Error: ' .. tostring(req_err))
     end
 
     local function done()
@@ -91,7 +91,7 @@ end
 
 local function s3_request(self, method, path, query, body, rawHeaders, opts)
     opts = opts or {}
-    query = query or ""
+    query = query or ''
     local resp, done = s3_request_raw(self, method, path, query, body, rawHeaders, opts)
     local resp_body = resp:read_body()
     done()
@@ -100,38 +100,48 @@ local function s3_request(self, method, path, query, body, rawHeaders, opts)
         opts.status_checker = default_status_checker
     end
 
-    if (not resp.status) or (not opts.status_checker(resp.status)) then
-        error("S3API request " .. method .. " " .. path .. "?" .. query .. " failed! " ..
-              "Status: " .. tostring(resp.status) .. " Body: " .. tostring(resp_body))
+    if not resp.status or not opts.status_checker(resp.status) then
+        error(
+            'S3API request ' .. method .. ' ' .. path .. '?' .. query .. ' failed! ' .. 'Status: ' .. tostring(
+                resp.status
+            ) .. ' Body: ' .. tostring(resp_body)
+        )
     end
 
     return resp, resp_body
 end
 
 local function _cache_get(key)
-    return ngx.shared.foxcaves["storage_s3_" .. key]
+    return ngx.shared.foxcaves['storage_s3_' .. key]
 end
 
 local function _cache_set(key, val)
-    ngx.shared.foxcaves["storage_s3_" .. key] = val
+    ngx.shared.foxcaves['storage_s3_' .. key] = val
 end
 
 function M.new(name, config)
-    local inst = setmetatable({
-        name = name,
-        config = config,
-        awssig = awssig.new({
-            access_key = config.access_key,
-            secret_key = config.secret_key,
-        }, _cache_get, _cache_set),
-        host = config.host or "s3.amazonaws.com",
-        region = config.region or "us-east-1",
-    }, M)
-    if inst.host == "s3.amazonaws.com" then
-        if inst.region ~= "us-east-1" then
-            inst.host = "s3." .. inst.region .. ".amazonaws.com"
+    local inst = setmetatable(
+        {
+            name = name,
+            config = config,
+            awssig = awssig.new(
+                {
+                    access_key = config.access_key,
+                    secret_key = config.secret_key,
+                },
+                _cache_get,
+                _cache_set
+            ),
+            host = config.host or 's3.amazonaws.com',
+            region = config.region or 'us-east-1',
+        },
+        M
+    )
+    if inst.host == 's3.amazonaws.com' then
+        if inst.region ~= 'us-east-1' then
+            inst.host = 's3.' .. inst.region .. '.amazonaws.com'
         end
-        inst.host = inst.config.bucket .. "." .. inst.host
+        inst.host = inst.config.bucket .. '.' .. inst.host
         inst.no_bucket_in_path = true
     else
         inst.no_bucket_in_path = false
@@ -142,32 +152,33 @@ end
 function M:open(id, size, ftype, mimeType, opts)
     opts = opts or {}
     local function make_headers()
-        return {
-            ["content-type"] = mimeType,
-        }
+        return { ['content-type'] = mimeType }
     end
 
     local key = build_key(self, id, ftype)
-    local _, resp_body = s3_request(self, "POST", key, "uploads=1", "", make_headers())
+    local _, resp_body = s3_request(self, 'POST', key, 'uploads=1', '', make_headers())
 
-    local m = ngx.re.match(resp_body, "<UploadId>([^<>]+)</UploadId>", "o")
+    local m = ngx.re.match(resp_body, '<UploadId>([^<>]+)</UploadId>', 'o')
     if not m then
-        error("Invalid response from S3API: " .. resp_body)
+        error('Invalid response from S3API: ' .. resp_body)
     end
 
-    local upload = setmetatable({
-        id = id,
-        size = size,
-        ftype = ftype,
-        part_number = 1,
-        key = key,
-        uploadId = m[1],
-        headers = make_headers,
-        module = self,
-        parts = {},
-        done = false,
-        on_abort = opts.on_abort,
-    }, UPLOAD)
+    local upload = setmetatable(
+        {
+            id = id,
+            size = size,
+            ftype = ftype,
+            part_number = 1,
+            key = key,
+            uploadId = m[1],
+            headers = make_headers,
+            module = self,
+            parts = {},
+            done = false,
+            on_abort = opts.on_abort,
+        },
+        UPLOAD
+    )
 
     utils.register_shutdown(function()
         upload:abort_if_not_done()
@@ -178,29 +189,35 @@ end
 
 function M:send_to_client(id, ftype)
     local key = build_key(self, id, ftype)
-    ngx.var.fcv_proxy_host = "storage-s3-" .. self.name
+    ngx.var.fcv_proxy_host = 'storage-s3-' .. self.name
     ngx.var.fcv_proxy_uri = key
 
     ngx.req.set_uri_args({})
-    self.awssig:aws_set_headers(self.host, key, "", {
-        body = "",
+    self.awssig:aws_set_headers(self.host, key, '', {
+        body = '',
         region = self.region,
-        service = "s3",
+        service = 's3',
     })
-    ngx.req.set_uri("/fcv-s3get", true)
+    ngx.req.set_uri('/fcv-s3get', true)
 end
 
 function M:delete(id, ftype)
-    s3_request(self, "DELETE", build_key(self, id, ftype))
+    s3_request(self, 'DELETE', build_key(self, id, ftype))
 end
 
 function M:build_nginx_config()
     return [[upstream storage-s3-]] .. self.name .. [[ {
         server ]] .. self.host .. [[:443;
-        keepalive ]] .. tostring(self.config.keepalive.pool_size) .. [[;
-        keepalive_requests ]] .. tostring(self.config.keepalive.max_requests) .. [[;
-        keepalive_time ]] .. tostring(self.config.keepalive.max_time) .. [[s;
-        keepalive_timeout ]] ..tostring(self.config.keepalive.idle_timeout) .. [[s;
+        keepalive ]] .. tostring(
+        self.config.keepalive.pool_size
+    ) .. [[;
+        keepalive_requests ]] .. tostring(
+        self.config.keepalive.max_requests
+    ) .. [[;
+        keepalive_time ]] .. tostring(
+        self.config.keepalive.max_time
+    ) .. [[s;
+        keepalive_timeout ]] .. tostring(self.config.keepalive.idle_timeout) .. [[s;
 }]]
 end
 
@@ -214,7 +231,7 @@ function UPLOAD:from_callback(cb)
             while chunk_remaining > 0 do
                 local data = cb(math_min(read_chunk_max, chunk_remaining))
                 if not data then
-                    error("Expected data, got none")
+                    error('Expected data, got none')
                 end
                 local len = data:len()
                 chunk_remaining = chunk_remaining - len
@@ -232,52 +249,56 @@ end
 
 function UPLOAD:chunk(chunk, opts)
     if not chunk then
-        error("Invalid chunk!")
+        error('Invalid chunk!')
     end
 
     local part_number = self.part_number
     self.part_number = self.part_number + 1
 
-    local resp, _ = s3_request(
-        self.module,
-        "PUT", self.key,
-        "partNumber="  .. tostring(part_number) .. "&uploadId=" .. self.uploadId,
-        chunk, self.headers(), opts)
-    local etag = resp.headers["ETag"]
+    local resp, _ =
+        s3_request(
+            self.module,
+            'PUT',
+            self.key,
+            'partNumber=' .. tostring(part_number) .. '&uploadId=' .. self.uploadId,
+            chunk,
+            self.headers(),
+            opts
+        )
+    local etag = resp.headers['ETag']
 
-    if (not etag) or etag == "error" then
-        error("Invalid ETag from S3API: " .. tostring(etag))
+    if not etag or etag == 'error' then
+        error('Invalid ETag from S3API: ' .. tostring(etag))
     end
     self.parts[part_number] = etag
 end
 
 function UPLOAD:finish()
-    local body = {"<CompleteMultipartUpload>"}
+    local body = { '<CompleteMultipartUpload>' }
     for part_number, etag in pairs(self.parts) do
-        table.insert(body, "<Part><PartNumber>" .. tostring(part_number) .. "</PartNumber><ETag>" .. etag .. "</ETag></Part>")
+        table.insert(
+            body,
+            '<Part><PartNumber>' .. tostring(part_number) .. '</PartNumber><ETag>' .. etag .. '</ETag></Part>'
+        )
     end
-    table.insert(body, "</CompleteMultipartUpload>")
+    table.insert(body, '</CompleteMultipartUpload>')
 
-    s3_request(self.module, "POST", self.key, "uploadId=" .. self.uploadId, table.concat(body, ""), {
-        ["content-type"] = "text/xml",
+    s3_request(self.module, 'POST', self.key, 'uploadId=' .. self.uploadId, table.concat(body, ''), {
+        ['content-type'] = 'text/xml',
     })
     self.done = true
 end
 
 function UPLOAD:abort_if_not_done()
-    if self.done then
-        return
-    end
+    if self.done then return end
     self:abort()
 end
 
 function UPLOAD:abort()
-    s3_request(self.module, "DELETE", self.key, "uploadId=" .. self.uploadId, nil, nil, {
+    s3_request(self.module, 'DELETE', self.key, 'uploadId=' .. self.uploadId, nil, nil, {
         status_checker = accept_404_status_checker,
     })
-    s3_request(self.module, "DELETE", self.key, nil, nil, nil, {
-        status_checker = accept_404_status_checker,
-    })
+    s3_request(self.module, 'DELETE', self.key, nil, nil, nil, { status_checker = accept_404_status_checker })
     if self.on_abort then
         self.on_abort()
     end

@@ -1,26 +1,26 @@
-local utils = require("foxcaves.utils")
-local redis = require("foxcaves.redis")
-local mail = require("foxcaves.mail")
-local random = require("foxcaves.random")
-local user_model = require("foxcaves.models.user")
-local main_url = require("foxcaves.config").http.main_url
+local utils = require('foxcaves.utils')
+local redis = require('foxcaves.redis')
+local mail = require('foxcaves.mail')
+local random = require('foxcaves.random')
+local user_model = require('foxcaves.models.user')
+local main_url = require('foxcaves.config').http.main_url
 local ngx = ngx
 
 local function invalid_code()
-    return utils.api_error("code invalid")
+    return utils.api_error('code invalid')
 end
 
-R.register_route("/api/v1/users/emails/code", "POST", R.make_route_opts_anon(), function()
+R.register_route('/api/v1/users/emails/code', 'POST', R.make_route_opts_anon(), function()
     local args = utils.get_post_args()
 
-    local code = args.code or ""
-    if code == "" then
-        return utils.api_error("code required")
+    local code = args.code or ''
+    if code == '' then
+        return utils.api_error('code required')
     end
 
     local redis_inst = redis.get_shared()
-    local codekey = "emailkeys:" .. ngx.unescape_uri(args.code)
-    local res = redis_inst:hmget(codekey, "user", "action")
+    local codekey = 'emailkeys:' .. ngx.unescape_uri(args.code)
+    local res = redis_inst:hmget(codekey, 'user', 'action')
     redis_inst:del(codekey)
     if utils.is_falsy_or_null(res) then
         return invalid_code()
@@ -34,22 +34,22 @@ R.register_route("/api/v1/users/emails/code", "POST", R.make_route_opts_anon(), 
 
     local user = user_model.get_by_id(userid)
     if not user then
-        return utils.api_error("Bad user")
+        return utils.api_error('Bad user')
     end
 
-    if action == "activation" then
+    if action == 'activation' then
         user.active = 1
         user:save()
-    elseif action == "forgot_password" then
+    elseif action == 'forgot_password' then
         local newPassword = random.string(16)
 
         user:set_password(newPassword)
         user:make_new_login_key()
         user:save()
 
-        local email = "Here is your new password:\n" .. newPassword ..
-                      "\nPlease log in at " .. main_url .. "/login and change it as soon as possible."
-        mail.send(user, "New password", email)
+        local email =
+            'Here is your new password:\n' .. newPassword .. '\nPlease log in at ' .. main_url .. '/login and change it as soon as possible.'
+        mail.send(user, 'New password', email)
     end
 
     return { action = action }
