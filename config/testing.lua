@@ -26,9 +26,7 @@ return {
     },
     app = {
         require_email_confirmation = false,
-        insecure_login_keys = true,
-        enable_test_error = true,
-        enable_test_reset = true,
+        enable_testing_routes = true,
     },
     storage = {
         default = "fs",
