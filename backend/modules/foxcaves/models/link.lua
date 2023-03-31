@@ -44,7 +44,7 @@ function link_model.get_by_query_raw(query, options, ...)
     return links
 end
 
-function link_model.get_by_owner(user, all)
+function link_model.get_by_owner(user, options, all)
     if not user then
         return {}
     end
@@ -57,7 +57,7 @@ function link_model.get_by_owner(user, all)
     if all then
         query_func = link_model.get_by_query_raw
     end
-    return query_func('owner = %s', nil, user)
+    return query_func('owner = %s', options, user)
 end
 
 function link_model.get_by_id(id)

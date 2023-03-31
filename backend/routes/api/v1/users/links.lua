@@ -19,13 +19,13 @@ R.register_route(
 
         local res = link_model.get_by_owner(user)
         for k, v in next, res do
-            res[k] = v:get_public()
+            res[k] = v:get_private()
         end
         return res
     end,
     {
         description = 'Get a list of links of a user',
-        authentication = { 'self' },
+        authorization = { 'self' },
         request = {
             params = {
                 user = {
