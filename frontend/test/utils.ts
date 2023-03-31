@@ -39,8 +39,6 @@ export async function doLoginPage(page: Page, user?: TestUser): Promise<TestUser
 }
 
 export async function doLogoutPage(page: Page): Promise<void> {
-    await page.context().storageState(undefined);
-
     await page.goto('http://main.foxcaves:8080/logout');
     await page.locator('.Toastify__toast--success').waitFor();
 
