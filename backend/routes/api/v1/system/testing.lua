@@ -19,8 +19,8 @@ R.register_route('/api/v1/system/testing/reset', 'POST', R.make_route_opts_anon(
     local deleted_links = 0
 
     for _, user in next, users do
-        local links = link_model.get_by_owner(user, true)
-        local files = file_model.get_by_owner(user, true)
+        local links = link_model.get_by_owner(user, { all = true })
+        local files = file_model.get_by_owner(user, { all = true })
         for _, link in next, links do
             link:delete()
         end

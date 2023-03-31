@@ -87,7 +87,7 @@ function file_model.get_by_query_raw(query, options, ...)
     return files
 end
 
-function file_model.get_by_owner(user, all)
+function file_model.get_by_owner(user, options)
     if not user then
         return {}
     end
@@ -97,10 +97,10 @@ function file_model.get_by_owner(user, all)
     end
 
     local query_func = file_model.get_by_query
-    if all then
+    if options and options.all then
         query_func = file_model.get_by_query_raw
     end
-    return query_func('owner = %s', nil, user)
+    return query_func('owner = %s', options, user)
 end
 
 function file_model.get_by_id(id)
