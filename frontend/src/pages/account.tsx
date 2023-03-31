@@ -79,7 +79,7 @@ export const AccountPage: React.FC = () => {
         (event: FormEvent) => {
             event.preventDefault();
             sendUserChange({
-                login_key: 'CHANGE',
+                security_version: 'CHANGE',
             }).catch(logError);
         },
         [sendUserChange],

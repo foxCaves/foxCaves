@@ -32,8 +32,8 @@
   "scripts": {
     "start": "webpack serve",
     "build": "rimraf build && NODE_ENV=production webpack build",
-    "lint": "eslint --cache --color . && prettier --check .",
-    "fmt": "eslint --fix . && prettier --write .",
+    "lint": "eslint --cache --color ./src ./test webpack.*.ts playwright.*.ts && prettier --check ./src ./test webpack.*.ts playwright.*.ts",
+    "fmt": "eslint --fix ./src ./test webpack.*.ts playwright.*.ts && prettier --write ./src ./test webpack.*.ts playwright.*.ts",
     "test": "curl -f -v -s -XPOST http://main.foxcaves:8080/api/v1/system/reset && playwright test"
   },
   "eslintConfig": {

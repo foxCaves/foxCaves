@@ -50,7 +50,7 @@ export const LinksPage: React.FC = () => {
 
         toast
             .promise(deleteLink.delete(), {
-                success: `Link "${deleteLink.short_url}" deleted`,
+                success: `Deleted link "${deleteLink.short_url}"!`,
                 pending: `Deleting link "${deleteLink.short_url}"...`,
                 error: {
                     render({ data }) {
@@ -72,7 +72,7 @@ export const LinksPage: React.FC = () => {
     const handleCreateLink = useCallback(() => {
         toast
             .promise(LinkModel.create(createLinkUrl), {
-                success: `Link "${createLinkUrl}" created!`,
+                success: `Created link "${createLinkUrl}"!`,
                 pending: `Creating link "${createLinkUrl}"...`,
                 error: {
                     render({ data }) {

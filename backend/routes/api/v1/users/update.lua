@@ -37,16 +37,16 @@ R.register_route('/api/v1/users/{user}', 'PATCH', R.make_route_opts(), function(
     if args.password then
         user:set_password(args.password)
         obj.password = 'CHANGED'
-        args.login_key = 'CHANGE'
+        args.security_version = 'CHANGE'
     end
 
     if args.api_key then
         user:make_new_api_key()
     end
 
-    if args.login_key then
-        user:make_new_login_key()
-        obj.login_key = 'CHANGED'
+    if args.security_version then
+        user:make_new_security_version()
+        obj.security_version = 'CHANGED'
     end
 
     user:save()

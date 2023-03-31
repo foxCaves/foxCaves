@@ -42,7 +42,7 @@ const FileView: React.FC<{
 
                 toast
                     .promise(file.rename(editFileName), {
-                        success: `File "${oldName}" renamed to "${newName}"`,
+                        success: `Renamed file "${oldName}" to "${newName}"!`,
                         pending: `Renaming file "${oldName}" to "${newName}"...`,
                         error: {
                             render({ data }) {
@@ -151,7 +151,7 @@ export const FilesPage: React.FC = () => {
 
         toast
             .promise(deleteFile.delete(), {
-                success: `File "${deleteFile.name}" deleted!`,
+                success: `Deleted file "${deleteFile.name}"!`,
                 pending: `Deleting file "${deleteFile.name}"...`,
                 error: {
                     render({ data }) {
@@ -188,7 +188,7 @@ export const FilesPage: React.FC = () => {
     const refreshButton = useCallback(() => {
         toast
             .promise(refresh(), {
-                success: 'Files refreshed!',
+                success: 'Refreshed files!',
                 pending: 'Refreshing files...',
                 error: {
                     render({ data }) {

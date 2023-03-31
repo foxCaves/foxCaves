@@ -7,7 +7,6 @@ local events = require('foxcaves.events')
 local mail = require('foxcaves.mail')
 local random = require('foxcaves.random')
 local consts = require('foxcaves.consts')
-local auth_utils = require('foxcaves.auth_utils')
 
 local setmetatable = setmetatable
 local ngx = ngx
@@ -31,7 +30,7 @@ local function makeusermt(user)
 end
 
 local user_select =
-    'id, username, email, password, login_key, api_key, active, storage_quota, ' .. database.TIME_COLUMNS
+    'id, username, email, password, security_version, api_key, active, storage_quota, ' .. database.TIME_COLUMNS
 
 function user_model.get_by_query(query, ...)
     local users = database.get_shared():query('SELECT ' .. user_select .. ' FROM users ' .. 'WHERE ' .. query, ...)
@@ -200,14 +199,14 @@ function user_mt:save()
         res =
             database.get_shared():query_single(
                 'INSERT INTO users \
-                (id, username, email, password, login_key, api_key, active, storage_quota) VALUES \
+                (id, username, email, password, security_version, api_key, active, storage_quota) VALUES \
                 (%s, %s, %s, %s, %s, %s, %s, %s) \
                 RETURNING ' .. database.TIME_COLUMNS,
                 self.id,
                 self.username,
                 self.email,
                 self.password,
-                self.login_key,
+                self.security_version,
                 self.api_key,
                 self.active,
                 self.storage_quota
@@ -218,14 +217,14 @@ function user_mt:save()
         res =
             database.get_shared():query_single(
                 "UPDATE users \
-                SET username = %s, email = %s, password = %s, login_key = %s, api_key = %s, active = %s, storage_quota = %s, \
+                SET username = %s, email = %s, password = %s, security_version = %s, api_key = %s, active = %s, storage_quota = %s, \
                     updated_at = (now() at time zone 'utc') \
                 WHERE id = %s \
                 RETURNING " .. database.TIME_COLUMNS,
                 self.username,
                 self.email,
                 self.password,
-                self.login_key,
+                self.security_version,
                 self.api_key,
                 self.active,
                 self.storage_quota,
@@ -260,12 +259,11 @@ function user_mt:save()
     self:send_self_event(primary_push_action)
 end
 
-function user_mt:make_new_login_key()
-    self.login_key = random.string(64)
+function user_mt:make_new_security_version()
+    self.security_version = self.security_version + 1
     self.kick_user = true
     if ngx.ctx.user and self.id == ngx.ctx.user.id then
         ngx.ctx.user = self
-        auth_utils.send_login_key()
     end
 end
 

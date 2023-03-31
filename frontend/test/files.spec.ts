@@ -6,6 +6,7 @@ import { Page } from '@playwright/test';
 import axios from 'axios';
 import sizeOf from 'image-size';
 import { test } from './fixtures';
+import { waitForToast } from './utils';
 
 // eslint-disable-next-line unicorn/prefer-module
 const PWD = __dirname;
@@ -26,8 +27,8 @@ async function uploadFile(file: string, page: Page) {
     });
 
     await page.locator('.file-drop-zone').click();
-    await page.locator('.Toastify__toast--success').waitFor();
     await fileLocator(filename, page).waitFor();
+    await waitForToast(page, 'Uploaded file');
     return filename;
 }
 
@@ -133,7 +134,7 @@ test('Delete file', async ({ browser, page }) => {
     await file.locator('.dropdown-item').getByText('Delete').click();
 
     await page.locator('.btn-primary').getByText('Yes').click();
-    await page.locator('.Toastify__toast--success').waitFor();
+    await waitForToast(page, 'Deleted file');
 
     await page.locator(`text="${filename}"`).waitFor({
         state: 'detached',
