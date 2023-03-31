@@ -18,14 +18,26 @@ local function makelinkmt(link)
     return link
 end
 
-local link_select = 'id, owner, url, expires_at, ' .. database.TIME_COLUMNS_EXPIRING
+local link_select = 'id, owner, url, ' .. database.TIME_COLUMNS_EXPIRING
 
-function link_model.get_by_query(query, ...)
-    return link_model.get_by_query_raw('(expires_at IS NULL OR expires_at >= NOW()) AND (' .. query .. ')', ...)
+function link_model.get_by_query(query, options, ...)
+    return link_model.get_by_query_raw(
+        '(expires_at IS NULL OR expires_at >= NOW()) AND (' .. query .. ')',
+        options,
+        ...
+    )
 end
 
-function link_model.get_by_query_raw(query, ...)
-    local links = database.get_shared():query('SELECT ' .. link_select .. ' FROM links ' .. 'WHERE ' .. query, ...)
+function link_model.get_by_query_raw(query, options, ...)
+    options = options or {}
+    if not options.order_by then
+        options.order_by = {
+            column = 'created_at',
+            desc = true,
+        }
+    end
+
+    local links = database.get_shared():query('SELECT ' .. link_select .. ' FROM links WHERE ' .. query, options, ...)
     for k, v in next, links do
         links[k] = makelinkmt(v)
     end
@@ -45,7 +57,7 @@ function link_model.get_by_owner(user, all)
     if all then
         query_func = link_model.get_by_query_raw
     end
-    return query_func('owner = %s', user)
+    return query_func('owner = %s', nil, user)
 end
 
 function link_model.get_by_id(id)
@@ -53,7 +65,7 @@ function link_model.get_by_id(id)
         return nil
     end
 
-    local links = link_model.get_by_query('id = %s', id)
+    local links = link_model.get_by_query('id = %s', nil, id)
     if links and links[1] then
         return makelinkmt(links[1])
     end
@@ -70,7 +82,7 @@ function link_model.new()
 end
 
 function link_mt:delete()
-    database.get_shared():query('DELETE FROM links WHERE id = %s', self.id)
+    database.get_shared():query('DELETE FROM links WHERE id = %s', nil, self.id)
 
     local owner = user_model.get_by_id(self.owner)
     owner:send_event('delete', 'link', self:get_private())
@@ -91,6 +103,7 @@ function link_mt:save()
         res =
             database.get_shared():query_single(
                 'INSERT INTO links (id, owner, url, expires_at) VALUES (%s, %s, %s, %s)' .. ' RETURNING ' .. database.TIME_COLUMNS_EXPIRING,
+                nil,
                 self.id,
                 self.owner,
                 self.url,
@@ -106,6 +119,7 @@ function link_mt:save()
                 expires_at = %s, updated_at = (now() at time zone 'utc') \
                 WHERE id = %s \
                 RETURNING " .. database.TIME_COLUMNS_EXPIRING,
+                nil,
                 self.owner,
                 self.url,
                 self.expires_at or ngx.null,
@@ -113,9 +127,9 @@ function link_mt:save()
             )
         primary_push_action = 'update'
     end
-    self.created_at = res.created_at
-    self.updated_at = res.updated_at
-    self.expires_at = res.expires_at
+    self.created_at = res.created_at_str
+    self.updated_at = res.updated_at_str
+    self.expires_at = res.expires_at_str
     if self.expires_at == ngx.null then
         self.expires_at = nil
     end

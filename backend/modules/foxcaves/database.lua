@@ -13,12 +13,12 @@ require('foxcaves.module_helper').setmodenv()
 config.socket_type = 'nginx'
 
 M.TIME_COLUMNS =
-    "to_json(updated_at at time zone 'utc') as updated_at, " .. "to_json(created_at at time zone 'utc') as created_at"
+    "to_json(updated_at at time zone 'utc') as updated_at_str, " .. "to_json(created_at at time zone 'utc') as created_at_str"
 
-M.TIME_COLUMNS_EXPIRING = "to_json(expires_at at time zone 'utc') as expires_at, " .. M.TIME_COLUMNS
+M.TIME_COLUMNS_EXPIRING = "to_json(expires_at at time zone 'utc') as expires_at_str, " .. M.TIME_COLUMNS
 
 local db_meta = {}
-function db_meta:query(query, ...)
+function db_meta:query(query, options, ...)
     local args = { ... }
     for i, v in next, args do
         if v == nil or v == ngx.null then
@@ -28,6 +28,23 @@ function db_meta:query(query, ...)
         end
     end
     query = query:format(unpack(args))
+
+    if options then
+        if options.order_by then
+            query =
+                query .. ' ORDER BY ' .. self.db:escape_identifier(
+                    options.order_by.column
+                ) .. ' ' .. (options.order_by.desc and 'DESC' or 'ASC')
+        end
+
+        if options.limit then
+            query =
+                query .. ' LIMIT ' .. self.db:escape_literal(options.limit.offset) .. ', ' .. self.db:escape_literal(
+                    options.limit.count
+                )
+        end
+    end
+
     local res, err = self.db:query(query)
     if not res then
         error('Postgres query error: ' .. err .. '! During query: ' .. query)
@@ -35,8 +52,8 @@ function db_meta:query(query, ...)
     return res
 end
 
-function db_meta:query_single(query, ...)
-    local res = self:query(query, ...)
+function db_meta:query_single(query, options, ...)
+    local res = self:query(query, options, ...)
     return res[1]
 end
 
