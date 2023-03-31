@@ -201,7 +201,7 @@ local function route_execute()
     ngx.header['FoxCaves-Route-ID'] = handler.id
 
     local opts = handler.options or {}
-    ngx.ctx.disable_set_cookies = opts.disable_set_cookies
+    ngx.ctx.route_opts = opts
 
     if opts.check_login then
         local res, code = auth.check()

@@ -113,7 +113,7 @@ test('Upload non-image file', async ({ page }) => {
 });
 
 test('Delete file', async ({ browser, page }) => {
-    const filePage = await browser.newPage({ storageState: await page.context().storageState() });
+    const filePage = await browser.newPage();
 
     await page.goto('http://main.foxcaves:8080/files');
     await filePage.goto('http://main.foxcaves:8080/files');
