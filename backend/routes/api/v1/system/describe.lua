@@ -79,7 +79,7 @@ local function describe_api()
 end
 
 local api_description_cache = nil
-R.register_route('/api/v1/system/describe', 'GET', R.make_route_opts_anon({ empty_is_array = true }), function()
+R.register_route('/api/v1/system/describe', 'GET', R.make_route_opts_anon(), function()
     if not api_description_cache then
         api_description_cache = describe_api()
     end

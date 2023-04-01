@@ -9,7 +9,7 @@ local table_insert = table.insert
 R.register_route(
     '/api/v1/users/{user}/files',
     'GET',
-    R.make_route_opts({ empty_is_array = true }),
+    R.make_route_opts(),
     function(route_vars)
         local user = user_model.get_by_id(route_vars.user)
         if not user then
@@ -29,7 +29,7 @@ R.register_route(
             offset = query_options.offset,
             count = #items,
             total = file_model.count_by_owner(user),
-            items = {},
+            items = utils.make_array(),
         }
         for _, v in next, items do
             table_insert(ret.items, v:get_private())
