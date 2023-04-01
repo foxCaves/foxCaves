@@ -14,6 +14,13 @@ interface APIRequestInfo {
     headers?: Record<string, string>;
 }
 
+export interface ListResponse {
+    offset: number;
+    count: number;
+    total: number;
+    items: unknown[];
+}
+
 export async function fetchAPIRaw(url: string, info?: APIRequestInfo): Promise<Response> {
     const init: RequestInit = {};
     if (info) {

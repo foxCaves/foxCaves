@@ -46,8 +46,8 @@ local function describe_api()
             },
             array = {
                 type = 'array',
-                description = 'An array of arbitrary values, described by items',
-                items = {},
+                description = 'An array of arbitrary values, described by item_type',
+                item_type = 'object',
             },
         },
     }

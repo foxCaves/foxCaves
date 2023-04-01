@@ -4,6 +4,7 @@ local utils = require('foxcaves.utils')
 local ngx = ngx
 local next = next
 local tonumber = tonumber
+local table_insert = table.insert
 
 R.register_route(
     '/api/v1/users/{user}/links',
@@ -15,17 +16,25 @@ R.register_route(
             return utils.api_error('User not found', 404)
         end
         if user.id ~= ngx.ctx.user.id then
-            return utils.api_error('You are not list links for this user', 403)
+            return utils.api_error('You are not allowed to list links for this user', 403)
         end
 
-        local res = link_model.get_by_owner(user, {
+        local query_options = {
             offset = tonumber(ngx.var.arg_offset or '0'),
             limit = tonumber(ngx.var.arg_limit or '0'),
-        })
-        for k, v in next, res do
-            res[k] = v:get_private()
+        }
+        local items = link_model.get_by_owner(user, query_options)
+
+        local ret = {
+            offset = query_options.offset,
+            count = #items,
+            total = link_model.count_by_owner(user),
+            items = {},
+        }
+        for _, v in next, items do
+            table_insert(ret.items, v:get_private())
         end
-        return res
+        return ret
     end,
     {
         description = 'Get a list of links of a user',
@@ -52,8 +61,25 @@ R.register_route(
         },
         response = {
             body = {
-                type = 'array',
-                items = { type = 'link.private' },
+                type = 'object',
+                fields = {
+                    offset = {
+                        description = 'The offset at which the links were listed',
+                        type = 'integer',
+                    },
+                    count = {
+                        description = 'The number of links returned',
+                        type = 'integer',
+                    },
+                    total = {
+                        description = 'The total number of links for the given user',
+                        type = 'integer',
+                    },
+                    items = {
+                        type = 'array',
+                        item_type = 'file.private',
+                    },
+                },
             },
         },
     }

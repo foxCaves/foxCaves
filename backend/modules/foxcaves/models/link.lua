@@ -60,6 +60,22 @@ function link_model.get_by_owner(user, options)
     return query_func('owner = %s', options, user)
 end
 
+function link_model.count_by_owner(user)
+    if not user then
+        return 0
+    end
+
+    if user.id then
+        user = user.id
+    end
+
+    local res = database.get_shared():query_single('SELECT COUNT(id) FROM links WHERE owner = %s', nil, user)
+    if not res then
+        return 0
+    end
+    return res.count
+end
+
 function link_model.get_by_id(id)
     if not id then
         return nil
