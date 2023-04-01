@@ -1,4 +1,4 @@
-import { fetchAPI, fetchAPIRaw, HttpError } from '../utils/api';
+import { fetchAPI, fetchAPIRaw, HttpError, ListResponse } from '../utils/api';
 import { formatSize } from '../utils/formatting';
 import { BaseModel } from './base';
 import { UserModel } from './user';
@@ -30,8 +30,8 @@ export class FileModel extends BaseModel {
     }
 
     public static async getByUser(user: UserModel): Promise<FileModel[]> {
-        const res = (await fetchAPI(`/api/v1/users/${encodeURIComponent(user.id)}/files`)) as unknown[];
-        return res.map((i) => FileModel.wrapNew(i));
+        const res = (await fetchAPI(`/api/v1/users/${encodeURIComponent(user.id)}/files`)) as ListResponse;
+        return res.items.map((i) => FileModel.wrapNew(i));
     }
 
     public static wrapNew(obj: unknown): FileModel {

@@ -218,7 +218,7 @@ local function route_execute()
 end
 
 function M.execute()
-    local opts, res, code = route_execute()
+    local _, res, code = route_execute()
 
     if not res then return end
 
@@ -231,11 +231,7 @@ function M.execute()
         ngx.print(res)
     else
         ngx.header['Content-Type'] = 'application/json'
-        if opts.empty_is_array and not next(res) then
-            ngx.print('[]')
-        else
-            ngx.print(cjson.encode(res))
-        end
+        ngx.print(cjson.encode(res))
     end
 end
 

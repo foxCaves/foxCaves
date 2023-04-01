@@ -5,6 +5,7 @@ local type = type
 local next = next
 local pcall = pcall
 local tostring = tostring
+local setmetatable = setmetatable
 
 local M = {}
 require('foxcaves.module_helper').setmodenv()
@@ -102,6 +103,10 @@ end
 
 function M.get_or_default_str(val, default)
     return tostring(M.get_or_default(val, default))
+end
+
+function M.make_array()
+    return setmetatable({}, cjson.array_mt)
 end
 
 return M
