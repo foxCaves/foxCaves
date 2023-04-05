@@ -7,6 +7,7 @@ local error = error
 local ngx = ngx
 local pairs = pairs
 local tostring = tostring
+local tonumber = tonumber
 local table = table
 local math_min = math.min
 local coroutine_yield = coroutine.yield
@@ -165,7 +166,7 @@ function M:upload(id, size, ftype, mimeType, opts)
         error('Invalid response from S3API: ' .. resp_body)
     end
 
-    local upload = setmetatable(
+    local ul = setmetatable(
         {
             id = id,
             size = size,
@@ -183,10 +184,10 @@ function M:upload(id, size, ftype, mimeType, opts)
     )
 
     utils.register_shutdown(function()
-        upload:abort_if_not_done()
+        ul:abort_if_not_done()
     end)
 
-    return upload
+    return ul
 end
 
 function M:download(id, ftype)
@@ -197,6 +198,7 @@ function M:download(id, ftype)
             resp = resp,
             done_cb = done,
             done = false,
+            size = tonumber(resp.headers['content-length']),
         },
         DOWNLOAD
     )

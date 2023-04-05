@@ -314,8 +314,8 @@ function file_mt:upload_abort()
 end
 
 local function file_migrate_piece(self, source_storage, destination_storage, ftype)
-    local upload = destination_storage:upload(self.id, self.size, ftype, self.mimetype)
     local download = source_storage:download(self.id, ftype)
+    local upload = destination_storage:upload(self.id, download.size, ftype, self.mimetype)
     upload:from_callback(function(chunk_size)
         return download:read(chunk_size)
     end)
@@ -343,6 +343,11 @@ function file_mt:migrate(destination_storage_name)
     end
     self.storage = destination_storage_name
     self:save()
+
+    source_storage:delete(self.id, 'file')
+    if self.thumbnail_mimetype then
+        source_storage:delete(self.id, 'thumb')
+    end
 end
 
 function file_mt:save(force_push_action)
