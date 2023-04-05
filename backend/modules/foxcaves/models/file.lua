@@ -331,6 +331,10 @@ function file_mt:migrate(destination_storage_name)
     local source_storage = file_get_storage_driver(self)
     local destination_storage = storage_drivers[destination_storage_name]
 
+    if not destination_storage then
+        error('Unknown storage driver ' .. destination_storage_name)
+    end
+
     if source_storage == destination_storage then return end
 
     file_migrate_piece(self, source_storage, destination_storage, 'file')

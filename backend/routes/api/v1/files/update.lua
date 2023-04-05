@@ -25,6 +25,11 @@ R.register_route(
         expiry_utils.parse_expiry(args, file)
 
         file:save()
+
+        if args.migrate_to then
+            file:migrate(args.migrate_to)
+        end
+
         return file:get_private()
     end,
     {
