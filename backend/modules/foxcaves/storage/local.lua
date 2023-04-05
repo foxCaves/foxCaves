@@ -23,10 +23,14 @@ function M.new(name, config)
     )
 end
 
-function M:open(id, size, ftype)
+local function _get_local_dir_and_name_for(self, id, ftype)
     local dir = self.config.root_folder .. '/' .. id
+    return dir, dir .. '/' .. ftype
+end
+
+function M:upload(id, size, ftype)
+    local dir, filename = _get_local_dir_and_name_for(self, id, ftype)
     lfs.mkdir(dir)
-    local filename = dir .. '/' .. ftype
 
     local fh = io.open(filename, 'wb')
     if not fh then
@@ -45,10 +49,20 @@ function M:open(id, size, ftype)
     )
 end
 
+function M:download(id, ftype)
+    local _, filename = _get_local_dir_and_name_for(self, id, ftype)
+    return io.open(filename, 'rb')
+end
+
 function M:delete(id, ftype)
-    local dir = self.config.root_folder .. '/' .. id
-    os.remove(dir .. '/' .. ftype)
+    local dir, filename = _get_local_dir_and_name_for(self, id, ftype)
+    os.remove(filename)
     lfs.rmdir(dir)
+end
+
+function M:get_local_path_for(id, ftype)
+    local _, filename = _get_local_dir_and_name_for(self, id, ftype)
+    return filename
 end
 
 function M:send_to_client(id, ftype)

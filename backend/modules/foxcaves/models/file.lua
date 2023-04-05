@@ -14,6 +14,7 @@ local os = os
 local ngx = ngx
 local next = next
 local setmetatable = setmetatable
+local error = error
 
 local file_mt = {}
 
@@ -208,17 +209,20 @@ function file_mt:upload_begin()
     local storage = file_get_storage_driver(self)
     self.uploaded = 0
 
-    self._upload = storage:open(self.id, self.size, 'file', self.mimetype, { on_abort = function()
+    self._upload = storage:upload(self.id, self.size, 'file', self.mimetype, { on_abort = function()
         self:delete()
     end })
 
     if self.size <= file_model.consts.THUMBNAIL_MAX_SIZE then
-        local file_temp = os.tmpname()
-        self._file_temp = file_temp
-        utils.register_shutdown(function()
-            os.remove(file_temp)
-        end)
-        self._fh_tmp = io.open(file_temp, 'wb')
+        self._file_temp = storage:get_local_path_for(self.id, 'file')
+        if not self._file_temp then
+            local file_temp = os.tmpname()
+            self._file_temp = file_temp
+            utils.register_shutdown(function()
+                os.remove(file_temp)
+            end)
+            self._fh_tmp = io.open(file_temp, 'wb')
+        end
     end
 
     return storage.config.chunk_size
@@ -268,7 +272,7 @@ local function file_thumbnail_process(self)
     local thumb_size = lfs.attributes(thumb_temp, 'size')
     if thumb_size > 0 then
         local thumb_fh = io.open(thumb_temp, 'rb')
-        local thumb_upload = storage:open(self.id, thumb_size, 'thumb', self.thumbnail_mimetype)
+        local thumb_upload = storage:upload(self.id, thumb_size, 'thumb', self.thumbnail_mimetype)
         thumb_upload:from_callback(function(chunk_size)
             return thumb_fh:read(chunk_size)
         end)
@@ -307,6 +311,34 @@ end
 
 function file_mt:upload_abort()
     self._upload:abort()
+end
+
+local function file_migrate_piece(self, source_storage, destination_storage, ftype)
+    local upload = destination_storage:upload(self.id, self.size, ftype, self.mimetype)
+    local download = source_storage:download(self.id, ftype)
+    upload:from_callback(function(chunk_size)
+        return download:read(chunk_size)
+    end)
+    upload:finish()
+    download:close()
+end
+
+function file_mt:migrate(destination_storage_name)
+    if self.uploaded ~= 1 then
+        error('Cannot migrate file that is not uploaded')
+    end
+
+    local source_storage = file_get_storage_driver(self)
+    local destination_storage = storage_drivers[destination_storage_name]
+
+    if source_storage == destination_storage then return end
+
+    file_migrate_piece(self, source_storage, destination_storage, 'file')
+    if self.thumbnail_mimetype then
+        file_migrate_piece(self, source_storage, destination_storage, 'thumb')
+    end
+    self.storage = destination_storage_name
+    self:save()
 end
 
 function file_mt:save(force_push_action)
