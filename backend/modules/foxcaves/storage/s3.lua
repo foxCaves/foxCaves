@@ -7,6 +7,7 @@ local error = error
 local ngx = ngx
 local pairs = pairs
 local tostring = tostring
+local tonumber = tonumber
 local table = table
 local math_min = math.min
 local coroutine_yield = coroutine.yield
@@ -16,6 +17,8 @@ local M = {}
 M.__index = M
 local UPLOAD = {}
 UPLOAD.__index = UPLOAD
+local DOWNLOAD = {}
+DOWNLOAD.__index = DOWNLOAD
 require('foxcaves.module_helper').setmodenv()
 
 local function build_key(self, id, ftype)
@@ -149,7 +152,7 @@ function M.new(name, config)
     return inst
 end
 
-function M:open(id, size, ftype, mimeType, opts)
+function M:upload(id, size, ftype, mimeType, opts)
     opts = opts or {}
     local function make_headers()
         return { ['content-type'] = mimeType }
@@ -163,7 +166,7 @@ function M:open(id, size, ftype, mimeType, opts)
         error('Invalid response from S3API: ' .. resp_body)
     end
 
-    local upload = setmetatable(
+    local ul = setmetatable(
         {
             id = id,
             size = size,
@@ -181,10 +184,30 @@ function M:open(id, size, ftype, mimeType, opts)
     )
 
     utils.register_shutdown(function()
-        upload:abort_if_not_done()
+        ul:abort_if_not_done()
     end)
 
-    return upload
+    return ul
+end
+
+function M:download(id, ftype)
+    local resp, done = s3_request_raw(self, 'GET', build_key(self, id, ftype))
+
+    local dl = setmetatable(
+        {
+            resp = resp,
+            done_cb = done,
+            done = false,
+            size = tonumber(resp.headers['content-length']),
+        },
+        DOWNLOAD
+    )
+
+    utils.register_shutdown(function()
+        dl:close()
+    end)
+
+    return dl
 end
 
 function M:send_to_client(id, ftype)
@@ -219,6 +242,10 @@ function M:build_nginx_config()
     ) .. [[s;
         keepalive_timeout ]] .. tostring(self.config.keepalive.idle_timeout) .. [[s;
 }]]
+end
+
+function M.get_local_path_for()
+    return nil
 end
 
 function UPLOAD:from_callback(cb)
@@ -302,6 +329,21 @@ function UPLOAD:abort()
     if self.on_abort then
         self.on_abort()
     end
+end
+
+function DOWNLOAD:read(size)
+    if self.done then return end
+    local data = self.resp.body_reader(size)
+    if not data then
+        self:close()
+    end
+    return data
+end
+
+function DOWNLOAD:close()
+    if self.done then return end
+    self.done = true
+    self.done_cb()
 end
 
 return M
