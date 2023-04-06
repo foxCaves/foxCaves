@@ -84,4 +84,18 @@ function M.get_shared()
     return database
 end
 
+function M.transfer_time_columns(model, res)
+    model.created_at = res.created_at_str
+    model.updated_at = res.updated_at_str
+    if res.expires_at_str == ngx.null then
+        model.expires_at = nil
+    else
+        model.expires_at = res.expires_at_str
+    end
+
+    model.created_at_str = nil
+    model.updated_at_str = nil
+    model.expires_at_str = nil
+end
+
 return M

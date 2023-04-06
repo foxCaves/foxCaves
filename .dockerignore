@@ -1,7 +1,8 @@
 .git
 .DS_Store
+**/.DS_Store
 /data
 /frontend/build
 /frontend/test-results
-.eslintcache
-node_modules
+**/.eslintcache
+**/node_modules
