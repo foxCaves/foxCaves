@@ -24,6 +24,7 @@ local GIGABYTE = MEGABYTE * 1024
 local STORAGE_BASE = 1 * GIGABYTE
 
 local function makeusermt(user)
+    database.transfer_time_columns(user, user)
     user.not_in_db = nil
     setmetatable(user, user_mt)
     return user
@@ -52,10 +53,7 @@ function user_model.get_by_id(id)
     end
 
     local users = user_model.get_by_query('id = %s', nil, id)
-    if users and users[1] then
-        return makeusermt(users[1])
-    end
-    return nil
+    return users[1]
 end
 
 function user_model.get_by_username(username, always_query)
@@ -70,10 +68,7 @@ function user_model.get_by_username(username, always_query)
     end
 
     local users = user_model.get_by_query('lower(username) = %s', nil, username)
-    if users and users[1] then
-        return makeusermt(users[1])
-    end
-    return nil
+    return users[1]
 end
 
 function user_model.get_by_email(email, always_query)
@@ -88,10 +83,7 @@ function user_model.get_by_email(email, always_query)
     end
 
     local users = user_model.get_by_query('lower(email) = %s', nil, email)
-    if users and users[1] then
-        return makeusermt(users[1])
-    end
-    return nil
+    return users[1]
 end
 
 function user_model.new()
@@ -250,8 +242,8 @@ function user_mt:save()
             )
         primary_push_action = 'update'
     end
-    self.created_at = res.created_at_str
-    self.updated_at = res.updated_at_str
+
+    database.transfer_time_columns(self, res)
 
     if self.require_email_confirmation then
         local emailid = random.string(32)

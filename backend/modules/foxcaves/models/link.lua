@@ -13,6 +13,7 @@ local link_model = {}
 require('foxcaves.module_helper').setmodenv()
 
 local function makelinkmt(link)
+    database.transfer_time_columns(link, link)
     link.not_in_db = nil
     setmetatable(link, link_mt)
     return link
@@ -143,12 +144,8 @@ function link_mt:save()
             )
         primary_push_action = 'update'
     end
-    self.created_at = res.created_at_str
-    self.updated_at = res.updated_at_str
-    self.expires_at = res.expires_at_str
-    if self.expires_at == ngx.null then
-        self.expires_at = nil
-    end
+
+    database.transfer_time_columns(self, res)
 
     local owner = user_model.get_by_id(self.owner)
     owner:send_event(primary_push_action, 'link', self:get_private())

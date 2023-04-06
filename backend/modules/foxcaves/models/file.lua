@@ -56,6 +56,7 @@ local function file_get_storage_driver(file)
 end
 
 local function makefilemt(file)
+    database.transfer_time_columns(file, file)
     file.not_in_db = nil
     setmetatable(file, file_mt)
     return file
@@ -392,12 +393,8 @@ function file_mt:save(force_push_action)
             )
         primary_push_action = 'update'
     end
-    self.created_at = res.created_at_str
-    self.updated_at = res.updated_at_str
-    self.expires_at = res.expires_at_str
-    if self.expires_at == ngx.null then
-        self.expires_at = nil
-    end
+
+    database.transfer_time_columns(self, res)
 
     if self.uploaded == 1 then
         if force_push_action then

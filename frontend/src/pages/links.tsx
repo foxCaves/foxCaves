@@ -5,7 +5,7 @@ import { toast } from 'react-toastify';
 import { LinksContext } from '../components/liveloading';
 import { LinkModel } from '../models/link';
 import { useInputFieldSetter } from '../utils/hooks';
-import { logError } from '../utils/misc';
+import { logError, sortByDate } from '../utils/misc';
 
 const LinkView: React.FC<{
     link: LinkModel;
@@ -207,9 +207,11 @@ export const LinksPage: React.FC = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {Array.from(models.values()).map((link) => (
-                        <LinkView key={link.id} link={link} setDeleteLink={setDeleteLink} />
-                    ))}
+                    {Array.from(models.values())
+                        .sort(sortByDate)
+                        .map((link) => (
+                            <LinkView key={link.id} link={link} setDeleteLink={setDeleteLink} />
+                        ))}
                 </tbody>
             </Table>
         </>
