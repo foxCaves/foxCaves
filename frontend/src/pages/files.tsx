@@ -18,7 +18,7 @@ import { FileModel } from '../models/file';
 import noThumbnail from '../resources/nothumb.gif';
 import { uploadFile } from '../utils/file_uploader';
 import { useInputFieldSetter } from '../utils/hooks';
-import { logError } from '../utils/misc';
+import { logError, sortByDate } from '../utils/misc';
 
 const FileView: React.FC<{
     file: FileModel;
@@ -256,18 +256,20 @@ export const FilesPage: React.FC = () => {
             </Container>
             <Container className="mt-2 justify-content-center">
                 <Row>
-                    {Array.from(models.values()).map((file) => {
-                        return (
-                            <Col className="col-auto mb-3" key={file.id}>
-                                <FileView
-                                    editMode={editFile === file}
-                                    file={file}
-                                    setDeleteFile={setDeleteFile}
-                                    setEditFile={setEditFile}
-                                />
-                            </Col>
-                        );
-                    })}
+                    {Array.from(models.values())
+                        .sort(sortByDate)
+                        .map((file) => {
+                            return (
+                                <Col className="col-auto mb-3" key={file.id}>
+                                    <FileView
+                                        editMode={editFile === file}
+                                        file={file}
+                                        setDeleteFile={setDeleteFile}
+                                        setEditFile={setEditFile}
+                                    />
+                                </Col>
+                            );
+                        })}
                 </Row>
             </Container>
         </>
