@@ -31,7 +31,7 @@ local function makeusermt(user)
 end
 
 local user_select =
-    'id, username, email, password, security_version, api_key, active, storage_quota, ' .. database.TIME_COLUMNS
+    'id, username, email, password, security_version, api_key, active, storage_quota, admin, ' .. database.TIME_COLUMNS
 
 function user_model.get_by_query(query, options, ...)
     local users = database.get_shared():query('SELECT ' .. user_select .. ' FROM users WHERE ' .. query, options, ...)
@@ -93,6 +93,7 @@ function user_model.new()
         security_version = 1,
         storage_quota = STORAGE_BASE,
         active = 0,
+        admin = 0,
     }
     setmetatable(user, user_mt)
     user:make_new_api_key()
@@ -194,6 +195,10 @@ end
 function user_mt:send_self_event(action)
     action = action or 'update'
     self:send_event(action, 'user', self:get_private())
+end
+
+function user_mt:is_admin()
+    return self.admin == 1
 end
 
 function user_mt:save()
