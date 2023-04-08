@@ -219,7 +219,7 @@ local function route_execute()
     end
 
     if opts.require_admin and not (ngx.ctx.user and ngx.ctx.user:is_admin()) then
-        return utils.api_error('Not admin', 403)
+        return opts, utils.api_error('Not admin', 403)
     end
 
     return opts, handler.func(route_vars)
