@@ -67,6 +67,10 @@ local BASE_OPTS_ANON = ROUTE_REG_MT.make_route_opts({
 function ROUTE_REG_MT.make_route_opts_anon()
     return BASE_OPTS_ANON
 end
+local BASE_OPTS_ADMIN = ROUTE_REG_MT.make_route_opts({ require_admin = true })
+function ROUTE_REG_MT.make_route_opts_admin()
+    return BASE_OPTS_ADMIN
+end
 
 local c_open, c_close, c_star = ('{}*'):byte(1, 3)
 
@@ -212,6 +216,10 @@ local function route_execute()
 
     if not opts.allow_guest and not ngx.ctx.user then
         return opts, utils.api_error('Not logged in', 403)
+    end
+
+    if opts.require_admin and not (ngx.ctx.user and ngx.ctx.user:is_admin()) then
+        return opts, utils.api_error('Not admin', 403)
     end
 
     return opts, handler.func(route_vars)
