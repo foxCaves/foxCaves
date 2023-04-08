@@ -5,8 +5,9 @@ CREATE TABLE users (
     password VARCHAR(255),
     active INT NOT NULL,
     storage_quota BIGINT NOT NULL,
-    login_key VARCHAR(255),
+    security_version INT NOT NULL,
     api_key VARCHAR(255),
+    admin INT NOT NULL DEFAULT 0,
     created_at timestamp without time zone DEFAULT (now() at time zone 'utc'),
     updated_at timestamp without time zone DEFAULT (now() at time zone 'utc')
 );
