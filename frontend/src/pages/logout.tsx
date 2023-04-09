@@ -32,6 +32,7 @@ export const LogoutPage: React.FC = () => {
             );
         } catch (error: unknown) {
             logError(error as Error);
+            await refreshUser();
         }
     }, [refreshUser]);
 

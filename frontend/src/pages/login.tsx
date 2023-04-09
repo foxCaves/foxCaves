@@ -40,6 +40,7 @@ export const LoginPage: React.FC = () => {
             );
         } catch (error: unknown) {
             logError(error as Error);
+            await refreshUser();
         }
     }, [username, password, remember, refreshUser]);
 
