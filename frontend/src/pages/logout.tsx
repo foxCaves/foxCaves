@@ -38,6 +38,7 @@ export const LogoutPage: React.FC = () => {
 
     const acceptLogOut = useCallback(() => {
         acceptLogOutAsync().catch(logError);
+        document.location.href = '/';
     }, [acceptLogOutAsync]);
 
     if (!userLoaded) {
