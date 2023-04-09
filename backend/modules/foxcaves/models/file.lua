@@ -434,6 +434,23 @@ function file_mt:get_public()
 end
 file_mt.get_private = file_mt.get_public
 
+function file_mt.can_view()
+    return true
+end
+
+function file_mt:can_edit(user)
+    if not user then
+        return false
+    end
+    if user.id == self.owner then
+        return true
+    end
+    if user:is_admin() then
+        return true
+    end
+    return false
+end
+
 function file_model.get_public_fields()
     return {
         id = {

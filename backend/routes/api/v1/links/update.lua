@@ -12,8 +12,8 @@ R.register_route(
         if not link then
             return utils.api_error('Link not found', 404)
         end
-        if link.owner ~= ngx.ctx.user.id then
-            return utils.api_error('Not your link', 403)
+        if not link:can_edit(ngx.ctx.user) then
+            return utils.api_error('You do not have permission to edit this link', 403)
         end
 
         local args = utils.get_post_args()

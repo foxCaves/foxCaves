@@ -10,8 +10,8 @@ R.register_route('/api/v1/users/{user}', 'DELETE', R.make_route_opts(), function
     if not user then
         return utils.api_error('User not found', 404)
     end
-    if user.id ~= ngx.ctx.user.id then
-        return utils.api_error('You are not allowed to delete this user', 403)
+    if not user:can_edit(ngx.ctx.user) then
+        return utils.api_error('You do not have permission to edit this user', 403)
     end
 
     local args = utils.get_post_args()
