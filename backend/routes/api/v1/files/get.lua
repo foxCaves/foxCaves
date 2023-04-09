@@ -1,5 +1,6 @@
 local utils = require('foxcaves.utils')
 local file_model = require('foxcaves.models.file')
+local ngx = ngx
 
 R.register_route(
     '/api/v1/files/{file}',
