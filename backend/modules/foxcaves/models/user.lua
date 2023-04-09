@@ -41,6 +41,14 @@ function user_model.get_by_query(query, options, ...)
     return users
 end
 
+function user_model.count_by_query(query, ...)
+    local res = database.get_shared():query_single('SELECT COUNT(id) AS count FROM users WHERE ' .. query, nil, ...)
+    if not res then
+        return 0
+    end
+    return res.count
+end
+
 function user_model.get_by_id(id)
     if not id or not uuid.is_valid(id) then
         return nil
