@@ -29,6 +29,14 @@ function link_model.get_by_query(query, options, ...)
     )
 end
 
+function link_model.count_by_query(query, ...)
+    local res = database.get_shared():query_single('SELECT COUNT(id) AS count FROM links WHERE ' .. query, nil, ...)
+    if not res then
+        return 0
+    end
+    return res.count
+end
+
 function link_model.get_by_query_raw(query, options, ...)
     options = options or {}
     if not options.order_by then
