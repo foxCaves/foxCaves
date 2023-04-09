@@ -219,7 +219,7 @@ local function route_execute()
         end
     end
 
-    if method == "HEAD" or method == "OPTIONS" or method == "GET" then
+    if method == 'HEAD' or method == 'OPTIONS' or method == 'GET' then
         opts.disable_csrf_checks = true
     end
 

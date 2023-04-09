@@ -7,7 +7,7 @@ local user_model = require('foxcaves.models.user')
 local ngx = ngx
 local tostring = tostring
 
-local SESSION_ID_COOKIE_NAME = "session_id"
+local SESSION_ID_COOKIE_NAME = 'session_id'
 
 local M = {}
 require('foxcaves.module_helper').setmodenv()
