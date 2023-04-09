@@ -8,12 +8,11 @@ local ngx = ngx
 local tostring = tostring
 
 local SESSION_ID_COOKIE_NAME = 'session_id'
+local SESSION_EXPIRE_DELAY = 7200
+local SESSION_EXPIRE_DELAY_REMEMBER = 30 * 24 * 60 * 60
 
 local M = {}
 require('foxcaves.module_helper').setmodenv()
-
-local SESSION_EXPIRE_DELAY = 7200
-local SESSION_EXPIRE_DELAY_REMEMBER = 30 * 24 * 60 * 60
 
 function M.LOGIN_METHOD_PASSWORD(userdata, password)
     return userdata:check_password(password)
