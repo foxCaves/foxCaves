@@ -1,6 +1,4 @@
 local auth = require('foxcaves.auth')
-local main_url = require('foxcaves.config').http.main_url
-local ngx = ngx
 
 R.register_route(
     '/api/v1/users/sessions',
