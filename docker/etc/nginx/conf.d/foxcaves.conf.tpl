@@ -74,7 +74,7 @@ server {
         proxy_buffering off;
 
         client_max_body_size 0;
-        limit_except POST {
+        limit_except POST GET {
             deny all;
         }
         proxy_pass http://unix:/run/nginx-lua-api.sock;

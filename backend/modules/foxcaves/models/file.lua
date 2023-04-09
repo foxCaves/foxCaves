@@ -73,6 +73,14 @@ function file_model.get_by_query(query, options, ...)
     )
 end
 
+function file_model.count_by_query(query, ...)
+    local res = database.get_shared():query_single('SELECT COUNT(id) AS count FROM files WHERE ' .. query, nil, ...)
+    if not res then
+        return 0
+    end
+    return res.count
+end
+
 function file_model.get_by_query_raw(query, options, ...)
     options = options or {}
     if not options.order_by then
