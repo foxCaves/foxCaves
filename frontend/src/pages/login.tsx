@@ -19,7 +19,7 @@ export const LoginPage: React.FC = () => {
     const submitLoginFormAsync = useCallback(async () => {
         try {
             await toast.promise(
-                fetchAPIRaw('/api/v1/users/sessions/login', {
+                fetchAPIRaw('/api/v1/users/sessions', {
                     method: 'POST',
                     data: {
                         username,
