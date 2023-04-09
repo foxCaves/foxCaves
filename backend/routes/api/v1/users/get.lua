@@ -18,6 +18,9 @@ R.register_route(
         if not user then
             return utils.api_error('User not found', 404)
         end
+        if not user:can_view(ngx.ctx.user) then
+            return utils.api_error('You do not have permission to view this user', 403)
+        end
         return user:get_public()
     end,
     {

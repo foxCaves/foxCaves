@@ -10,6 +10,9 @@ R.register_route(
         if not file then
             return utils.api_error('File not found', 404)
         end
+        if not file:can_edit(ngx.ctx.user) then
+            return utils.api_error('You do not have permission to edit this file', 403)
+        end
 
         local args = utils.get_post_args()
 

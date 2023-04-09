@@ -309,6 +309,27 @@ function user_mt:get_private()
     }
 end
 
+function user_mt.can_view()
+    return true
+end
+
+function user_mt:can_view_subresources(user)
+    return self:can_edit(user)
+end
+
+function user_mt:can_edit(user)
+    if not user then
+        return false
+    end
+    if user.id == self.id then
+        return true
+    end
+    if user:is_admin() then
+        return true
+    end
+    return false
+end
+
 function user_model.get_private_fields()
     return {
         id = {

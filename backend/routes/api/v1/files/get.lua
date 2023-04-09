@@ -10,6 +10,9 @@ R.register_route(
         if not file then
             return utils.api_error('File not found', 404)
         end
+        if not file:can_view(ngx.ctx.user) then
+            return utils.api_error('You do not have permission to view this file', 403)
+        end
         return file:get_public()
     end,
     {

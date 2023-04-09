@@ -39,6 +39,11 @@ R.register_route(
 
         expiry_utils.parse_expiry(ngx.var, file, 'arg_')
         file.size = filesize
+
+        if ngx.var.arg_storage and ngx.ctx.user:is_admin() then
+            file.storage = ngx.var.arg_storage
+        end
+
         file:save()
         file:upload_begin()
 
@@ -71,6 +76,11 @@ R.register_route(
                 expires_in = {
                     type = 'integer',
                     description = 'The expiry of the file in seconds from now',
+                    required = false,
+                },
+                storage = {
+                    type = 'string',
+                    description = 'The storage of the file (admin only)',
                     required = false,
                 },
             },

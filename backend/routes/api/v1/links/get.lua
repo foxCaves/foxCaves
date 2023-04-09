@@ -10,6 +10,9 @@ R.register_route(
         if not link then
             return utils.api_error('Link not found', 404)
         end
+        if not link:can_view(ngx.ctx.user) then
+            return utils.api_error('You do not have permission to view this link', 403)
+        end
         return link:get_public()
     end,
     {

@@ -15,7 +15,7 @@ R.register_route(
         if not user then
             return utils.api_error('User not found', 404)
         end
-        if user.id ~= ngx.ctx.user.id then
+        if user:can_view_subresources(ngx.ctx.user) then
             return utils.api_error('You are not allowed to list files for this user', 403)
         end
 

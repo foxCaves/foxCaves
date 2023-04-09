@@ -164,6 +164,23 @@ function link_mt:get_public()
 end
 link_mt.get_private = link_mt.get_public
 
+function link_mt.can_view()
+    return true
+end
+
+function link_mt:can_edit(user)
+    if not user then
+        return false
+    end
+    if user.id == self.owner then
+        return true
+    end
+    if user:is_admin() then
+        return true
+    end
+    return false
+end
+
 function link_model.get_public_fields()
     return {
         id = {

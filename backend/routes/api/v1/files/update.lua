@@ -12,8 +12,8 @@ R.register_route(
         if not file then
             return utils.api_error('File not found', 404)
         end
-        if file.owner ~= ngx.ctx.user.id then
-            return utils.api_error('Not your file', 403)
+        if not file:can_edit(ngx.ctx.user) then
+            return utils.api_error('You do not have permission to edit this file', 403)
         end
 
         local args = utils.get_post_args()
@@ -25,6 +25,10 @@ R.register_route(
         expiry_utils.parse_expiry(args, file)
 
         file:save()
+
+        if args.storage and ngx.ctx.user:is_admin() then
+            file:migrate(args.storage)
+        end
 
         return file:get_private()
     end,
@@ -55,6 +59,11 @@ R.register_route(
                     expires_in = {
                         type = 'integer',
                         description = 'The new expiry of the file in seconds from now',
+                        required = false,
+                    },
+                    storage = {
+                        type = 'string',
+                        description = 'The new storage of the file (admin only)',
                         required = false,
                     },
                 },
