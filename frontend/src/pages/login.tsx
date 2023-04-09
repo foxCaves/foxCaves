@@ -20,7 +20,7 @@ export const LoginPage: React.FC = () => {
         try {
             await toast.promise(
                 fetchAPIRaw('/api/v1/users/sessions', {
-                    method: 'POST',
+                    method: 'PUT',
                     data: {
                         username,
                         password,
