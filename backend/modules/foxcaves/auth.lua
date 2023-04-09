@@ -7,6 +7,8 @@ local user_model = require('foxcaves.models.user')
 local ngx = ngx
 local tostring = tostring
 
+local SESSION_ID_COOKIE_NAME = "session_id"
+
 local M = {}
 require('foxcaves.module_helper').setmodenv()
 
@@ -49,7 +51,7 @@ function M.login(username_or_id, credential, options)
     if not options.no_session then
         local session_id = random.string(32)
         local session_id_cookie = {
-            key = 'session_id',
+            key = SESSION_ID_COOKIE_NAME,
             value = session_id,
         }
         ngx.ctx.session_id = session_id
@@ -81,7 +83,7 @@ function M.login(username_or_id, credential, options)
 end
 
 function M.logout()
-    cookies.delete({ key = 'session_id' })
+    cookies.delete({ key = SESSION_ID_COOKIE_NAME })
     if ngx.ctx.session_id then
         redis.get_shared():del('sessions:' .. ngx.ctx.session_id)
     end
@@ -108,10 +110,11 @@ function M.check()
         if not success then
             return utils.api_error('Invalid username or API key', 401)
         end
+        ngx.ctx.route_opts.disable_csrf_checks = true
         return
     end
 
-    local session_id = cookies.get('session_id')
+    local session_id = cookies.get(SESSION_ID_COOKIE_NAME)
     if session_id then
         local redis_inst = redis.get_shared()
         local sessionKey = 'sessions:' .. session_id
@@ -125,7 +128,7 @@ function M.check()
         }) then
             ngx.ctx.session_id = session_id
             local session_id_cookie = {
-                key = 'session_id',
+                key = SESSION_ID_COOKIE_NAME,
                 value = session_id,
             }
             if remember then

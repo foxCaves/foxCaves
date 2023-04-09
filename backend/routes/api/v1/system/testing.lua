@@ -7,11 +7,17 @@ local app_config = require('foxcaves.config').app
 
 if not app_config.enable_testing_routes then return end
 
-R.register_route('/api/v1/system/testing/error', 'GET', R.make_route_opts_anon(), function()
+local testing_opts = R.make_route_opts({
+    check_login = false,
+    allow_guest = true,
+    disable_csrf_checks = true,
+})
+
+R.register_route('/api/v1/system/testing/error', 'GET', testing_opts, function()
     error('test error')
 end)
 
-R.register_route('/api/v1/system/testing/reset', 'POST', R.make_route_opts_anon(), function()
+R.register_route('/api/v1/system/testing/reset', 'POST', testing_opts, function()
     local users = user_model.get_by_query("lower(username) LIKE 'test_user_%%'")
 
     local deleted_users = #users

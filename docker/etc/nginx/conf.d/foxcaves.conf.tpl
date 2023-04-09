@@ -91,8 +91,8 @@ server {
 
     add_header Access-Control-Allow-Origin "*" always;
     add_header Access-Control-Allow-Methods "GET, OPTIONS, HEAD" always;
-    add_header Access-Control-Allow-Headers "Origin, Accept, Range, Content-Type, If-Modified-Since" always;
-    add_header Access-Control-Expose-Headers "Content-Type, Content-Length, Content-Range" always;
+    add_header Access-Control-Allow-Headers "Origin, Accept, Range, Content-Type, If-Modified-Since, CSRF-Token" always;
+    add_header Access-Control-Expose-Headers "Content-Type, Content-Length, Content-Range, CSRF-Token" always;
 
     location = /favicon.ico {
         expires 1h;

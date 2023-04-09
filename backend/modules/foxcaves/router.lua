@@ -2,6 +2,7 @@ local lfs = require('lfs')
 local cjson = require('cjson')
 local utils = require('foxcaves.utils')
 local auth = require('foxcaves.auth')
+local csrf = require('foxcaves.csrf')
 local consts = require('foxcaves.consts')
 local module_helper = require('foxcaves.module_helper')
 
@@ -207,11 +208,23 @@ local function route_execute()
     local opts = handler.options or {}
     ngx.ctx.route_opts = opts
 
+    if not opts.disable_set_cookies then
+        csrf.set()
+    end
+
     if opts.check_login then
         local res, code = auth.check()
         if res then
             return opts, res, code
         end
+    end
+
+    if method == "HEAD" or method == "OPTIONS" or method == "GET" then
+        opts.disable_csrf_checks = true
+    end
+
+    if not opts.disable_csrf_checks and not csrf.check(ngx.var.http_csrf_token) then
+        return opts, utils.api_error('CSRF mismatch', 403)
     end
 
     if not opts.allow_guest and not ngx.ctx.user then

@@ -1,5 +1,7 @@
 import { logError } from './misc';
 
+let csrfToken: string | null = null;
+
 export class HttpError extends Error {
     public constructor(public status: number, public message: string) {
         super(`HTTP Error: ${status} ${message}`);
@@ -38,7 +40,22 @@ export async function fetchAPIRaw(url: string, info?: APIRequestInfo): Promise<R
         }
     }
 
+    if (!init.headers) {
+        init.headers = {};
+    }
+
+    if (csrfToken) {
+        (init.headers as Record<string, string>)['CSRF-Token'] = csrfToken;
+    }
+
     const res = await fetch(url, init);
+
+    const newCSRFToken = res.headers.get('CSRF-Token');
+    if (newCSRFToken) {
+        // eslint-disable-next-line require-atomic-updates
+        csrfToken = newCSRFToken;
+    }
+
     if (res.status < 200 || res.status > 299) {
         let desc;
         try {
