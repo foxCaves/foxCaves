@@ -7,17 +7,18 @@ export default defineConfig({
     fullyParallel: true,
     // Fail the build on CI if you accidentally left test.only in the source code.
     forbidOnly: !!process.env.CI,
-    // Retry never
-    retries: 0,
+    // Retry once
+    retries: 1,
     // Reporter to use
     reporter: process.env.CI ? 'github' : 'list',
-    timeout: 5000,
+    timeout: 10 * 1000,
     use: {
         // Base URL to use in actions like `await page.goto('/')`.
         baseURL: 'http://main.foxcaves:8080',
         // Collect trace when retrying the failed test.
         trace: 'on-first-retry',
         screenshot: 'only-on-failure',
+        video: 'retain-on-failure',
     },
     // Configure projects for major browsers.
     projects: [

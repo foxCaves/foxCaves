@@ -1,18 +1,17 @@
 import assert from 'node:assert';
-import { randomUUID } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 import { extname, join } from 'node:path';
 import { Page } from '@playwright/test';
 import axios from 'axios';
 import sizeOf from 'image-size';
 import { test } from './fixtures';
-import { waitForToast } from './utils';
+import { randomID, waitForToast } from './utils';
 
 // eslint-disable-next-line unicorn/prefer-module
 const PWD = __dirname;
 
 async function uploadFile(file: string, page: Page) {
-    const filename = `${randomUUID()}${extname(file)}`;
+    const filename = `${randomID()}${extname(file)}`;
     const buffer = await readFile(join(PWD, file));
 
     page.on('filechooser', (fileChooser) => {
@@ -69,7 +68,7 @@ async function checkFile(src: string, page: Page): Promise<void> {
 }
 
 function fileLocator(filename: string, page: Page) {
-    return page.locator('div.file-card', { has: page.locator(`text="${filename}"`) });
+    return page.locator('div.file-card', { hasText: filename });
 }
 
 test('Files page', async ({ page }) => {
@@ -114,15 +113,18 @@ test('Upload non-image file', async ({ page }) => {
 });
 
 test('Delete file', async ({ browser, page }) => {
+    await page.goto('http://main.foxcaves:8080/files');
+    const filename = await uploadFile('test.jpg', page);
+
+    // Second secondary page to the file view
+    await viewAndCheckFile(filename, 'test.jpg', page);
     const filePage = await browser.newPage();
+    await filePage.goto(page.url());
 
     await page.goto('http://main.foxcaves:8080/files');
-    await filePage.goto('http://main.foxcaves:8080/files');
-    const filename = await uploadFile('test.jpg', page);
     const file = fileLocator(filename, page);
 
     // Verify file and thumbnail exist
-    await viewAndCheckFile(filename, 'test.jpg', filePage);
     const thumbnailSrc = (await file.locator('.card-img-top').getAttribute('src'))!;
     assert(thumbnailSrc.includes('http://short.foxcaves:8080'));
     await axios(thumbnailSrc, {

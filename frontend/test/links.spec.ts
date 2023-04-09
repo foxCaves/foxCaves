@@ -1,11 +1,10 @@
 import assert from 'node:assert';
-import { randomUUID } from 'node:crypto';
 import { Page } from '@playwright/test';
 import { test } from './fixtures';
-import { waitForToast } from './utils';
+import { randomID, waitForToast } from './utils';
 
 async function createLink(page: Page) {
-    const linkUrl = `http://main.foxcaves:8080?${randomUUID()}`;
+    const linkUrl = `http://main.foxcaves:8080?${randomID()}`;
     await page.locator('.btn-primary').getByText('Create new link').click();
     await page.locator('input[name="createLink"]').fill(linkUrl);
     await page.locator('.btn-primary').getByText('Shorten').click();
