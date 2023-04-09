@@ -18,7 +18,7 @@ export const LogoutPage: React.FC = () => {
             await toast.promise(
                 fetchAPIRaw('/api/v1/users/sessions', {
                     method: 'DELETE',
-                }),
+                }).then(refreshUser),
                 {
                     success: 'Logged out!',
                     pending: 'Logging out...',
@@ -30,8 +30,6 @@ export const LogoutPage: React.FC = () => {
                     },
                 },
             );
-
-            await refreshUser();
         } catch (error: unknown) {
             logError(error as Error);
         }

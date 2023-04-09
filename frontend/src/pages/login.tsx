@@ -26,7 +26,7 @@ export const LoginPage: React.FC = () => {
                         password,
                         remember,
                     },
-                }),
+                }).then(refreshUser),
                 {
                     success: 'Logged in!',
                     pending: 'Logging in...',
@@ -41,8 +41,6 @@ export const LoginPage: React.FC = () => {
         } catch (error: unknown) {
             logError(error as Error);
         }
-
-        await refreshUser();
     }, [username, password, remember, refreshUser]);
 
     const submitLoginForm = useCallback(

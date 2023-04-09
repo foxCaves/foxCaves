@@ -1,5 +1,5 @@
 import { test } from '@playwright/test';
-import { doLoginPage } from './utils';
+import { doLoginPage, waitForToast } from './utils';
 
 test('Main page', async ({ page }) => {
     await page.goto('http://main.foxcaves:8080/');
@@ -30,7 +30,9 @@ test('Log out', async ({ browser }) => {
     await doLoginPage(page);
 
     await page.goto('http://main.foxcaves:8080/logout');
-    await page.waitForURL('http://main.foxcaves:8080');
+
+    await page.locator('.btn-primary').getByText('Yes').click();
+    await waitForToast(page, 'Logged out');
     await page.locator('text="Welcome, Guest!"').waitFor();
 
     await page.goto('http://main.foxcaves:8080');
