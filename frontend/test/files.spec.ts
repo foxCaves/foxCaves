@@ -118,7 +118,7 @@ test('Delete file', async ({ browser, page }) => {
 
     // Second secondary page to the file view
     await viewAndCheckFile(filename, 'test.jpg', page);
-    const filePage = await browser.newPage();
+    const filePage = await browser.newPage({ storageState: undefined });
     await filePage.goto(page.url());
 
     await page.goto('http://main.foxcaves:8080/files');
