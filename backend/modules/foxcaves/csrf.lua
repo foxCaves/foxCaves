@@ -26,7 +26,7 @@ function M.set()
 end
 
 function M.check(token)
-    ngx.log(ngx.ERR, "Provided: " .. tostring(token) .. "; Expected: " .. tostring(cookies.get(CSRF_COOKIE_NAME))
+    ngx.log(ngx.ERR, 'Provided: ' .. tostring(token) .. '; Expected: ' .. tostring(cookies.get(CSRF_COOKIE_NAME)))
 
     if not token then
         return false
