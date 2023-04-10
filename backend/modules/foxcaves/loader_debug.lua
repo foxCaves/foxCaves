@@ -1,6 +1,5 @@
 local utils = require('foxcaves.utils')
 local router = require('foxcaves.router')
-local main_url = require('foxcaves.config').http.main_url
 local ngx = ngx
 local xpcall = xpcall
 local table = table
@@ -177,26 +176,22 @@ local dbg_trace_hdr =
                 return false;
             })
             .next().addClass("ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom").hide();
-    
         $(".autoclick").trigger('click');
         $("table").each(function() {
             const $this = $(this);
             $this.addClass('ui-styled-table ui-widget');
-    
             $this.on('mouseover mouseout', 'tbody tr', function (event) {
                 $(this).children().toggleClass("ui-state-hover",
                                                 event.type == 'mouseover');
             });
-    
             $this.find("th").addClass("ui-widget ui-state-default");
             $this.find("td").addClass("ui-widget ui-widget-content");
             $this.find("tr:last-child").addClass("last-child");
         });
-    
         if(prettyPrint) {
             prettyPrint();
         }
-    });    
+    });
     </script>
     <link rel="stylesheet" type="text/css"
         href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.13.2/themes/base/jquery-ui.min.css" crossorigin="anonymous" />
