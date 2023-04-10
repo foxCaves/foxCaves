@@ -4,7 +4,7 @@ import { extname, join } from 'node:path';
 import { Page } from '@playwright/test';
 import axios from 'axios';
 import sizeOf from 'image-size';
-import { test } from './fixtures';
+import { testLoggedIn } from './fixtures';
 import { randomID, waitForToast } from './utils';
 
 // eslint-disable-next-line unicorn/prefer-module
@@ -71,12 +71,12 @@ function fileLocator(filename: string, page: Page) {
     return page.locator('div.file-card', { hasText: filename });
 }
 
-test('Files page', async ({ page }) => {
+testLoggedIn('Files page', async ({ page }) => {
     await page.goto('http://main.foxcaves:8080/files');
     await page.waitForSelector('text="Refresh"');
 });
 
-test('Upload image file', async ({ page }) => {
+testLoggedIn('Upload image file', async ({ page }) => {
     await page.goto('http://main.foxcaves:8080/files');
     const filename = await uploadFile('test.jpg', page);
     const file = fileLocator(filename, page);
@@ -100,7 +100,7 @@ test('Upload image file', async ({ page }) => {
     await viewAndCheckFile(filename, 'test.jpg', page);
 });
 
-test('Upload non-image file', async ({ page }) => {
+testLoggedIn('Upload non-image file', async ({ page }) => {
     await page.goto('http://main.foxcaves:8080/files');
     const filename = await uploadFile('test.txt', page);
     const file = fileLocator(filename, page);
@@ -112,7 +112,7 @@ test('Upload non-image file', async ({ page }) => {
     await viewAndCheckFile(filename, 'test.txt', page);
 });
 
-test('Delete file', async ({ browser, page }) => {
+testLoggedIn('Delete file', async ({ browser, page }) => {
     await page.goto('http://main.foxcaves:8080/files');
     const filename = await uploadFile('test.jpg', page);
 
