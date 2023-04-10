@@ -31,6 +31,8 @@ export const LogoutPage: React.FC = () => {
                     },
                 },
             );
+
+            document.location.href = '/';
         } catch (error: unknown) {
             logError(error as Error);
             await refreshUser();
@@ -39,7 +41,6 @@ export const LogoutPage: React.FC = () => {
 
     const acceptLogOut = useCallback(() => {
         acceptLogOutAsync().catch(logError);
-        document.location.href = '/';
     }, [acceptLogOutAsync]);
 
     if (!userLoaded) {

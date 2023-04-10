@@ -77,8 +77,6 @@ function M.login(username_or_id, credential, options)
 
     ngx.ctx.user = user
 
-    ngx.log(ngx.ERR, "User " .. tostring(user.username) .. " with SID " .. tostring(cookies.get(SESSION_ID_COOKIE_NAME)))
-
     return true
 end
 
