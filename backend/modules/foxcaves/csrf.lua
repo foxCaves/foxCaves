@@ -2,6 +2,7 @@ local cookies = require('foxcaves.cookies')
 local random = require('foxcaves.random')
 
 local ngx = ngx
+local tostring = tostring
 
 local CSRF_COOKIE_NAME = 'csrf_token'
 local CSRF_COOKIE_EXPIRE = 1 * 24 * 60 * 60
@@ -25,6 +26,8 @@ function M.set()
 end
 
 function M.check(token)
+    ngx.log(ngx.ERR, "Provided: " .. tostring(token) .. "; Expected: " .. tostring(cookies.get(CSRF_COOKIE_NAME))
+
     if not token then
         return false
     end
