@@ -4,7 +4,7 @@ local random = require('foxcaves.random')
 local ngx = ngx
 
 local CSRF_COOKIE_NAME = 'csrf_token'
-local CSRF_COOKIE_EXPIRE = 1 * 60 * 60
+local CSRF_COOKIE_EXPIRE = 1 * 24 * 60 * 60
 
 local M = {}
 require('foxcaves.module_helper').setmodenv()
@@ -21,7 +21,7 @@ function M.set()
         max_age = CSRF_COOKIE_EXPIRE,
     })
 
-    ngx.header['CSRF-Token'] = val
+    ngx.header['Set-CSRF-Token'] = val
 end
 
 function M.check(token)
