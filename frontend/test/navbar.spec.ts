@@ -1,7 +1,6 @@
-import test from '@playwright/test';
-import { test as testLoggedIn } from './fixtures';
+import { testGuest, testLoggedIn } from './fixtures';
 
-test('Navbar as guest', async ({ page }) => {
+testGuest('Navbar as guest', async ({ page }) => {
     await page.goto('http://main.foxcaves:8080/');
     await page.locator('text="Welcome, Guest!"').waitFor();
 

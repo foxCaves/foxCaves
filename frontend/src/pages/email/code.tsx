@@ -1,16 +1,17 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { fetchAPI } from '../../utils/api';
+import { AppContext } from '../../utils/context';
 import { logError } from '../../utils/misc';
 
 export const EmailCodePage: React.FC = () => {
+    const { apiAccessor } = useContext(AppContext);
     const { code } = useParams<{ code: string }>();
     const [loading, setLoading] = useState(false);
     const [status, setStatus] = useState('Processing...');
 
     const sendCode = useCallback(async () => {
         try {
-            const res = (await fetchAPI('/api/v1/users/emails/code', {
+            const res = (await apiAccessor.fetch('/api/v1/users/emails/code', {
                 method: 'POST',
                 data: { code },
             })) as { action: string };
@@ -29,7 +30,7 @@ export const EmailCodePage: React.FC = () => {
         } catch (error: unknown) {
             setStatus(`Error: ${(error as Error).message}`);
         }
-    }, [code]);
+    }, [code, apiAccessor]);
 
     useEffect(() => {
         if (loading) {

@@ -30,7 +30,7 @@ export const LiveLoadingContainer: React.FC<LiveLoadingContainerInterface> = ({ 
     const [files, setFiles] = useState<ModelMap<FileModel> | undefined>(undefined);
     const [links, setLinks] = useState<ModelMap<LinkModel> | undefined>(undefined);
     const wsRef = useRef<ReconnectingWebSocket | undefined>();
-    const { user, setUser } = useContext(AppContext);
+    const { user, setUser, apiAccessor } = useContext(AppContext);
     const [curUserId, setCurUserId] = useState<string | undefined>(undefined);
 
     const refreshFiles = useCallback(async () => {
@@ -39,14 +39,14 @@ export const LiveLoadingContainer: React.FC<LiveLoadingContainerInterface> = ({ 
             return;
         }
 
-        const fileArray = await FileModel.getByUser(user);
+        const fileArray = await FileModel.getByUser(user, apiAccessor);
         const fileMap: ModelMap<FileModel> = new Map();
         for (const file of fileArray) {
             fileMap.set(file.id, file);
         }
 
         setFiles(fileMap);
-    }, [user]);
+    }, [user, apiAccessor]);
 
     const refreshLinks = useCallback(async () => {
         if (!user) {
@@ -54,14 +54,14 @@ export const LiveLoadingContainer: React.FC<LiveLoadingContainerInterface> = ({ 
             return;
         }
 
-        const linkArray = await LinkModel.getByUser(user);
+        const linkArray = await LinkModel.getByUser(user, apiAccessor);
         const linkMap: ModelMap<LinkModel> = new Map();
         for (const link of linkArray) {
             linkMap.set(link.id, link);
         }
 
         setLinks(linkMap);
-    }, [user]);
+    }, [user, apiAccessor]);
 
     const handleLiveLoadMessage = useCallback(
         // eslint-disable-next-line complexity
