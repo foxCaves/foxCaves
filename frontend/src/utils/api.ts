@@ -29,11 +29,6 @@ interface CSRFRequestResponse {
 export class APIAccessor {
     private csrfToken: string | null = null;
 
-    public async fetch(url: string, info?: APIRequestInfo): Promise<unknown> {
-        const res = await this.fetchRaw(url, info);
-        return res.json();
-    }
-
     public async refreshCSRFToken(): Promise<void> {
         const res = (await this.fetch('/api/v1/system/csrf', {
             method: 'POST',
@@ -61,7 +56,7 @@ export class APIAccessor {
         return method === 'GET' || method === 'HEAD' || method === 'OPTIONS';
     }
 
-    public async fetchRaw(url: string, info?: APIRequestInfo): Promise<Response> {
+    public async fetch(url: string, info?: APIRequestInfo): Promise<unknown> {
         const init: RequestInit = {};
 
         if (info) {
@@ -102,6 +97,6 @@ export class APIAccessor {
             throw new HttpError(res.status, desc ?? res.statusText);
         }
 
-        return res;
+        return res.json();
     }
 }

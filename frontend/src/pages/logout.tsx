@@ -16,7 +16,7 @@ export const LogoutPage: React.FC = () => {
         try {
             await toast.promise(
                 apiAccessor
-                    .fetchRaw('/api/v1/users/sessions', {
+                    .fetch('/api/v1/users/sessions', {
                         method: 'DELETE',
                     })
                     .then(refreshUser),

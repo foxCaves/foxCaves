@@ -14,7 +14,7 @@ export const ForgotPasswordPage: React.FC = () => {
 
     const submitForgotPasswordFormAsync = useCallback(async () => {
         await toast.promise(
-            apiAccessor.fetchRaw('/api/v1/users/emails/request', {
+            apiAccessor.fetch('/api/v1/users/emails/request', {
                 method: 'POST',
                 data: {
                     username,

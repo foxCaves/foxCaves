@@ -27,7 +27,7 @@ import { APIAccessor } from './utils/api';
 import { AppContext, AppContextData } from './utils/context';
 import { logError } from './utils/misc';
 
-const Routing: FC<{ user?: UserDetailsModel }> = ({ user }) => {
+const Routing: FC<{ user?: UserDetailsModel; userLoaded: boolean }> = ({ user, userLoaded }) => {
     return (
         <Router>
             <Navbar bg="primary" fixed="top" variant="dark">
@@ -54,7 +54,7 @@ const Routing: FC<{ user?: UserDetailsModel }> = ({ user }) => {
                         <Nav>
                             <Dropdown as={Nav.Item}>
                                 <Dropdown.Toggle as={Nav.Link}>
-                                    Welcome, {user ? user.username : 'Guest'}!
+                                    {userLoaded ? <>Welcome, {user ? user.username : 'Guest'}!</> : <>Welcome!</>}
                                 </Dropdown.Toggle>
                                 <Dropdown.Menu>
                                     <CustomDropDownItem login={LoginState.LoggedIn} to="/account">
@@ -171,7 +171,7 @@ export const App: React.FC = () => {
     return (
         <AppContext.Provider value={context}>
             <LiveLoadingContainer>
-                <Routing user={user} />
+                <Routing user={user} userLoaded={userLoaded} />
                 <ToastContainer position="bottom-right" theme="colored" />
             </LiveLoadingContainer>
         </AppContext.Provider>
