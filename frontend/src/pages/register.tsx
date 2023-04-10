@@ -1,14 +1,15 @@
-import React, { FormEvent, useCallback, useState } from 'react';
+import React, { FormEvent, useCallback, useContext, useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import FloatingLabel from 'react-bootstrap/FloatingLabel';
 import Form from 'react-bootstrap/Form';
 import { Navigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { fetchAPI } from '../utils/api';
+import { AppContext } from '../utils/context';
 import { useCheckboxFieldSetter, useInputFieldSetter } from '../utils/hooks';
 import { logError } from '../utils/misc';
 
 export const RegistrationPage: React.FC = () => {
+    const { apiAccessor } = useContext(AppContext);
     const [username, setUsernameCB] = useInputFieldSetter('');
     const [password, setPasswordCB] = useInputFieldSetter('');
     const [passwordConfirm, setPasswordConfirmCB] = useInputFieldSetter('');
@@ -31,7 +32,7 @@ export const RegistrationPage: React.FC = () => {
 
             toast
                 .promise(
-                    fetchAPI('/api/v1/users', {
+                    apiAccessor.fetch('/api/v1/users', {
                         method: 'POST',
                         data: {
                             username,
@@ -56,7 +57,7 @@ export const RegistrationPage: React.FC = () => {
                     setRegistrationDone(true);
                 });
         },
-        [username, password, passwordConfirm, email, agreeTos],
+        [username, password, passwordConfirm, email, agreeTos, apiAccessor],
     );
 
     if (registrationDone) {

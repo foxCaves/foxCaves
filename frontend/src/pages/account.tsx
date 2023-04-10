@@ -5,13 +5,12 @@ import FloatingLabel from 'react-bootstrap/FloatingLabel';
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
 import { toast } from 'react-toastify';
-import { fetchAPIRaw } from '../utils/api';
 import { AppContext } from '../utils/context';
 import { useInputFieldSetter } from '../utils/hooks';
 import { logError } from '../utils/misc';
 
 export const AccountPage: React.FC = () => {
-    const { user, refreshUser } = useContext(AppContext);
+    const { user, refreshUser, apiAccessor } = useContext(AppContext);
     const userEmail = user!.email;
 
     const [showDeleteAccountModal, setShowDeleteAccountModal] = useState(false);
@@ -29,7 +28,7 @@ export const AccountPage: React.FC = () => {
             body.current_password = currentPassword;
             try {
                 await toast.promise(
-                    fetchAPIRaw(`/api/users/${encodeURIComponent(user!.id)}`, {
+                    apiAccessor.fetchRaw(`/api/users/${encodeURIComponent(user!.id)}`, {
                         method,
                         data: body,
                     }),
@@ -50,7 +49,7 @@ export const AccountPage: React.FC = () => {
 
             await refreshUser();
         },
-        [currentPassword, refreshUser, user],
+        [currentPassword, refreshUser, user, apiAccessor],
     );
 
     const handleAPIKeyRegenerate = useCallback(

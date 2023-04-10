@@ -1,11 +1,10 @@
 import assert from 'node:assert';
-import { randomUUID } from 'node:crypto';
 import { Page } from '@playwright/test';
-import { test } from './fixtures';
-import { waitForToast } from './utils';
+import { testLoggedIn } from './fixtures';
+import { randomID, waitForToast } from './utils';
 
 async function createLink(page: Page) {
-    const linkUrl = `http://main.foxcaves:8080?${randomUUID()}`;
+    const linkUrl = `http://main.foxcaves:8080?${randomID()}`;
     await page.locator('.btn-primary').getByText('Create new link').click();
     await page.locator('input[name="createLink"]').fill(linkUrl);
     await page.locator('.btn-primary').getByText('Shorten').click();
@@ -18,12 +17,12 @@ function linkLocator(linkUrl: string, page: Page) {
     return page.locator('tr', { has: page.locator('td', { has: page.locator(`a[href="${linkUrl}"]`) }) });
 }
 
-test('Links page', async ({ page }) => {
+testLoggedIn('Links page', async ({ page }) => {
     await page.goto('http://main.foxcaves:8080/links');
     await page.waitForSelector('text="Refresh"');
 });
 
-test('Create link', async ({ page }) => {
+testLoggedIn('Create link', async ({ page }) => {
     await page.goto('http://main.foxcaves:8080/links');
     const linkUrl = await createLink(page);
     const link = linkLocator(linkUrl, page);
@@ -34,7 +33,7 @@ test('Create link', async ({ page }) => {
     await page.waitForURL(linkUrl);
 });
 
-test('Delete link', async ({ page }) => {
+testLoggedIn('Delete link', async ({ page }) => {
     await page.goto('http://main.foxcaves:8080/links');
     const linkUrl = await createLink(page);
     const link = linkLocator(linkUrl, page);

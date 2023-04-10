@@ -1,4 +1,4 @@
-import { fetchAPI, fetchAPIRaw, HttpError, ListResponse } from '../utils/api';
+import { APIAccessor, HttpError, ListResponse } from '../utils/api';
 import { BaseModel } from './base';
 import { UserModel } from './user';
 
@@ -8,9 +8,9 @@ export class LinkModel extends BaseModel {
     public short_url = '';
     public owner = '';
 
-    public static async getById(id: string): Promise<LinkModel | undefined> {
+    public static async getById(id: string, apiAccessor: APIAccessor): Promise<LinkModel | undefined> {
         try {
-            const api = await fetchAPI(`/api/v1/links/${encodeURIComponent(id)}`);
+            const api = await apiAccessor.fetch(`/api/v1/links/${encodeURIComponent(id)}`);
             return LinkModel.wrapNew(api);
         } catch (error) {
             if (error instanceof HttpError && (error.status === 404 || error.status === 403)) {
@@ -21,13 +21,13 @@ export class LinkModel extends BaseModel {
         }
     }
 
-    public static async getByUser(user: UserModel): Promise<LinkModel[]> {
-        const res = (await fetchAPI(`/api/v1/users/${encodeURIComponent(user.id)}/links`)) as ListResponse;
+    public static async getByUser(user: UserModel, apiAccessor: APIAccessor): Promise<LinkModel[]> {
+        const res = (await apiAccessor.fetch(`/api/v1/users/${encodeURIComponent(user.id)}/links`)) as ListResponse;
         return res.items.map((link) => LinkModel.wrapNew(link));
     }
 
-    public static async create(url: string): Promise<LinkModel> {
-        const api = await fetchAPI('/api/v1/links', {
+    public static async create(url: string, apiAccessor: APIAccessor): Promise<LinkModel> {
+        const api = await apiAccessor.fetch('/api/v1/links', {
             method: 'POST',
             data: { url },
         });
@@ -39,8 +39,8 @@ export class LinkModel extends BaseModel {
         return new LinkModel().wrap(obj);
     }
 
-    public async delete(): Promise<void> {
-        await fetchAPIRaw(`/api/v1/links/${encodeURIComponent(this.id)}`, {
+    public async delete(apiAccessor: APIAccessor): Promise<void> {
+        await apiAccessor.fetchRaw(`/api/v1/links/${encodeURIComponent(this.id)}`, {
             method: 'DELETE',
         });
     }

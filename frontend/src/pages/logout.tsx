@@ -2,12 +2,11 @@ import React, { useCallback, useContext } from 'react';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import { toast } from 'react-toastify';
-import { fetchAPIRaw } from '../utils/api';
 import { AppContext } from '../utils/context';
 import { logError } from '../utils/misc';
 
 export const LogoutPage: React.FC = () => {
-    const { userLoaded, refreshUser } = useContext(AppContext);
+    const { userLoaded, refreshUser, apiAccessor } = useContext(AppContext);
 
     const declineLogOut = useCallback(() => {
         document.location.href = '/';
@@ -16,9 +15,11 @@ export const LogoutPage: React.FC = () => {
     const acceptLogOutAsync = useCallback(async () => {
         try {
             await toast.promise(
-                fetchAPIRaw('/api/v1/users/sessions', {
-                    method: 'DELETE',
-                }).then(refreshUser),
+                apiAccessor
+                    .fetchRaw('/api/v1/users/sessions', {
+                        method: 'DELETE',
+                    })
+                    .then(refreshUser),
                 {
                     success: 'Logged out!',
                     pending: 'Logging out...',
@@ -34,7 +35,7 @@ export const LogoutPage: React.FC = () => {
             logError(error as Error);
             await refreshUser();
         }
-    }, [refreshUser]);
+    }, [refreshUser, apiAccessor]);
 
     const acceptLogOut = useCallback(() => {
         acceptLogOutAsync().catch(logError);

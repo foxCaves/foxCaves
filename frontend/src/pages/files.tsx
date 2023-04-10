@@ -16,6 +16,7 @@ import { FilesContext } from '../components/liveloading';
 import { StorageUseBar } from '../components/storage_use';
 import { FileModel } from '../models/file';
 import noThumbnail from '../resources/nothumb.gif';
+import { AppContext } from '../utils/context';
 import { uploadFile } from '../utils/file_uploader';
 import { useInputFieldSetter } from '../utils/hooks';
 import { logError, sortByDate } from '../utils/misc';
@@ -26,6 +27,7 @@ const FileView: React.FC<{
     setEditFile: (file: FileModel | undefined) => void;
     editMode: boolean;
 }> = ({ file, editMode, setDeleteFile, setEditFile }) => {
+    const { apiAccessor } = useContext(AppContext);
     const [editFileName, setEditFileName] = useInputFieldSetter(file.name);
 
     const isImage = file.mimetype.startsWith('image/');
@@ -41,7 +43,7 @@ const FileView: React.FC<{
                 }
 
                 toast
-                    .promise(file.rename(editFileName), {
+                    .promise(file.rename(editFileName, apiAccessor), {
                         success: `Renamed file "${oldName}" to "${newName}"!`,
                         pending: `Renaming file "${oldName}" to "${newName}"...`,
                         error: {
@@ -60,7 +62,7 @@ const FileView: React.FC<{
                 setEditFile(undefined);
             }
         },
-        [file, editFileName, setEditFile],
+        [file, editFileName, setEditFile, apiAccessor],
     );
 
     const setEditFileCB = useCallback(() => {
@@ -116,6 +118,7 @@ const FileView: React.FC<{
 };
 
 export const FilesPage: React.FC = () => {
+    const { apiAccessor } = useContext(AppContext);
     const { refresh, set, models } = useContext(FilesContext);
     const [loading, setLoading] = useState(false);
     const [deleteFile, setDeleteFile] = useState<FileModel | undefined>(undefined);
@@ -127,7 +130,7 @@ export const FilesPage: React.FC = () => {
 
             Promise.all(
                 acceptedFiles.map(async (file: File) => {
-                    const fileObj = await uploadFile(file);
+                    const fileObj = await uploadFile(file, apiAccessor);
                     modelsCopy.set(fileObj.id, fileObj);
                 }),
             )
@@ -137,7 +140,7 @@ export const FilesPage: React.FC = () => {
                 })
                 .catch(logError);
         },
-        [models, set],
+        [models, set, apiAccessor],
     );
 
     const dropzone = useDropzone({
@@ -150,7 +153,7 @@ export const FilesPage: React.FC = () => {
         }
 
         toast
-            .promise(deleteFile.delete(), {
+            .promise(deleteFile.delete(apiAccessor), {
                 success: `Deleted file "${deleteFile.name}"!`,
                 pending: `Deleting file "${deleteFile.name}"...`,
                 error: {
@@ -168,7 +171,7 @@ export const FilesPage: React.FC = () => {
             .finally(() => {
                 setDeleteFile(undefined);
             });
-    }, [deleteFile, set, models]);
+    }, [deleteFile, set, models, apiAccessor]);
 
     const unsetDeleteFile = useCallback(() => {
         setDeleteFile(undefined);

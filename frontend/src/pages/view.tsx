@@ -1,9 +1,10 @@
 import '../resources/view.css';
 
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { FileModel } from '../models/file';
 import { UserModel } from '../models/user';
+import { AppContext } from '../utils/context';
 import { formatDate } from '../utils/formatting';
 import { logError } from '../utils/misc';
 
@@ -57,6 +58,7 @@ const FileContentView: React.FC<{ file: FileModel }> = ({ file }) => {
 };
 
 export const ViewPage: React.FC = () => {
+    const { apiAccessor } = useContext(AppContext);
     const { id } = useParams<{ id: string }>();
     const [fileLoading, setFileLoading] = useState(false);
     const [fileLoadDone, setFileLoadDone] = useState(false);
@@ -66,10 +68,10 @@ export const ViewPage: React.FC = () => {
 
     const loadFile = useCallback(async () => {
         try {
-            const newFile = await FileModel.getById(id!);
+            const newFile = await FileModel.getById(id!, apiAccessor);
             if (newFile) {
                 setFile(newFile);
-                const newOwner = await UserModel.getById(newFile.owner);
+                const newOwner = await UserModel.getById(newFile.owner, apiAccessor);
                 setOwner(newOwner);
             } else {
                 setFileError('File not found');
@@ -80,7 +82,7 @@ export const ViewPage: React.FC = () => {
 
         setFileLoading(false);
         setFileLoadDone(true);
-    }, [id]);
+    }, [id, apiAccessor]);
 
     useEffect(() => {
         if (fileLoading || fileLoadDone) {
