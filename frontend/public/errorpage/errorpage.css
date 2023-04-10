@@ -1,0 +1,34 @@
+body {
+	font-size:80%;
+}
+
+ul {
+	margin: 0;
+}
+
+/* Internet Explorer 7: setting "separate" results in bad visuals; all other browsers work fine with either value. */
+/* If set to "separate", then this rule is also needed to prevent double vertical borders on hover:
+table.ui-styled-table tr * + th, table.ui-styled-table tr * + td  { border-left-width: 0px !important; } */
+table.ui-styled-table {
+	border-collapse: collapse;
+}
+
+/* Undo the "bolding" that jQuery UI theme may cause on hovered elements
+/* Internet Explorer 7: does not support "inherit", so use a MS proprietary expression along with an Internet Explorer <= 7 targeting hack
+		to make the visuals consistent across all supported browsers */
+table.ui-styled-table td.ui-state-hover {
+	font-weight: inherit;
+	*font-weight: expression(this.parentNode.currentStyle['fontWeight']);
+}
+
+td:hover {
+	background-color: #555 !important;
+}
+
+.errorline {
+	background-color: orange;
+}
+
+pre {
+	margin: 0;
+}
