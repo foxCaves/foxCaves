@@ -163,11 +163,12 @@ local dbg_trace_hdr =
     <script
         src="https://cdnjs.cloudflare.com/ajax/libs/prettify/r298/lang-lua.min.js"
         type="text/javascript" crossorigin="anonymous"></script>
-    <script type="text/javascript" src="/static/errorpage/main.js" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="/static/errorpage.js" crossorigin="anonymous"></script>
     <link rel="stylesheet" type="text/css"
         href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.13.2/themes/base/jquery-ui.min.css" crossorigin="anonymous" />
-    <link rel="stylesheet" type="text/css" href="/static/errorpage/main.css" crossorigin="anonymous" />
-    <link rel="stylesheet" type="text/css" href="/static/errorpage/prettify.css" crossorigin="anonymous" />
+    <link rel="stylesheet" type="text/css"
+        href="https://cdnjs.cloudflare.com/ajax/libs/prettify/r298/prettify.min.css" crossorigin="anonymous" />
+    <style>pre.prettyprint { border: 0px !important; }</style>
     </head><body><h1 class="ui-widget">Original Error:
 ]]
 
