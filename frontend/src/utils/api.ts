@@ -1,7 +1,5 @@
 import { logError } from './misc';
 
-let csrfToken: string | null = null;
-
 export class HttpError extends Error {
     public constructor(public status: number, public message: string) {
         super(`HTTP Error: ${status} ${message}`);
