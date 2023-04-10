@@ -12,6 +12,7 @@ interface APIRequestInfo {
     data?: unknown;
     body?: BodyInit;
     headers?: Record<string, string>;
+    disableCSRF?: boolean;
 }
 
 export interface ListResponse {
@@ -21,18 +22,52 @@ export interface ListResponse {
     items: unknown[];
 }
 
+interface CSRFRequestResponse {
+    csrf_token: string;
+}
+
 export class APIAccessor {
     private csrfToken: string | null = null;
 
-    public getCSRFToken(): string {
+    public async fetch(url: string, info?: APIRequestInfo): Promise<unknown> {
+        const res = await this.fetchRaw(url, info);
+        return res.json();
+    }
+
+    public async refreshCSRFToken(): Promise<void> {
+        const res = (await this.fetch('/api/v1/system/csrf', {
+            method: 'POST',
+            data: { refresh: true },
+            disableCSRF: true,
+        })) as CSRFRequestResponse;
+
+        this.csrfToken = res.csrf_token;
+    }
+
+    public async getCSRFToken(): Promise<string> {
+        if (!this.csrfToken) {
+            await this.refreshCSRFToken();
+        }
+
         return this.csrfToken!;
+    }
+
+    public isReadOnlyMethod(method?: string): boolean {
+        if (!method) {
+            return true;
+        }
+
+        method = method.toUpperCase();
+        return method === 'GET' || method === 'HEAD' || method === 'OPTIONS';
     }
 
     public async fetchRaw(url: string, info?: APIRequestInfo): Promise<Response> {
         const init: RequestInit = {};
+
         if (info) {
             init.headers = info.headers;
             init.method = info.method;
+
             if (info.data) {
                 init.body = JSON.stringify(info.data);
                 if (!init.headers) {
@@ -49,16 +84,11 @@ export class APIAccessor {
             init.headers = {};
         }
 
-        if (this.csrfToken) {
-            (init.headers as Record<string, string>)['CSRF-Token'] = this.csrfToken;
+        if (!info?.disableCSRF && !this.isReadOnlyMethod(init.method)) {
+            (init.headers as Record<string, string>)['CSRF-Token'] = await this.getCSRFToken();
         }
 
         const res = await fetch(url, init);
-
-        const newCSRFToken = res.headers.get('Set-CSRF-Token');
-        if (newCSRFToken) {
-            this.csrfToken = newCSRFToken;
-        }
 
         if (res.status < 200 || res.status > 299) {
             let desc;
@@ -73,10 +103,5 @@ export class APIAccessor {
         }
 
         return res;
-    }
-
-    public async fetch(url: string, info?: APIRequestInfo): Promise<unknown> {
-        const res = await this.fetchRaw(url, info);
-        return res.json();
     }
 }

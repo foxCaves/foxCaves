@@ -209,9 +209,7 @@ local function route_execute()
     ngx.ctx.route_opts = opts
     ngx.ctx.disable_csrf_checks = opts.disable_csrf_checks or false
 
-    if not opts.disable_set_cookies then
-        csrf.set()
-    end
+    local is_read_only_method = method == 'HEAD' or method == 'OPTIONS' or method == 'GET'
 
     if opts.check_login then
         local res, code = auth.check()
@@ -220,12 +218,12 @@ local function route_execute()
         end
     end
 
-    if method == 'HEAD' or method == 'OPTIONS' or method == 'GET' then
+    if is_read_only_method then
         ngx.ctx.disable_csrf_checks = true
     end
 
     if not ngx.ctx.disable_csrf_checks and not csrf.check(ngx.var.http_csrf_token) then
-        return opts, utils.api_error('CSRF mismatch', 403)
+        return opts, utils.api_error('CSRF mismatch', 419)
     end
 
     if not opts.allow_guest and not ngx.ctx.user then
