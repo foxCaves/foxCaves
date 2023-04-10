@@ -1,6 +1,5 @@
 local utils = require('foxcaves.utils')
 local router = require('foxcaves.router')
-local main_url = require('foxcaves.config').http.main_url
 local ngx = ngx
 local xpcall = xpcall
 local table = table
@@ -154,20 +153,51 @@ local dbg_trace_hdr =
     [[
     <html><head>
     <script type="text/javascript"
-        src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+        src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js" crossorigin="anonymous"></script>
     <script type="text/javascript"
-        src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js" crossorigin="anonymous"></script>
+        src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.13.2/jquery-ui.min.js" crossorigin="anonymous"></script>
     <script
         src="https://cdnjs.cloudflare.com/ajax/libs/prettify/r298/prettify.min.js"
         type="text/javascript" crossorigin="anonymous"></script>
     <script
         src="https://cdnjs.cloudflare.com/ajax/libs/prettify/r298/lang-lua.min.js"
         type="text/javascript" crossorigin="anonymous"></script>
-    <script type="text/javascript" src="]] .. main_url .. [[/static/_head/js/errorpage.js" crossorigin="anonymous"></script>
+    <script type="text/javascript">
+    $(function() {
+        $(".accordion").addClass("ui-accordion ui-widget ui-helper-reset ui-accordion-icons")
+        .find("> h3")
+            .addClass("ui-accordion-header ui-accordion-icons ui-helper-reset ui-state-default ui-corner-top ui-corner-bottom")
+            .prepend('<span class="ui-accordion-header-icon ui-icon ui-icon-triangle-1-e"/>')
+            .on('click', function() {
+                $(this).toggleClass("ui-accordion-header-active").toggleClass("ui-state-active")
+                    .toggleClass("ui-state-default").toggleClass("ui-corner-bottom")
+                .find("> .ui-icon").toggleClass("ui-icon-triangle-1-e").toggleClass("ui-icon-triangle-1-s")
+                .end().next().toggleClass("ui-accordion-content-active").toggle("fast");
+                return false;
+            })
+            .next().addClass("ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom").hide();
+        $(".autoclick").trigger('click');
+        $("table").each(function() {
+            const $this = $(this);
+            $this.addClass('ui-styled-table ui-widget');
+            $this.on('mouseover mouseout', 'tbody tr', function (event) {
+                $(this).children().toggleClass("ui-state-hover",
+                                                event.type == 'mouseover');
+            });
+            $this.find("th").addClass("ui-widget ui-state-default");
+            $this.find("td").addClass("ui-widget ui-widget-content");
+            $this.find("tr:last-child").addClass("last-child");
+        });
+        if(prettyPrint) {
+            prettyPrint();
+        }
+    });
+    </script>
     <link rel="stylesheet" type="text/css"
-        href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/themes/base/jquery-ui.css" crossorigin="anonymous" />
-    <link rel="stylesheet" type="text/css" href="]] .. main_url .. [[/static/_head/css/errorpage.css" crossorigin="anonymous" />
-    <link rel="stylesheet" type="text/css" href="]] .. main_url .. [[/static/_head/css/prettify.css" crossorigin="anonymous" />
+        href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.13.2/themes/base/jquery-ui.min.css" crossorigin="anonymous" />
+    <link rel="stylesheet" type="text/css"
+        href="https://cdnjs.cloudflare.com/ajax/libs/prettify/r298/prettify.min.css" crossorigin="anonymous" />
+    <style>pre.prettyprint { border: 0px !important; }</style>
     </head><body><h1 class="ui-widget">Original Error:
 ]]
 
