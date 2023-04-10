@@ -154,9 +154,9 @@ local dbg_trace_hdr =
     [[
     <html><head>
     <script type="text/javascript"
-        src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+        src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js" crossorigin="anonymous"></script>
     <script type="text/javascript"
-        src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js" crossorigin="anonymous"></script>
+        src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.13.2/jquery-ui.min.js" crossorigin="anonymous"></script>
     <script
         src="https://cdnjs.cloudflare.com/ajax/libs/prettify/r298/prettify.min.js"
         type="text/javascript" crossorigin="anonymous"></script>
@@ -165,7 +165,7 @@ local dbg_trace_hdr =
         type="text/javascript" crossorigin="anonymous"></script>
     <script type="text/javascript" src="/static/errorpage/main.js" crossorigin="anonymous"></script>
     <link rel="stylesheet" type="text/css"
-        href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/themes/base/jquery-ui.css" crossorigin="anonymous" />
+        href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.13.2/themes/base/jquery-ui.min.css" crossorigin="anonymous" />
     <link rel="stylesheet" type="text/css" href="/static/errorpage/main.css" crossorigin="anonymous" />
     <link rel="stylesheet" type="text/css" href="/static/errorpage/prettify.css" crossorigin="anonymous" />
     </head><body><h1 class="ui-widget">Original Error:
