@@ -66,8 +66,6 @@ export class APIAccessor {
 
             if (info.data) {
                 init.body = JSON.stringify(info.data);
-                init.headers = {};
-
                 init.headers['Content-Type'] = 'application/json';
             } else if (info.body) {
                 init.body = info.body;
