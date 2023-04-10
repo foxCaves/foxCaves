@@ -2,13 +2,13 @@
     "name": "foxcaves-backend",
     "version": "0.1.0",
     "scripts": {
-        "lint:prettier": "prettier --check --plugin=@elsongabriel/lua-formatter --parser=lua \"**/*.lua\"",
-        "fmt:prettier": "prettier --write --plugin=@elsongabriel/lua-formatter --parser=lua \"**/*.lua\"",
+        "lint:prettier": "prettier --check \"**/*.lua\"",
+        "fmt:prettier": "prettier --write \"**/*.lua\"",
         "lint": "npm run lint:prettier && luacheck .",
         "fmt": "npm run fmt:prettier && luacheck ."
     },
     "devDependencies": {
-        "@elsongabriel/lua-formatter": "^1.0.3",
-        "@elsongabriel/prettier": "^1.0.1"
+        "@prettier/plugin-lua": "github:foxCaves/prettier-plugin-lua",
+        "prettier": "^2.8.7"
     }
 }
