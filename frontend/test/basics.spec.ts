@@ -18,15 +18,11 @@ testGuest('Files page redirect', async ({ page }) => {
     await page.waitForURL('http://main.foxcaves:8080/login');
 });
 
-testGuest('Register and log in', async ({ browser }) => {
-    const page = await browser.newPage({ storageState: undefined });
+testGuest('Register and log in', async ({ page }) => {
     await doLoginPage(page);
-
-    await page.close();
 });
 
-testGuest('Log out', async ({ browser }) => {
-    const page = await browser.newPage({ storageState: undefined });
+testGuest('Log out', async ({ page }) => {
     await doLoginPage(page);
 
     await page.goto('http://main.foxcaves:8080/logout');
@@ -36,6 +32,4 @@ testGuest('Log out', async ({ browser }) => {
 
     await page.goto('http://main.foxcaves:8080');
     await page.locator('text="Welcome, Guest!"').waitFor();
-
-    await page.close();
 });

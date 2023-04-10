@@ -4,6 +4,7 @@ import Modal from 'react-bootstrap/Modal';
 import { toast } from 'react-toastify';
 import { LinksContext } from '../components/liveloading';
 import { LinkModel } from '../models/link';
+import { AppContext } from '../utils/context';
 import { useInputFieldSetter } from '../utils/hooks';
 import { logError, sortByDate } from '../utils/misc';
 
@@ -37,6 +38,7 @@ const LinkView: React.FC<{
 };
 
 export const LinksPage: React.FC = () => {
+    const { apiAccessor } = useContext(AppContext);
     const { refresh, set, models } = useContext(LinksContext);
     const [loading, setLoading] = useState(false);
     const [deleteLink, setDeleteLink] = useState<LinkModel | undefined>(undefined);
@@ -49,7 +51,7 @@ export const LinksPage: React.FC = () => {
         }
 
         toast
-            .promise(deleteLink.delete(), {
+            .promise(deleteLink.delete(apiAccessor), {
                 success: `Deleted link "${deleteLink.short_url}"!`,
                 pending: `Deleting link "${deleteLink.short_url}"...`,
                 error: {
@@ -67,11 +69,11 @@ export const LinksPage: React.FC = () => {
             .finally(() => {
                 setDeleteLink(undefined);
             });
-    }, [deleteLink, models, set]);
+    }, [deleteLink, models, set, apiAccessor]);
 
     const handleCreateLink = useCallback(() => {
         toast
-            .promise(LinkModel.create(createLinkUrl), {
+            .promise(LinkModel.create(createLinkUrl, apiAccessor), {
                 success: `Created link "${createLinkUrl}"!`,
                 pending: `Creating link "${createLinkUrl}"...`,
                 error: {
@@ -89,7 +91,7 @@ export const LinksPage: React.FC = () => {
             .finally(() => {
                 setShowCreateLink(false);
             });
-    }, [createLinkUrl, models, set]);
+    }, [createLinkUrl, models, set, apiAccessor]);
 
     const showCreateLinkDialog = useCallback(() => {
         setCreateLinkUrl('https://');

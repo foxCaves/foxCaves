@@ -1,13 +1,13 @@
-import { fetchAPI, HttpError } from '../utils/api';
+import { APIAccessor, HttpError } from '../utils/api';
 import { BaseModel } from './base';
 
 export class UserModel extends BaseModel {
     public id = '';
     public username = '';
 
-    public static async getById(id: string): Promise<UserModel | undefined> {
+    public static async getById(id: string, apiAccessor: APIAccessor): Promise<UserModel | undefined> {
         try {
-            const api = await fetchAPI(`/api/v1/users/${encodeURIComponent(id)}`);
+            const api = await apiAccessor.fetch(`/api/v1/users/${encodeURIComponent(id)}`);
             return UserModel.wrapNew(api);
         } catch (error) {
             if (error instanceof HttpError && (error.status === 404 || error.status === 403)) {
@@ -30,9 +30,9 @@ export class UserDetailsModel extends UserModel {
     public storage_used = 0;
     public active = 0;
 
-    public static async getById(id: string): Promise<UserDetailsModel | undefined> {
+    public static async getById(id: string, apiAccessor: APIAccessor): Promise<UserDetailsModel | undefined> {
         try {
-            const api = await fetchAPI(`/api/v1/users/${encodeURIComponent(id)}/details`);
+            const api = await apiAccessor.fetch(`/api/v1/users/${encodeURIComponent(id)}/details`);
             return UserDetailsModel.wrapNew(api);
         } catch (error) {
             if (error instanceof HttpError && (error.status === 404 || error.status === 403)) {

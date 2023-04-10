@@ -1,19 +1,20 @@
-import React, { FormEvent, useCallback } from 'react';
+import React, { FormEvent, useCallback, useContext } from 'react';
 import Button from 'react-bootstrap/Button';
 import FloatingLabel from 'react-bootstrap/FloatingLabel';
 import Form from 'react-bootstrap/Form';
 import { toast } from 'react-toastify';
-import { fetchAPIRaw } from '../../utils/api';
+import { AppContext } from '../../utils/context';
 import { useInputFieldSetter } from '../../utils/hooks';
 import { logError } from '../../utils/misc';
 
 export const ForgotPasswordPage: React.FC = () => {
+    const { apiAccessor } = useContext(AppContext);
     const [username, setUsernameCB] = useInputFieldSetter('');
     const [email, setEmailCB] = useInputFieldSetter('');
 
     const submitForgotPasswordFormAsync = useCallback(async () => {
         await toast.promise(
-            fetchAPIRaw('/api/v1/users/emails/request', {
+            apiAccessor.fetchRaw('/api/v1/users/emails/request', {
                 method: 'POST',
                 data: {
                     username,
@@ -32,16 +33,7 @@ export const ForgotPasswordPage: React.FC = () => {
                 },
             },
         );
-
-        await fetchAPIRaw('/api/v1/users/emails/request', {
-            method: 'POST',
-            data: {
-                username,
-                email,
-                action: 'forgot_password',
-            },
-        });
-    }, [username, email]);
+    }, [username, email, apiAccessor]);
 
     const submitForgotPasswordForm = useCallback(
         (event: FormEvent<HTMLFormElement>) => {

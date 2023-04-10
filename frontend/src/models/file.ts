@@ -1,4 +1,4 @@
-import { fetchAPI, fetchAPIRaw, HttpError, ListResponse } from '../utils/api';
+import { APIAccessor, HttpError, ListResponse } from '../utils/api';
 import { formatSize } from '../utils/formatting';
 import { BaseModel } from './base';
 import { UserModel } from './user';
@@ -16,9 +16,9 @@ export class FileModel extends BaseModel {
     public direct_url = '';
     public view_url = '';
 
-    public static async getById(id: string): Promise<FileModel | undefined> {
+    public static async getById(id: string, apiAccessor: APIAccessor): Promise<FileModel | undefined> {
         try {
-            const api = await fetchAPI(`/api/v1/files/${encodeURIComponent(id)}`);
+            const api = await apiAccessor.fetch(`/api/v1/files/${encodeURIComponent(id)}`);
             return FileModel.wrapNew(api);
         } catch (error) {
             if (error instanceof HttpError && (error.status === 404 || error.status === 403)) {
@@ -29,8 +29,8 @@ export class FileModel extends BaseModel {
         }
     }
 
-    public static async getByUser(user: UserModel): Promise<FileModel[]> {
-        const res = (await fetchAPI(`/api/v1/users/${encodeURIComponent(user.id)}/files`)) as ListResponse;
+    public static async getByUser(user: UserModel, apiAccessor: APIAccessor): Promise<FileModel[]> {
+        const res = (await apiAccessor.fetch(`/api/v1/users/${encodeURIComponent(user.id)}/files`)) as ListResponse;
         return res.items.map((i) => FileModel.wrapNew(i));
     }
 
@@ -38,14 +38,14 @@ export class FileModel extends BaseModel {
         return new FileModel().wrap(obj);
     }
 
-    public async delete(): Promise<void> {
-        await fetchAPIRaw(`/api/v1/files/${encodeURIComponent(this.id)}`, {
+    public async delete(apiAccessor: APIAccessor): Promise<void> {
+        await apiAccessor.fetchRaw(`/api/v1/files/${encodeURIComponent(this.id)}`, {
             method: 'DELETE',
         });
     }
 
-    public async rename(name: string): Promise<void> {
-        await fetchAPIRaw(`/api/v1/files/${encodeURIComponent(this.id)}`, {
+    public async rename(name: string, apiAccessor: APIAccessor): Promise<void> {
+        await apiAccessor.fetchRaw(`/api/v1/files/${encodeURIComponent(this.id)}`, {
             method: 'PATCH',
             data: { name },
         });

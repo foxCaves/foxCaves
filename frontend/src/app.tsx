@@ -23,6 +23,7 @@ import { LoginPage } from './pages/login';
 import { LogoutPage } from './pages/logout';
 import { RegistrationPage } from './pages/register';
 import { ViewPage } from './pages/view';
+import { APIAccessor } from './utils/api';
 import { AppContext, AppContextData } from './utils/context';
 import { logError } from './utils/misc';
 
@@ -135,12 +136,15 @@ export const App: React.FC = () => {
     const [user, setUser] = useState<UserDetailsModel | undefined>(undefined);
     const [userLoaded, setUserLoaded] = useState(false);
     const [userLoadStarted, setUserLoadStarted] = useState(false);
+    const apiAccessor: APIAccessor = useMemo(() => {
+        return new APIAccessor();
+    }, []);
 
     const refreshUser = useCallback(async () => {
-        const newUser = await UserDetailsModel.getById('self');
+        const newUser = await UserDetailsModel.getById('self', apiAccessor);
         setUser(newUser);
         setUserLoaded(true);
-    }, [setUser, setUserLoaded]);
+    }, [setUser, setUserLoaded, apiAccessor]);
 
     const context: AppContextData = useMemo(
         () => ({
@@ -148,8 +152,9 @@ export const App: React.FC = () => {
             setUser,
             userLoaded,
             refreshUser,
+            apiAccessor,
         }),
-        [refreshUser, user, userLoaded],
+        [refreshUser, user, userLoaded, apiAccessor],
     );
 
     useEffect(() => {

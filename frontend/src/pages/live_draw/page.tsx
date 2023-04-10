@@ -1,11 +1,12 @@
 import '../../resources/live_draw.css';
 
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { Form } from 'react-bootstrap';
 import Button from 'react-bootstrap/Button';
 import RangeSlider from 'react-bootstrap-range-slider';
 import { Navigate, useParams } from 'react-router-dom';
 import { FileModel } from '../../models/file';
+import { AppContext } from '../../utils/context';
 import { BlobWithName, uploadFile } from '../../utils/file_uploader';
 import { logError } from '../../utils/misc';
 import { randomString } from '../../utils/random';
@@ -18,6 +19,7 @@ export const LiveDrawRedirectPage: React.FC = () => {
 };
 
 export const LiveDrawPage: React.FC = () => {
+    const { apiAccessor } = useContext(AppContext);
     const { id, sid } = useParams<{ id: string; sid: string }>();
     const [file, setFile] = useState<FileModel | undefined>(undefined);
     const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -30,8 +32,8 @@ export const LiveDrawPage: React.FC = () => {
     const fileName = file ? file.name : `ID_${id!}`;
 
     useEffect(() => {
-        FileModel.getById(id!).then(setFile, logError);
-    }, [id]);
+        FileModel.getById(id!, apiAccessor).then(setFile, logError);
+    }, [id, apiAccessor]);
 
     const getFileName = useCallback(() => {
         return `${fileName}-edit.png`;

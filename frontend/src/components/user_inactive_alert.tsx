@@ -1,12 +1,11 @@
 import React, { useCallback, useContext } from 'react';
 import Alert from 'react-bootstrap/Alert';
 import { toast } from 'react-toastify';
-import { fetchAPIRaw } from '../utils/api';
 import { AppContext } from '../utils/context';
 import { logError } from '../utils/misc';
 
 export const UserInactiveAlert: React.FC = () => {
-    const { user } = useContext(AppContext);
+    const { user, apiAccessor } = useContext(AppContext);
 
     const requestActivationEmail = useCallback(() => {
         if (!user) {
@@ -15,7 +14,7 @@ export const UserInactiveAlert: React.FC = () => {
 
         toast
             .promise(
-                fetchAPIRaw('/api/v1/users/emails/request', {
+                apiAccessor.fetchRaw('/api/v1/users/emails/request', {
                     method: 'POST',
                     data: {
                         action: 'activation',
@@ -35,7 +34,7 @@ export const UserInactiveAlert: React.FC = () => {
                 },
             )
             .catch(logError);
-    }, [user]);
+    }, [user, apiAccessor]);
 
     if (!user || user.isActive()) {
         return null;
