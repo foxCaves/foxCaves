@@ -14,7 +14,7 @@ export const UserInactiveAlert: React.FC = () => {
 
         toast
             .promise(
-                apiAccessor.fetchRaw('/api/v1/users/emails/request', {
+                apiAccessor.fetch('/api/v1/users/emails/request', {
                     method: 'POST',
                     data: {
                         action: 'activation',

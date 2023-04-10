@@ -39,13 +39,13 @@ export class FileModel extends BaseModel {
     }
 
     public async delete(apiAccessor: APIAccessor): Promise<void> {
-        await apiAccessor.fetchRaw(`/api/v1/files/${encodeURIComponent(this.id)}`, {
+        await apiAccessor.fetch(`/api/v1/files/${encodeURIComponent(this.id)}`, {
             method: 'DELETE',
         });
     }
 
     public async rename(name: string, apiAccessor: APIAccessor): Promise<void> {
-        await apiAccessor.fetchRaw(`/api/v1/files/${encodeURIComponent(this.id)}`, {
+        await apiAccessor.fetch(`/api/v1/files/${encodeURIComponent(this.id)}`, {
             method: 'PATCH',
             data: { name },
         });

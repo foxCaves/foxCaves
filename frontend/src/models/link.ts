@@ -40,7 +40,7 @@ export class LinkModel extends BaseModel {
     }
 
     public async delete(apiAccessor: APIAccessor): Promise<void> {
-        await apiAccessor.fetchRaw(`/api/v1/links/${encodeURIComponent(this.id)}`, {
+        await apiAccessor.fetch(`/api/v1/links/${encodeURIComponent(this.id)}`, {
             method: 'DELETE',
         });
     }

@@ -29,11 +29,6 @@ interface CSRFRequestResponse {
 export class APIAccessor {
     private csrfToken: string | null = null;
 
-    public async fetch(url: string, info?: APIRequestInfo): Promise<unknown> {
-        const res = await this.fetchRaw(url, info);
-        return res.json();
-    }
-
     public async refreshCSRFToken(): Promise<void> {
         const res = (await this.fetch('/api/v1/system/csrf', {
             method: 'POST',
@@ -61,18 +56,17 @@ export class APIAccessor {
         return method === 'GET' || method === 'HEAD' || method === 'OPTIONS';
     }
 
-    public async fetchRaw(url: string, info?: APIRequestInfo): Promise<Response> {
+    public async fetch(url: string, info?: APIRequestInfo): Promise<unknown> {
         const init: RequestInit = {};
 
+        init.headers = { ...info?.headers };
+
         if (info) {
-            init.headers = info.headers;
             init.method = info.method;
 
             if (info.data) {
                 init.body = JSON.stringify(info.data);
-                if (!init.headers) {
-                    init.headers = {};
-                }
+                init.headers = {};
 
                 init.headers['Content-Type'] = 'application/json';
             } else if (info.body) {
@@ -80,12 +74,8 @@ export class APIAccessor {
             }
         }
 
-        if (!init.headers) {
-            init.headers = {};
-        }
-
         if (!info?.disableCSRF && !this.isReadOnlyMethod(init.method)) {
-            (init.headers as Record<string, string>)['CSRF-Token'] = await this.getCSRFToken();
+            init.headers['CSRF-Token'] = await this.getCSRFToken();
         }
 
         const res = await fetch(url, init);
@@ -102,6 +92,6 @@ export class APIAccessor {
             throw new HttpError(res.status, desc ?? res.statusText);
         }
 
-        return res;
+        return res.json();
     }
 }
