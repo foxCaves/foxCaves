@@ -130,7 +130,7 @@ export const FilesPage: React.FC = () => {
 
             Promise.all(
                 acceptedFiles.map(async (file: File) => {
-                    const fileObj = await uploadFile(file);
+                    const fileObj = await uploadFile(file, apiAccessor);
                     modelsCopy.set(fileObj.id, fileObj);
                 }),
             )
@@ -140,7 +140,7 @@ export const FilesPage: React.FC = () => {
                 })
                 .catch(logError);
         },
-        [models, set],
+        [models, set, apiAccessor],
     );
 
     const dropzone = useDropzone({

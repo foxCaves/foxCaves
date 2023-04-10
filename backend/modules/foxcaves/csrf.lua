@@ -22,7 +22,7 @@ function M.set()
         max_age = CSRF_COOKIE_EXPIRE,
     })
 
-    ngx.header['CSRF-Token'] = val
+    ngx.header['Set-CSRF-Token'] = val
 end
 
 function M.check(token)

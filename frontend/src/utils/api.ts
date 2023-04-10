@@ -24,6 +24,10 @@ export interface ListResponse {
 export class APIAccessor {
     private csrfToken: string | null = null;
 
+    public getCSRFToken(): string {
+        return this.csrfToken!;
+    }
+
     public async fetchRaw(url: string, info?: APIRequestInfo): Promise<Response> {
         const init: RequestInit = {};
         if (info) {
@@ -51,7 +55,7 @@ export class APIAccessor {
 
         const res = await fetch(url, init);
 
-        const newCSRFToken = res.headers.get('CSRF-Token');
+        const newCSRFToken = res.headers.get('Set-CSRF-Token');
         if (newCSRFToken) {
             this.csrfToken = newCSRFToken;
         }

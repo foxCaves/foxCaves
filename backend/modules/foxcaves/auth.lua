@@ -109,7 +109,7 @@ function M.check()
         if not success then
             return utils.api_error('Invalid username or API key', 401)
         end
-        ngx.ctx.route_opts.disable_csrf_checks = true
+        ngx.ctx.disable_csrf_checks = true
         return
     end
 

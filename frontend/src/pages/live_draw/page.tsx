@@ -63,9 +63,9 @@ export const LiveDrawPage: React.FC = () => {
         canvasRef.current!.toBlob((blob) => {
             const namedBlob = blob as BlobWithName;
             namedBlob.name = getFileName();
-            uploadFile(namedBlob).catch(logError);
+            uploadFile(namedBlob, apiAccessor).catch(logError);
         }, 'image/png');
-    }, [getFileName]);
+    }, [getFileName, apiAccessor]);
 
     useEffect(() => {
         const manager = new LiveDrawManager(

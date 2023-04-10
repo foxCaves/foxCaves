@@ -207,6 +207,7 @@ local function route_execute()
 
     local opts = handler.options or {}
     ngx.ctx.route_opts = opts
+    ngx.ctx.disable_csrf_checks = opts.disable_csrf_checks or false
 
     if not opts.disable_set_cookies then
         csrf.set()
@@ -220,10 +221,10 @@ local function route_execute()
     end
 
     if method == 'HEAD' or method == 'OPTIONS' or method == 'GET' then
-        opts.disable_csrf_checks = true
+        ngx.ctx.disable_csrf_checks = true
     end
 
-    if not opts.disable_csrf_checks and not csrf.check(ngx.var.http_csrf_token) then
+    if not ngx.ctx.disable_csrf_checks and not csrf.check(ngx.var.http_csrf_token) then
         return opts, utils.api_error('CSRF mismatch', 403)
     end
 

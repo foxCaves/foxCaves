@@ -1,6 +1,6 @@
 import { toast } from 'react-toastify';
 import { FileModel } from '../models/file';
-import { HttpError } from './api';
+import { APIAccessor, HttpError } from './api';
 import { logError } from './misc';
 
 export interface BlobWithName extends Blob {
@@ -8,10 +8,15 @@ export interface BlobWithName extends Blob {
 }
 type FileLike = BlobWithName | File;
 
-async function uploadFileInternal(file: FileLike, onProgress: (e: ProgressEvent<XMLHttpRequestEventTarget>) => void) {
+async function uploadFileInternal(
+    file: FileLike,
+    csrfToken: string,
+    onProgress: (e: ProgressEvent<XMLHttpRequestEventTarget>) => void,
+) {
     return new Promise<FileModel>((resolve, reject) => {
         const xhr = new XMLHttpRequest();
         xhr.open('POST', `/api/v1/files?name=${encodeURIComponent(file.name)}`);
+        xhr.setRequestHeader('CSRF-Token', csrfToken);
 
         xhr.upload.addEventListener('progress', onProgress);
 
@@ -40,7 +45,7 @@ async function uploadFileInternal(file: FileLike, onProgress: (e: ProgressEvent<
     });
 }
 
-export async function uploadFile(file: FileLike): Promise<FileModel> {
+export async function uploadFile(file: FileLike, apiAccessor: APIAccessor): Promise<FileModel> {
     const toastId = toast(`Uploading file "${file.name}"...`, {
         autoClose: false,
         progress: 0,
@@ -66,7 +71,7 @@ export async function uploadFile(file: FileLike): Promise<FileModel> {
     };
 
     try {
-        const fileObj = await uploadFileInternal(file, progressHandler);
+        const fileObj = await uploadFileInternal(file, apiAccessor.getCSRFToken(), progressHandler);
         toast(`Uploaded file "${file.name}"!`, {
             type: 'success',
             autoClose: 3000,
