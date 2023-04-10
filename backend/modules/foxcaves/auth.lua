@@ -42,8 +42,7 @@ function M.login(username_or_id, credential, options)
         return false
     end
 
-    local auth_func = options.login_method or M.LOGIN_METHOD_PASSWORD
-    if not auth_func(user, credential) then
+    if not options.login_method(user, credential) then
         return false
     end
 

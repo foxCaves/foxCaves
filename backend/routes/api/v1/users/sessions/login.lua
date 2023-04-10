@@ -18,6 +18,7 @@ R.register_route('/api/v1/users/sessions', 'PUT', R.make_route_opts_anon(), func
 
     if not auth.login(args.username, args.password, {
         remember = args.remember == 'true' or args.remember == true,
+        login_method = auth.LOGIN_METHOD_PASSWORD,
     }) then
         return utils.api_error('Invalid username/password', 401)
     end
