@@ -209,8 +209,6 @@ local function route_execute()
     ngx.ctx.route_opts = opts
     ngx.ctx.disable_csrf_checks = opts.disable_csrf_checks or false
 
-    local is_read_only_method = method == 'HEAD' or method == 'OPTIONS' or method == 'GET'
-
     if opts.check_login then
         local res, code = auth.check()
         if res then
@@ -218,7 +216,7 @@ local function route_execute()
         end
     end
 
-    if is_read_only_method then
+    if method == 'HEAD' or method == 'OPTIONS' or method == 'GET' then
         ngx.ctx.disable_csrf_checks = true
     end
 
