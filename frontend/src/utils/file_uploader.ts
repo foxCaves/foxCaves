@@ -10,16 +10,18 @@ type FileLike = BlobWithName | File;
 
 async function uploadFileInternal(
     file: FileLike,
-    csrfToken: string,
+    apiAccessor: APIAccessor,
     onProgress: (e: ProgressEvent<XMLHttpRequestEventTarget>) => void,
-) {
+): Promise<FileModel> {
+    const csrfToken = await apiAccessor.getCSRFToken();
+
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', `/api/v1/files?name=${encodeURIComponent(file.name)}`);
+    xhr.setRequestHeader('CSRF-Token', csrfToken);
+
+    xhr.upload.addEventListener('progress', onProgress);
+
     return new Promise<FileModel>((resolve, reject) => {
-        const xhr = new XMLHttpRequest();
-        xhr.open('POST', `/api/v1/files?name=${encodeURIComponent(file.name)}`);
-        xhr.setRequestHeader('CSRF-Token', csrfToken);
-
-        xhr.upload.addEventListener('progress', onProgress);
-
         xhr.addEventListener('error', () => {
             reject(new HttpError(599, 'Error connecting to server'));
         });
@@ -71,7 +73,7 @@ export async function uploadFile(file: FileLike, apiAccessor: APIAccessor): Prom
     };
 
     try {
-        const fileObj = await uploadFileInternal(file, apiAccessor.getCSRFToken(), progressHandler);
+        const fileObj = await uploadFileInternal(file, apiAccessor, progressHandler);
         toast(`Uploaded file "${file.name}"!`, {
             type: 'success',
             autoClose: 3000,
