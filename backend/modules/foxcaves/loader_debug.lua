@@ -14,7 +14,7 @@ local tostring = tostring
 local M = {}
 require('foxcaves.module_helper').setmodenv()
 
-local function makeTableRecurse(var, done)
+local function make_table_recurse(var, done)
     local t = type(var)
     if t == 'table' then
         if not done then
@@ -25,7 +25,7 @@ local function makeTableRecurse(var, done)
             local ret = { '<table><thead><tr><th>Name</th><th>Type</th><th>Value</th></tr></thead><tbody>' }
             for k, v in next, var do
                 table.insert(ret, '<tr><td>' .. tostring(k) .. '</td><td>' .. type(v) .. '</td><td>')
-                table.insert(ret, makeTableRecurse(v, done))
+                table.insert(ret, make_table_recurse(v, done))
                 table.insert(ret, '</td></tr>')
             end
             table.insert(ret, '</tbody></table>')
@@ -40,7 +40,7 @@ local function makeTableRecurse(var, done)
     end
 end
 
-local function getFunctionCode(info)
+local function get_function_code(info)
     local curr = info.currentline
     local startline = info.linedefined --function start
     local endline = info.lastlinedefined --function end
@@ -113,7 +113,7 @@ local function getFunctionCode(info)
     return ''
 end
 
-local function getLocals(level)
+local function get_locals(level)
     if debug.getlocal(level + 1, 1) then
         local out = { "<h3><a href='#'>Locals</a></h3><div>" }
         local tbl = {}
@@ -124,14 +124,14 @@ local function getLocals(level)
             end
             tbl[k] = v
         end
-        table.insert(out, makeTableRecurse(tbl))
+        table.insert(out, make_table_recurse(tbl))
         table.insert(out, '</div>')
         return table.concat(out, '')
     end
     return ''
 end
 
-local function getUpValues(func)
+local function get_upvalues(func)
     if func and debug.getupvalue(func, 1) then
         local out = { "<h3><a href='#'>UpValues</a></h3><div>" }
         local tbl = {}
@@ -142,7 +142,7 @@ local function getUpValues(func)
             end
             tbl[k] = v
         end
-        table.insert(out, makeTableRecurse(tbl))
+        table.insert(out, make_table_recurse(tbl))
         table.insert(out, '</div>')
         return table.concat(out, '')
     end
@@ -246,9 +246,9 @@ local function debug_trace(err)
             '<li>What: ' .. (cur.name and "In function '" .. cur.name .. "'" or 'In main chunk') .. '</li></ul></div>'
         )
 
-        table.insert(out, getLocals(level))
-        table.insert(out, getUpValues(cur.func))
-        table.insert(out, getFunctionCode(cur))
+        table.insert(out, get_locals(level))
+        table.insert(out, get_upvalues(cur.func))
+        table.insert(out, get_function_code(cur))
 
         table.insert(out, '</div></div>')
     end
