@@ -3,7 +3,7 @@ local MIMETYPE_TO_EXTENSIONS = {}
 
 local MIMETYPE_SAFE_SUBSTITUTIONS = {
     ['application/javascript'] = 'text/plain',
-    ['application/xhtml+xml']  = 'text/plain',
+    ['application/xhtml+xml'] = 'text/plain',
     ['text/html'] = 'text/plain',
     ['text/javascript'] = 'text/plain',
     ['text/xml'] = 'text/plain',
