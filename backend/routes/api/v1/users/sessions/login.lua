@@ -1,5 +1,6 @@
 local utils = require('foxcaves.utils')
 local auth = require('foxcaves.auth')
+local captcha = require('foxcaves.captcha')
 local ngx = ngx
 
 R.register_route('/api/v1/users/sessions', 'POST', R.make_route_opts_anon(), function()
@@ -11,9 +12,12 @@ R.register_route('/api/v1/users/sessions', 'POST', R.make_route_opts_anon(), fun
     if not args.username or args.username == '' then
         return utils.api_error('No username')
     end
-
     if not args.password or args.password == '' then
         return utils.api_error('No password')
+    end
+
+    if not captcha.check('login', args) then
+        return captcha.error()
     end
 
     if not auth.login(args.username, args.password, {

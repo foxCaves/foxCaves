@@ -28,6 +28,14 @@ return {
         enable_user_always_active = true,
         enable_testing_routes = true,
     },
+    captcha = {
+        registration = false,
+        login = false,
+        forgot_password = false,
+        resend_activation = false,
+        recaptcha_site_key = "",
+        recaptcha_secret_key = "",
+    },
     storage = {
         default = "fs",
 
@@ -47,5 +55,6 @@ return {
     },
     sentry = {
         dsn = nil,
+        dsn_frontend = nil,
     },
 }

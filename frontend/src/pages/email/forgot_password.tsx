@@ -1,8 +1,9 @@
-import React, { FormEvent, useCallback, useContext } from 'react';
+import React, { FormEvent, useCallback, useContext, useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import FloatingLabel from 'react-bootstrap/FloatingLabel';
 import Form from 'react-bootstrap/Form';
 import { toast } from 'react-toastify';
+import { CaptchaContainer } from '../../components/captcha';
 import { AppContext } from '../../utils/context';
 import { useInputFieldSetter } from '../../utils/hooks';
 import { logError } from '../../utils/misc';
@@ -11,8 +12,18 @@ export const ForgotPasswordPage: React.FC = () => {
     const { apiAccessor } = useContext(AppContext);
     const [username, setUsernameCB] = useInputFieldSetter('');
     const [email, setEmailCB] = useInputFieldSetter('');
+    const [captchaResponse, setCaptchaResponse] = useState('');
 
     const submitForgotPasswordFormAsync = useCallback(async () => {
+        if (!captchaResponse) {
+            toast('CAPTCHA not completed', {
+                type: 'error',
+                autoClose: 5000,
+            });
+
+            return;
+        }
+
         await toast.promise(
             apiAccessor.fetch('/api/v1/users/emails/request', {
                 method: 'POST',
@@ -20,6 +31,7 @@ export const ForgotPasswordPage: React.FC = () => {
                     username,
                     email,
                     action: 'forgot_password',
+                    captchaResponse,
                 },
             }),
             {
@@ -33,12 +45,16 @@ export const ForgotPasswordPage: React.FC = () => {
                 },
             },
         );
-    }, [username, email, apiAccessor]);
+    }, [captchaResponse, username, email, apiAccessor]);
 
     const submitForgotPasswordForm = useCallback(
         (event: FormEvent<HTMLFormElement>) => {
             event.preventDefault();
-            submitForgotPasswordFormAsync().catch(logError);
+            submitForgotPasswordFormAsync()
+                .catch(logError)
+                .finally(() => {
+                    setCaptchaResponse('');
+                });
         },
         [submitForgotPasswordFormAsync],
     );
@@ -68,7 +84,8 @@ export const ForgotPasswordPage: React.FC = () => {
                         value={email}
                     />
                 </FloatingLabel>
-                <Button size="lg" type="submit" variant="primary">
+                <CaptchaContainer onVerifyChanged={setCaptchaResponse} page="forgot_password" />
+                <Button disabled={!captchaResponse} size="lg" type="submit" variant="primary">
                     Send E-Mail
                 </Button>
             </Form>

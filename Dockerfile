@@ -12,7 +12,6 @@ RUN npm ci
 COPY frontend/ /opt/stage/
 
 # Actually build frontend
-ARG REACT_APP_SENTRY_DSN=''
 RUN npm run build
 
 
