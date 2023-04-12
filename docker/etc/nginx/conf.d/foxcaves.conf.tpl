@@ -16,6 +16,7 @@ real_ip_header proxy_protocol;
 server {
     listen unix:/run/nginx-lua-api.sock default;
     server_name __MAIN_DOMAIN__;
+    include /etc/nginx/headers.conf;
 
     real_ip_header X-Real-IP;
 
@@ -30,6 +31,7 @@ server {
 server {
     include __LISTENER_CONFIG__;
     server_name __MAIN_DOMAIN__;
+    include /etc/nginx/headers.conf;
 
     root /var/www/foxcaves/html;
     client_max_body_size 10M;
@@ -85,6 +87,7 @@ server {
 server {
     include __LISTENER_CONFIG__;
     server_name __SHORT_DOMAIN__;
+    include /etc/nginx/headers.conf;
 
     set $fcv_proxy_host "";
     set $fcv_proxy_uri "";

@@ -1,5 +1,6 @@
 local utils = require('foxcaves.utils')
 local file_model = require('foxcaves.models.file')
+local mimetypes = require('foxcaves.mimetypes')
 local main_url = require('foxcaves.config').http.main_url
 local ngx = ngx
 
@@ -28,7 +29,7 @@ route_vars
     end
 
     ngx.header['Content-Disposition'] = disposition_type .. '; filename="' .. file.name .. '"'
-    ngx.header['Content-Type'] = file.mimetype
+    ngx.header['Content-Type'] = mimetypes.get_safe_mimetype(file.mimetype)
     utils.add_cdn_cache_control()
     if ngx.var.request_method == 'HEAD' then
         ngx.header['Content-Length'] = file.size
