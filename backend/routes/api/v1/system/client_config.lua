@@ -30,6 +30,6 @@ end)
 
 R.register_route('/api/v1/system/client_config.js', 'GET', R.make_route_opts_anon(), function()
     ngx.header['Content-Type'] = 'text/javascript'
-    ngx.say("'use strict';\nwindow.foxcavesConfig = " .. cjson.encode(config) .. ';')
+    ngx.say('"use strict";\nwindow.foxcavesConfig = ' .. cjson.encode(config) .. ';')
     ngx.eof()
 end)
