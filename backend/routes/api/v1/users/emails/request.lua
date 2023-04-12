@@ -3,6 +3,7 @@ local redis = require('foxcaves.redis')
 local mail = require('foxcaves.mail')
 local random = require('foxcaves.random')
 local user_model = require('foxcaves.models.user')
+local captcha = require('foxcaves.captcha')
 local main_url = require('foxcaves.config').http.main_url
 
 R.register_route('/api/v1/users/emails/request', 'POST', R.make_route_opts_anon(), function() --48 hours
@@ -35,9 +36,15 @@ R.register_route('/api/v1/users/emails/request', 'POST', R.make_route_opts_anon(
     if action == 'activation' then
         emailstr = emailstr .. 'have your activation E-Mail resent. To activate your user account'
         subject = 'Activate your account'
+        if not captcha.check('resend_activation', args) then
+            return captcha.error()
+        end
     elseif action == 'forgot_password' then
         emailstr = emailstr .. 'reset your password. To have a random password sent to you E-Mail'
         subject = 'Reset your password'
+        if not captcha.check('forgot_password', args) then
+            return captcha.error()
+        end
     else
         return utils.api_error('action invalid')
     end

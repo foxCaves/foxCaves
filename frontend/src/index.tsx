@@ -7,12 +7,13 @@ import * as Sentry from '@sentry/react';
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { App } from './app';
+import { FoxCavesConfig } from './utils/config';
 
-declare const REACT_APP_SENTRY_DSN: string;
+declare const foxcavesConfig: FoxCavesConfig;
 
-if (REACT_APP_SENTRY_DSN) {
+if (foxcavesConfig.sentry.dsn) {
     Sentry.init({
-        dsn: REACT_APP_SENTRY_DSN,
+        dsn: foxcavesConfig.sentry.dsn,
     });
 } else {
     // eslint-disable-next-line no-console

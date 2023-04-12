@@ -4,10 +4,10 @@ import FloatingLabel from 'react-bootstrap/FloatingLabel';
 import Form from 'react-bootstrap/Form';
 import { Navigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { CaptchaContainer } from '../components/captcha';
 import { AppContext } from '../utils/context';
 import { useCheckboxFieldSetter, useInputFieldSetter } from '../utils/hooks';
 import { logError } from '../utils/misc';
-import { CaptchaContainer } from '../components/captcha';
 
 export const RegistrationPage: React.FC = () => {
     const { apiAccessor } = useContext(AppContext);
@@ -15,12 +15,22 @@ export const RegistrationPage: React.FC = () => {
     const [password, setPasswordCB] = useInputFieldSetter('');
     const [passwordConfirm, setPasswordConfirmCB] = useInputFieldSetter('');
     const [email, setEmailCB] = useInputFieldSetter('');
+    const [captchaResponse, setCaptchaResponse] = useState('');
     const [agreeTos, setAgreeTosCallback] = useCheckboxFieldSetter(false);
     const [registrationDone, setRegistrationDone] = useState(false);
 
     const handleSubmit = useCallback(
         (event: FormEvent<HTMLFormElement>) => {
             event.preventDefault();
+
+            if (!captchaResponse) {
+                toast('CAPTCHA not completed', {
+                    type: 'error',
+                    autoClose: 5000,
+                });
+
+                return;
+            }
 
             if (password !== passwordConfirm) {
                 toast('Passwords do not match', {
@@ -40,6 +50,7 @@ export const RegistrationPage: React.FC = () => {
                             password,
                             email,
                             agreeTos,
+                            captchaResponse,
                         },
                     }),
                     {
@@ -58,7 +69,7 @@ export const RegistrationPage: React.FC = () => {
                     setRegistrationDone(true);
                 });
         },
-        [username, password, passwordConfirm, email, agreeTos, apiAccessor],
+        [username, password, passwordConfirm, email, agreeTos, apiAccessor, captchaResponse],
     );
 
     if (registrationDone) {
@@ -110,6 +121,7 @@ export const RegistrationPage: React.FC = () => {
                         value={email}
                     />
                 </FloatingLabel>
+                <CaptchaContainer onVerifyChanged={setCaptchaResponse} page="registration" />
                 <Form.Group className="mb-3">
                     <Form.Check
                         checked={agreeTos}
@@ -121,7 +133,6 @@ export const RegistrationPage: React.FC = () => {
                         value="true"
                     />
                 </Form.Group>
-                <CaptchaContainer page="login" />
                 <Button size="lg" type="submit" variant="primary">
                     Register
                 </Button>

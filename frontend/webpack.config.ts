@@ -1,7 +1,7 @@
 import { join } from 'node:path';
 // eslint-disable-next-line import/default
 import CopyPlugin from 'copy-webpack-plugin';
-import webpack, { Configuration } from 'webpack';
+import { Configuration } from 'webpack';
 import 'webpack-dev-server';
 
 // eslint-disable-next-line unicorn/prefer-module
@@ -34,9 +34,6 @@ const config: Configuration = {
         ],
     },
     plugins: [
-        new webpack.DefinePlugin({
-            REACT_APP_SENTRY_DSN: JSON.stringify(process.env.REACT_APP_SENTRY_DSN),
-        }),
         new CopyPlugin({
             patterns: [{ from: 'public' }],
         }),

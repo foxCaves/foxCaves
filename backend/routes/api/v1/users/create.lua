@@ -1,5 +1,6 @@
 local utils = require('foxcaves.utils')
 local consts = require('foxcaves.consts')
+local captcha = require('foxcaves.captcha')
 local user_model = require('foxcaves.models.user')
 
 R.register_route('/api/v1/users', 'POST', R.make_route_opts_anon(), function()
@@ -20,6 +21,10 @@ R.register_route('/api/v1/users', 'POST', R.make_route_opts_anon(), function()
     end
     if password == '' then
         return utils.api_error('password required')
+    end
+
+    if not captcha.check('registration', args) then
+        return captcha.error()
     end
 
     local user = user_model.new()

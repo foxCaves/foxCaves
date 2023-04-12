@@ -1,40 +1,40 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { AppContext } from '../utils/context';
-import { logError } from '../utils/misc';
+import React, { useCallback, useEffect } from 'react';
+import Reaptcha from 'reaptcha';
+import { FoxCavesConfig } from '../utils/config';
 
 interface CustomRouteHandlerOptions {
-    page: keyof CaptchaConfig;
+    page: keyof FoxCavesConfig['captcha'];
+    onVerifyChanged: (response: string) => void;
 }
 
-interface CaptchaConfig {
-    registration: boolean;
-    login: boolean;
-    forgot_password: boolean;
-    resend_activation: boolean;
-    recaptcha_site_key: string;
-}
+declare const foxcavesConfig: FoxCavesConfig;
 
-export const CaptchaContainer: React.FC<CustomRouteHandlerOptions> = ({ page }) => {
-    const { apiAccessor } = useContext(AppContext);
-    const [loading, setLoading] = useState(false);
-    const [captchaData, setCaptchaData] = useState<CaptchaConfig | undefined>(undefined);
+export const CaptchaContainer: React.FC<CustomRouteHandlerOptions> = ({ page, onVerifyChanged }) => {
+    const setNotVerified = useCallback(() => {
+        onVerifyChanged('');
+    }, [onVerifyChanged]);
+
+    const enabled = !!foxcavesConfig.captcha[page];
 
     useEffect(() => {
-        if (loading || captchaData) {
+        if (enabled) {
             return;
         }
 
-        setLoading(true);
+        onVerifyChanged('disabled');
+    }, [enabled, onVerifyChanged]);
 
-        apiAccessor.fetch('/api/v1/system/captcha').then((data: unknown) => {
-            setCaptchaData(data as CaptchaConfig);
-            setLoading(false);
-        }, logError);
-    }, [apiAccessor, loading, captchaData, setLoading, setCaptchaData]);
-
-    if (!captchaData) {
-        return <p>Loading...</p>;
+    if (!enabled) {
+        return null;
     }
 
-    return <p>{captchaData[page]}</p>;
+    return (
+        <Reaptcha
+            onExpire={setNotVerified}
+            onVerify={onVerifyChanged}
+            sitekey={foxcavesConfig.captcha.recaptcha_site_key}
+            size="normal"
+            theme="dark"
+        />
+    );
 };
