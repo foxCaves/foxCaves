@@ -210,7 +210,7 @@ function file_mt:compute_mimetype()
     if not self.name then
         return false
     end
-    self.mimetype = mimetypes[self:get_extension()] or 'application/octet-stream'
+    self.mimetype = mimetypes.get_mimetype_for(self:get_extension()) or 'application/octet-stream'
     return true
 end
 
