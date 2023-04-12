@@ -65,8 +65,10 @@ local function s3_request_raw(self, method, path, query, body, rawHeaders, opts)
         body = body or '',
         headers = headers,
     })
-    if not resp then
-        resp:close()
+    if req_err then
+        if resp then
+            resp:close()
+        end
         error('S3API request ' .. method .. ' ' .. path .. '?' .. query .. ' failed! Error: ' .. tostring(req_err))
     end
 
