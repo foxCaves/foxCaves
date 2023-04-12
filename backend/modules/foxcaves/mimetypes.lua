@@ -53,11 +53,11 @@ local M = {}
 require('foxcaves.module_helper').setmodenv()
 
 function M.get_extensions_for(mimetype)
-    return MIMETYPE_TO_EXTENSIONS[mimetype]
+    return MIMETYPE_TO_EXTENSIONS[mimetype] or {}
 end
 
 function M.get_mimetype_for(extension)
-    return EXTENSION_TO_MIMETYPE[extension]
+    return EXTENSION_TO_MIMETYPE[extension] or 'application/octet-stream'
 end
 
 return M
