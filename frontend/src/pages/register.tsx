@@ -7,6 +7,7 @@ import { toast } from 'react-toastify';
 import { AppContext } from '../utils/context';
 import { useCheckboxFieldSetter, useInputFieldSetter } from '../utils/hooks';
 import { logError } from '../utils/misc';
+import { CaptchaContainer } from '../components/captcha';
 
 export const RegistrationPage: React.FC = () => {
     const { apiAccessor } = useContext(AppContext);
@@ -120,6 +121,7 @@ export const RegistrationPage: React.FC = () => {
                         value="true"
                     />
                 </Form.Group>
+                <CaptchaContainer page="login" />
                 <Button size="lg" type="submit" variant="primary">
                     Register
                 </Button>

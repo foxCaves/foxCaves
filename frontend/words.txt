@@ -5,3 +5,4 @@ foxcaves
 f0xes
 Toastify
 filechooser
+recaptcha
