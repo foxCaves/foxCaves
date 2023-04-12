@@ -50,7 +50,11 @@ export const ForgotPasswordPage: React.FC = () => {
     const submitForgotPasswordForm = useCallback(
         (event: FormEvent<HTMLFormElement>) => {
             event.preventDefault();
-            submitForgotPasswordFormAsync().catch(logError);
+            submitForgotPasswordFormAsync()
+                .catch(logError)
+                .finally(() => {
+                    setCaptchaResponse('');
+                });
         },
         [submitForgotPasswordFormAsync],
     );
@@ -81,7 +85,7 @@ export const ForgotPasswordPage: React.FC = () => {
                     />
                 </FloatingLabel>
                 <CaptchaContainer onVerifyChanged={setCaptchaResponse} page="forgot_password" />
-                <Button size="lg" type="submit" variant="primary">
+                <Button disabled={!captchaResponse} size="lg" type="submit" variant="primary">
                     Send E-Mail
                 </Button>
             </Form>

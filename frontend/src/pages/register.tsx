@@ -66,6 +66,7 @@ export const RegistrationPage: React.FC = () => {
                 )
                 .catch(logError)
                 .finally(() => {
+                    setCaptchaResponse('');
                     setRegistrationDone(true);
                 });
         },
@@ -133,7 +134,7 @@ export const RegistrationPage: React.FC = () => {
                         value="true"
                     />
                 </Form.Group>
-                <Button size="lg" type="submit" variant="primary">
+                <Button disabled={captchaResponse === ''} size="lg" type="submit" variant="primary">
                     Register
                 </Button>
             </Form>

@@ -54,6 +54,8 @@ export const LoginPage: React.FC = () => {
         } catch (error: unknown) {
             logError(error as Error);
             await refreshUser();
+        } finally {
+            setCaptchaResponse('');
         }
     }, [captchaResponse, username, password, remember, refreshUser, apiAccessor]);
 
@@ -105,7 +107,7 @@ export const LoginPage: React.FC = () => {
                         value="true"
                     />
                 </Form.Group>
-                <Button size="lg" type="submit" variant="primary">
+                <Button disabled={captchaResponse === ''} size="lg" type="submit" variant="primary">
                     Login
                 </Button>
             </Form>
