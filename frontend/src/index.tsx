@@ -9,11 +9,11 @@ import { createRoot } from 'react-dom/client';
 import { App } from './app';
 import { FoxCavesConfig } from './utils/config';
 
-declare const foxcavesConfig: FoxCavesConfig;
+declare const FOXCAVES_CONFIG: FoxCavesConfig;
 
-if (foxcavesConfig.sentry.dsn) {
+if (FOXCAVES_CONFIG.sentry.dsn) {
     Sentry.init({
-        dsn: foxcavesConfig.sentry.dsn,
+        dsn: FOXCAVES_CONFIG.sentry.dsn,
     });
 } else {
     // eslint-disable-next-line no-console
