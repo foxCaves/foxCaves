@@ -4,6 +4,12 @@ import { doLoginPage } from './utils';
 testGuest('Main page', async ({ page }) => {
     await page.goto('http://main.foxcaves:8080/');
     await page.locator('text="Welcome, Guest!"').waitFor();
+
+    if (process.env.CI) {
+        const gitRevision = process.env.GIT_REVISION!;
+        await page.getByText(`Frontend revision: ${gitRevision}`).waitFor();
+        await page.getByText(`Backend revision: ${gitRevision}`).waitFor();
+    }
 });
 
 testGuest('Login page', async ({ page }) => {
