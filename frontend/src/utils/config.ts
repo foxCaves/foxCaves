@@ -13,3 +13,6 @@ export interface Config {
 
 declare const FOXCAVES_CONFIG: Config;
 export const config = FOXCAVES_CONFIG;
+
+declare const GIT_REVISION: string;
+export const revision = GIT_REVISION;

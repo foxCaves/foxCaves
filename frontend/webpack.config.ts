@@ -1,7 +1,7 @@
 import { join } from 'node:path';
 // eslint-disable-next-line import/default
 import CopyPlugin from 'copy-webpack-plugin';
-import { Configuration } from 'webpack';
+import { Configuration, DefinePlugin } from 'webpack';
 import 'webpack-dev-server';
 
 // eslint-disable-next-line unicorn/prefer-module
@@ -34,6 +34,9 @@ const config: Configuration = {
         ],
     },
     plugins: [
+        new DefinePlugin({
+            GIT_REVISION: JSON.stringify(process.env.GIT_REVISION),
+        }),
         new CopyPlugin({
             patterns: [{ from: 'public' }],
         }),

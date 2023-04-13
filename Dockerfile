@@ -12,6 +12,7 @@ RUN npm ci
 COPY frontend/ /opt/stage/
 
 # Actually build frontend
+ARG GIT_REVISION=UNKNOWN
 RUN npm run build
 
 

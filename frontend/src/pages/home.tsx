@@ -1,4 +1,5 @@
 import React from 'react';
+import { revision } from '../utils/config';
 
 export const HomePage: React.FC = () => {
     return (
@@ -20,6 +21,8 @@ export const HomePage: React.FC = () => {
                 <a href="https://github.com/foxCaves/site" rel="noreferrer" target="_blank">
                     https://github.com/foxCaves/site
                 </a>
+                <br />
+                This website is deployed from git revision "{revision}".
             </p>
         </>
     );
