@@ -64,10 +64,12 @@ export const RegistrationPage: React.FC = () => {
                         },
                     },
                 )
+                .then(() => {
+                    setRegistrationDone(true);
+                })
                 .catch(logError)
                 .finally(() => {
                     setCaptchaResponse('');
-                    setRegistrationDone(true);
                 });
         },
         [username, password, passwordConfirm, email, agreeTos, apiAccessor, captchaResponse],
