@@ -13,6 +13,7 @@ COPY frontend/ /opt/stage/
 
 # Actually build frontend
 ARG GIT_REVISION=UNKNOWN
+ENV NODE_ENV=production
 RUN npm run build
 
 
