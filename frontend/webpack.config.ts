@@ -1,6 +1,8 @@
 import { join } from 'node:path';
 // eslint-disable-next-line import/default
 import CopyPlugin from 'copy-webpack-plugin';
+// eslint-disable-next-line import/default
+import HtmlWebpackPlugin from 'html-webpack-plugin';
 import { Configuration, DefinePlugin } from 'webpack';
 import 'webpack-dev-server';
 
@@ -15,6 +17,7 @@ const config: Configuration = {
     output: {
         path: join(PWD, 'build'),
         publicPath: '/static/',
+        filename: '[name].[chunkhash].js',
     },
     module: {
         rules: [
@@ -38,7 +41,12 @@ const config: Configuration = {
             GIT_REVISION: JSON.stringify(process.env.GIT_REVISION),
         }),
         new CopyPlugin({
-            patterns: [{ from: 'public' }],
+            patterns: [{
+                from: 'public', 
+            }],
+        }),
+        new HtmlWebpackPlugin({
+            template: 'src/index.html',
         }),
     ],
     devServer: {
