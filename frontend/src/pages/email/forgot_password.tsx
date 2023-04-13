@@ -13,6 +13,7 @@ export const ForgotPasswordPage: React.FC = () => {
     const [username, setUsernameCB] = useInputFieldSetter('');
     const [email, setEmailCB] = useInputFieldSetter('');
     const [captchaResponse, setCaptchaResponse] = useState('');
+    const [captchaReset, setCaptchaReset] = useState(0);
 
     const submitForgotPasswordFormAsync = useCallback(async () => {
         if (!captchaResponse) {
@@ -54,6 +55,7 @@ export const ForgotPasswordPage: React.FC = () => {
                 .catch(logError)
                 .finally(() => {
                     setCaptchaResponse('');
+                    setCaptchaReset((prev) => prev + 1);
                 });
         },
         [submitForgotPasswordFormAsync],
@@ -84,7 +86,11 @@ export const ForgotPasswordPage: React.FC = () => {
                         value={email}
                     />
                 </FloatingLabel>
-                <CaptchaContainer onVerifyChanged={setCaptchaResponse} page="forgot_password" />
+                <CaptchaContainer
+                    onVerifyChanged={setCaptchaResponse}
+                    page="forgot_password"
+                    resetFactor={captchaReset}
+                />
                 <Button disabled={!captchaResponse} size="lg" type="submit" variant="primary">
                     Send E-Mail
                 </Button>
