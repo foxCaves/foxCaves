@@ -1,5 +1,6 @@
-local config_raw = require('foxcaves.config')
 local cjson = require('cjson')
+local config_raw = require('foxcaves.config')
+local revision = require('foxcaves.revision')
 local ngx = ngx
 
 local config = {
@@ -11,6 +12,7 @@ local config = {
         recaptcha_site_key = '',
     },
     sentry = { dsn = '' },
+    backend_revision = revision.hash,
 }
 
 for key, _ in pairs(config.captcha) do

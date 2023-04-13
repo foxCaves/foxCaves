@@ -6,6 +6,18 @@ testGuest('Main page', async ({ page }) => {
     await page.locator('text="Welcome, Guest!"').waitFor();
 });
 
+testGuest('Git revision on main page', async ({ page }) => {
+    await page.goto('http://main.foxcaves:8080/');
+
+    const gitRevision = process.env.GIT_REVISION ?? 'UNKNOWN';
+    if (process.env.CI && gitRevision === 'UNKNOWN') {
+        throw new Error('GIT_REVISION is not set in CI');
+    }
+
+    await page.getByText(`Frontend revision: ${gitRevision}`).waitFor();
+    await page.getByText(`Backend revision: ${gitRevision}`).waitFor();
+});
+
 testGuest('Login page', async ({ page }) => {
     await page.goto('http://main.foxcaves:8080/login');
     await page.waitForSelector('input[name="password"]', {

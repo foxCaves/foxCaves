@@ -1,4 +1,5 @@
 import React from 'react';
+import { config, frontendRevision } from '../utils/config';
 
 export const HomePage: React.FC = () => {
     return (
@@ -16,10 +17,15 @@ export const HomePage: React.FC = () => {
                     https://github.com/foxCaves/sharex
                 </a>
                 <br />
+                <br />
                 You can also see the full source code of this project at:{' '}
                 <a href="https://github.com/foxCaves/site" rel="noreferrer" target="_blank">
                     https://github.com/foxCaves/site
                 </a>
+                <br />
+                Frontend revision: {frontendRevision}
+                <br />
+                Backend revision: {config.backend_revision}
             </p>
         </>
     );
