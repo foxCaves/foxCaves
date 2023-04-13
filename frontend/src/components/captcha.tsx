@@ -1,20 +1,18 @@
 import React, { useCallback, useEffect } from 'react';
 import Reaptcha from 'reaptcha';
-import { FoxCavesConfig } from '../utils/config';
+import { config, Config } from '../utils/config';
 
 interface CustomRouteHandlerOptions {
-    page: keyof FoxCavesConfig['captcha'];
+    page: keyof Config['captcha'];
     onVerifyChanged: (response: string) => void;
 }
-
-declare const FOXCAVES_CONFIG: FoxCavesConfig;
 
 export const CaptchaContainer: React.FC<CustomRouteHandlerOptions> = ({ page, onVerifyChanged }) => {
     const setNotVerified = useCallback(() => {
         onVerifyChanged('');
     }, [onVerifyChanged]);
 
-    const enabled = !!FOXCAVES_CONFIG.captcha[page];
+    const enabled = config.captcha[page];
 
     useEffect(() => {
         if (enabled) {
@@ -32,7 +30,7 @@ export const CaptchaContainer: React.FC<CustomRouteHandlerOptions> = ({ page, on
         <Reaptcha
             onExpire={setNotVerified}
             onVerify={onVerifyChanged}
-            sitekey={FOXCAVES_CONFIG.captcha.recaptcha_site_key}
+            sitekey={config.captcha.recaptcha_site_key}
             size="normal"
             theme="dark"
         />
