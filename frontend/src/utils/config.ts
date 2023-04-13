@@ -1,4 +1,4 @@
-export interface FoxCavesConfig {
+export interface Config {
     readonly sentry: {
         readonly dsn?: string;
     };
@@ -10,3 +10,6 @@ export interface FoxCavesConfig {
         readonly recaptcha_site_key: string;
     };
 }
+
+declare const FOXCAVES_CONFIG: Config;
+export const config = FOXCAVES_CONFIG;
