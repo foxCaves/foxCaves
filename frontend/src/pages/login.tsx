@@ -14,6 +14,7 @@ export const LoginPage: React.FC = () => {
     const [password, setPasswordCB] = useInputFieldSetter('');
     const [remember, setRememberCB] = useCheckboxFieldSetter(false);
     const [captchaResponse, setCaptchaResponse] = useState('');
+    const [captchaReset, setCaptchaReset] = useState(0);
 
     const { refreshUser, apiAccessor } = useContext(AppContext);
 
@@ -56,6 +57,7 @@ export const LoginPage: React.FC = () => {
             await refreshUser();
         } finally {
             setCaptchaResponse('');
+            setCaptchaReset((prev) => prev + 1);
         }
     }, [captchaResponse, username, password, remember, refreshUser, apiAccessor]);
 
@@ -92,7 +94,7 @@ export const LoginPage: React.FC = () => {
                         value={password}
                     />
                 </FloatingLabel>
-                <CaptchaContainer onVerifyChanged={setCaptchaResponse} page="login" />
+                <CaptchaContainer onVerifyChanged={setCaptchaResponse} page="login" resetFactor={captchaReset} />
                 <p>
                     <Link to="/email/forgot_password">Forgot password?</Link>
                 </p>

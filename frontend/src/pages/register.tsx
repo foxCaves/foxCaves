@@ -18,6 +18,7 @@ export const RegistrationPage: React.FC = () => {
     const [captchaResponse, setCaptchaResponse] = useState('');
     const [agreeTos, setAgreeTosCallback] = useCheckboxFieldSetter(false);
     const [registrationDone, setRegistrationDone] = useState(false);
+    const [captchaReset, setCaptchaReset] = useState(0);
 
     const handleSubmit = useCallback(
         (event: FormEvent<HTMLFormElement>) => {
@@ -64,10 +65,13 @@ export const RegistrationPage: React.FC = () => {
                         },
                     },
                 )
+                .then(() => {
+                    setRegistrationDone(true);
+                })
                 .catch(logError)
                 .finally(() => {
                     setCaptchaResponse('');
-                    setRegistrationDone(true);
+                    setCaptchaReset((prev) => prev + 1);
                 });
         },
         [username, password, passwordConfirm, email, agreeTos, apiAccessor, captchaResponse],
@@ -122,7 +126,7 @@ export const RegistrationPage: React.FC = () => {
                         value={email}
                     />
                 </FloatingLabel>
-                <CaptchaContainer onVerifyChanged={setCaptchaResponse} page="registration" />
+                <CaptchaContainer onVerifyChanged={setCaptchaResponse} page="registration" resetFactor={captchaReset} />
                 <Form.Group className="mb-3">
                     <Form.Check
                         checked={agreeTos}
