@@ -27,9 +27,7 @@ export const CaptchaContainer: React.FC<CustomRouteHandlerOptions> = ({ page, on
     }, [enabled, onVerifyChanged]);
 
     useEffect(() => {
-        if (resetFactor) {
-            captchaRef.current?.reset().catch(logError);
-        }
+        captchaRef.current?.reset().catch(logError);
     }, [resetFactor]);
 
     if (!enabled) {
