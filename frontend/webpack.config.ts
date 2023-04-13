@@ -41,9 +41,11 @@ const config: Configuration = {
             GIT_REVISION: JSON.stringify(process.env.GIT_REVISION),
         }),
         new CopyPlugin({
-            patterns: [{
-                from: 'public', 
-            }],
+            patterns: [
+                {
+                    from: 'public',
+                },
+            ],
         }),
         new HtmlWebpackPlugin({
             template: 'src/index.html',

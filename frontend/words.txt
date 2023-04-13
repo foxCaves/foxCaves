@@ -7,3 +7,5 @@ Toastify
 filechooser
 recaptcha
 Reaptcha
+chunkhash
+contenthash
