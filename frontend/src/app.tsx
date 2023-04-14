@@ -17,6 +17,8 @@ import { EmailCodePage } from './pages/email/code';
 import { ForgotPasswordPage } from './pages/email/forgot_password';
 import { FilesPage } from './pages/files';
 import { HomePage } from './pages/home';
+import { PrivacyPolicyPage } from './pages/legal/privacy_policy';
+import { TermsOfServicePage } from './pages/legal/terms_of_service';
 import { LinksPage } from './pages/links';
 import { LiveDrawPage, LiveDrawRedirectPage } from './pages/live_draw/page';
 import { LoginPage } from './pages/login';
@@ -124,6 +126,8 @@ const Routing: FC<{ user?: UserDetailsModel; userLoaded: boolean }> = ({ user, u
                     <Route element={<LiveDrawRedirectPage />} path="/live_draw/:id" />
                     <Route element={<ForgotPasswordPage />} path="/email/forgot_password" />
                     <Route element={<EmailCodePage />} path="/email/code/:code" />
+                    <Route element={<PrivacyPolicyPage />} path="/legal/privacy_policy" />
+                    <Route element={<TermsOfServicePage />} path="/legal/terms_of_service" />
                     <Route element={<HomePage />} path="/" />
                     <Route element={<h3>404 - Page not found</h3>} path="/*" />
                 </Routes>

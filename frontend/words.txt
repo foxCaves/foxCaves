@@ -9,3 +9,5 @@ recaptcha
 Reaptcha
 chunkhash
 contenthash
+Doridian
+Dietzer

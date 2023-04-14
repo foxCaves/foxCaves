@@ -2,7 +2,7 @@ import React, { FormEvent, useCallback, useContext, useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import FloatingLabel from 'react-bootstrap/FloatingLabel';
 import Form from 'react-bootstrap/Form';
-import { Navigate } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { CaptchaContainer } from '../components/captcha';
 import { AppContext } from '../utils/context';
@@ -131,7 +131,12 @@ export const RegistrationPage: React.FC = () => {
                     <Form.Check
                         checked={agreeTos}
                         id="agreeTos"
-                        label="I agree to the Terms of Service and Privacy Policy"
+                        label={
+                            <>
+                                I agree to the <Link to="/legal/terms_of_service">Terms of Service</Link> and{' '}
+                                <Link to="/legal/privacy_policy">Privacy Policy</Link>
+                            </>
+                        }
                         name="agreeTos"
                         onChange={setAgreeTosCallback}
                         type="checkbox"

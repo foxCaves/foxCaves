@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { config, frontendRevision } from '../utils/config';
 
 export const HomePage: React.FC = () => {
@@ -26,6 +27,13 @@ export const HomePage: React.FC = () => {
                 Frontend revision: {frontendRevision}
                 <br />
                 Backend revision: {config.backend_revision}
+            </p>
+            <br />
+            <h4>Legal</h4>
+            <p>
+                <Link to="/legal/terms_of_service">Terms of service</Link>
+                <br />
+                <Link to="/legal/privacy_policy">Privacy policy</Link>
             </p>
         </>
     );
