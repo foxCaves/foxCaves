@@ -14,25 +14,34 @@ local tostring = tostring
 local M = {}
 require('foxcaves.module_helper').setmodenv()
 
-local function make_table_recurse(var, done)
+local function make_table_recurse(var, done, depth)
+    depth = depth or 0
     local t = type(var)
+
+    if depth > 1 then
+        return tostring(var)
+    end
+
     if t == 'table' then
         if not done then
             done = {}
         end
         if not done[var] then
             done[var] = true
-            local ret = { '<table><thead><tr><th>Name</th><th>Type</th><th>Value</th></tr></thead><tbody>' }
-            for k, v in next, var do
+            local ret = { 
+                tostring(var),
+                '<table class="table table-striped"><thead><tr><th scope="row">Name</th><th scope="row">Type</th><th scope="row">Value</th></tr></thead><tbody>',
+            }
+            for k, v in utils.sorted_pairs(var) do
                 table.insert(ret, '<tr><td>' .. tostring(k) .. '</td><td>' .. type(v) .. '</td><td>')
-                table.insert(ret, make_table_recurse(v, done))
+                table.insert(ret, make_table_recurse(v, done, depth + 1))
                 table.insert(ret, '</td></tr>')
             end
             table.insert(ret, '</tbody></table>')
             return table.concat(ret, '')
         end
 
-        return 'DONE'
+        return tostring(var)
     elseif t == 'function' then
         return utils.escape_html(tostring(var))
     else
@@ -54,7 +63,7 @@ local function get_function_code(info)
     end
 
     if endline ~= -1 then
-        local out = { "<h3><a href='#'>Code</a></h3><div><pre class='prettyprint lang-lua'><ol class='linenums'>" }
+        local out = { "<h4 class='card-title'>Code</h4><div class='card-text'><pre class='prettyprint lang-lua'><ol class='linenums'>" }
         local source = info.short_src
         if source:sub(1, 9) == '[string "' then
             source = source:sub(10, -3)
@@ -115,7 +124,7 @@ end
 
 local function get_locals(level)
     if debug.getlocal(level + 1, 1) then
-        local out = { "<h3><a href='#'>Locals</a></h3><div>" }
+        local out = { "<h4 class='card-title'>Locals</h4><div class='card-text'>" }
         local tbl = {}
         for i = 1, 100 do
             local k, v = debug.getlocal(level + 1, i)
@@ -133,7 +142,7 @@ end
 
 local function get_upvalues(func)
     if func and debug.getupvalue(func, 1) then
-        local out = { "<h3><a href='#'>UpValues</a></h3><div>" }
+        local out = { "<h4 class='card-title'>Up values</h4><div class='card-text'>" }
         local tbl = {}
         for i = 1, 100 do
             local k, v = debug.getupvalue(func, i)
@@ -153,7 +162,7 @@ local dbg_trace_hdr =
     [[
     <html><head>
     <script type="text/javascript"
-        src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js" crossorigin="anonymous"></script>
+        src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/js/bootstrap.min.js" crossorigin="anonymous"></script>
     <script type="text/javascript"
         src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.13.2/jquery-ui.min.js" crossorigin="anonymous"></script>
     <script
@@ -162,58 +171,30 @@ local dbg_trace_hdr =
     <script
         src="https://cdnjs.cloudflare.com/ajax/libs/prettify/r298/lang-lua.min.js"
         type="text/javascript" crossorigin="anonymous"></script>
-    <script type="text/javascript">
-    $(function() {
-        $(".accordion").addClass("ui-accordion ui-widget ui-helper-reset ui-accordion-icons")
-        .find("> h3")
-            .addClass("ui-accordion-header ui-accordion-icons ui-helper-reset ui-state-default ui-corner-top ui-corner-bottom")
-            .prepend('<span class="ui-accordion-header-icon ui-icon ui-icon-triangle-1-e"/>')
-            .on('click', function() {
-                $(this).toggleClass("ui-accordion-header-active").toggleClass("ui-state-active")
-                    .toggleClass("ui-state-default").toggleClass("ui-corner-bottom")
-                .find("> .ui-icon").toggleClass("ui-icon-triangle-1-e").toggleClass("ui-icon-triangle-1-s")
-                .end().next().toggleClass("ui-accordion-content-active").toggle("fast");
-                return false;
-            })
-            .next().addClass("ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom").hide();
-        $(".autoclick").trigger('click');
-        $("table").each(function() {
-            const $this = $(this);
-            $this.addClass('ui-styled-table ui-widget');
-            $this.on('mouseover mouseout', 'tbody tr', function (event) {
-                $(this).children().toggleClass("ui-state-hover",
-                                                event.type == 'mouseover');
-            });
-            $this.find("th").addClass("ui-widget ui-state-default");
-            $this.find("td").addClass("ui-widget ui-widget-content");
-            $this.find("tr:last-child").addClass("last-child");
-        });
-        if(prettyPrint) {
-            prettyPrint();
-        }
-    });
-    </script>
     <link rel="stylesheet" type="text/css"
-        href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.13.2/themes/base/jquery-ui.min.css" crossorigin="anonymous" />
+        href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/css/bootstrap.min.css" crossorigin="anonymous" />
+    <link rel="stylesheet" type="text/css"
+        href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/5.2.3/vapor/bootstrap.min.css" crossorigin="anonymous" />
     <link rel="stylesheet" type="text/css"
         href="https://cdnjs.cloudflare.com/ajax/libs/prettify/r298/prettify.min.css" crossorigin="anonymous" />
-    <style>pre.prettyprint { border: 0px !important; }</style>
-    </head><body><h1 class="ui-widget">Original Error:
+    <style>pre.prettyprint { border: 0px !important; } .errorline { background-color: red; }</style>
+    <title>Lua error - foxCaves</title>
+    </head><body><div class='container'>
 ]]
 
 local function debug_trace(err)
     local out =
         {
             dbg_trace_hdr,
-            err,
-            "</h1><div class='accordion'><h3 class='autoclick'><a href='#'>UserInfo</a></h3><div>",
+            "<div class='card border-primary mb-3'><div class='card-header'>Basic info</div><div class='card-body'>",
             string.format(
-                '<table><tr><th>UserID</th><td>%s</td></tr><tr><th>IP</th>' .. '<td>%s</td></tr><tr><th>URL</th><td>%s</td></tr><tbody>',
+                '<table class="table table-striped"><tbody><tr><th scope="col">Error</th><td>%s</td></tr><tr><th scope="col">UserID</th><td>%s</td></tr><tr><th scope="col">IP</th><td>%s</td></tr><tr><th scope="col">URL</th><td>%s</td></tr>',
+                err,
                 ngx.ctx.user and ngx.ctx.user.id or 'N/A',
                 ngx.var.remote_addr,
                 ngx.var.request_uri
             ),
-            '</tbody></table></div>',
+            '</tbody></table></div></div>',
         }
 
     local cur
@@ -229,15 +210,9 @@ local function debug_trace(err)
             src_file = src_file:sub(10, -3)
         end
 
-        if level <= 2 then
-            table.insert(
-                out,
-                "<h3 class='autoclick'><a href='#'>Level " .. tostring(level) .. "</a></h3><div><div class='accordion'>"
-            )
-        else
-            table.insert(out, "<h3><a href='#'>Level " .. tostring(level) .. "</a></h3><div><div class='accordion'>")
-        end
-        table.insert(out, "<h3 class='autoclick'><a href='#'>Base</a></h3><div><ul><li>Where: " .. src_file .. '</li>')
+        table.insert(out, "<div class='card border-primary mb-3'><div class='card-header'>Level " .. tostring(level) .. "</div><div class='card-body'>")
+
+        table.insert(out, "<h4 class='card-title'>Info</h4><div class='card-text'><ul><li>Where: " .. src_file .. '</li>')
         if cur.currentline ~= -1 then
             table.insert(out, '<li>Line: ' .. cur.currentline .. '</li>')
         end
@@ -253,7 +228,7 @@ local function debug_trace(err)
         table.insert(out, '</div></div>')
     end
 
-    table.insert(out, '</body></html>')
+    table.insert(out, '</div></body></html>')
     return table.concat(out, '')
 end
 
