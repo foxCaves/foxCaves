@@ -6,7 +6,7 @@
         "fmt:prettier": "prettier --write \"**/*.lua\"",
         "lint": "npm run lint:prettier && luacheck .",
         "fmt": "npm run fmt:prettier && luacheck .",
-        "new-migration": "node -e \"if (!process.argv[1]) throw new Error('Please provide name of migration'); const n = `migrations/${(new Date()).toISOString().replace(/\\.[\\d]+Z$/, '').replace(/[^\\d]/g, '')}_${process.argv[1]}.sql`; require('fs').writeFileSync(n, ''); console.info(`Created ${n}`);\""
+        "new-migration": "node -e \"if (!process.argv[1]) throw new Error('Please provide a name for the migration'); const n = `migrations/${(new Date()).toISOString().replace(/\\.[\\d]+Z$/, '').replace(/[^\\d]/g, '')}_${process.argv[1]}.sql`; require('fs').writeFileSync(n, ''); console.info(`Created ${n}`);\""
     },
     "devDependencies": {
         "@prettier/plugin-lua": "github:foxCaves/prettier-plugin-lua",
