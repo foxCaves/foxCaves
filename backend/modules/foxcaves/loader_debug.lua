@@ -28,10 +28,11 @@ local function make_table_recurse(var, done, depth)
         end
         if not done[var] then
             done[var] = true
-            local ret = {
-                depth == 0 and "" or tostring(var),
-                '<table class="table table-striped"><thead><tr><th scope="row">Name</th><th scope="row">Type</th><th scope="row">Value</th></tr></thead><tbody>',
-            }
+            local ret =
+                {
+                    depth == 0 and '' or tostring(var),
+                    '<table class="table table-striped"><thead><tr><th scope="row">Name</th><th scope="row">Type</th><th scope="row">Value</th></tr></thead><tbody>',
+                }
             for k, v in utils.sorted_pairs(var) do
                 table.insert(ret, '<tr><td>' .. tostring(k) .. '</td><td>' .. type(v) .. '</td><td>')
                 table.insert(ret, make_table_recurse(v, done, depth + 1))
@@ -67,7 +68,10 @@ local function get_function_code(info)
     end
 
     if endline ~= -1 then
-        local out = { "<h4 class='card-title'>Code</h4><div class='card-body'><pre class='prettyprint lang-lua'><ol class='linenums'>" }
+        local out =
+            {
+                "<h4 class='card-title'>Code</h4><div class='card-body'><pre class='prettyprint lang-lua'><ol class='linenums'>",
+            }
         local source = info.short_src
         if source:sub(1, 9) == '[string "' then
             source = source:sub(10, -3)
@@ -111,7 +115,7 @@ local function get_function_code(info)
                 end
                 table.insert(
                     out,
-                    '<span class=\'nocode\'>\n...</span></li><li value="' .. endline .. '">' .. funcEnd .. '</li>'
+                    "<span class='nocode'>\n...</span></li><li value=\"" .. endline .. '">' .. funcEnd .. '</li>'
                 )
             else
                 table.insert(out, '</li>')
@@ -216,9 +220,17 @@ local function debug_trace(err)
             src_file = src_file:sub(10, -3)
         end
 
-        table.insert(out, "<div class='card border-primary mb-3'><div class='card-header'>Level " .. tostring(level) .. "</div><div class='card-body'>")
+        table.insert(
+            out,
+            "<div class='card border-primary mb-3'><div class='card-header'>Level " .. tostring(
+                level
+            ) .. "</div><div class='card-body'>"
+        )
 
-        table.insert(out, "<h4 class='card-title'>Info</h4><div class='card-text'><ul><li>Where: " .. src_file .. '</li>')
+        table.insert(
+            out,
+            "<h4 class='card-title'>Info</h4><div class='card-text'><ul><li>Where: " .. src_file .. '</li>'
+        )
         if cur.currentline ~= -1 then
             table.insert(out, '<li>Line: ' .. cur.currentline .. '</li>')
         end
