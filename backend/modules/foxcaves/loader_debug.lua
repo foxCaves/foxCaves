@@ -28,8 +28,8 @@ local function make_table_recurse(var, done, depth)
         end
         if not done[var] then
             done[var] = true
-            local ret = { 
-                tostring(var),
+            local ret = {
+                depth == 0 and "" or tostring(var),
                 '<table class="table table-striped"><thead><tr><th scope="row">Name</th><th scope="row">Type</th><th scope="row">Value</th></tr></thead><tbody>',
             }
             for k, v in utils.sorted_pairs(var) do
@@ -51,19 +51,23 @@ end
 
 local function get_function_code(info)
     local curr = info.currentline
-    local startline = info.linedefined --function start
-    local endline = info.lastlinedefined --function end
+    local startline = info.linedefined or -1 --function start
+    local endline = info.lastlinedefined or -1 --function end
     local minline = math.max(curr - 5, 1) --start of capture
     local maxline = curr + 5 --end of capture
-    if startline and minline < startline then
+    if startline < 1 then
+        startline = 1
+    end
+
+    if minline < startline then
         minline = startline
     end
-    if endline and maxline > endline then
+    if maxline > endline then
         maxline = endline
     end
 
     if endline ~= -1 then
-        local out = { "<h4 class='card-title'>Code</h4><div class='card-text'><pre class='prettyprint lang-lua'><ol class='linenums'>" }
+        local out = { "<h4 class='card-title'>Code</h4><div class='card-body'><pre class='prettyprint lang-lua'><ol class='linenums'>" }
         local source = info.short_src
         if source:sub(1, 9) == '[string "' then
             source = source:sub(10, -3)
@@ -80,17 +84,17 @@ local function get_function_code(info)
                 end
             end
             if (minline ~= startline) then
-                table.insert(out, '<li class="L0" value="' .. startline .. '">')
+                table.insert(out, '<li value="' .. startline .. '">')
                 table.insert(out, funcStart)
                 table.insert(out, "<span class='nocode'>\n...</span></li>")
             end
             for i = minline, maxline do
-                table.insert(out, '<li class="L0" value="' .. i .. '">')
                 if (curr == i) then
-                    table.insert(out, '<span class="errorline">' .. utils.escape_html(iter()) .. '</span></li>')
+                    table.insert(out, '<li class="errorline" value="' .. i .. '">')
                 else
-                    table.insert(out, utils.escape_html(iter()))
+                    table.insert(out, '<li value="' .. i .. '">')
                 end
+                table.insert(out, utils.escape_html(iter()))
                 if i < maxline then
                     table.insert(out, '</li>')
                 end
@@ -107,7 +111,7 @@ local function get_function_code(info)
                 end
                 table.insert(
                     out,
-                    '<span class=\'nocode\'>\n...</span></li><li class="L0" value="' .. endline .. '">' .. funcEnd .. '</li>'
+                    '<span class=\'nocode\'>\n...</span></li><li value="' .. endline .. '">' .. funcEnd .. '</li>'
                 )
             else
                 table.insert(out, '</li>')
@@ -163,8 +167,6 @@ local dbg_trace_hdr =
     <html><head>
     <script type="text/javascript"
         src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/js/bootstrap.min.js" crossorigin="anonymous"></script>
-    <script type="text/javascript"
-        src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.13.2/jquery-ui.min.js" crossorigin="anonymous"></script>
     <script
         src="https://cdnjs.cloudflare.com/ajax/libs/prettify/r298/prettify.min.js"
         type="text/javascript" crossorigin="anonymous"></script>
@@ -176,8 +178,12 @@ local dbg_trace_hdr =
     <link rel="stylesheet" type="text/css"
         href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/5.2.3/vapor/bootstrap.min.css" crossorigin="anonymous" />
     <link rel="stylesheet" type="text/css"
-        href="https://cdnjs.cloudflare.com/ajax/libs/prettify/r298/prettify.min.css" crossorigin="anonymous" />
-    <style>pre.prettyprint { border: 0px !important; } .errorline { background-color: red; }</style>
+        href="https://jmblog.github.io/color-themes-for-google-code-prettify/themes/atelier-sulphurpool-dark.min.css" crossorigin="anonymous" />
+    <style>
+        pre.prettyprint { border: 0px !important; }
+        .errorline { background-color: #330000; }
+        .linenums { list-style: decimal inside; padding-left: 0; }
+    </style>
     <title>Lua error - foxCaves</title>
     </head><body onload='prettyPrint();'><div class='container'>
 ]]
