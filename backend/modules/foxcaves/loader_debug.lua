@@ -179,7 +179,7 @@ local dbg_trace_hdr =
         href="https://cdnjs.cloudflare.com/ajax/libs/prettify/r298/prettify.min.css" crossorigin="anonymous" />
     <style>pre.prettyprint { border: 0px !important; } .errorline { background-color: red; }</style>
     <title>Lua error - foxCaves</title>
-    </head><body><div class='container'>
+    </head><body onload='prettyPrint();'><div class='container'>
 ]]
 
 local function debug_trace(err)
