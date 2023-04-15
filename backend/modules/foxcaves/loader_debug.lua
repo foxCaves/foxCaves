@@ -8,7 +8,6 @@ local io = io
 local debug = debug
 local string = string
 local type = type
-local next = next
 local tostring = tostring
 
 local M = {}
@@ -198,7 +197,11 @@ local function debug_trace(err)
             dbg_trace_hdr,
             "<div class='card border-primary mb-3'><div class='card-header'>Basic info</div><div class='card-body'>",
             string.format(
-                '<table class="table table-striped"><tbody><tr><th scope="col">Error</th><td>%s</td></tr><tr><th scope="col">UserID</th><td>%s</td></tr><tr><th scope="col">IP</th><td>%s</td></tr><tr><th scope="col">URL</th><td>%s</td></tr>',
+                [[<table class="table table-striped"><tbody>
+                    <tr><th scope="col">Error</th><td>%s</td></tr>
+                    <tr><th scope="col">UserID</th><td>%s</td></tr>
+                    <tr><th scope="col">IP</th><td>%s</td></tr>
+                    <tr><th scope="col">URL</th><td>%s</td></tr>]],
                 err,
                 ngx.ctx.user and ngx.ctx.user.id or 'N/A',
                 ngx.var.remote_addr,
