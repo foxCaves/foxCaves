@@ -109,4 +109,25 @@ function M.make_array()
     return setmetatable({}, cjson.array_mt)
 end
 
+local function collect_keys(tbl, sort)
+    local key_tbl = {}
+    for key in next, tbl do
+        table.insert(key_tbl, key)
+    end
+    table.sort(key_tbl, sort)
+    return key_tbl
+end
+
+function M.sorted_pairs(tbl, sort)
+    local key_tbl = collect_keys(tbl, sort)
+    local i = 0
+    return function()
+        i = i + 1
+        local key = key_tbl[i]
+        if key then
+            return key, tbl[key]
+        end
+    end
+end
+
 return M
