@@ -25,20 +25,6 @@ function M.__on_shutdown()
     ngx.ctx.shutdown_funcs = nil
 end
 
-local repTbl = {
-    ['&'] = '&amp;',
-    ['<'] = '&lt;',
-    ['>'] = '&gt;',
-}
-
-function M.escape_html(str)
-    if not str or type(str) ~= 'string' then
-        return str
-    end
-    str = str:gsub('[&<>]', repTbl)
-    return str
-end
-
 function M.get_post_args()
     ngx.req.read_body()
     local ctype = ngx.var.http_content_type
@@ -59,10 +45,8 @@ function M.api_error(error, code)
     return { error = error }, (code or 400)
 end
 
-function M.explode(
-div,
-    str -- credit: http://richard.warburton.it
-)
+function M.explode(div, str)
+    -- credit: http://richard.warburton.it
     local pos, arr = 0, {}
     -- for each divider found
     for st, sp in
