@@ -224,7 +224,7 @@ local function debug_trace(err)
     local out =
         {
             dbg_trace_hdr,
-            "<div class='card border-primary mb-3'><div class='card-header'>Basic info</div><div class='card-body'>",
+            "<div class='card border-primary mb-3 mt-3'><div class='card-header'>Basic info</div><div class='card-body'>",
             string.format(
                 [[<table class="table table-striped"><tbody>
                     <tr><th scope="col">Error</th><td>%s</td></tr>
