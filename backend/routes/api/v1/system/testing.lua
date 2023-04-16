@@ -14,7 +14,7 @@ local testing_opts = R.make_route_opts({
 })
 
 R.register_route('/api/v1/system/testing/error', 'GET', testing_opts, function()
-    error('test error')
+    error('test error <u>&escaping</u>')
 end)
 
 R.register_route('/api/v1/system/testing/reset', 'POST', testing_opts, function()

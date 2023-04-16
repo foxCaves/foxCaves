@@ -10,15 +10,39 @@ local string = string
 local type = type
 local tostring = tostring
 
+local html_escape_table = {
+    ['&'] = '&amp;',
+    ['<'] = '&lt;',
+    ['>'] = '&gt;',
+}
+
+local html_replacement_expr = ''
+
+(function()
+    for raw in next, html_escape_table do
+        html_replacement_expr = html_replacement_expr .. raw
+    end
+
+    html_replacement_expr = '[' .. html_replacement_expr .. ']'
+end)()
+
 local M = {}
 require('foxcaves.module_helper').setmodenv()
+
+local function escape_html(str)
+    if not str or type(str) ~= 'string' then
+        str = tostring(str)
+    end
+    str = str:gsub(html_replacement_expr, html_escape_table)
+    return str
+end
 
 local function make_table_recurse(var, done, depth)
     depth = depth or 0
     local t = type(var)
 
     if depth > 1 then
-        return tostring(var)
+        return escape_html(tostring(var))
     end
 
     if t == 'table' then
@@ -29,11 +53,14 @@ local function make_table_recurse(var, done, depth)
             done[var] = true
             local ret =
                 {
-                    depth == 0 and '' or tostring(var),
+                    depth == 0 and '' or escape_html(tostring(var)),
                     '<table class="table table-striped"><thead><tr><th scope="row">Name</th><th scope="row">Type</th><th scope="row">Value</th></tr></thead><tbody>',
                 }
             for k, v in utils.sorted_pairs(var) do
-                table.insert(ret, '<tr><td>' .. tostring(k) .. '</td><td>' .. type(v) .. '</td><td>')
+                table.insert(
+                    ret,
+                    '<tr><td>' .. escape_html(tostring(k)) .. '</td><td>' .. escape_html(type(v)) .. '</td><td>'
+                )
                 table.insert(ret, make_table_recurse(v, done, depth + 1))
                 table.insert(ret, '</td></tr>')
             end
@@ -43,9 +70,9 @@ local function make_table_recurse(var, done, depth)
 
         return tostring(var)
     elseif t == 'function' then
-        return utils.escape_html(tostring(var))
+        return escape_html(tostring(var))
     else
-        return utils.escape_html(tostring(var):sub(1, 1024))
+        return escape_html(tostring(var):sub(1, 1024))
     end
 end
 
@@ -88,7 +115,7 @@ local function get_function_code(info)
             end
             if (minline ~= startline) then
                 table.insert(out, '<li value="' .. startline .. '">')
-                table.insert(out, funcStart)
+                table.insert(out, escape_html(funcStart))
                 table.insert(out, "<span class='nocode'>\n...</span></li>")
             end
             for i = minline, maxline do
@@ -97,7 +124,7 @@ local function get_function_code(info)
                 else
                     table.insert(out, '<li value="' .. i .. '">')
                 end
-                table.insert(out, utils.escape_html(iter()))
+                table.insert(out, escape_html(iter()))
                 if i < maxline then
                     table.insert(out, '</li>')
                 end
@@ -114,7 +141,9 @@ local function get_function_code(info)
                 end
                 table.insert(
                     out,
-                    "<span class='nocode'>\n...</span></li><li value=\"" .. endline .. '">' .. funcEnd .. '</li>'
+                    "<span class='nocode'>\n...</span></li><li value=\"" .. endline .. '">' .. escape_html(
+                        funcEnd
+                    ) .. '</li>'
                 )
             else
                 table.insert(out, '</li>')
@@ -195,17 +224,17 @@ local function debug_trace(err)
     local out =
         {
             dbg_trace_hdr,
-            "<div class='card border-primary mb-3'><div class='card-header'>Basic info</div><div class='card-body'>",
+            "<div class='card border-primary mb-3 mt-3'><div class='card-header'>Basic info</div><div class='card-body'>",
             string.format(
                 [[<table class="table table-striped"><tbody>
                     <tr><th scope="col">Error</th><td>%s</td></tr>
-                    <tr><th scope="col">UserID</th><td>%s</td></tr>
+                    <tr><th scope="col">User ID</th><td>%s</td></tr>
                     <tr><th scope="col">IP</th><td>%s</td></tr>
                     <tr><th scope="col">URL</th><td>%s</td></tr>]],
-                err,
-                ngx.ctx.user and ngx.ctx.user.id or 'N/A',
-                ngx.var.remote_addr,
-                ngx.var.request_uri
+                escape_html(err),
+                escape_html(ngx.ctx.user and ngx.ctx.user.id or 'N/A'),
+                escape_html(ngx.var.remote_addr),
+                escape_html(ngx.var.request_uri)
             ),
             '</tbody></table></div></div>',
         }
@@ -232,14 +261,16 @@ local function debug_trace(err)
 
         table.insert(
             out,
-            "<h4 class='card-title'>Info</h4><div class='card-text'><ul><li>Where: " .. src_file .. '</li>'
+            "<h4 class='card-title'>Info</h4><div class='card-text'><ul><li>Where: " .. escape_html(src_file) .. '</li>'
         )
         if cur.currentline ~= -1 then
             table.insert(out, '<li>Line: ' .. cur.currentline .. '</li>')
         end
         table.insert(
             out,
-            '<li>What: ' .. (cur.name and "In function '" .. cur.name .. "'" or 'In main chunk') .. '</li></ul></div>'
+            '<li>What: ' .. (cur.name and "In function '" .. escape_html(
+                cur.name
+            ) .. "'" or 'In main chunk') .. '</li></ul></div>'
         )
 
         table.insert(out, get_locals(level))
