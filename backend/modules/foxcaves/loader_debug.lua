@@ -16,26 +16,22 @@ local html_escape_table = {
     ['>'] = '&gt;',
 }
 
-local html_unescape_table = {}
 local html_replacement_expr = ''
 
 (function()
     for raw, escaped in next, html_escape_table do
-        html_unescape_table[escaped] = raw
         html_replacement_expr = html_replacement_expr .. raw
     end
 
     html_replacement_expr = '[' .. html_replacement_expr .. ']'
 end)()
 
-ngx.log(ngx.ERR, html_replacement_expr)
-
 local M = {}
 require('foxcaves.module_helper').setmodenv()
 
 local function escape_html(str)
     if not str or type(str) ~= 'string' then
-        return str
+        str = tostring(str)
     end
     str = str:gsub(html_replacement_expr, html_escape_table)
     return str

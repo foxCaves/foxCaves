@@ -1,7 +1,6 @@
 local cjson = require('cjson')
 local ngx = ngx
 local table = table
-local type = type
 local next = next
 local pcall = pcall
 local tostring = tostring
