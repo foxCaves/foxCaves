@@ -61,7 +61,10 @@ local function make_table_recurse(var, done, depth)
                     '<table class="table table-striped"><thead><tr><th scope="row">Name</th><th scope="row">Type</th><th scope="row">Value</th></tr></thead><tbody>',
                 }
             for k, v in utils.sorted_pairs(var) do
-                table.insert(ret, '<tr><td>' .. escape_html(tostring(k)) .. '</td><td>' .. escape_html(type(v)) .. '</td><td>')
+                table.insert(
+                    ret,
+                    '<tr><td>' .. escape_html(tostring(k)) .. '</td><td>' .. escape_html(type(v)) .. '</td><td>'
+                )
                 table.insert(ret, make_table_recurse(v, done, depth + 1))
                 table.insert(ret, '</td></tr>')
             end
@@ -142,7 +145,9 @@ local function get_function_code(info)
                 end
                 table.insert(
                     out,
-                    "<span class='nocode'>\n...</span></li><li value=\"" .. endline .. '">' .. escape_html(funcEnd) .. '</li>'
+                    "<span class='nocode'>\n...</span></li><li value=\"" .. endline .. '">' .. escape_html(
+                        funcEnd
+                    ) .. '</li>'
                 )
             else
                 table.insert(out, '</li>')
@@ -267,7 +272,9 @@ local function debug_trace(err)
         end
         table.insert(
             out,
-            '<li>What: ' .. (cur.name and "In function '" .. escape_html(cur.name) .. "'" or 'In main chunk') .. '</li></ul></div>'
+            '<li>What: ' .. (cur.name and "In function '" .. escape_html(
+                cur.name
+            ) .. "'" or 'In main chunk') .. '</li></ul></div>'
         )
 
         table.insert(out, get_locals(level))
