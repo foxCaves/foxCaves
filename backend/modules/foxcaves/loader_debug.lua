@@ -19,7 +19,7 @@ local html_escape_table = {
 local html_replacement_expr = ''
 
 (function()
-    for raw, escaped in next, html_escape_table do
+    for raw in next, html_escape_table do
         html_replacement_expr = html_replacement_expr .. raw
     end
 
