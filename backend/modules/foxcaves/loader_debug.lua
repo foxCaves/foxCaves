@@ -228,7 +228,7 @@ local function debug_trace(err)
             string.format(
                 [[<table class="table table-striped"><tbody>
                     <tr><th scope="col">Error</th><td>%s</td></tr>
-                    <tr><th scope="col">UserID</th><td>%s</td></tr>
+                    <tr><th scope="col">User ID</th><td>%s</td></tr>
                     <tr><th scope="col">IP</th><td>%s</td></tr>
                     <tr><th scope="col">URL</th><td>%s</td></tr>]],
                 escape_html(err),
