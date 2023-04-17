@@ -1,6 +1,6 @@
 name: Test/Build
 concurrency:
-  group: ${{ github.ref }}
+  group: testbuild_${{ github.ref }}
   cancel-in-progress: true
 on:
   push:
