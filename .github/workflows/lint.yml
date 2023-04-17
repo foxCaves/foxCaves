@@ -1,7 +1,7 @@
 name: Run tests
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: lint-${{ github.ref }}
   cancel-in-progress: true
 
 on:

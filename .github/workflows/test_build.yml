@@ -1,7 +1,7 @@
 name: Test/Build
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: testbuild-${{ github.ref }}
   cancel-in-progress: true
 
 on:
