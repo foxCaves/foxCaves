@@ -3,6 +3,7 @@ local table = table
 local math = math
 local ngx = ngx
 local bit = bit
+local pcall = pcall
 
 local M = {}
 require('foxcaves.module_helper').setmodenv()
@@ -21,7 +22,7 @@ function M.seed()
         seed = 256 * seed + seed_str:byte(i)
     end
     if ngx.worker then
-        seed = bit.bxor(ngx.now() * 1000 + ngx.worker.pid(), seed)
+        seed = bit.bxor(ngx.now() * 1000 + ngx.worker.id(), seed)
     end
     math.randomseed(seed)
 end
