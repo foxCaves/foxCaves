@@ -3,7 +3,6 @@ local table = table
 local math = math
 local ngx = ngx
 local bit = bit
-local pcall = pcall
 
 local M = {}
 require('foxcaves.module_helper').setmodenv()
