@@ -27,7 +27,7 @@ local error_html = ''
 
     html_replacement_expr = '[' .. html_replacement_expr .. ']'
 
-    local fh = io.open(ngx.var.document_root .. '/static/index.html', 'r')
+    local fh = io.open(HTML_ROOT .. '/static/index.html', 'r')
     local index_html = fh:read('*a')
     fh:close()
 
