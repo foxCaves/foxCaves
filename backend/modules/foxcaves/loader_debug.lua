@@ -27,7 +27,7 @@ local error_html = ''
 
     html_replacement_expr = '[' .. html_replacement_expr .. ']'
 
-    local fh = io.open(ROOT .. '/../html/static/index.html', 'r')
+    local fh = io.open(HTML_ROOT .. '/../html/static/index.html', 'r')
     local index_html = fh:read('*a')
     fh:close()
 

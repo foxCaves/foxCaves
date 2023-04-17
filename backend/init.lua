@@ -56,7 +56,8 @@ local path = require('path')
 local root = path.abs(debug.getinfo(1, 'S').source:sub(2):match('(.*/)'))
 package.path = package.path .. ';' .. path.abs(root .. '/modules'):gsub('//+', '/') .. '/?.lua;'
 
-rawset(_G, "ROOT", root)
+rawset(_G, "LUA_ROOT", path.abs(root))
+rawset(_G, "HTML_ROOT", path.abs(root .. "/../html"))
 
 -- Secure cjson
 local cjson = require('cjson')
