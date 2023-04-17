@@ -1,4 +1,5 @@
 export interface Config {
+    readonly no_render?: boolean;
     readonly sentry: {
         readonly dsn?: string;
     };

@@ -18,12 +18,35 @@ local html_escape_table = {
 
 local html_replacement_expr = ''
 
+local error_html = ''
+
 (function()
     for raw in next, html_escape_table do
         html_replacement_expr = html_replacement_expr .. raw
     end
 
     html_replacement_expr = '[' .. html_replacement_expr .. ']'
+
+    local fh = io.open(ngx.var.document_root .. '/static/index.html', 'r')
+    local index_html = fh:read('*a')
+    fh:close()
+
+    error_html =
+        index_html:gsub(
+            '<script.-src="/api/v1/system/client_config.js".->',
+            '<script type="text/javascript">window.FOXCAVES_CONFIG={no_render:true,sentry:{}};'
+        ):gsub(
+            '</head>',
+            [[
+    <style>
+        pre.prettyprint { border: 0px !important; }
+        .errorline { background-color: #330000; }
+        .linenums { list-style: decimal inside; padding-left: 0; }
+        .linenums li::marker { color: #666; }
+    </style>
+    </head>
+    ]]
+        ):gsub('<body>.*</body>', '<body><div class="container">%%s</div></body>')
 end)()
 
 local M = {}
@@ -194,37 +217,10 @@ local function get_upvalues(func)
     return ''
 end
 
-local dbg_trace_hdr =
-    [[
-    <html><head>
-    <script type="text/javascript"
-        src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/js/bootstrap.min.js" crossorigin="anonymous"></script>
-    <script
-        src="https://cdnjs.cloudflare.com/ajax/libs/prettify/r298/prettify.min.js"
-        type="text/javascript" crossorigin="anonymous"></script>
-    <script
-        src="https://cdnjs.cloudflare.com/ajax/libs/prettify/r298/lang-lua.min.js"
-        type="text/javascript" crossorigin="anonymous"></script>
-    <link rel="stylesheet" type="text/css"
-        href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/css/bootstrap.min.css" crossorigin="anonymous" />
-    <link rel="stylesheet" type="text/css"
-        href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/5.2.3/vapor/bootstrap.min.css" crossorigin="anonymous" />
-    <link rel="stylesheet" type="text/css"
-        href="https://jmblog.github.io/color-themes-for-google-code-prettify/themes/atelier-sulphurpool-dark.min.css" crossorigin="anonymous" />
-    <style>
-        pre.prettyprint { border: 0px !important; }
-        .errorline { background-color: #330000; }
-        .linenums { list-style: decimal inside; padding-left: 0; }
-    </style>
-    <title>Lua error - foxCaves</title>
-    </head><body onload='prettyPrint();'><div class='container'>
-]]
-
 local function debug_trace(err)
     local out =
         {
-            dbg_trace_hdr,
-            "<div class='card border-primary mb-3 mt-3'><div class='card-header'>Basic info</div><div class='card-body'>",
+            "<div class='card border-primary mb-3'><div class='card-header'>Basic info</div><div class='card-body'>",
             string.format(
                 [[<table class="table table-striped"><tbody>
                     <tr><th scope="col">Error</th><td>%s</td></tr>
@@ -279,9 +275,7 @@ local function debug_trace(err)
 
         table.insert(out, '</div></div>')
     end
-
-    table.insert(out, '</div></body></html>')
-    return table.concat(out, '')
+    return error_html:format(table.concat(out, ''))
 end
 
 function M.run()
