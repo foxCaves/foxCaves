@@ -27,10 +27,7 @@ local error_html = ''
 
     html_replacement_expr = '[' .. html_replacement_expr .. ']'
 
-    local path = require('path')
-    local root = path.abs(debug.getinfo(1, 'S').source:sub(2):match('(.*/)'))
-
-    local fh = io.open(root .. '/html/static/index.html', 'r')
+    local fh = io.open(ROOT .. '/../html/static/index.html', 'r')
     local index_html = fh:read('*a')
     fh:close()
 
