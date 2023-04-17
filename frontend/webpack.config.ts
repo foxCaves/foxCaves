@@ -3,6 +3,8 @@ import { join } from 'node:path';
 import CopyPlugin from 'copy-webpack-plugin';
 // eslint-disable-next-line import/default
 import HtmlWebpackPlugin from 'html-webpack-plugin';
+// eslint-disable-next-line import/default
+import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import { Configuration, DefinePlugin } from 'webpack';
 import 'webpack-dev-server';
 
@@ -17,7 +19,8 @@ const config: Configuration = {
     output: {
         path: join(PWD, 'build'),
         publicPath: '/static/',
-        filename: '[name].[chunkhash].js',
+        filename: '[name].[contenthash].js',
+        chunkFilename: '[id].[contenthash].js',
     },
     module: {
         rules: [
@@ -28,7 +31,7 @@ const config: Configuration = {
             },
             {
                 test: /\.css$/i,
-                use: ['style-loader', 'css-loader'],
+                use: [MiniCssExtractPlugin.loader, 'css-loader'],
             },
             {
                 test: /\.(png|svg|jpg|jpeg|gif)$/i,
@@ -49,6 +52,10 @@ const config: Configuration = {
         }),
         new HtmlWebpackPlugin({
             template: 'src/index.html',
+        }),
+        new MiniCssExtractPlugin({
+            filename: '[name].[contenthash].css',
+            chunkFilename: '[id].[contenthash].css',
         }),
     ],
     devServer: {
