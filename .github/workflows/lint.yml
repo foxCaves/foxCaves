@@ -1,6 +1,12 @@
 name: Run tests
+
+concurrency:
+  group: lint-${{ github.ref }}
+  cancel-in-progress: true
+
 on:
   workflow_call: {}
+
 jobs:
   frontend:
     runs-on: ubuntu-latest

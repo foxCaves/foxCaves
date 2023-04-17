@@ -1,4 +1,9 @@
 name: Test/Build
+
+concurrency:
+  group: testbuild-${{ github.ref }}
+  cancel-in-progress: true
+
 on:
   push:
     branches:
@@ -10,6 +15,7 @@ on:
       - synchronize
   merge_group: {}
   workflow_call: {}
+
 jobs:
   lint:
     uses: ./.github/workflows/lint.yml
