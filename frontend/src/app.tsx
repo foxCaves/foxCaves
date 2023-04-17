@@ -1,10 +1,11 @@
 import './resources/app.css';
 
-import React, { ComponentType, FC, lazy, useCallback, useEffect, useMemo, useState } from 'react';
+import React, { FC, useCallback, useEffect, useMemo, useState } from 'react';
 import Container from 'react-bootstrap/Container';
 import Dropdown from 'react-bootstrap/Dropdown';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
+import { lazily } from 'react-lazily';
 import { LinkContainer } from 'react-router-bootstrap';
 import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
@@ -16,34 +17,19 @@ import { APIAccessor } from './utils/api';
 import { AppContext, AppContextData } from './utils/context';
 import { logError } from './utils/misc';
 
-function lazyImport(modUnknown: () => Promise<unknown>, name: string) {
-    return lazy(async () => {
-        const mod = (await modUnknown()) as Record<string, ComponentType<unknown>>;
-        const modPage = mod[name];
-        if (!modPage) {
-            throw new Error(`Module does not have a named export ${name}`);
-        }
-
-        return {
-            default: modPage,
-        };
-    });
-}
-
-const AccountPage = lazyImport(async () => import('./pages/account'), 'AccountPage');
-const EmailCodePage = lazyImport(async () => import('./pages/email/code'), 'EmailCodePage');
-const ForgotPasswordPage = lazyImport(async () => import('./pages/email/forgot_password'), 'ForgotPasswordPage');
-const FilesPage = lazyImport(async () => import('./pages/files'), 'FilesPage');
-const HomePage = lazyImport(async () => import('./pages/home'), 'HomePage');
-const PrivacyPolicyPage = lazyImport(async () => import('./pages/legal/privacy_policy'), 'PrivacyPolicyPage');
-const TermsOfServicePage = lazyImport(async () => import('./pages/legal/terms_of_service'), 'TermsOfServicePage');
-const LinksPage = lazyImport(async () => import('./pages/links'), 'LinksPage');
-const LiveDrawPage = lazyImport(async () => import('./pages/live_draw/page'), 'LiveDrawPage');
-const LiveDrawRedirectPage = lazyImport(async () => import('./pages/live_draw/page'), 'LiveDrawRedirectPage');
-const LoginPage = lazyImport(async () => import('./pages/login'), 'LoginPage');
-const LogoutPage = lazyImport(async () => import('./pages/logout'), 'LogoutPage');
-const RegistrationPage = lazyImport(async () => import('./pages/register'), 'RegistrationPage');
-const ViewPage = lazyImport(async () => import('./pages/view'), 'ViewPage');
+const { AccountPage } = lazily(async () => import('./pages/account'));
+const { EmailCodePage } = lazily(async () => import('./pages/email/code'));
+const { ForgotPasswordPage } = lazily(async () => import('./pages/email/forgot_password'));
+const { FilesPage } = lazily(async () => import('./pages/files'));
+const { HomePage } = lazily(async () => import('./pages/home'));
+const { PrivacyPolicyPage } = lazily(async () => import('./pages/legal/privacy_policy'));
+const { TermsOfServicePage } = lazily(async () => import('./pages/legal/terms_of_service'));
+const { LinksPage } = lazily(async () => import('./pages/links'));
+const { LiveDrawPage, LiveDrawRedirectPage } = lazily(async () => import('./pages/live_draw/page'));
+const { LoginPage } = lazily(async () => import('./pages/login'));
+const { LogoutPage } = lazily(async () => import('./pages/logout'));
+const { RegistrationPage } = lazily(async () => import('./pages/register'));
+const { ViewPage } = lazily(async () => import('./pages/view'));
 
 const Routing: FC<{ user?: UserDetailsModel; userLoaded: boolean }> = ({ user, userLoaded }) => {
     return (

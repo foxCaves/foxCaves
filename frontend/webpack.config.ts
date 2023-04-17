@@ -82,11 +82,6 @@ const config: Configuration = {
             },
         },
     },
-    optimization: {
-        splitChunks: {
-            chunks: 'all',
-        },
-    },
     resolve: {
         extensions: ['.tsx', '.ts', '.js'],
     },
