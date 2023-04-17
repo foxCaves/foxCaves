@@ -1,6 +1,6 @@
 import './resources/app.css';
 
-import React, { FC, useCallback, useEffect, useMemo, useState } from 'react';
+import React, { ComponentType, FC, lazy, useCallback, useEffect, useMemo, useState } from 'react';
 import Container from 'react-bootstrap/Container';
 import Dropdown from 'react-bootstrap/Dropdown';
 import Nav from 'react-bootstrap/Nav';
@@ -9,25 +9,41 @@ import { LinkContainer } from 'react-router-bootstrap';
 import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import { LiveLoadingContainer } from './components/liveloading';
-import { CustomDropDownItem, CustomNavLink, CustomRouteHandler, LoginState } from './components/route';
+import { CustomDropDownItem, CustomNavLink, CustomRouteHandler, LoginState, RouteWrapper } from './components/route';
 import { UserInactiveAlert } from './components/user_inactive_alert';
 import { UserDetailsModel } from './models/user';
-import { AccountPage } from './pages/account';
-import { EmailCodePage } from './pages/email/code';
-import { ForgotPasswordPage } from './pages/email/forgot_password';
-import { FilesPage } from './pages/files';
-import { HomePage } from './pages/home';
-import { PrivacyPolicyPage } from './pages/legal/privacy_policy';
-import { TermsOfServicePage } from './pages/legal/terms_of_service';
-import { LinksPage } from './pages/links';
-import { LiveDrawPage, LiveDrawRedirectPage } from './pages/live_draw/page';
-import { LoginPage } from './pages/login';
-import { LogoutPage } from './pages/logout';
-import { RegistrationPage } from './pages/register';
-import { ViewPage } from './pages/view';
 import { APIAccessor } from './utils/api';
 import { AppContext, AppContextData } from './utils/context';
 import { logError } from './utils/misc';
+
+function lazyImport(modUnknown: () => Promise<unknown>, name: string) {
+    return lazy(async () => {
+        const mod = (await modUnknown()) as Record<string, ComponentType<unknown>>;
+        const modPage = mod[name];
+        if (!modPage) {
+            throw new Error(`Module does not have a named export ${name}`);
+        }
+
+        return {
+            default: modPage,
+        };
+    });
+}
+
+const AccountPage = lazyImport(async () => import('./pages/account'), 'AccountPage');
+const EmailCodePage = lazyImport(async () => import('./pages/email/code'), 'EmailCodePage');
+const ForgotPasswordPage = lazyImport(async () => import('./pages/email/forgot_password'), 'ForgotPasswordPage');
+const FilesPage = lazyImport(async () => import('./pages/files'), 'FilesPage');
+const HomePage = lazyImport(async () => import('./pages/home'), 'HomePage');
+const PrivacyPolicyPage = lazyImport(async () => import('./pages/legal/privacy_policy'), 'PrivacyPolicyPage');
+const TermsOfServicePage = lazyImport(async () => import('./pages/legal/terms_of_service'), 'TermsOfServicePage');
+const LinksPage = lazyImport(async () => import('./pages/links'), 'LinksPage');
+const LiveDrawPage = lazyImport(async () => import('./pages/live_draw/page'), 'LiveDrawPage');
+const LiveDrawRedirectPage = lazyImport(async () => import('./pages/live_draw/page'), 'LiveDrawRedirectPage');
+const LoginPage = lazyImport(async () => import('./pages/login'), 'LoginPage');
+const LogoutPage = lazyImport(async () => import('./pages/logout'), 'LogoutPage');
+const RegistrationPage = lazyImport(async () => import('./pages/register'), 'RegistrationPage');
+const ViewPage = lazyImport(async () => import('./pages/view'), 'ViewPage');
 
 const Routing: FC<{ user?: UserDetailsModel; userLoaded: boolean }> = ({ user, userLoaded }) => {
     return (
@@ -120,15 +136,78 @@ const Routing: FC<{ user?: UserDetailsModel; userLoaded: boolean }> = ({ user, u
                         }
                         path="/account"
                     />
-                    <Route element={<LogoutPage />} path="/logout" />
-                    <Route element={<ViewPage />} path="/view/:id" />
-                    <Route element={<LiveDrawPage />} path="/live_draw/:id/:sid" />
-                    <Route element={<LiveDrawRedirectPage />} path="/live_draw/:id" />
-                    <Route element={<ForgotPasswordPage />} path="/email/forgot_password" />
-                    <Route element={<EmailCodePage />} path="/email/code/:code" />
-                    <Route element={<PrivacyPolicyPage />} path="/legal/privacy_policy" />
-                    <Route element={<TermsOfServicePage />} path="/legal/terms_of_service" />
-                    <Route element={<HomePage />} path="/" />
+                    <Route
+                        element={
+                            <RouteWrapper>
+                                <LogoutPage />
+                            </RouteWrapper>
+                        }
+                        path="/logout"
+                    />
+                    <Route
+                        element={
+                            <RouteWrapper>
+                                <ViewPage />
+                            </RouteWrapper>
+                        }
+                        path="/view/:id"
+                    />
+                    <Route
+                        element={
+                            <RouteWrapper>
+                                <LiveDrawPage />
+                            </RouteWrapper>
+                        }
+                        path="/live_draw/:id/:sid"
+                    />
+                    <Route
+                        element={
+                            <RouteWrapper>
+                                <LiveDrawRedirectPage />
+                            </RouteWrapper>
+                        }
+                        path="/live_draw/:id"
+                    />
+                    <Route
+                        element={
+                            <RouteWrapper>
+                                <ForgotPasswordPage />
+                            </RouteWrapper>
+                        }
+                        path="/email/forgot_password"
+                    />
+                    <Route
+                        element={
+                            <RouteWrapper>
+                                <EmailCodePage />
+                            </RouteWrapper>
+                        }
+                        path="/email/code/:code"
+                    />
+                    <Route
+                        element={
+                            <RouteWrapper>
+                                <PrivacyPolicyPage />
+                            </RouteWrapper>
+                        }
+                        path="/legal/privacy_policy"
+                    />
+                    <Route
+                        element={
+                            <RouteWrapper>
+                                <TermsOfServicePage />
+                            </RouteWrapper>
+                        }
+                        path="/legal/terms_of_service"
+                    />
+                    <Route
+                        element={
+                            <RouteWrapper>
+                                <HomePage />
+                            </RouteWrapper>
+                        }
+                        path="/"
+                    />
                     <Route element={<h3>404 - Page not found</h3>} path="/*" />
                 </Routes>
             </Container>
