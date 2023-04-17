@@ -19,16 +19,13 @@ export const CaptchaContainer: React.FC<CustomRouteHandlerOptions> = ({ page, on
     const enabled = config.captcha[page];
 
     useEffect(() => {
-        if (enabled) {
+        if (!enabled) {
+            onVerifyChanged('disabled');
             return;
         }
 
-        onVerifyChanged('disabled');
-    }, [enabled, onVerifyChanged]);
-
-    useEffect(() => {
         captchaRef.current?.reset().catch(logError);
-    }, [resetFactor]);
+    }, [resetFactor, enabled, onVerifyChanged]);
 
     if (!enabled) {
         return null;
