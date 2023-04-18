@@ -13,12 +13,14 @@ const PWD = __dirname;
 
 type NodeEnv = 'development' | 'production' | undefined;
 
+const mode: NodeEnv = (process.env.NODE_ENV as NodeEnv) ?? 'development';
+
 const config: Configuration = {
-    mode: (process.env.NODE_ENV as NodeEnv) ?? 'development',
+    mode,
     entry: './src/index.tsx',
     output: {
         path: join(PWD, 'build'),
-        publicPath: '/static/',
+        publicPath: mode === 'development' ? '/' : '/static/',
         filename: '[name].[contenthash].js',
         chunkFilename: '[id].[contenthash].js',
     },
