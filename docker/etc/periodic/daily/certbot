@@ -1,2 +1,2 @@
 #!/bin/sh
-certbot --webroot -w /var/www/foxcaves/html/static --post-hook 's6-svc -wr -r /etc/s6/nginx' renew
+exec certbot --webroot -w /var/www/foxcaves/html/static --post-hook 's6-svc -wr -r /etc/s6/nginx' renew
