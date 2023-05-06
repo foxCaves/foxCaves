@@ -27,6 +27,11 @@ server {
         types { }
         content_by_lua_file /var/www/foxcaves/lua/nginx_run.lua;
     }
+
+    location /.well-known {
+        expires 1h;
+        root /var/www/foxcaves/html/static;
+    }
 }
 
 server {

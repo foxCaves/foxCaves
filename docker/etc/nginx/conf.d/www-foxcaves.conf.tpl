@@ -6,4 +6,9 @@ server {
     location / {
         return 302 __MAIN_URL__;
     }
+
+    location /.well-known {
+        expires 1h;
+        root /var/www/foxcaves/html/static;
+    }
 }
