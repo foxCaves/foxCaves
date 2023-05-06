@@ -1,2 +1,2 @@
 #!/bin/sh
-exec certbot --nginx --nginx-server-root /usr/local/openresty/nginx/conf renew 
+certbot --webroot -w /var/www/foxcaves/html/static --post-hook 's6-svc -wr -r /etc/s6/nginx' renew
