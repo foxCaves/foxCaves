@@ -20,7 +20,7 @@ real_ip_header proxy_protocol;
 server {
     listen unix:/run/nginx-lua-api.sock default;
     server_name __MAIN_DOMAIN__;
-    include /etc/nginx/headers.conf;
+    include /etc/nginx/basics.conf;
 
     real_ip_header X-Real-IP;
 
@@ -30,17 +30,12 @@ server {
         types { }
         content_by_lua_file /var/www/foxcaves/lua/nginx_run.lua;
     }
-
-    location /.well-known {
-        expires 1h;
-        root /var/www/foxcaves/html/static;
-    }
 }
 
 server {
     include __LISTENER_CONFIG__;
     server_name __MAIN_DOMAIN__;
-    include /etc/nginx/headers.conf;
+    include /etc/nginx/basics.conf;
 
     root /var/www/foxcaves/html;
     client_max_body_size 10M;
@@ -48,21 +43,6 @@ server {
 
     location / {
         rewrite ^ /static/index.html break;
-    }
-
-    location = /favicon.ico {
-        expires 1h;
-        alias /var/www/foxcaves/html/static/favicon.ico;
-    }
-
-    location = /security.txt {
-        expires 1h;
-        alias /var/www/foxcaves/html/static/.well-known/security.txt;
-    }
-
-    location /.well-known {
-        expires 1h;
-        root /var/www/foxcaves/html/static;
     }
 
     location /static {
@@ -96,7 +76,7 @@ server {
 server {
     include __LISTENER_CONFIG__;
     server_name __SHORT_DOMAIN__;
-    include /etc/nginx/headers.conf;
+    include /etc/nginx/basics.conf;
 
     set $fcv_proxy_host "";
     set $fcv_proxy_uri "";
@@ -105,21 +85,6 @@ server {
     add_header Access-Control-Allow-Methods "GET, OPTIONS, HEAD" always;
     add_header Access-Control-Allow-Headers "Origin, Accept, Range, Content-Type, If-Modified-Since, CSRF-Token" always;
     add_header Access-Control-Expose-Headers "Content-Type, Content-Length, Content-Range, CSRF-Token" always;
-
-    location = /favicon.ico {
-        expires 1h;
-        alias /var/www/foxcaves/html/static/favicon.ico;
-    }
-
-    location = /security.txt {
-        expires 1h;
-        alias /var/www/foxcaves/html/static/.well-known/security.txt;
-    }
-
-    location /.well-known {
-        expires 1h;
-        root /var/www/foxcaves/html/static;
-    }
 
     location = / {
         return 302 __MAIN_URL__;
