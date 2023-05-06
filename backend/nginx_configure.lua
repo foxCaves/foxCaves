@@ -1,5 +1,3 @@
-local os_execute = os.execute
-
 package.loaded['resty.http'] = {}
 package.loaded['resty.aws-signature'] = { new = function()
     return {}
@@ -15,10 +13,7 @@ dofile(root .. '/init.lua')
 dofile(root .. '/init_worker.lua')
 
 local config = require('foxcaves.config')
-
-local function url_to_domain(url)
-    return url:gsub('^https?://', ''):gsub(':.*$', '')
-end
+local url_to_domain = require('foxcaves.utils').url_to_domain
 
 local short_domain = url_to_domain(config.http.short_url)
 local main_domain = url_to_domain(config.http.main_url)
@@ -60,14 +55,6 @@ for _, nginx_config in pairs(nginx_configs) do
     fh = io.open(nginx_config, 'w')
     fh:write(data)
     fh:close()
-end
-
-if config.http.enable_acme and not path.exists('/etc/letsencrypt/live/' .. main_domain .. '/fullchain.pem') then
-    local cmd = 'certbot --standalone certonly'
-    for _, domain in pairs(domains) do
-        cmd = cmd .. ' -d ' .. domain
-    end
-    os_execute(cmd)
 end
 
 local fh = io.open('/etc/nginx/conf.d/dynamic.conf', 'w')
