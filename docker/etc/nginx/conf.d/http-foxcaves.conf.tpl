@@ -11,4 +11,9 @@ server {
     location / {
         return 302 https://$host;
     }
+
+    location /.well-known {
+        expires 1h;
+        root /var/www/foxcaves/html/static;
+    }
 }
