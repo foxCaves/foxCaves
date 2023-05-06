@@ -8,8 +8,8 @@ local main_domain = url_to_domain(config.http.main_url)
 local allowed_domains = {
     [short_domain] = true,
     [main_domain] = true,
-    ["www." .. short_domain] = true,
-    ["www." .. main_domain] = true,
+    ['www.' .. short_domain] = true,
+    ['www.' .. main_domain] = true,
 }
 
 require('foxcaves.module_helper').setmodenv()
