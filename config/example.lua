@@ -65,9 +65,9 @@ return {
     http = {
         short_url = "http://short.foxcaves:8080",
         main_url = "http://main.foxcaves:8080",
-        enable_acme = true,
         redirect_www = true,
         upstream_ips = {"1.2.3.4"},
+        auto_ssl = {},
     },
     sentry = {
         dsn = nil,
