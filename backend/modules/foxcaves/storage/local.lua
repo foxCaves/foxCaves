@@ -98,14 +98,22 @@ function UPLOAD:from_callback(cb)
     local remaining = self.size
     while remaining > 0 do
         local data = cb(math_min(self.storage.config.chunk_size, remaining))
-        self:chunk(data)
+        if not self:chunk(data) then
+            self:abort()
+            return false
+        end
         remaining = remaining - data:len()
     end
     self:finish()
+    return true
 end
 
 function UPLOAD:chunk(chunk)
+    if not self.fh then
+        return false
+    end
     self.fh:write(chunk)
+    return true
 end
 
 function UPLOAD:finish()
@@ -127,6 +135,9 @@ function UPLOAD:abort_if_not_done()
 end
 
 function DOWNLOAD:read(size)
+    if not self.fh then
+        return nil
+    end
     return self.fh:read(size)
 end
 

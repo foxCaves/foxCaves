@@ -49,9 +49,15 @@ R.register_route(
 
         local sock = ngx.req.socket()
         sock:settimeout(10000)
-        file:upload_from_callback(function(size)
+        local res = file:upload_from_callback(function(size)
             return sock:receive(size)
         end)
+
+        if not res then
+            file:upload_abort()
+            file:delete()
+            return utils.api_error('Upload failed', 500)
+        end
 
         file:upload_finish()
         file:save('create')
