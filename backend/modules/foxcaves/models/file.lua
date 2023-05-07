@@ -238,16 +238,20 @@ function file_mt:upload_begin()
 end
 
 function file_mt:upload_chunk(chunk)
-    self._upload:chunk(chunk)
-    if self._fh_tmp then
-        self._fh_tmp:write(chunk)
+    local res = self._upload:chunk(chunk)
+    if not res then
+        return false
     end
+
+    if self._fh_tmp then
+        return self._fh_tmp:write(chunk)
+    end
+    return true
 end
 
 function file_mt:upload_from_callback(cb)
     if not self._fh_tmp then
-        self._upload:from_callback(cb)
-        return
+        return self._upload:from_callback(cb)
     end
 
     local cb_local = cb
@@ -256,7 +260,7 @@ function file_mt:upload_from_callback(cb)
         self._fh_tmp:write(data)
         return data
     end
-    self._upload:from_callback(file_bridge_cb)
+    return self._upload:from_callback(file_bridge_cb)
 end
 
 local function file_thumbnail_process(self)
