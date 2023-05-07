@@ -36,6 +36,7 @@ RUN luarocks install pgmoon
 RUN luarocks install lua-resty-uuid
 RUN luarocks install lpath
 RUN luarocks install luaossl
+RUN luarocks install shell-games
 RUN git clone --depth 1 --branch v1.0.0 https://github.com/foxCaves/lua-resty-auto-ssl.git /tmp/lua-resty-auto-ssl && cp -r /tmp/lua-resty-auto-ssl/lib/* /usr/local/share/lua/5.1/ && rm -rf /tmp/lua-resty-auto-ssl
 RUN git clone --depth 1 --branch v1.0.3 https://github.com/foxCaves/raven-lua.git /tmp/raven-lua && mv /tmp/raven-lua/raven /usr/local/share/lua/5.1/ && rm -rf /tmp/raven-lua
 RUN git clone --depth 1 --branch v0.1.7 https://github.com/foxCaves/lua-resty-cookie.git /tmp/lua-resty-cookie && cp -r /tmp/lua-resty-cookie/lib/* /usr/local/share/lua/5.1/ && rm -rf /tmp/lua-resty-cookie
