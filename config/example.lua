@@ -67,7 +67,9 @@ return {
         main_url = "http://main.foxcaves:8080",
         redirect_www = true,
         upstream_ips = {"1.2.3.4"},
-        auto_ssl = {},
+        auto_ssl = {
+            ca = "letsencrypt-test",
+        },
     },
     sentry = {
         dsn = nil,

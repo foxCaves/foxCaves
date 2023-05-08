@@ -9,9 +9,6 @@ lua_ssl_verify_depth 10;
 
 lua_shared_dict foxcaves 1m;
 
-lua_shared_dict auto_ssl 1m;
-lua_shared_dict auto_ssl_settings 64k;
-
 __UPSTREAM_IPS__
 set_real_ip_from 127.0.0.0/8;
 set_real_ip_from unix:;
