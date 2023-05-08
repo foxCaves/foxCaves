@@ -51,7 +51,9 @@ return {
         redirect_www = false,
         force_plaintext = true,
         upstream_ips = {"127.0.0.1"},
-        auto_ssl = {},
+        auto_ssl = {
+            ca = "letsencrypt-test",
+        },
     },
     sentry = {
         dsn = nil,
