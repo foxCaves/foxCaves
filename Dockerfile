@@ -36,7 +36,7 @@ RUN luarocks install pgmoon
 RUN luarocks install lua-resty-uuid
 RUN luarocks install lpath
 RUN luarocks install luaossl
-RUN luarocks install https://raw.githubusercontent.com/foxCaves/lua-resty-auto-ssl/1.1.0-1/lua-resty-auto-ssl-1.1.0-1.rockspec
+RUN luarocks install https://raw.githubusercontent.com/foxCaves/lua-resty-auto-ssl/1.1.1-1/lua-resty-auto-ssl-1.1.1-1.rockspec
 RUN git clone --depth 1 --branch v1.0.3 https://github.com/foxCaves/raven-lua.git /tmp/raven-lua && mv /tmp/raven-lua/raven /usr/local/share/lua/5.1/ && rm -rf /tmp/raven-lua
 RUN git clone --depth 1 --branch v0.1.7 https://github.com/foxCaves/lua-resty-cookie.git /tmp/lua-resty-cookie && cp -r /tmp/lua-resty-cookie/lib/* /usr/local/share/lua/5.1/ && rm -rf /tmp/lua-resty-cookie
 RUN git clone --depth 1 --branch v0.3.1 https://github.com/foxCaves/lua-resty-aws-signature.git /tmp/lua-resty-aws-signature && cp -r /tmp/lua-resty-aws-signature/lib/* /usr/local/share/lua/5.1/ && rm -rf /tmp/lua-resty-aws-signature
