@@ -175,7 +175,7 @@ function M:upload(id, size, ftype, mimeType, opts)
             ftype = ftype,
             part_number = 1,
             key = key,
-            uploadId = m[1],
+            upload_id = ngx.escape_uri(m[1]),
             headers = make_headers,
             module = self,
             parts = {},
@@ -289,7 +289,7 @@ function UPLOAD:chunk(chunk, opts)
             self.module,
             'PUT',
             self.key,
-            'partNumber=' .. tostring(part_number) .. '&uploadId=' .. self.uploadId,
+            'partNumber=' .. tostring(part_number) .. '&uploadId=' .. self.upload_id,
             chunk,
             self.headers(),
             opts
@@ -312,7 +312,7 @@ function UPLOAD:finish()
     end
     table.insert(body, '</CompleteMultipartUpload>')
 
-    s3_request(self.module, 'POST', self.key, 'uploadId=' .. self.uploadId, table.concat(body, ''), {
+    s3_request(self.module, 'POST', self.key, 'uploadId=' .. self.upload_id, table.concat(body, ''), {
         ['content-type'] = 'text/xml',
     })
     self.done = true
@@ -324,7 +324,7 @@ function UPLOAD:abort_if_not_done()
 end
 
 function UPLOAD:abort()
-    s3_request(self.module, 'DELETE', self.key, 'uploadId=' .. self.uploadId, nil, nil, {
+    s3_request(self.module, 'DELETE', self.key, 'uploadId=' .. self.upload_id, nil, nil, {
         status_checker = accept_404_status_checker,
     })
     s3_request(self.module, 'DELETE', self.key, nil, nil, nil, { status_checker = accept_404_status_checker })
