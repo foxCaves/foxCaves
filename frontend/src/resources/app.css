@@ -4,3 +4,9 @@ body {
 html {
     min-height: 100%;
 }
+.dropdown-menu {
+    --bs-dropdown-bg: #30115e;
+    --bs-dropdown-link-hover-bg: var(--bs-secondary);
+    --bs-dropdown-link-active-bg: #40256e;
+    --bs-dropdown-link-color: #fff;
+}
