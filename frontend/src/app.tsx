@@ -7,7 +7,7 @@ import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import { lazily } from 'react-lazily';
 import { LinkContainer } from 'react-router-bootstrap';
-import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import { LiveLoadingContainer } from './components/liveloading';
 import { CustomDropDownItem, CustomNavLink, CustomRouteHandler, LoginState, RouteWrapper } from './components/route';
@@ -33,7 +33,7 @@ const { ViewPage } = lazily(async () => import('./pages/view'));
 
 const Routing: FC<{ user?: UserDetailsModel; userLoaded: boolean }> = ({ user, userLoaded }) => {
     return (
-        <Router>
+        <BrowserRouter future={{ v7_startTransition: true }}>
             <Navbar bg="primary" fixed="top" variant="dark">
                 <Container>
                     <LinkContainer to="/">
@@ -197,7 +197,7 @@ const Routing: FC<{ user?: UserDetailsModel; userLoaded: boolean }> = ({ user, u
                     <Route element={<h3>404 - Page not found</h3>} path="/*" />
                 </Routes>
             </Container>
-        </Router>
+        </BrowserRouter>
     );
 };
 
