@@ -11,3 +11,4 @@ chunkhash
 contenthash
 Doridian
 Dietzer
+webp

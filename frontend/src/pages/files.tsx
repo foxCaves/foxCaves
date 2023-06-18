@@ -30,7 +30,7 @@ const FileView: React.FC<{
     const { apiAccessor } = useContext(AppContext);
     const [editFileName, setEditFileName] = useInputFieldSetter(file.name);
 
-    const isImage = file.mimetype.startsWith('image/');
+    const isImage = file.isImage();
 
     const onKeyDownEdit = useCallback(
         (e: KeyboardEvent) => {

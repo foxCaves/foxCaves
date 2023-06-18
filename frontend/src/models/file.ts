@@ -3,12 +3,13 @@ import { formatSize } from '../utils/formatting';
 import { BaseModel } from './base';
 import { UserModel } from './user';
 
+const IMAGE_EXTENSIONS = new Set(['bmp', 'gif', 'jpeg', 'jpg', 'png', 'webp']);
+
 export class FileModel extends BaseModel {
     public id = '';
     public name = '';
     public size = 0;
     public owner = '';
-    public mimetype = '';
 
     public thumbnail_url?: string;
 
@@ -51,6 +52,14 @@ export class FileModel extends BaseModel {
         });
 
         this.name = name;
+    }
+
+    public getExtension(): string {
+        return this.name.split('.').at(-1)?.toLowerCase() ?? '';
+    }
+
+    public isImage(): boolean {
+        return IMAGE_EXTENSIONS.has(this.getExtension());
     }
 
     public getFormattedSize(): string {
