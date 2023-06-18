@@ -27,7 +27,7 @@ local function process_migration_dir(db, ran_migrations, dir)
         local migration_query =
             'BEGIN;\n' .. data .. 'INSERT INTO migrations (name) VALUES (' .. db:escape_literal(
                 file
-            ) .. ');\n' .. 'COMMIT;'
+            ) .. ');\nCOMMIT;'
         db:query_err(migration_query)
     end
 end
