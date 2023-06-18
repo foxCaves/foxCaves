@@ -22,7 +22,6 @@ CREATE TABLE files (
     name VARCHAR(255),
     size BIGINT,
     thumbnail_mimetype VARCHAR(255),
-    mimetype VARCHAR(255),
     uploaded INT NOT NULL,
     storage VARCHAR(16) NOT NULL,
     created_at timestamp without time zone DEFAULT (now() at time zone 'utc'),
@@ -38,7 +37,6 @@ CREATE INDEX ON files ("expires_at");
 
 CREATE INDEX ON files ("uploaded");
 CREATE INDEX ON files ("size");
-CREATE INDEX ON files ("mimetype");
 
 
 CREATE TABLE links (
