@@ -62,8 +62,7 @@ local function makefilemt(file)
     return file
 end
 
-local file_select =
-    'id, name, owner, size, thumbnail_mimetype, uploaded, storage, ' .. database.TIME_COLUMNS_EXPIRING
+local file_select = 'id, name, owner, size, thumbnail_mimetype, uploaded, storage, ' .. database.TIME_COLUMNS_EXPIRING
 
 function file_model.get_by_query(query, options, ...)
     return file_model.get_by_query_raw(
@@ -208,7 +207,7 @@ end
 
 function file_mt:get_mimetype()
     if not self.name then
-        return "application/octet-stream"
+        return 'application/octet-stream'
     end
     return mimetypes.get_mimetype_for(self:get_extension())
 end
