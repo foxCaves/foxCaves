@@ -23,8 +23,10 @@ local function process_migration_dir(db, ran_migrations, dir)
         local fh = io.open(absfile, 'r')
         local data = fh:read('*a')
         fh:close()
-        db:query_err(data)
-        db:query_err('INSERT INTO migrations (name) VALUES (' .. db:escape_literal(file) .. ');')
+
+        local migration_query =
+            'BEGIN;\n' .. data .. 'INSERT INTO migrations (name) VALUES (' .. db:escape_literal(file) .. ');\nCOMMIT;'
+        db:query_err(migration_query)
     end
 end
 local function setup_db()
