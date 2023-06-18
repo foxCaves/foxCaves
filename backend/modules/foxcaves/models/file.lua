@@ -63,7 +63,7 @@ local function makefilemt(file)
 end
 
 local file_select =
-    'id, name, owner, size, mimetype, thumbnail_mimetype, uploaded, storage, ' .. database.TIME_COLUMNS_EXPIRING
+    'id, name, owner, size, thumbnail_mimetype, uploaded, storage, ' .. database.TIME_COLUMNS_EXPIRING
 
 function file_model.get_by_query(query, options, ...)
     return file_model.get_by_query_raw(
@@ -206,19 +206,18 @@ function file_mt:set_name(rawname)
     return true
 end
 
-function file_mt:compute_mimetype()
+function file_mt:get_mimetype()
     if not self.name then
-        return false
+        return "application/octet-stream"
     end
-    self.mimetype = mimetypes.get_mimetype_for(self:get_extension())
-    return true
+    return mimetypes.get_mimetype_for(self:get_extension())
 end
 
 function file_mt:upload_begin()
     local storage = file_get_storage_driver(self)
     self.uploaded = 0
 
-    self._upload = storage:upload(self.id, self.size, 'file', self.mimetype, { on_abort = function()
+    self._upload = storage:upload(self.id, self.size, 'file', self:get_mimetype(), { on_abort = function()
         self:delete()
     end })
 
@@ -276,7 +275,7 @@ local function file_thumbnail_process(self)
         os.remove(thumb_temp)
     end)
 
-    local prefix, suffix = self.mimetype:match('([a-z]+)/([a-z]+)')
+    local prefix, suffix = self:get_mimetype():match('([a-z]+)/([a-z]+)')
     local handler = mimeHandlers[prefix]
     if handler then
         self.thumbnail_mimetype = handler(file_temp, thumb_temp, suffix)
@@ -328,7 +327,7 @@ end
 
 local function file_migrate_piece(self, source_storage, destination_storage, ftype)
     local download = source_storage:download(self.id, ftype)
-    local upload = destination_storage:upload(self.id, download.size, ftype, self.mimetype)
+    local upload = destination_storage:upload(self.id, download.size, ftype, self:get_mimetype())
     upload:from_callback(function(chunk_size)
         return download:read(chunk_size)
     end)
@@ -369,14 +368,13 @@ function file_mt:save(force_push_action)
         res =
             database.get_shared():query_single(
                 'INSERT INTO files \
-                (id, name, owner, size, mimetype, thumbnail_mimetype, uploaded, storage, expires_at) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s) \
+                (id, name, owner, size, thumbnail_mimetype, uploaded, storage, expires_at) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s) \
                 RETURNING ' .. database.TIME_COLUMNS_EXPIRING,
                 nil,
                 self.id,
                 self.name,
                 self.owner,
                 self.size,
-                self.mimetype,
                 self.thumbnail_mimetype or '',
                 self.uploaded,
                 self.storage,
@@ -388,7 +386,7 @@ function file_mt:save(force_push_action)
         res =
             database.get_shared():query_single(
                 "UPDATE files \
-                SET name = %s, owner = %s, size = %s, mimetype = %s, thumbnail_mimetype = %s, uploaded = %s, storage = %s, \
+                SET name = %s, owner = %s, size = %s, thumbnail_mimetype = %s, uploaded = %s, storage = %s, \
                 expires_at = %s, updated_at = (now() at time zone 'utc') \
                 WHERE id = %s \
                 RETURNING " .. database.TIME_COLUMNS_EXPIRING,
@@ -396,7 +394,6 @@ function file_mt:save(force_push_action)
                 self.name,
                 self.owner,
                 self.size,
-                self.mimetype,
                 self.thumbnail_mimetype or '',
                 self.uploaded,
                 self.storage,
@@ -434,7 +431,6 @@ function file_mt:get_public()
         created_at = self.created_at,
         updated_at = self.updated_at,
         expires_at = self.expires_at,
-        mimetype = self.mimetype,
         view_url = short_url_file,
         direct_url = short_url_file .. '?raw=1',
         download_url = short_url_file .. '?dl=1',
@@ -487,10 +483,6 @@ function file_model.get_public_fields()
         },
         updated_at = {
             type = 'timestamp',
-            required = true,
-        },
-        mimetype = {
-            type = 'string',
             required = true,
         },
         view_url = {

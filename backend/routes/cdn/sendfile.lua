@@ -29,7 +29,7 @@ route_vars
     end
 
     ngx.header['Content-Disposition'] = disposition_type .. '; filename="' .. file.name .. '"'
-    ngx.header['Content-Type'] = mimetypes.get_safe_mimetype(file.mimetype)
+    ngx.header['Content-Type'] = mimetypes.get_safe_mimetype(file:get_mimetype())
     utils.add_cdn_cache_control()
     if ngx.var.request_method == 'HEAD' then
         ngx.header['Content-Length'] = file.size

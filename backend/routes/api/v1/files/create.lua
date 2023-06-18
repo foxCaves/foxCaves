@@ -25,7 +25,7 @@ R.register_route(
 
         local file = file_model.new()
         file:set_owner(user)
-        if not file:set_name(name) or not file:compute_mimetype() then
+        if not file:set_name(name) then
             return utils.api_error('Invalid name')
         end
 

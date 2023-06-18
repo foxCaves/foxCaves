@@ -31,30 +31,47 @@ const TextView: React.FC<{ src: string }> = ({ src }) => {
 };
 
 const FileContentView: React.FC<{ file: FileModel }> = ({ file }) => {
-    const mimeSplit = file.mimetype.split('/');
-    switch (mimeSplit[0]) {
-        case 'text':
+    const extension = file.getExtension();
+    switch (extension) {
+        case 'c':
+        case 'cpp':
+        case 'cs':
+        case 'ex':
+        case 'exs':
+        case 'go':
+        case 'h':
+        case 'hpp':
+        case 'htm':
+        case 'html':
+        case 'java':
+        case 'js':
+        case 'json':
+        case 'lua':
+        case 'php':
+        case 'py':
+        case 'ts':
+        case 'txt':
+        case 'xml':
+        case 'yaml':
+        case 'yml':
             return <TextView src={file.direct_url} />;
-        case 'image':
+        case 'bmp':
+        case 'gif':
+        case 'jpeg':
+        case 'jpg':
+        case 'png':
+        case 'webp':
             return <img alt={file.name} className="mw-100" src={file.direct_url} />;
-        case 'video':
+        case 'mp4':
             return <video className="mw-100" controls src={file.direct_url} />;
-        case 'audio':
+        case 'mp3':
+        case 'ogg':
             return <audio controls src={file.direct_url} />;
-        case 'application':
-            if (mimeSplit[2] === 'pdf') {
-                return (
-                    <iframe className="mw-100 preview-iframe" sandbox="" src={file.direct_url} title="PDF preview" />
-                );
-            }
-
-            break;
-
+        case 'pdf':
+            return <iframe className="mw-100 preview-iframe" sandbox="" src={file.direct_url} title="PDF preview" />;
         default:
-        // noop
+            return <h3>No preview available</h3>;
     }
-
-    return <h3>No preview available</h3>;
 };
 
 export const ViewPage: React.FC = () => {
