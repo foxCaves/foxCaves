@@ -30,6 +30,7 @@ const TextView: React.FC<{ src: string }> = ({ src }) => {
     return <pre>{data}</pre>;
 };
 
+// eslint-disable-next-line complexity
 const FileContentView: React.FC<{ file: FileModel }> = ({ file }) => {
     const extension = file.getExtension();
     switch (extension) {

@@ -3,14 +3,7 @@ import { formatSize } from '../utils/formatting';
 import { BaseModel } from './base';
 import { UserModel } from './user';
 
-const IMAGE_EXTENSIONS = new Set([
-    'bmp',
-    'gif',
-    'jpeg',
-    'jpg',
-    'png',
-    'webp',
-]);
+const IMAGE_EXTENSIONS = new Set(['bmp', 'gif', 'jpeg', 'jpg', 'png', 'webp']);
 
 export class FileModel extends BaseModel {
     public id = '';
@@ -62,7 +55,7 @@ export class FileModel extends BaseModel {
     }
 
     public getExtension(): string {
-        return this.name.split('.').at(-1)?.toLowerCase() || '';
+        return this.name.split('.').at(-1)?.toLowerCase() ?? '';
     }
 
     public isImage(): boolean {
