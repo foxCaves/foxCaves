@@ -367,7 +367,7 @@ function file_mt:save(force_push_action)
         res =
             database.get_shared():query_single(
                 'INSERT INTO files \
-                (id, name, owner, size, thumbnail_mimetype, uploaded, storage, expires_at) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s) \
+                (id, name, owner, size, thumbnail_mimetype, uploaded, storage, expires_at) VALUES (%s, %s, %s, %s, %s, %s, %s, %s) \
                 RETURNING ' .. database.TIME_COLUMNS_EXPIRING,
                 nil,
                 self.id,
