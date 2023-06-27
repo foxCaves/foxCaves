@@ -1,3 +1,4 @@
+local path = require('path')
 local utils = require('foxcaves.utils')
 local router = require('foxcaves.router')
 local ngx = ngx
