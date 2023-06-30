@@ -20,14 +20,16 @@ M.TIME_COLUMNS_EXPIRING = "to_json(expires_at at time zone 'utc') as expires_at_
 local db_meta = {}
 function db_meta:query(query, options, ...)
     local args = { ... }
-    for i, v in next, args do
-        if v == nil or v == ngx.null then
-            args[i] = 'NULL'
-        else
-            args[i] = self.db:escape_literal(v)
+    if #args > 0 then
+        for i, v in next, args do
+            if v == nil or v == ngx.null then
+                args[i] = 'NULL'
+            else
+                args[i] = self.db:escape_literal(v)
+            end
         end
+        query = query:format(unpack(args))
     end
-    query = query:format(unpack(args))
 
     if options then
         if options.order_by then
