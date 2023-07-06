@@ -41,7 +41,8 @@
 #color-selector {
     width: 250px;
 
-    background-image: -webkit-linear-gradient(top, black, transparent, white),
+    background-image:
+        -webkit-linear-gradient(top, black, transparent, white),
         -webkit-linear-gradient(left, #f00, #ff0, #0f0, #0ff, #00f, #f0f, #f00);
 }
 

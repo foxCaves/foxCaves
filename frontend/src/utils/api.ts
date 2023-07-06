@@ -1,7 +1,10 @@
 import { logError } from './misc';
 
 export class HttpError extends Error {
-    public constructor(public status: number, public message: string) {
+    public constructor(
+        public status: number,
+        public message: string,
+    ) {
         super(`HTTP Error: ${status} ${message}`);
         this.name = 'HttpError';
     }
