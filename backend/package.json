@@ -9,7 +9,7 @@
         "new-migration": "node -e \"if (!process.argv[1]) throw new Error('Please provide a name for the migration'); const n = `migrations/${(new Date()).toISOString().replace(/\\.[\\d]+Z$/, '').replace(/[^\\d]/g, '')}_${process.argv[1]}.sql`; require('fs').writeFileSync(n, ''); console.info(`Created ${n}`);\""
     },
     "devDependencies": {
-        "@prettier/plugin-lua": "^0.0.2",
+        "@prettier/plugin-lua": "^0.0.3",
         "prettier": "^3.0.0"
     }
 }
