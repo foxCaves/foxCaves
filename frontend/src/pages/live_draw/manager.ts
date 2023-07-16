@@ -166,7 +166,7 @@ const paintBrushes: Record<string, Brush> = {
             backgroundCanvasCTX.arc(
                 user.cursorData.lastX,
                 user.cursorData.lastY,
-                Math.sqrt(x * x + y * y),
+                Math.hypot(x, y),
                 0,
                 MathPIDouble,
                 false,
@@ -183,7 +183,7 @@ const paintBrushes: Record<string, Brush> = {
                 return;
             }
 
-            const radius = Math.sqrt(x * x + y * y);
+            const radius = Math.hypot(x, y);
 
             foregroundCanvasCTX.font = '10px Verdana';
             foregroundCanvasCTX.fillText(`Radius: ${radius}px`, user.cursorData.lastX, user.cursorData.lastY);
@@ -194,7 +194,7 @@ const paintBrushes: Record<string, Brush> = {
             foregroundCanvasCTX.arc(
                 user.cursorData.lastX,
                 user.cursorData.lastY,
-                Math.sqrt(x * x + y * y),
+                Math.hypot(x, y),
                 0,
                 MathPIDouble,
                 false,
