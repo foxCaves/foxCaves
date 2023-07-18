@@ -167,7 +167,7 @@ export const FilesPage: React.FC = () => {
                 const modelsCopy = new Map(models);
                 modelsCopy.delete(deleteFile.id);
                 set(modelsCopy);
-            })
+            }, logError)
             .finally(() => {
                 setDeleteFile(undefined);
             });
