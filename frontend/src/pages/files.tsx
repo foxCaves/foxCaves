@@ -22,10 +22,10 @@ import { useInputFieldSetter } from '../utils/hooks';
 import { logError, sortByDate } from '../utils/misc';
 
 const FileView: React.FC<{
-    file: FileModel;
-    setDeleteFile: (file: FileModel | undefined) => void;
-    setEditFile: (file: FileModel | undefined) => void;
-    editMode: boolean;
+    readonly file: FileModel;
+    readonly setDeleteFile: (file: FileModel | undefined) => void;
+    readonly setEditFile: (file: FileModel | undefined) => void;
+    readonly editMode: boolean;
 }> = ({ file, editMode, setDeleteFile, setEditFile }) => {
     const { apiAccessor } = useContext(AppContext);
     const [editFileName, setEditFileName] = useInputFieldSetter(file.name);

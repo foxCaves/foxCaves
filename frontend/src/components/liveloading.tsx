@@ -20,7 +20,7 @@ interface LiveLoadingPayload {
 }
 
 interface LiveLoadingContainerInterface {
-    children?: React.ReactNode;
+    readonly children?: React.ReactNode;
 }
 
 export const FilesContext = React.createContext<ModelContext<FileModel>>({} as ModelContext<FileModel>);

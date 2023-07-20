@@ -31,7 +31,7 @@ const { LogoutPage } = lazily(async () => import('./pages/logout'));
 const { RegistrationPage } = lazily(async () => import('./pages/register'));
 const { ViewPage } = lazily(async () => import('./pages/view'));
 
-const Routing: FC<{ user?: UserDetailsModel; userLoaded: boolean }> = ({ user, userLoaded }) => {
+const Routing: FC<{ readonly user?: UserDetailsModel; readonly userLoaded: boolean }> = ({ user, userLoaded }) => {
     return (
         <BrowserRouter future={{ v7_startTransition: true }}>
             <Navbar bg="primary" fixed="top" variant="dark">

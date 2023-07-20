@@ -11,8 +11,8 @@ export enum LoginState {
 }
 
 interface CustomRouteHandlerOptions {
-    login?: LoginState;
-    children?: ReactElement;
+    readonly login?: LoginState;
+    readonly children?: ReactElement;
 }
 export const CustomRouteHandler: React.FC<CustomRouteHandlerOptions> = ({ login, children }) => {
     const { userLoaded, user } = useContext(AppContext);
@@ -32,7 +32,7 @@ export const CustomRouteHandler: React.FC<CustomRouteHandlerOptions> = ({ login,
 };
 
 interface RouteWrapperOptions {
-    children?: ReactElement;
+    readonly children?: ReactElement;
 }
 export const RouteWrapper: React.FC<RouteWrapperOptions> = ({ children }) => {
     return <Suspense fallback={<h3>Loading...</h3>}>{children}</Suspense>;
@@ -59,9 +59,9 @@ function shouldRender(login: LoginState | undefined, ctx: AppContextData) {
 }
 
 interface CustomNavLinkOptions {
-    to: string;
-    login?: LoginState;
-    children?: ReactElement;
+    readonly to: string;
+    readonly login?: LoginState;
+    readonly children?: ReactElement;
 }
 export const CustomNavLink: React.FC<CustomNavLinkOptions> = ({ to, login, children }) => {
     const ctx = useContext(AppContext);
