@@ -4,9 +4,9 @@ import { config, Config } from '../utils/config';
 import { logError } from '../utils/misc';
 
 interface CustomRouteHandlerOptions {
-    page: keyof Config['captcha'];
-    onVerifyChanged: (response: string) => void;
-    resetFactor: unknown;
+    readonly page: keyof Config['captcha'];
+    readonly onVerifyChanged: (response: string) => void;
+    readonly resetFactor: unknown;
 }
 
 export const CaptchaContainer: React.FC<CustomRouteHandlerOptions> = ({ page, onVerifyChanged, resetFactor }) => {

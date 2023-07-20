@@ -3,7 +3,7 @@ import ProgressBar from 'react-bootstrap/ProgressBar';
 import { AppContext } from '../utils/context';
 import { formatSize, formatSizeWithInfinite } from '../utils/formatting';
 
-const ProgressBarLabel: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
+const ProgressBarLabel: React.FC<{ readonly children?: React.ReactNode }> = ({ children }) => {
     return <div className="justify-content-center d-flex position-absolute w-100">{children}</div>;
 };
 

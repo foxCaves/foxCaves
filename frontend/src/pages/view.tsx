@@ -8,7 +8,7 @@ import { AppContext } from '../utils/context';
 import { formatDate } from '../utils/formatting';
 import { logError } from '../utils/misc';
 
-const TextView: React.FC<{ src: string }> = ({ src }) => {
+const TextView: React.FC<{ readonly src: string }> = ({ src }) => {
     const [dataLoading, setDataLoading] = useState(false);
     const [data, setData] = useState<string | undefined>();
 
@@ -31,7 +31,7 @@ const TextView: React.FC<{ src: string }> = ({ src }) => {
 };
 
 // eslint-disable-next-line complexity
-const FileContentView: React.FC<{ file: FileModel }> = ({ file }) => {
+const FileContentView: React.FC<{ readonly file: FileModel }> = ({ file }) => {
     const extension = file.getExtension();
     switch (extension) {
         case 'c':

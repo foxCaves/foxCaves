@@ -9,8 +9,8 @@ import { useInputFieldSetter } from '../utils/hooks';
 import { logError, sortByDate } from '../utils/misc';
 
 const LinkView: React.FC<{
-    link: LinkModel;
-    setDeleteLink: (link: LinkModel | undefined) => void;
+    readonly link: LinkModel;
+    readonly setDeleteLink: (link: LinkModel | undefined) => void;
 }> = ({ link, setDeleteLink }) => {
     const setDeleteLinkCB = useCallback(() => {
         setDeleteLink(link);
