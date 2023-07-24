@@ -20,8 +20,8 @@ export const HomePage: React.FC = () => {
                 <br />
                 <br />
                 You can also see the full source code of this project at:{' '}
-                <a href="https://github.com/foxCaves/site" rel="noreferrer" target="_blank">
-                    https://github.com/foxCaves/site
+                <a href="https://github.com/foxCaves/foxCaves" rel="noreferrer" target="_blank">
+                    https://github.com/foxCaves/foxCaves
                 </a>
                 <br />
                 Frontend revision: {frontendRevision}

@@ -60,7 +60,7 @@ jobs:
           build-args: |
             GIT_REVISION=${{ github.sha }}
           tags: |
-            ghcr.io/foxcaves/site/foxcaves-site:latest
+            ghcr.io/foxcaves/foxcaves/foxcaves:latest
 
       # Run tests
       - name: Add to hostsfile
@@ -97,7 +97,7 @@ jobs:
 
       # Push if we are on main
       - name: Push Docker image
-        run: docker push ghcr.io/foxcaves/site/foxcaves-site:latest
+        run: docker push ghcr.io/foxcaves/foxcaves/foxcaves:latest
         if: github.ref == 'refs/heads/main'
 
       # https://github.com/docker/build-push-action/issues/252 (prevent cache from growing indefinitely)
