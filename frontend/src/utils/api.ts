@@ -32,6 +32,15 @@ interface CSRFRequestResponse {
 export class APIAccessor {
     private csrfToken: string | null = null;
 
+    public static isReadOnlyMethod(method?: string): boolean {
+        if (!method) {
+            return true;
+        }
+
+        method = method.toUpperCase();
+        return method === 'GET' || method === 'HEAD' || method === 'OPTIONS';
+    }
+
     public async refreshCSRFToken(): Promise<void> {
         const res = (await this.fetch('/api/v1/system/csrf', {
             method: 'POST',
@@ -50,15 +59,6 @@ export class APIAccessor {
         return this.csrfToken!;
     }
 
-    public isReadOnlyMethod(method?: string): boolean {
-        if (!method) {
-            return true;
-        }
-
-        method = method.toUpperCase();
-        return method === 'GET' || method === 'HEAD' || method === 'OPTIONS';
-    }
-
     public async fetch(url: string, info?: APIRequestInfo): Promise<unknown> {
         const init: RequestInit = {};
 
@@ -75,7 +75,7 @@ export class APIAccessor {
             }
         }
 
-        if (!info?.disableCSRF && !this.isReadOnlyMethod(init.method)) {
+        if (!info?.disableCSRF && !APIAccessor.isReadOnlyMethod(init.method)) {
             init.headers['CSRF-Token'] = await this.getCSRFToken();
         }
 
