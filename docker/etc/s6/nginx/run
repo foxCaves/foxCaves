@@ -6,4 +6,6 @@ chown foxcaves:foxcaves /var/www/foxcaves/tmp /var/www/foxcaves/storage /etc/res
 
 luajit /var/www/foxcaves/lua/nginx_configure.lua
 
+rm -f /run/nginx-lua-api.sock
+
 exec /usr/local/openresty/bin/openresty -c /usr/local/openresty/nginx/conf/custom.conf
