@@ -113,8 +113,4 @@ function M.sorted_pairs(tbl, sort)
     end
 end
 
-function M.url_to_domain(url)
-    return url:gsub('^https?://', ''):gsub(':.*$', '')
-end
-
 return M
