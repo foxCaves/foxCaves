@@ -217,6 +217,8 @@
             }
         ],
 
+        "@typescript-eslint/max-params": ["error", {"max": 6}],
+
         // Potentially turning these on
         "@typescript-eslint/prefer-readonly-parameter-types": "off",
         "@typescript-eslint/explicit-function-return-type": "off",
