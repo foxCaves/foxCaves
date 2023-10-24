@@ -75,7 +75,7 @@
         "max-statements": ["error", 150],
         "max-lines": ["error", 1000],
         "max-classes-per-file": ["error", 10],
-        "max-params": ["error", 6],
+        "max-params": "off",
         // must be disabled for TS version
         "init-declarations": "off",
         // useful for later
@@ -216,6 +216,8 @@
                 "blankLine": "always"
             }
         ],
+
+        "@typescript-eslint/max-params": ["error", {"max": 6}],
 
         // Potentially turning these on
         "@typescript-eslint/prefer-readonly-parameter-types": "off",
