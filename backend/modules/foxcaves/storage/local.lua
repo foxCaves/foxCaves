@@ -109,6 +109,10 @@ function UPLOAD:from_callback(cb)
 end
 
 function UPLOAD:chunk(chunk)
+    if not chunk then
+        error('Invalid chunk!')
+    end
+
     if not self.fh then
         return false
     end
