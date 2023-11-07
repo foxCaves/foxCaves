@@ -2,7 +2,7 @@
   "name": "foxcaves-frontend",
   "version": "0.1.0",
   "dependencies": {
-    "@cspell/eslint-plugin": "^7.0.0",
+    "@cspell/eslint-plugin": "^8.0.0",
     "@playwright/test": "^1.32.0",
     "@sentry/react": "7.77.0",
     "@testing-library/jest-dom": "6.1.4",
