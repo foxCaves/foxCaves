@@ -35,7 +35,7 @@
     "mini-css-extract-plugin": "^2.7.5",
     "prettier": "3.2.3",
     "react": "18.2.0",
-    "react-bootstrap": "2.9.2",
+    "react-bootstrap": "2.10.0",
     "react-bootstrap-range-slider": "3.0.8",
     "react-dom": "18.2.0",
     "react-dropzone": "14.2.3",
