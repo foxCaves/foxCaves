@@ -33,7 +33,7 @@
     "http-proxy-middleware": "2.0.6",
     "image-size": "^1.0.2",
     "mini-css-extract-plugin": "^2.7.5",
-    "prettier": "3.2.3",
+    "prettier": "3.2.4",
     "react": "18.2.0",
     "react-bootstrap": "2.10.0",
     "react-bootstrap-range-slider": "3.0.8",
