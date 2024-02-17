@@ -30,7 +30,12 @@ end
 local listener_config = '/etc/nginx/listener.conf'
 
 local nginx_configs =
-    { '/etc/nginx/conf.d/foxcaves.conf', '/etc/nginx/conf.d/http-foxcaves.conf', '/etc/nginx/listener.conf' }
+    {
+        '/etc/nginx/conf.d/foxcaves.conf',
+        '/etc/nginx/conf.d/http-foxcaves.conf',
+        '/etc/nginx/listener.conf',
+        '/etc/nginx/basics.conf',
+    }
 local domains = { main_domain, short_domain }
 
 if config.http.force_plaintext then
