@@ -1,5 +1,7 @@
 import { join } from 'node:path';
 // eslint-disable-next-line import/default
+import ContentReplacePlugin from 'content-replace-webpack-plugin';
+// eslint-disable-next-line import/default
 import CopyPlugin from 'copy-webpack-plugin';
 // eslint-disable-next-line import/default
 import HtmlWebpackPlugin from 'html-webpack-plugin';
@@ -59,20 +61,33 @@ const config: Configuration = {
             filename: '[name].[contenthash].css',
             chunkFilename: '[id].[contenthash].css',
         }),
+        new ContentReplacePlugin({
+            rules: {
+                '*.css': (content: string) => {
+                    return content.replaceAll(
+                        'https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap',
+                        // eslint-disable-next-line @cspell/spellchecker
+                        '/static/fonts/lato.css',
+                    );
+                },
+            },
+        }),
     ],
     devServer: {
         static: {
             directory: join(PWD, 'public'),
         },
-        proxy: {
-            '/api': {
+        proxy: [
+            {
+                path: '/api',
                 target: 'https://foxcav.es:443',
                 changeOrigin: true,
                 headers: {
                     Host: 'foxcav.es',
                 },
             },
-            '/api/v1/ws': {
+            {
+                path: '/api/v1/ws',
                 target: 'wss://foxcav.es:443',
                 changeOrigin: true,
                 ws: true,
@@ -80,7 +95,7 @@ const config: Configuration = {
                     Host: 'foxcav.es',
                 },
             },
-        },
+        ],
     },
     resolve: {
         extensions: ['.tsx', '.ts', '.js'],
