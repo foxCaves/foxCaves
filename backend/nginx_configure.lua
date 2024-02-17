@@ -34,7 +34,8 @@ local nginx_configs =
         '/etc/nginx/conf.d/foxcaves.conf',
         '/etc/nginx/conf.d/http-foxcaves.conf',
         '/etc/nginx/listener.conf',
-        '/etc/nginx/basics.conf',
+        '/etc/nginx/csp-main.conf',
+        '/etc/nginx/csp-short.conf',
     }
 local domains = { main_domain, short_domain }
 
