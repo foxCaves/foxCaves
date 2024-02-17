@@ -18,6 +18,7 @@ server {
     listen unix:/run/nginx-lua-api.sock default;
     server_name __MAIN_DOMAIN__;
     include /etc/nginx/basics.conf;
+    include /etc/nginx/csp-main.conf;
 
     real_ip_header X-Real-IP;
 
@@ -33,6 +34,7 @@ server {
     include __LISTENER_CONFIG__;
     server_name __MAIN_DOMAIN__;
     include /etc/nginx/basics.conf;
+    include /etc/nginx/csp-main.conf;
 
     root /var/www/foxcaves/html;
     client_max_body_size 10M;
@@ -74,6 +76,7 @@ server {
     include __LISTENER_CONFIG__;
     server_name __SHORT_DOMAIN__;
     include /etc/nginx/basics.conf;
+    include /etc/nginx/csp-short.conf;
 
     set $fcv_proxy_host "";
     set $fcv_proxy_uri "";
