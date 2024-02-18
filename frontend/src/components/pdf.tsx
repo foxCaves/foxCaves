@@ -12,7 +12,7 @@ export const PDFViewer: React.FC<PDFViewerProps> = (props) => {
 
     useEffect(() => {
         void (async () => {
-            GlobalWorkerOptions.workerSrc = `${process.env.PUBLIC_URL}static/pdf.worker.min.mjs`;
+            GlobalWorkerOptions.workerSrc = '/static/pdf.worker.min.mjs';
             const pdf = await getDocument(document).promise;
 
             const page = await pdf.getPage(1);
