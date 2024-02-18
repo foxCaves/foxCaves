@@ -22,7 +22,7 @@ const config: Configuration = {
     entry: './src/index.tsx',
     output: {
         path: join(PWD, 'build'),
-        publicPath: mode === 'development' ? '/' : '/static/',
+        publicPath: '/static/',
         filename: '[name].[contenthash].js',
         chunkFilename: '[id].[contenthash].js',
     },
@@ -74,6 +74,9 @@ const config: Configuration = {
         }),
     ],
     devServer: {
+        historyApiFallback: {
+            index: `/static/index.html`,
+        },
         static: {
             directory: join(PWD, 'public'),
         },
