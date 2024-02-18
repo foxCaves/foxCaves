@@ -69,7 +69,8 @@ const FileContentView: React.FC<{ readonly file: FileModel }> = ({ file }) => {
         case 'ogg':
             return <audio controls src={file.direct_url} />;
         case 'pdf':
-            return <iframe className="mw-100 preview-iframe" sandbox="" src={file.direct_url} title="PDF preview" />;
+            // eslint-disable-next-line react/iframe-missing-sandbox
+            return <iframe className="mw-100 preview-iframe" src={file.direct_url} title="PDF preview" />;
         default:
             return <h3>No preview available</h3>;
     }
