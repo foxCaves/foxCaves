@@ -52,6 +52,10 @@ const config: Configuration = {
                 {
                     from: 'public',
                 },
+                {
+                    from: 'node_modules/pspdfkit/dist/pspdfkit-lib',
+                    to: 'pspdfkit-lib',
+                },
             ],
         }),
         new HtmlWebpackPlugin({

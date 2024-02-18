@@ -12,3 +12,4 @@ contenthash
 Doridian
 Dietzer
 webp
+pspdfkit

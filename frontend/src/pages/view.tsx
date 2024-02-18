@@ -1,12 +1,15 @@
 import '../resources/view.css';
 
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import React, { Suspense, useCallback, useContext, useEffect, useState } from 'react';
+import { lazily } from 'react-lazily';
 import { useParams } from 'react-router-dom';
 import { FileModel } from '../models/file';
 import { UserModel } from '../models/user';
 import { AppContext } from '../utils/context';
 import { formatDate } from '../utils/formatting';
 import { logError } from '../utils/misc';
+
+const { PDFViewer } = lazily(async () => import('../components/pdf'));
 
 const TextView: React.FC<{ readonly src: string }> = ({ src }) => {
     const [dataLoading, setDataLoading] = useState(false);
@@ -69,7 +72,7 @@ const FileContentView: React.FC<{ readonly file: FileModel }> = ({ file }) => {
         case 'ogg':
             return <audio controls src={file.direct_url} />;
         case 'pdf':
-            return <iframe className="mw-100 preview-iframe" sandbox="" src={file.direct_url} title="PDF preview" />;
+            return <PDFViewer className="mw-100 preview-iframe" document={file.direct_url} />;
         default:
             return <h3>No preview available</h3>;
     }
@@ -147,7 +150,9 @@ export const ViewPage: React.FC = () => {
             <p>
                 Download link: <a href={file.download_url}>{file.download_url}</a>
             </p>
-            <FileContentView file={file} />
+            <Suspense fallback={<h3>Loading preview...</h3>}>
+                <FileContentView file={file} />
+            </Suspense>
         </>
     );
 };
