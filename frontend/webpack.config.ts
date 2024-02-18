@@ -53,8 +53,7 @@ const config: Configuration = {
                     from: 'public',
                 },
                 {
-                    from: 'node_modules/pspdfkit/dist/pspdfkit-lib',
-                    to: 'pspdfkit-lib',
+                    from: 'node_modules/pdfjs-dist/build/pdf.worker.min.mjs',
                 },
             ],
         }),
@@ -80,6 +79,7 @@ const config: Configuration = {
     devServer: {
         static: {
             directory: join(PWD, 'public'),
+            publicPath: '/static/',
         },
         proxy: [
             {

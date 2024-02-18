@@ -1,5 +1,4 @@
-/* eslint-disable @cspell/spellchecker */
-import PSPDFKit from 'pspdfkit';
+import { getDocument, GlobalWorkerOptions } from 'pdfjs-dist';
 import React, { useEffect, useRef } from 'react';
 
 interface PDFViewerProps {
@@ -9,30 +8,27 @@ interface PDFViewerProps {
 
 export const PDFViewer: React.FC<PDFViewerProps> = (props) => {
     const { document, className } = props;
-    const containerRef = useRef<HTMLDivElement>(null);
+    const canvasRef = useRef<HTMLCanvasElement>(null);
 
     useEffect(() => {
-        const container = containerRef.current;
-        let pspdfKitInstance: typeof PSPDFKit | undefined;
+        void (async () => {
+            GlobalWorkerOptions.workerSrc = `${process.env.PUBLIC_URL}static/pdf.worker.min.mjs`;
+            const pdf = await getDocument(document).promise;
 
-        void (async function loadPSPDFKit() {
-            pspdfKitInstance = (await import('pspdfkit')) as unknown as typeof PSPDFKit;
-            pspdfKitInstance.unload(container);
+            const page = await pdf.getPage(1);
+            const viewport = page.getViewport({ scale: 1.5 });
 
-            await pspdfKitInstance.load({
-                // Container where PSPDFKit should be mounted.
-                container: container!,
-                // The document to open.
-                document,
-            });
+            // Prepare canvas using PDF page dimensions.
+            const canvas = canvasRef.current!;
+            const canvasContext = canvas.getContext('2d')!;
+            canvas.height = viewport.height;
+            canvas.width = viewport.width;
+
+            // Render PDF page into canvas context.
+            const renderContext = { canvasContext, viewport };
+            page.render(renderContext);
         })();
-
-        return () => {
-            if (pspdfKitInstance) {
-                pspdfKitInstance.unload(container);
-            }
-        };
     }, [document]);
 
-    return <div className={className} ref={containerRef} style={{ width: '100%', height: '100vh' }} />;
+    return <canvas className={className} ref={canvasRef} />;
 };
