@@ -1,16 +1,17 @@
-import React, { useCallback, useEffect, useContext, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import Button from 'react-bootstrap/Button';
-import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-import { config, Config } from '../utils/config';
-import { logError } from '../utils/misc';
-import { AppContext } from '../utils/context';
 import FloatingLabel from 'react-bootstrap/FloatingLabel';
 import Form from 'react-bootstrap/Form';
+import Row from 'react-bootstrap/Row';
+import { config, Config } from '../utils/config';
+import { AppContext } from '../utils/context';
+import { useInputFieldSetter } from '../utils/hooks';
+import { logError } from '../utils/misc';
 
 interface CustomRouteHandlerOptions {
     readonly page: keyof Config['captcha'];
-    readonly onParamChange: (params: { [key: string]: string; } ) => void;
+    readonly onParamChange: (params: Record<string, string>) => void;
     readonly resetFactor: unknown;
 }
 
@@ -21,65 +22,64 @@ interface CaptchaResponse {
     image: string;
 }
 
-
 export const CaptchaContainer: React.FC<CustomRouteHandlerOptions> = ({ page, onParamChange, resetFactor }) => {
     const { apiAccessor } = useContext(AppContext);
     const [dataLoading, setDataLoading] = useState(false);
     const [data, setData] = useState<CaptchaResponse | undefined>();
 
-    const onResponseChangeCallback = useCallback((response: string) => {
-        if (!data) {
-            return;
-        }
-        onParamChange({
-            captchaResponse: response,
-            captchaTime: data.time.toString(),
-            captchaId: data.id,
-            captchaToken: data.token,
-        });
-    }, [data, onParamChange]);
+    const onResponseChangeCallback = useCallback(
+        (response: string) => {
+            if (!data) {
+                return;
+            }
 
-    const [response, setResponseInt] = useState('');
-    const setResponse = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
-        const v = event.currentTarget.value;
-        setResponseInt(v);
-        onResponseChangeCallback(v);
-    }, [setResponseInt, onResponseChangeCallback]);
+            onParamChange({
+                captchaResponse: response,
+                captchaTime: data.time.toString(),
+                captchaId: data.id,
+                captchaToken: data.token,
+            });
+        },
+        [data, onParamChange],
+    );
+
+    const [response, setResponse, setResponseText] = useInputFieldSetter('', onResponseChangeCallback);
 
     const setReload = useCallback(() => {
-        setResponseInt('');
+        setResponseText('');
         onParamChange({});
         setData(undefined);
-    }, [setData]);
+    }, [setData, onParamChange, setResponseText]);
 
     const enabled = config.captcha[page];
 
     useEffect(() => {
         setReload();
-    }, [resetFactor]);
+    }, [resetFactor, setReload]);
 
     useEffect(() => {
         if (!enabled) {
             setReload();
         }
-    }, [onParamChange, enabled]);
+    }, [onParamChange, enabled, setReload]);
 
     useEffect(() => {
-        if (dataLoading || data || !enabled) {
+        if (dataLoading || !!data || !enabled) {
             return;
         }
 
         setDataLoading(true);
 
-        apiAccessor.fetch(`/api/v1/system/captcha/${page}`, {
-            method: 'POST',
-        })
-        .then((newData) => {
-            setData(newData as CaptchaResponse);
-            setDataLoading(false);
-        })
-        .catch(logError);
-    }, [resetFactor, enabled, data, dataLoading]);
+        apiAccessor
+            .fetch(`/api/v1/system/captcha/${page}`, {
+                method: 'POST',
+            })
+            .then((newData) => {
+                setData(newData as CaptchaResponse);
+                setDataLoading(false);
+            })
+            .catch(logError);
+    }, [resetFactor, enabled, data, dataLoading, apiAccessor, setDataLoading, page]);
 
     if (!enabled) {
         return null;
@@ -87,22 +87,20 @@ export const CaptchaContainer: React.FC<CustomRouteHandlerOptions> = ({ page, on
 
     return (
         <Row>
-            <Col md='auto'>
-                {data ? <img alt='CAPTCHA' src={data?.image} /> : <>Loading</>},
-            </Col>
-            <Col md='auto'>
+            <Col md="auto">{data ? <img alt="CAPTCHA" src={data.image} /> : <>Loading</>},</Col>
+            <Col md="auto">
                 <Button onClick={setReload}>Reload</Button>
             </Col>
             <Col>
-                <FloatingLabel className='w-100' label="Enter the characters you see">
+                <FloatingLabel className="w-100" label="Enter the characters you see">
                     <Form.Control
+                        disabled={!data}
                         name="response"
                         onChange={setResponse}
                         placeholder=""
                         required
                         type="text"
                         value={response}
-                        disabled={!data}
                     />
                 </FloatingLabel>
             </Col>

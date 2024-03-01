@@ -12,11 +12,11 @@ export const ForgotPasswordPage: React.FC = () => {
     const { apiAccessor } = useContext(AppContext);
     const [username, setUsernameCB] = useInputFieldSetter('');
     const [email, setEmailCB] = useInputFieldSetter('');
-    const [captchaResponse, setCaptchaResponse] = useState< { [key: string]: string; }>({});
+    const [captchaResponse, setCaptchaResponse] = useState<Record<string, string>>({});
     const [captchaReset, setCaptchaReset] = useState(0);
 
     const submitForgotPasswordFormAsync = useCallback(async () => {
-        if (!captchaResponse) {
+        if (!captchaResponse.captchaResponse) {
             toast('CAPTCHA not completed', {
                 type: 'error',
                 autoClose: 5000,
@@ -70,7 +70,7 @@ export const ForgotPasswordPage: React.FC = () => {
                     <Form.Control
                         name="username"
                         onChange={setUsernameCB}
-                        placeholder="test user"
+                        placeholder="user"
                         required
                         type="text"
                         value={username}
@@ -80,7 +80,7 @@ export const ForgotPasswordPage: React.FC = () => {
                     <Form.Control
                         name="email"
                         onChange={setEmailCB}
-                        placeholder="test@example.com"
+                        placeholder="user@example.com"
                         required
                         type="email"
                         value={email}

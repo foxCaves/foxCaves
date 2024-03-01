@@ -1,5 +1,3 @@
-local cjson = require('cjson')
-local http = require('resty.http')
 local config = require('foxcaves.config').captcha
 local utils = require('foxcaves.utils')
 local random = require('foxcaves.random')
@@ -10,66 +8,59 @@ local error = error
 local ngx = ngx
 local tostring = tostring
 local tonumber = tonumber
-local table = table
 
 local M = {}
 require('foxcaves.module_helper').setmodenv()
 
-local captcha_chars = {
-    'A',
-    'B',
-    'C',
-    'D',
-    'E',
-    'F',
-    'G',
-    'H',
-    'i',
-    'J',
-    'K',
-    'L',
-    'M',
-    'N',
-    'P',
-    'Q',
-    'R',
-    'S',
-    'T',
-    'U',
-    'V',
-    'W',
-    'X',
-    'Y',
-    'Z',
-    '2',
-    '3',
-    '4',
-    '5',
-    '6',
-    '7',
-    '8',
-    '9'
-}
+local captcha_chars =
+    {
+        'A',
+        'B',
+        'C',
+        'D',
+        'E',
+        'F',
+        'G',
+        'H',
+        'i',
+        'J',
+        'K',
+        'L',
+        'M',
+        'N',
+        'P',
+        'Q',
+        'R',
+        'S',
+        'T',
+        'U',
+        'V',
+        'W',
+        'X',
+        'Y',
+        'Z',
+        '2',
+        '3',
+        '4',
+        '5',
+        '6',
+        '7',
+        '8',
+        '9',
+    }
 
 local captcha_timeout = 5 * 60
 
 local function generate_verify_code(page, id, time, response)
-    return ngx.encode_base64(ngx.hmac_sha1(id .. "/" .. tostring(time) .. "/" .. page, response:upper()))
+    return ngx.encode_base64(ngx.hmac_sha1(id .. '/' .. tostring(time) .. '/' .. page, response:upper()))
 end
 
 local function generate_image(text)
-    local res = exec.cmd(
-        'qrencode',
-        '-t',
-        'png',
-        '-o',
-        '-',
-        text
-    )
+    local res = exec.cmd('qrencode', '-t', 'png', '-o', '-', text)
     if not (res and res.ok) then
         return nil
     end
-    return "data:image/png;base64," .. ngx.encode_base64(res.stdout)
+    return 'data:image/png;base64,' .. ngx.encode_base64(res.stdout)
 end
 
 function M.generate(page)
@@ -107,7 +98,7 @@ function M.check(page, args)
         return false
     end
 
-    local redis_key = "captcha:" .. id
+    local redis_key = 'captcha:' .. id
 
     local redis_inst = redis.get_shared()
     local res = redis_inst:exists(redis_key)

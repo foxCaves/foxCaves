@@ -15,7 +15,7 @@ export const RegistrationPage: React.FC = () => {
     const [password, setPasswordCB] = useInputFieldSetter('');
     const [passwordConfirm, setPasswordConfirmCB] = useInputFieldSetter('');
     const [email, setEmailCB] = useInputFieldSetter('');
-    const [captchaResponse, setCaptchaResponse] = useState< { [key: string]: string; }>({});
+    const [captchaResponse, setCaptchaResponse] = useState<Record<string, string>>({});
     const [agreeTos, setAgreeTosCallback] = useCheckboxFieldSetter(false);
     const [registrationDone, setRegistrationDone] = useState(false);
     const [captchaReset, setCaptchaReset] = useState(0);
@@ -24,7 +24,7 @@ export const RegistrationPage: React.FC = () => {
         (event: FormEvent<HTMLFormElement>) => {
             event.preventDefault();
 
-            if (!captchaResponse) {
+            if (!captchaResponse.captchaResponse) {
                 toast('CAPTCHA not completed', {
                     type: 'error',
                     autoClose: 5000,

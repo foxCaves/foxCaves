@@ -13,13 +13,13 @@ export const LoginPage: React.FC = () => {
     const [username, setUsernameCB] = useInputFieldSetter('');
     const [password, setPasswordCB] = useInputFieldSetter('');
     const [remember, setRememberCB] = useCheckboxFieldSetter(false);
-    const [captchaResponse, setCaptchaResponse] = useState< { [key: string]: string; }>({});
+    const [captchaResponse, setCaptchaResponse] = useState<Record<string, string>>({});
     const [captchaReset, setCaptchaReset] = useState(0);
 
     const { refreshUser, apiAccessor } = useContext(AppContext);
 
     const submitLoginFormAsync = useCallback(async () => {
-        if (!captchaResponse) {
+        if (!captchaResponse.captchaResponse) {
             toast('CAPTCHA not completed', {
                 type: 'error',
                 autoClose: 5000,
