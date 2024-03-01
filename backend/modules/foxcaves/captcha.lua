@@ -10,13 +10,13 @@ local tostring = tostring
 local tonumber = tonumber
 local math = math
 
-local font_name = OSENV.CAPTCHA_FONT
-local captcha_timeout = 5 * 60
-local font_size = 36
-local width = 252
-local height = 64
-local angle_max_dev = math.rad(15)
-local code_length = 6
+local font_name = config.font_name or OSENV.CAPTCHA_FONT
+local captcha_timeout = config.timeout
+local font_size = config.font_size
+local width = config.width
+local height = config.height
+local angle_max_dev = math.rad(config.angle_max)
+local code_length = config.code_length
 
 local M = {}
 require('foxcaves.module_helper').setmodenv()

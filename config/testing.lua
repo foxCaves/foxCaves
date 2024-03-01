@@ -33,8 +33,13 @@ return {
         login = false,
         forgot_password = false,
         resend_activation = false,
-        recaptcha_site_key = "",
-        recaptcha_secret_key = "",
+
+        timeout = 5 * 60,
+        font_size = 36,
+        width = 252,
+        height = 64,
+        angle_max = 15,
+        code_length = 6,
     },
     storage = {
         default = "fs",
