@@ -2,6 +2,8 @@ local cjson = require('cjson')
 local http = require('resty.http')
 local config = require('foxcaves.config').captcha
 local utils = require('foxcaves.utils')
+local random = require('foxcaves.random')
+local exec = require('foxcaves.exec')
 
 local error = error
 local ngx = ngx
@@ -11,30 +13,86 @@ local table = table
 local M = {}
 require('foxcaves.module_helper').setmodenv()
 
-local function send_recaptcha_verify(captcha_response)
-    local httpc = http.new()
-    local res, err = httpc:request_uri('https://www.google.com/recaptcha/api/siteverify', {
-        method = 'POST',
-        body = ngx.encode_args({
-            secret = config.recaptcha_secret_key,
-            response = captcha_response,
-        }),
-        headers = { ['Content-Type'] = 'application/x-www-form-urlencoded' },
-    })
-    if err then
-        return nil, ('Error: ' .. tostring(err))
+local captcha_chars = {
+    'A',
+    'B',
+    'C',
+    'D',
+    'E',
+    'F',
+    'G',
+    'H',
+    'i',
+    'J',
+    'K',
+    'L',
+    'M',
+    'N',
+    'P',
+    'Q',
+    'R',
+    'S',
+    'T',
+    'U',
+    'V',
+    'W',
+    'X',
+    'Y',
+    'Z',
+    '2',
+    '3',
+    '4',
+    '5',
+    '6',
+    '7',
+    '8',
+    '9'
+}
+
+local captcha_timeout = 5 * 60
+
+local function generate_verify_code(page, args)
+    if not (args and args.captchaId and args.captchaTime and args.captchaCode) then
+        return nil
+    end
+    local captcha_time = tonumber(args.captchaTime)
+    local captcha_age = ngx.time() - captcha_time
+    if captcha_age > captcha_timeout then
+        return nil
     end
 
-    if res.status ~= 200 then
-        return nil, ('Status: ' .. tostring(res.status))
+    return ngx.hmac_sha1(args.captchaID .. "/" .. tostring(args.captchaTime) .. "/" .. args.captchaCode, args.captchaCode)
+end
+
+local function generate_image(text)
+    local res = exec.cmd(
+        'qrencode',
+        '-t',
+        'png',
+        '-o',
+        '-',
+        text
+    )
+    if not (res and res.ok) then
+        return nil
+    end
+    return "data:image/png;base64," .. ngx.encode_base64(res.stdout)
+end
+
+function M.generate(page)
+    if not config[page] then
+        return {}
     end
 
-    local body = cjson.decode(res.body)
-    if not body then
-        return nil, 'Invalid JSON response'
-    end
+    local id = random.string(32)
+    local code = random.string(8, captcha_chars)
 
-    return body, nil
+    return {
+        time = ngx.time(),
+        id = id,
+        token = generate_verify_code(page, { captchaId = id, captchaTime = time, captchaCode = code }),
+        image = generate_image(code),
+    }
 end
 
 function M.check(page, args)
@@ -42,35 +100,12 @@ function M.check(page, args)
         return true
     end
 
-    local captcha_response = args.captchaResponse
-    if not captcha_response or captcha_response == '' then
+    local correct_code = generate_verify_code(page, args)
+    if not correct_code then
         return false
     end
 
-    local retries = 3
-    local body, err
-    while retries > 0 do
-        retries = retries - 1
-        body, err = send_recaptcha_verify(captcha_response)
-        if err then
-            err = 'reCAPTCHA request failed! ' .. err
-            ngx.log(ngx.ERR, err)
-            ngx.sleep(0.5)
-        end
-    end
-    if err ~= nil then
-        error(err)
-    end
-
-    if not body.success then
-        ngx.log(
-            ngx.INFO,
-            'reCAPTCHA verification failed! Error code(s): ' .. table.concat(body['error-codes'] or { 'unknown' }, ', ')
-        )
-        return false
-    end
-
-    return true
+    return correct_code == args.captchaToken
 end
 
 function M.error()
