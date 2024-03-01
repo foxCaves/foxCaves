@@ -126,7 +126,7 @@ export const RegistrationPage: React.FC = () => {
                         value={email}
                     />
                 </FloatingLabel>
-                <CaptchaContainer onVerifyChanged={setCaptchaResponse} page="registration" resetFactor={captchaReset} />
+                <CaptchaContainer onParamChange={setCaptchaResponse} page="registration" resetFactor={captchaReset} />
                 <Form.Group className="mb-3">
                     <Form.Check
                         checked={agreeTos}

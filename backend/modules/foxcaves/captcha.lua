@@ -8,6 +8,7 @@ local exec = require('foxcaves.exec')
 local error = error
 local ngx = ngx
 local tostring = tostring
+local tonumber = tonumber
 local table = table
 
 local M = {}

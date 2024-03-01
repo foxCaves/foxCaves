@@ -87,7 +87,7 @@ export const ForgotPasswordPage: React.FC = () => {
                     />
                 </FloatingLabel>
                 <CaptchaContainer
-                    onVerifyChanged={setCaptchaResponse}
+                    onParamChange={setCaptchaResponse}
                     page="forgot_password"
                     resetFactor={captchaReset}
                 />

@@ -94,7 +94,7 @@ export const LoginPage: React.FC = () => {
                         value={password}
                     />
                 </FloatingLabel>
-                <CaptchaContainer onVerifyChanged={setCaptchaResponse} page="login" resetFactor={captchaReset} />
+                <CaptchaContainer onParamChange={setCaptchaResponse} page="login" resetFactor={captchaReset} />
                 <p>
                     <Link to="/email/forgot_password">Forgot password?</Link>
                 </p>
