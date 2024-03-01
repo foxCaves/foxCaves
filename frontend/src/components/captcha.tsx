@@ -16,10 +16,31 @@ interface CustomRouteHandlerOptions {
 }
 
 interface CaptchaResponse {
+    ok: boolean;
     time: number;
     id: string;
     token: string;
     image: string;
+}
+
+const invalidCaptchaResponse = {
+    ok: false,
+    time: 0,
+    id: '',
+    token: '',
+    image: '',
+};
+
+function makeCaptchaImage(data: CaptchaResponse | undefined, dataLoading: boolean) {
+    if (data?.image) {
+        return <img alt="CAPTCHA" src={data.image} />;
+    }
+
+    if (dataLoading) {
+        return <h3>Loading</h3>;
+    }
+
+    return <h3>Error! Click refresh</h3>;
 }
 
 export const CaptchaContainer: React.FC<CustomRouteHandlerOptions> = ({ page, onParamChange, resetFactor }) => {
@@ -78,7 +99,11 @@ export const CaptchaContainer: React.FC<CustomRouteHandlerOptions> = ({ page, on
                 setData(newData as CaptchaResponse);
                 setDataLoading(false);
             })
-            .catch(logError);
+            .catch((error: Error) => {
+                logError(error);
+                setData(invalidCaptchaResponse);
+                setDataLoading(false);
+            });
     }, [resetFactor, enabled, data, dataLoading, apiAccessor, setDataLoading, page]);
 
     if (!enabled) {
@@ -87,7 +112,7 @@ export const CaptchaContainer: React.FC<CustomRouteHandlerOptions> = ({ page, on
 
     return (
         <Row>
-            <Col md="auto">{data ? <img alt="CAPTCHA" src={data.image} /> : <>Loading</>}</Col>
+            <Col md="auto">{makeCaptchaImage(data, dataLoading)}</Col>
             <Col md="auto">
                 <Button onClick={setReload}>Reload</Button>
             </Col>
