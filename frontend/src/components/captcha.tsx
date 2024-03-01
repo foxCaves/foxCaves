@@ -87,7 +87,7 @@ export const CaptchaContainer: React.FC<CustomRouteHandlerOptions> = ({ page, on
 
     return (
         <Row>
-            <Col md="auto">{data ? <img alt="CAPTCHA" src={data.image} /> : <>Loading</>},</Col>
+            <Col md="auto">{data ? <img alt="CAPTCHA" src={data.image} /> : <>Loading</>}</Col>
             <Col md="auto">
                 <Button onClick={setReload}>Reload</Button>
             </Col>

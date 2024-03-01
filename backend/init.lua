@@ -19,7 +19,7 @@ end
 rawset(_G, 'protect_table', protect_table)
 
 -- Load environment vars
-rawset(_G, 'OSENV', { ENVIRONMENT = true })
+rawset(_G, 'OSENV', { ENVIRONMENT = true, CAPTCHA_FONT = true })
 for k, _ in pairs(OSENV) do
     rawset(OSENV, k, os.getenv(k))
 end

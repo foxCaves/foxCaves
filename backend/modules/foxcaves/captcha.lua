@@ -1,13 +1,21 @@
 local config = require('foxcaves.config').captcha
 local utils = require('foxcaves.utils')
 local random = require('foxcaves.random')
-local exec = require('foxcaves.exec')
 local redis = require('foxcaves.redis')
+local gd = require('gd')
 
 local error = error
 local ngx = ngx
 local tostring = tostring
 local tonumber = tonumber
+local math = math
+
+local font_name = OSENV.CAPTCHA_FONT
+local captcha_timeout = 5 * 60
+local font_size = 36
+local width = 252
+local height = 64
+local angle_max_dev = math.rad(15)
 
 local M = {}
 require('foxcaves.module_helper').setmodenv()
@@ -49,18 +57,57 @@ local captcha_chars =
         '9',
     }
 
-local captcha_timeout = 5 * 60
-
 local function generate_verify_code(page, id, time, response)
     return ngx.encode_base64(ngx.hmac_sha1(id .. '/' .. tostring(time) .. '/' .. page, response:upper()))
 end
 
+local font_size_half = font_size / 2
+
+local captcha_char_sizes = {}
+for i = 1, #captcha_chars do
+    local img = gd.createTrueColor(64, 64)
+    local color = img:colorAllocate(255, 255, 255)
+    img:stringFT(color, font_name, 36, 0, 0, 36, captcha_chars[i])
+    local llx, lly, lrx, lry, urx, ury, ulx, uly = img:stringFT(color, font_name, font_size, 0, 0, font_size, captcha_chars[i])
+    local info = {
+        width = lrx - llx,
+        height = lry - ury,
+    }
+    info.width_half = info.width / 2
+    info.height_half = info.height / 2
+    captcha_char_sizes[captcha_chars[i]] = info
+end
+
+local angle_max_dev_double = angle_max_dev * 2
 local function generate_image(text)
-    local res = exec.cmd('qrencode', '-t', 'png', '-o', '-', text)
-    if not (res and res.ok) then
-        return nil
+    local img = gd.createTrueColor(width, height)
+
+    --local background = img:colorAllocate(0, 0, 0)
+    --img:filledRectangle(0, 0, width - 1, height - 1, background)
+
+    local random_colors = {
+        img:colorAllocate(255, 0, 0),
+        img:colorAllocate(0, 255, 0),
+        img:colorAllocate(0, 0, 255),
+        img:colorAllocate(255, 255, 0),
+        img:colorAllocate(255, 0, 255),
+        img:colorAllocate(0, 255, 255),
+    }
+
+    local letter_spacing = width / #text
+    local letter_spacing_half = letter_spacing / 2
+    for i = 1, #text do
+        local char = text:sub(i, i)
+        local size = captcha_char_sizes[char]
+
+        local x = (i - 1) * letter_spacing + math.random(0, letter_spacing - size.width)
+        local y = math.random(font_size, height - (size.height_half - font_size_half))
+        local angle = (math.random() * angle_max_dev_double) - angle_max_dev
+        local color = random_colors[math.random(1, #random_colors)]
+        img:stringFT(color, font_name, font_size, angle, x, y, char)
     end
-    return 'data:image/png;base64,' .. ngx.encode_base64(res.stdout)
+
+    return 'data:image/png;base64,' .. ngx.encode_base64(img:pngStr())
 end
 
 function M.generate(page)
@@ -69,7 +116,7 @@ function M.generate(page)
     end
 
     local id = random.string(32)
-    local code = random.string(8, captcha_chars)
+    local code = random.string(6, captcha_chars)
     local time = ngx.now()
 
     return {
