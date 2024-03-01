@@ -4,6 +4,7 @@ local config = require('foxcaves.config').captcha
 local utils = require('foxcaves.utils')
 local random = require('foxcaves.random')
 local exec = require('foxcaves.exec')
+local redis = require('foxcaves.redis')
 
 local error = error
 local ngx = ngx
@@ -52,17 +53,8 @@ local captcha_chars = {
 
 local captcha_timeout = 5 * 60
 
-local function generate_verify_code(page, args)
-    if not (args and args.captchaId and args.captchaTime and args.captchaCode) then
-        return nil
-    end
-    local captcha_time = tonumber(args.captchaTime)
-    local captcha_age = ngx.time() - captcha_time
-    if captcha_age > captcha_timeout then
-        return nil
-    end
-
-    return ngx.hmac_sha1(args.captchaID .. "/" .. tostring(args.captchaTime) .. "/" .. args.captchaCode, args.captchaCode)
+local function generate_verify_code(page, id, time, response)
+    return ngx.encode_base64(ngx.hmac_sha1(id .. "/" .. tostring(time) .. "/" .. page, response:upper()))
 end
 
 local function generate_image(text)
@@ -87,11 +79,12 @@ function M.generate(page)
 
     local id = random.string(32)
     local code = random.string(8, captcha_chars)
+    local time = ngx.now()
 
     return {
-        time = ngx.time(),
+        time = time,
         id = id,
-        token = generate_verify_code(page, { captchaId = id, captchaTime = time, captchaCode = code }),
+        token = generate_verify_code(page, id, time, code),
         image = generate_image(code),
     }
 end
@@ -101,11 +94,40 @@ function M.check(page, args)
         return true
     end
 
-    local correct_code = generate_verify_code(page, args)
+    if not (args and args.captchaId and args.captchaTime and args.captchaResponse) then
+        return false
+    end
+
+    local id = args.captchaId
+    local time = tonumber(args.captchaTime)
+    local response = args.captchaResponse
+
+    local captcha_age = ngx.now() - time
+    if captcha_age > captcha_timeout then
+        return false
+    end
+
+    local redis_key = "captcha:" .. id
+
+    local redis_inst = redis.get_shared()
+    local res = redis_inst:exists(redis_key)
+    if utils.is_falsy_or_null(res) then
+        error('redis error')
+    end
+    if res > 0 then -- already used
+        return false
+    end
+
+    local correct_code = generate_verify_code(page, id, time, response)
     if not correct_code then
         return false
     end
 
+    -- ensure that the captcha can only be used once (even if wrong!)
+    res = redis_inst:set(redis_key, tostring(ngx.now()), 'ex', captcha_timeout)
+    if utils.is_falsy_or_null(res) then
+        error('redis error')
+    end
     return correct_code == args.captchaToken
 end
 

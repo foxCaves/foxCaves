@@ -13,7 +13,7 @@ export const LoginPage: React.FC = () => {
     const [username, setUsernameCB] = useInputFieldSetter('');
     const [password, setPasswordCB] = useInputFieldSetter('');
     const [remember, setRememberCB] = useCheckboxFieldSetter(false);
-    const [captchaResponse, setCaptchaResponse] = useState('');
+    const [captchaResponse, setCaptchaResponse] = useState< { [key: string]: string; }>({});
     const [captchaReset, setCaptchaReset] = useState(0);
 
     const { refreshUser, apiAccessor } = useContext(AppContext);
@@ -37,7 +37,7 @@ export const LoginPage: React.FC = () => {
                             username,
                             password,
                             remember,
-                            captchaResponse,
+                            ...captchaResponse,
                         },
                     })
                     .then(refreshUser),
@@ -56,7 +56,7 @@ export const LoginPage: React.FC = () => {
             logError(error as Error);
             await refreshUser();
         } finally {
-            setCaptchaResponse('');
+            setCaptchaResponse({});
             setCaptchaReset((prev) => prev + 1);
         }
     }, [captchaResponse, username, password, remember, refreshUser, apiAccessor]);
@@ -109,7 +109,7 @@ export const LoginPage: React.FC = () => {
                         value="true"
                     />
                 </Form.Group>
-                <Button disabled={captchaResponse === ''} size="lg" type="submit" variant="primary">
+                <Button disabled={!captchaResponse.captchaResponse} size="lg" type="submit" variant="primary">
                     Login
                 </Button>
             </Form>

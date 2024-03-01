@@ -15,7 +15,7 @@ export const RegistrationPage: React.FC = () => {
     const [password, setPasswordCB] = useInputFieldSetter('');
     const [passwordConfirm, setPasswordConfirmCB] = useInputFieldSetter('');
     const [email, setEmailCB] = useInputFieldSetter('');
-    const [captchaResponse, setCaptchaResponse] = useState('');
+    const [captchaResponse, setCaptchaResponse] = useState< { [key: string]: string; }>({});
     const [agreeTos, setAgreeTosCallback] = useCheckboxFieldSetter(false);
     const [registrationDone, setRegistrationDone] = useState(false);
     const [captchaReset, setCaptchaReset] = useState(0);
@@ -51,7 +51,7 @@ export const RegistrationPage: React.FC = () => {
                             password,
                             email,
                             agreeTos,
-                            captchaResponse,
+                            ...captchaResponse,
                         },
                     }),
                     {
@@ -70,7 +70,7 @@ export const RegistrationPage: React.FC = () => {
                 })
                 .catch(logError)
                 .finally(() => {
-                    setCaptchaResponse('');
+                    setCaptchaResponse({});
                     setCaptchaReset((prev) => prev + 1);
                 });
         },
@@ -143,7 +143,7 @@ export const RegistrationPage: React.FC = () => {
                         value="true"
                     />
                 </Form.Group>
-                <Button disabled={captchaResponse === ''} size="lg" type="submit" variant="primary">
+                <Button disabled={!captchaResponse.captchaResponse} size="lg" type="submit" variant="primary">
                     Register
                 </Button>
             </Form>

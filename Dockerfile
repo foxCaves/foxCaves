@@ -25,7 +25,7 @@ ENV ENVIRONMENT=development
 ENV AWS_EC2_METADATA_DISABLED=true
 
 # OS packages
-RUN apk update && apk add s6 imagemagick git argon2-libs argon2-dev argon2 runuser libuuid openssl openssl-dev certbot certbot-nginx ca-certificates
+RUN apk update && apk add s6 imagemagick git argon2-libs argon2-dev argon2 runuser libuuid openssl openssl-dev certbot certbot-nginx ca-certificates libqrencode-tools
 
 # Lua modules
 RUN mkdir -p /usr/local/share/lua/5.1

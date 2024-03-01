@@ -93,7 +93,7 @@ local default_chars =
         '_',
         '-',
     }
-function M.string(len, chrs)
+function M.string(len, chars)
     if not chars then
         chars = default_chars
     end

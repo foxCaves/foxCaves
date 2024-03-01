@@ -12,7 +12,7 @@ export const ForgotPasswordPage: React.FC = () => {
     const { apiAccessor } = useContext(AppContext);
     const [username, setUsernameCB] = useInputFieldSetter('');
     const [email, setEmailCB] = useInputFieldSetter('');
-    const [captchaResponse, setCaptchaResponse] = useState('');
+    const [captchaResponse, setCaptchaResponse] = useState< { [key: string]: string; }>({});
     const [captchaReset, setCaptchaReset] = useState(0);
 
     const submitForgotPasswordFormAsync = useCallback(async () => {
@@ -32,7 +32,7 @@ export const ForgotPasswordPage: React.FC = () => {
                     username,
                     email,
                     action: 'forgot_password',
-                    captchaResponse,
+                    ...captchaResponse,
                 },
             }),
             {
@@ -54,7 +54,7 @@ export const ForgotPasswordPage: React.FC = () => {
             submitForgotPasswordFormAsync()
                 .catch(logError)
                 .finally(() => {
-                    setCaptchaResponse('');
+                    setCaptchaResponse({});
                     setCaptchaReset((prev) => prev + 1);
                 });
         },
@@ -91,7 +91,7 @@ export const ForgotPasswordPage: React.FC = () => {
                     page="forgot_password"
                     resetFactor={captchaReset}
                 />
-                <Button disabled={!captchaResponse} size="lg" type="submit" variant="primary">
+                <Button disabled={!captchaResponse.captchaResponse} size="lg" type="submit" variant="primary">
                     Send E-Mail
                 </Button>
             </Form>
