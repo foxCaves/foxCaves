@@ -10,3 +10,7 @@ export const logError = (error: Error): void => {
 export const sortByDate = (a: BaseModel, b: BaseModel): number => {
     return b.created_at.getTime() - a.created_at.getTime();
 };
+
+export function noop(): void {
+    // do nothing
+}

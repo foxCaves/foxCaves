@@ -343,7 +343,6 @@ const paintBrushes: Record<string, Brush> = {
             foregroundCanvasCTX.moveTo(user.cursorData.lastX, user.cursorData.lastY);
             foregroundCanvasCTX.lineTo(x, y);
             foregroundCanvasCTX.stroke();
-            return true;
         },
     },
 
