@@ -3,6 +3,7 @@ import { FileModel } from '../models/file';
 import { LinkModel } from '../models/link';
 import { UserDetailsModel } from '../models/user';
 import { AppContext } from '../utils/context';
+import { noop } from '../utils/misc';
 import { ReconnectingWebSocket } from '../utils/websocket_autoreconnect';
 
 type ModelMap<T> = Map<string, T>;
@@ -188,11 +189,11 @@ export const LiveLoadingContainer: React.FC<LiveLoadingContainerInterface> = ({ 
         if (!curUserId) {
             wsRef.current?.close();
             wsRef.current = undefined;
-            return;
+            return noop;
         }
 
         if (wsRef.current) {
-            return;
+            return noop;
         }
 
         const url = new URL(document.location.href);
