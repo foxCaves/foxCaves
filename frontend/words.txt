@@ -5,8 +5,6 @@ foxcaves
 f0xes
 Toastify
 filechooser
-recaptcha
-Reaptcha
 chunkhash
 contenthash
 Doridian

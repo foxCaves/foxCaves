@@ -9,7 +9,6 @@ local config = {
         login = false,
         forgot_password = false,
         resend_activation = false,
-        recaptcha_site_key = '',
     },
     sentry = { dsn = '' },
     backend_revision = revision.hash,

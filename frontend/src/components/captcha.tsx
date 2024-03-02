@@ -1,44 +1,142 @@
-import React, { useCallback, useEffect, useRef } from 'react';
-import Reaptcha from 'reaptcha';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
+import Button from 'react-bootstrap/Button';
+import Col from 'react-bootstrap/Col';
+import FloatingLabel from 'react-bootstrap/FloatingLabel';
+import Form from 'react-bootstrap/Form';
+import Row from 'react-bootstrap/Row';
 import { config, Config } from '../utils/config';
+import { AppContext } from '../utils/context';
+import { useInputFieldSetter } from '../utils/hooks';
 import { logError } from '../utils/misc';
 
 interface CustomRouteHandlerOptions {
     readonly page: keyof Config['captcha'];
-    readonly onVerifyChanged: (response: string) => void;
+    readonly onParamChange: (params: Record<string, string>) => void;
     readonly resetFactor: unknown;
 }
 
-export const CaptchaContainer: React.FC<CustomRouteHandlerOptions> = ({ page, onVerifyChanged, resetFactor }) => {
-    const captchaRef = useRef<Reaptcha>(null);
+interface CaptchaResponse {
+    ok: boolean;
+    time: number;
+    id: string;
+    token: string;
+    image: string;
+}
 
-    const setNotVerified = useCallback(() => {
-        onVerifyChanged('');
-    }, [onVerifyChanged]);
+const invalidCaptchaResponse = {
+    ok: false,
+    time: 0,
+    id: '',
+    token: '',
+    image: '',
+};
 
+function makeCaptchaImage(data: CaptchaResponse | undefined, dataLoading: boolean) {
+    if (data?.image) {
+        return <img alt="CAPTCHA" src={data.image} />;
+    }
+
+    if (dataLoading) {
+        return <h3>Loading</h3>;
+    }
+
+    return <h3>Error! Click refresh</h3>;
+}
+
+export const CaptchaContainer: React.FC<CustomRouteHandlerOptions> = ({ page, onParamChange, resetFactor }) => {
     const enabled = config.captcha[page];
 
-    useEffect(() => {
+    const { apiAccessor } = useContext(AppContext);
+    const [dataLoading, setDataLoading] = useState(false);
+    const [data, setData] = useState<CaptchaResponse | undefined>();
+
+    const onResponseChangeCallback = useCallback(
+        (response: string) => {
+            if (!data) {
+                return;
+            }
+
+            onParamChange({
+                captchaResponse: response,
+                captchaTime: data.time.toString(),
+                captchaId: data.id,
+                captchaToken: data.token,
+            });
+        },
+        [data, onParamChange],
+    );
+
+    const [response, setResponse, setResponseText] = useInputFieldSetter('', onResponseChangeCallback);
+
+    const setReload = useCallback(() => {
         if (!enabled) {
-            onVerifyChanged('disabled');
+            onParamChange({
+                captchaResponse: 'disabled',
+            });
+
             return;
         }
 
-        captchaRef.current?.reset().catch(logError);
-    }, [resetFactor, enabled, onVerifyChanged]);
+        setResponseText('');
+        onParamChange({});
+        setData(undefined);
+    }, [enabled, setData, onParamChange, setResponseText]);
+
+    useEffect(() => {
+        setReload();
+    }, [resetFactor, setReload]);
+
+    useEffect(() => {
+        if (!enabled) {
+            setReload();
+        }
+    }, [enabled, setReload]);
+
+    useEffect(() => {
+        if (dataLoading || !!data) {
+            return;
+        }
+
+        setDataLoading(true);
+
+        apiAccessor
+            .fetch(`/api/v1/system/captcha/${page}`, {
+                method: 'POST',
+            })
+            .then((newData) => {
+                setData(newData as CaptchaResponse);
+                setDataLoading(false);
+            })
+            .catch((error: Error) => {
+                logError(error);
+                setData(invalidCaptchaResponse);
+                setDataLoading(false);
+            });
+    }, [resetFactor, enabled, data, dataLoading, apiAccessor, setDataLoading, page]);
 
     if (!enabled) {
         return null;
     }
 
     return (
-        <Reaptcha
-            onExpire={setNotVerified}
-            onVerify={onVerifyChanged}
-            ref={captchaRef}
-            sitekey={config.captcha.recaptcha_site_key}
-            size="normal"
-            theme="dark"
-        />
+        <Row>
+            <Col md="auto">{makeCaptchaImage(data, dataLoading)}</Col>
+            <Col md="auto">
+                <Button onClick={setReload}>Reload</Button>
+            </Col>
+            <Col>
+                <FloatingLabel className="w-100" label="Enter the characters you see">
+                    <Form.Control
+                        disabled={!data}
+                        name="response"
+                        onChange={setResponse}
+                        placeholder=""
+                        required
+                        type="text"
+                        value={response}
+                    />
+                </FloatingLabel>
+            </Col>
+        </Row>
     );
 };

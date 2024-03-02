@@ -12,11 +12,11 @@ export const ForgotPasswordPage: React.FC = () => {
     const { apiAccessor } = useContext(AppContext);
     const [username, setUsernameCB] = useInputFieldSetter('');
     const [email, setEmailCB] = useInputFieldSetter('');
-    const [captchaResponse, setCaptchaResponse] = useState('');
+    const [captchaResponse, setCaptchaResponse] = useState<Record<string, string>>({});
     const [captchaReset, setCaptchaReset] = useState(0);
 
     const submitForgotPasswordFormAsync = useCallback(async () => {
-        if (!captchaResponse) {
+        if (!captchaResponse.captchaResponse) {
             toast('CAPTCHA not completed', {
                 type: 'error',
                 autoClose: 5000,
@@ -32,7 +32,7 @@ export const ForgotPasswordPage: React.FC = () => {
                     username,
                     email,
                     action: 'forgot_password',
-                    captchaResponse,
+                    ...captchaResponse,
                 },
             }),
             {
@@ -54,7 +54,7 @@ export const ForgotPasswordPage: React.FC = () => {
             submitForgotPasswordFormAsync()
                 .catch(logError)
                 .finally(() => {
-                    setCaptchaResponse('');
+                    setCaptchaResponse({});
                     setCaptchaReset((prev) => prev + 1);
                 });
         },
@@ -70,7 +70,7 @@ export const ForgotPasswordPage: React.FC = () => {
                     <Form.Control
                         name="username"
                         onChange={setUsernameCB}
-                        placeholder="test user"
+                        placeholder="user"
                         required
                         type="text"
                         value={username}
@@ -80,18 +80,18 @@ export const ForgotPasswordPage: React.FC = () => {
                     <Form.Control
                         name="email"
                         onChange={setEmailCB}
-                        placeholder="test@example.com"
+                        placeholder="user@example.com"
                         required
                         type="email"
                         value={email}
                     />
                 </FloatingLabel>
                 <CaptchaContainer
-                    onVerifyChanged={setCaptchaResponse}
+                    onParamChange={setCaptchaResponse}
                     page="forgot_password"
                     resetFactor={captchaReset}
                 />
-                <Button disabled={!captchaResponse} size="lg" type="submit" variant="primary">
+                <Button disabled={!captchaResponse.captchaResponse} size="lg" type="submit" variant="primary">
                     Send E-Mail
                 </Button>
             </Form>

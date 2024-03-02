@@ -8,7 +8,6 @@ export interface Config {
         readonly login: boolean;
         readonly forgot_password: boolean;
         readonly resend_activation: boolean;
-        readonly recaptcha_site_key: string;
     };
     readonly backend_revision: boolean;
 }

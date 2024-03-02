@@ -26,7 +26,7 @@ function M.seed()
     math.randomseed(seed)
 end
 
-local chars =
+local default_chars =
     {
         'A',
         'B',
@@ -93,8 +93,11 @@ local chars =
         '_',
         '-',
     }
-local charcount = #chars
-function M.string(len)
+function M.string(len, chars)
+    if not chars then
+        chars = default_chars
+    end
+    local charcount = #chars
     local ret = {}
     for _ = 1, len do
         table.insert(ret, chars[math.random(1, charcount)])

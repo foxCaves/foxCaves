@@ -32,8 +32,6 @@ return {
         login = false,
         forgot_password = false,
         resend_activation = false,
-        recaptcha_site_key = "",
-        recaptcha_secret_key = "",
     },
     storage = {
         default = "fs",

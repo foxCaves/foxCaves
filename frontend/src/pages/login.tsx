@@ -13,13 +13,13 @@ export const LoginPage: React.FC = () => {
     const [username, setUsernameCB] = useInputFieldSetter('');
     const [password, setPasswordCB] = useInputFieldSetter('');
     const [remember, setRememberCB] = useCheckboxFieldSetter(false);
-    const [captchaResponse, setCaptchaResponse] = useState('');
+    const [captchaResponse, setCaptchaResponse] = useState<Record<string, string>>({});
     const [captchaReset, setCaptchaReset] = useState(0);
 
     const { refreshUser, apiAccessor } = useContext(AppContext);
 
     const submitLoginFormAsync = useCallback(async () => {
-        if (!captchaResponse) {
+        if (!captchaResponse.captchaResponse) {
             toast('CAPTCHA not completed', {
                 type: 'error',
                 autoClose: 5000,
@@ -37,7 +37,7 @@ export const LoginPage: React.FC = () => {
                             username,
                             password,
                             remember,
-                            captchaResponse,
+                            ...captchaResponse,
                         },
                     })
                     .then(refreshUser),
@@ -56,7 +56,7 @@ export const LoginPage: React.FC = () => {
             logError(error as Error);
             await refreshUser();
         } finally {
-            setCaptchaResponse('');
+            setCaptchaResponse({});
             setCaptchaReset((prev) => prev + 1);
         }
     }, [captchaResponse, username, password, remember, refreshUser, apiAccessor]);
@@ -94,7 +94,7 @@ export const LoginPage: React.FC = () => {
                         value={password}
                     />
                 </FloatingLabel>
-                <CaptchaContainer onVerifyChanged={setCaptchaResponse} page="login" resetFactor={captchaReset} />
+                <CaptchaContainer onParamChange={setCaptchaResponse} page="login" resetFactor={captchaReset} />
                 <p>
                     <Link to="/email/forgot_password">Forgot password?</Link>
                 </p>
@@ -109,7 +109,7 @@ export const LoginPage: React.FC = () => {
                         value="true"
                     />
                 </Form.Group>
-                <Button disabled={captchaResponse === ''} size="lg" type="submit" variant="primary">
+                <Button disabled={!captchaResponse.captchaResponse} size="lg" type="submit" variant="primary">
                     Login
                 </Button>
             </Form>
