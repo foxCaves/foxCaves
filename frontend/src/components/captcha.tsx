@@ -44,6 +44,8 @@ function makeCaptchaImage(data: CaptchaResponse | undefined, dataLoading: boolea
 }
 
 export const CaptchaContainer: React.FC<CustomRouteHandlerOptions> = ({ page, onParamChange, resetFactor }) => {
+    const enabled = config.captcha[page];
+
     const { apiAccessor } = useContext(AppContext);
     const [dataLoading, setDataLoading] = useState(false);
     const [data, setData] = useState<CaptchaResponse | undefined>();
@@ -67,12 +69,18 @@ export const CaptchaContainer: React.FC<CustomRouteHandlerOptions> = ({ page, on
     const [response, setResponse, setResponseText] = useInputFieldSetter('', onResponseChangeCallback);
 
     const setReload = useCallback(() => {
+        if (!enabled) {
+            onParamChange({
+                captchaResponse: 'disabled',
+            });
+
+            return;
+        }
+
         setResponseText('');
         onParamChange({});
         setData(undefined);
-    }, [setData, onParamChange, setResponseText]);
-
-    const enabled = config.captcha[page];
+    }, [enabled, setData, onParamChange, setResponseText]);
 
     useEffect(() => {
         setReload();
@@ -82,10 +90,10 @@ export const CaptchaContainer: React.FC<CustomRouteHandlerOptions> = ({ page, on
         if (!enabled) {
             setReload();
         }
-    }, [onParamChange, enabled, setReload]);
+    }, [enabled, setReload]);
 
     useEffect(() => {
-        if (dataLoading || !!data || !enabled) {
+        if (dataLoading || !!data) {
             return;
         }
 
