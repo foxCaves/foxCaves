@@ -1,4 +1,3 @@
-local path = require('path')
 local utils = require('foxcaves.utils')
 local router = require('foxcaves.router')
 local htmlgen = require('foxcaves.htmlgen')
@@ -16,8 +15,13 @@ local tostring = tostring
 local error_html = ''
 
 (function()
-    error_html = htmlgen.get_index_html():gsub('<script.-src="/api/v1/system/client_config.js".->',
-        '<script type="text/javascript">window.FOXCAVES_CONFIG={no_render:true,sentry:{}};'):gsub('</head>', [[
+    error_html =
+        htmlgen.get_index_html():gsub(
+            '<script.-src="/api/v1/system/client_config.js".->',
+            '<script type="text/javascript">window.FOXCAVES_CONFIG={no_render:true,sentry:{}};'
+        ):gsub(
+            '</head>',
+            [[
     <style>
         pre.prettyprint { border: 0px !important; }
         .errorline { background-color: #330000; }
@@ -25,7 +29,8 @@ local error_html = ''
         .linenums li::marker { color: #666; }
     </style>
     </head>
-    ]]):gsub('<body>.*</body>', '<body><div class="container">%%s</div></body>')
+    ]]
+        ):gsub('<body>.*</body>', '<body><div class="container">%%s</div></body>')
 end)()
 
 local M = {}
@@ -45,11 +50,18 @@ local function make_table_recurse(var, done, depth)
         end
         if not done[var] then
             done[var] = true
-            local ret = {depth == 0 and '' or htmlgen.escape_html(tostring(var)),
-                         '<table class="table table-striped"><thead><tr><th scope="row">Name</th><th scope="row">Type</th><th scope="row">Value</th></tr></thead><tbody>'}
+            local ret =
+                {
+                    depth == 0 and '' or htmlgen.escape_html(tostring(var)),
+                    '<table class="table table-striped"><thead><tr><th scope="row">Name</th><th scope="row">Type</th><th scope="row">Value</th></tr></thead><tbody>',
+                }
             for k, v in utils.sorted_pairs(var) do
-                table.insert(ret, '<tr><td>' .. htmlgen.escape_html(tostring(k)) .. '</td><td>' ..
-                    htmlgen.escape_html(type(v)) .. '</td><td>')
+                table.insert(
+                    ret,
+                    '<tr><td>' .. htmlgen.escape_html(tostring(k)) .. '</td><td>' .. htmlgen.escape_html(
+                        type(v)
+                    ) .. '</td><td>'
+                )
                 table.insert(ret, make_table_recurse(v, done, depth + 1))
                 table.insert(ret, '</td></tr>')
             end
@@ -84,7 +96,9 @@ local function get_function_code(info)
 
     if endline ~= -1 then
         local out =
-            {"<h4 class='card-title'>Code</h4><div class='card-body'><pre class='prettyprint lang-lua'><ol class='linenums'>"}
+            {
+                "<h4 class='card-title'>Code</h4><div class='card-body'><pre class='prettyprint lang-lua'><ol class='linenums'>",
+            }
         local source = info.short_src
         if source:sub(1, 9) == '[string "' then
             source = source:sub(10, -3)
@@ -126,8 +140,12 @@ local function get_function_code(info)
                         break
                     end
                 end
-                table.insert(out, "<span class='nocode'>\n...</span></li><li value=\"" .. endline .. '">' ..
-                    htmlgen.escape_html(funcEnd) .. '</li>')
+                table.insert(
+                    out,
+                    "<span class='nocode'>\n...</span></li><li value=\"" .. endline .. '">' .. htmlgen.escape_html(
+                        funcEnd
+                    ) .. '</li>'
+                )
             else
                 table.insert(out, '</li>')
             end
@@ -143,7 +161,7 @@ end
 
 local function get_locals(level)
     if debug.getlocal(level + 1, 1) then
-        local out = {"<h4 class='card-title'>Locals</h4><div class='card-text'>"}
+        local out = { "<h4 class='card-title'>Locals</h4><div class='card-text'>" }
         local tbl = {}
         for i = 1, 100 do
             local k, v = debug.getlocal(level + 1, i)
@@ -161,7 +179,7 @@ end
 
 local function get_upvalues(func)
     if func and debug.getupvalue(func, 1) then
-        local out = {"<h4 class='card-title'>Up values</h4><div class='card-text'>"}
+        local out = { "<h4 class='card-title'>Up values</h4><div class='card-text'>" }
         local tbl = {}
         for i = 1, 100 do
             local k, v = debug.getupvalue(func, i)
@@ -179,14 +197,21 @@ end
 
 local function debug_trace(err)
     local out =
-        {"<div class='card border-primary mb-3'><div class='card-header'>Basic info</div><div class='card-body'>",
-         string.format([[<table class="table table-striped"><tbody>
+        {
+            "<div class='card border-primary mb-3'><div class='card-header'>Basic info</div><div class='card-body'>",
+            string.format(
+                [[<table class="table table-striped"><tbody>
                     <tr><th scope="col">Error</th><td>%s</td></tr>
                     <tr><th scope="col">User ID</th><td>%s</td></tr>
                     <tr><th scope="col">IP</th><td>%s</td></tr>
-                    <tr><th scope="col">URL</th><td>%s</td></tr>]], htmlgen.escape_html(err),
-            htmlgen.escape_html(ngx.ctx.user and ngx.ctx.user.id or 'N/A'), htmlgen.escape_html(ngx.var.remote_addr),
-            htmlgen.escape_html(ngx.var.request_uri)), '</tbody></table></div></div>'}
+                    <tr><th scope="col">URL</th><td>%s</td></tr>]],
+                htmlgen.escape_html(err),
+                htmlgen.escape_html(ngx.ctx.user and ngx.ctx.user.id or 'N/A'),
+                htmlgen.escape_html(ngx.var.remote_addr),
+                htmlgen.escape_html(ngx.var.request_uri)
+            ),
+            '</tbody></table></div></div>',
+        }
 
     local cur
     for level = 2, 100 do
@@ -201,17 +226,28 @@ local function debug_trace(err)
             src_file = src_file:sub(10, -3)
         end
 
-        table.insert(out, "<div class='card border-primary mb-3'><div class='card-header'>Level " .. tostring(level) ..
-            "</div><div class='card-body'>")
+        table.insert(
+            out,
+            "<div class='card border-primary mb-3'><div class='card-header'>Level " .. tostring(
+                level
+            ) .. "</div><div class='card-body'>"
+        )
 
-        table.insert(out, "<h4 class='card-title'>Info</h4><div class='card-text'><ul><li>Where: " ..
-            htmlgen.escape_html(src_file) .. '</li>')
+        table.insert(
+            out,
+            "<h4 class='card-title'>Info</h4><div class='card-text'><ul><li>Where: " .. htmlgen.escape_html(
+                src_file
+            ) .. '</li>'
+        )
         if cur.currentline ~= -1 then
             table.insert(out, '<li>Line: ' .. cur.currentline .. '</li>')
         end
-        table.insert(out,
-            '<li>What: ' .. (cur.name and "In function '" .. htmlgen.escape_html(cur.name) .. "'" or 'In main chunk') ..
-                '</li></ul></div>')
+        table.insert(
+            out,
+            '<li>What: ' .. (cur.name and "In function '" .. htmlgen.escape_html(
+                cur.name
+            ) .. "'" or 'In main chunk') .. '</li></ul></div>'
+        )
 
         table.insert(out, get_locals(level))
         table.insert(out, get_upvalues(cur.func))

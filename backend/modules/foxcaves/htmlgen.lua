@@ -1,3 +1,7 @@
+local path = require('path')
+
+local ngx = ngx
+
 local index_html = ''
 local index_html_pre_metadata = ''
 local index_html_post_metadata = ''
@@ -5,7 +9,7 @@ local index_html_post_metadata = ''
 local html_escape_table = {
     ['&'] = '&amp;',
     ['<'] = '&lt;',
-    ['>'] = '&gt;'
+    ['>'] = '&gt;',
 }
 
 local html_replacement_expr = ''
@@ -56,6 +60,12 @@ function M.generate_index_html(title, description, image)
         <meta property="og:description" content="]] .. description .. [[" />
         <meta property="og:image" content="]] .. image .. [[" />
     ]] .. index_html_post_metadata
+end
+
+function M.render_index_html(title, description, image)
+    ngx.header['Content-Type'] = 'text/html'
+    ngx.say(M.generate_index_html(title, description, image))
+    ngx.eof()
 end
 
 function M.escape_html(str)
