@@ -1,6 +1,8 @@
 local path = require('path')
 local utils = require('foxcaves.utils')
 local router = require('foxcaves.router')
+local htmlgen = require('foxcaves.htmlgen')
+
 local ngx = ngx
 local xpcall = xpcall
 local table = table
@@ -11,34 +13,11 @@ local string = string
 local type = type
 local tostring = tostring
 
-local html_escape_table = {
-    ['&'] = '&amp;',
-    ['<'] = '&lt;',
-    ['>'] = '&gt;',
-}
-
-local html_replacement_expr = ''
-
 local error_html = ''
 
 (function()
-    for raw in next, html_escape_table do
-        html_replacement_expr = html_replacement_expr .. raw
-    end
-
-    html_replacement_expr = '[' .. html_replacement_expr .. ']'
-
-    local fh = io.open(path.abs(LUA_ROOT .. '/../html') .. '/static/index.html', 'r')
-    local index_html = fh:read('*a')
-    fh:close()
-
-    error_html =
-        index_html:gsub(
-            '<script.-src="/api/v1/system/client_config.js".->',
-            '<script type="text/javascript">window.FOXCAVES_CONFIG={no_render:true,sentry:{}};'
-        ):gsub(
-            '</head>',
-            [[
+    error_html = htmlgen.get_index_html():gsub('<script.-src="/api/v1/system/client_config.js".->',
+        '<script type="text/javascript">window.FOXCAVES_CONFIG={no_render:true,sentry:{}};'):gsub('</head>', [[
     <style>
         pre.prettyprint { border: 0px !important; }
         .errorline { background-color: #330000; }
@@ -46,27 +25,18 @@ local error_html = ''
         .linenums li::marker { color: #666; }
     </style>
     </head>
-    ]]
-        ):gsub('<body>.*</body>', '<body><div class="container">%%s</div></body>')
+    ]]):gsub('<body>.*</body>', '<body><div class="container">%%s</div></body>')
 end)()
 
 local M = {}
 require('foxcaves.module_helper').setmodenv()
-
-local function escape_html(str)
-    if not str or type(str) ~= 'string' then
-        str = tostring(str)
-    end
-    str = str:gsub(html_replacement_expr, html_escape_table)
-    return str
-end
 
 local function make_table_recurse(var, done, depth)
     depth = depth or 0
     local t = type(var)
 
     if depth > 1 then
-        return escape_html(tostring(var))
+        return htmlgen.escape_html(tostring(var))
     end
 
     if t == 'table' then
@@ -75,16 +45,11 @@ local function make_table_recurse(var, done, depth)
         end
         if not done[var] then
             done[var] = true
-            local ret =
-                {
-                    depth == 0 and '' or escape_html(tostring(var)),
-                    '<table class="table table-striped"><thead><tr><th scope="row">Name</th><th scope="row">Type</th><th scope="row">Value</th></tr></thead><tbody>',
-                }
+            local ret = {depth == 0 and '' or htmlgen.escape_html(tostring(var)),
+                         '<table class="table table-striped"><thead><tr><th scope="row">Name</th><th scope="row">Type</th><th scope="row">Value</th></tr></thead><tbody>'}
             for k, v in utils.sorted_pairs(var) do
-                table.insert(
-                    ret,
-                    '<tr><td>' .. escape_html(tostring(k)) .. '</td><td>' .. escape_html(type(v)) .. '</td><td>'
-                )
+                table.insert(ret, '<tr><td>' .. htmlgen.escape_html(tostring(k)) .. '</td><td>' ..
+                    htmlgen.escape_html(type(v)) .. '</td><td>')
                 table.insert(ret, make_table_recurse(v, done, depth + 1))
                 table.insert(ret, '</td></tr>')
             end
@@ -94,18 +59,18 @@ local function make_table_recurse(var, done, depth)
 
         return tostring(var)
     elseif t == 'function' then
-        return escape_html(tostring(var))
+        return htmlgen.escape_html(tostring(var))
     else
-        return escape_html(tostring(var):sub(1, 1024))
+        return htmlgen.escape_html(tostring(var):sub(1, 1024))
     end
 end
 
 local function get_function_code(info)
     local curr = info.currentline
-    local startline = info.linedefined or -1 --function start
-    local endline = info.lastlinedefined or -1 --function end
-    local minline = math.max(curr - 5, 1) --start of capture
-    local maxline = curr + 5 --end of capture
+    local startline = info.linedefined or -1 -- function start
+    local endline = info.lastlinedefined or -1 -- function end
+    local minline = math.max(curr - 5, 1) -- start of capture
+    local maxline = curr + 5 -- end of capture
     if startline < 1 then
         startline = 1
     end
@@ -119,9 +84,7 @@ local function get_function_code(info)
 
     if endline ~= -1 then
         local out =
-            {
-                "<h4 class='card-title'>Code</h4><div class='card-body'><pre class='prettyprint lang-lua'><ol class='linenums'>",
-            }
+            {"<h4 class='card-title'>Code</h4><div class='card-body'><pre class='prettyprint lang-lua'><ol class='linenums'>"}
         local source = info.short_src
         if source:sub(1, 9) == '[string "' then
             source = source:sub(10, -3)
@@ -139,7 +102,7 @@ local function get_function_code(info)
             end
             if (minline ~= startline) then
                 table.insert(out, '<li value="' .. startline .. '">')
-                table.insert(out, escape_html(funcStart))
+                table.insert(out, htmlgen.escape_html(funcStart))
                 table.insert(out, "<span class='nocode'>\n...</span></li>")
             end
             for i = minline, maxline do
@@ -148,7 +111,7 @@ local function get_function_code(info)
                 else
                     table.insert(out, '<li value="' .. i .. '">')
                 end
-                table.insert(out, escape_html(iter()))
+                table.insert(out, htmlgen.escape_html(iter()))
                 if i < maxline then
                     table.insert(out, '</li>')
                 end
@@ -163,12 +126,8 @@ local function get_function_code(info)
                         break
                     end
                 end
-                table.insert(
-                    out,
-                    "<span class='nocode'>\n...</span></li><li value=\"" .. endline .. '">' .. escape_html(
-                        funcEnd
-                    ) .. '</li>'
-                )
+                table.insert(out, "<span class='nocode'>\n...</span></li><li value=\"" .. endline .. '">' ..
+                    htmlgen.escape_html(funcEnd) .. '</li>')
             else
                 table.insert(out, '</li>')
             end
@@ -184,7 +143,7 @@ end
 
 local function get_locals(level)
     if debug.getlocal(level + 1, 1) then
-        local out = { "<h4 class='card-title'>Locals</h4><div class='card-text'>" }
+        local out = {"<h4 class='card-title'>Locals</h4><div class='card-text'>"}
         local tbl = {}
         for i = 1, 100 do
             local k, v = debug.getlocal(level + 1, i)
@@ -202,7 +161,7 @@ end
 
 local function get_upvalues(func)
     if func and debug.getupvalue(func, 1) then
-        local out = { "<h4 class='card-title'>Up values</h4><div class='card-text'>" }
+        local out = {"<h4 class='card-title'>Up values</h4><div class='card-text'>"}
         local tbl = {}
         for i = 1, 100 do
             local k, v = debug.getupvalue(func, i)
@@ -220,21 +179,14 @@ end
 
 local function debug_trace(err)
     local out =
-        {
-            "<div class='card border-primary mb-3'><div class='card-header'>Basic info</div><div class='card-body'>",
-            string.format(
-                [[<table class="table table-striped"><tbody>
+        {"<div class='card border-primary mb-3'><div class='card-header'>Basic info</div><div class='card-body'>",
+         string.format([[<table class="table table-striped"><tbody>
                     <tr><th scope="col">Error</th><td>%s</td></tr>
                     <tr><th scope="col">User ID</th><td>%s</td></tr>
                     <tr><th scope="col">IP</th><td>%s</td></tr>
-                    <tr><th scope="col">URL</th><td>%s</td></tr>]],
-                escape_html(err),
-                escape_html(ngx.ctx.user and ngx.ctx.user.id or 'N/A'),
-                escape_html(ngx.var.remote_addr),
-                escape_html(ngx.var.request_uri)
-            ),
-            '</tbody></table></div></div>',
-        }
+                    <tr><th scope="col">URL</th><td>%s</td></tr>]], htmlgen.escape_html(err),
+            htmlgen.escape_html(ngx.ctx.user and ngx.ctx.user.id or 'N/A'), htmlgen.escape_html(ngx.var.remote_addr),
+            htmlgen.escape_html(ngx.var.request_uri)), '</tbody></table></div></div>'}
 
     local cur
     for level = 2, 100 do
@@ -249,26 +201,17 @@ local function debug_trace(err)
             src_file = src_file:sub(10, -3)
         end
 
-        table.insert(
-            out,
-            "<div class='card border-primary mb-3'><div class='card-header'>Level " .. tostring(
-                level
-            ) .. "</div><div class='card-body'>"
-        )
+        table.insert(out, "<div class='card border-primary mb-3'><div class='card-header'>Level " .. tostring(level) ..
+            "</div><div class='card-body'>")
 
-        table.insert(
-            out,
-            "<h4 class='card-title'>Info</h4><div class='card-text'><ul><li>Where: " .. escape_html(src_file) .. '</li>'
-        )
+        table.insert(out, "<h4 class='card-title'>Info</h4><div class='card-text'><ul><li>Where: " ..
+            htmlgen.escape_html(src_file) .. '</li>')
         if cur.currentline ~= -1 then
             table.insert(out, '<li>Line: ' .. cur.currentline .. '</li>')
         end
-        table.insert(
-            out,
-            '<li>What: ' .. (cur.name and "In function '" .. escape_html(
-                cur.name
-            ) .. "'" or 'In main chunk') .. '</li></ul></div>'
-        )
+        table.insert(out,
+            '<li>What: ' .. (cur.name and "In function '" .. htmlgen.escape_html(cur.name) .. "'" or 'In main chunk') ..
+                '</li></ul></div>')
 
         table.insert(out, get_locals(level))
         table.insert(out, get_upvalues(cur.func))

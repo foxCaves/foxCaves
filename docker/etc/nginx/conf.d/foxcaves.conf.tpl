@@ -44,6 +44,12 @@ server {
         rewrite ^ /static/index.html break;
     }
 
+    location /view {
+        default_type text/html;
+        types { }
+        content_by_lua_file /var/www/foxcaves/lua/nginx_run.lua;
+    }
+
     location /static {
         expires 1h;
     }
