@@ -10,6 +10,7 @@ local html_escape_table = {
     ['&'] = '&amp;',
     ['<'] = '&lt;',
     ['>'] = '&gt;',
+    ['"'] = '&quot;'
 }
 
 local html_replacement_expr = ''
@@ -36,12 +37,21 @@ local type = type
 local M = {}
 require('foxcaves.module_helper').setmodenv()
 
+local function escape_html(str)
+    if not str or type(str) ~= 'string' then
+        str = tostring(str)
+    end
+    str = str:gsub(html_replacement_expr, html_escape_table)
+    return str
+end
+M.escape_html = escape_html
+
 function M.get_index_html()
     return index_html
 end
 
-function M.generate_index_html(title, description, image)
-    if not (title or description or image) then
+local function generate_index_html(title, description, image, site_type)
+    if not (title or description or image or site_type) then
         return index_html
     end
 
@@ -54,26 +64,24 @@ function M.generate_index_html(title, description, image)
     if not image then
         image = 'https://foxcav.es/static/img/logo.jpg'
     end
+    if not site_type then
+        site_type = 'website'
+    end
 
     return index_html_pre_metadata .. [[
-        <meta property="og:title" content="]] .. title .. [[" />
-        <meta property="og:description" content="]] .. description .. [[" />
-        <meta property="og:image" content="]] .. image .. [[" />
+        <meta property="og:title" content="]] .. escape_html(title) .. [[" />
+        <meta property="og:description" content="]] .. escape_html(description) .. [[" />
+        <meta property="og:image" content="]] .. escape_html(image) .. [[" />
+        <meta property="og:image:secure_url" content="]] .. escape_html(image) .. [[" />
+        <meta property="og:type" content="]] .. escape_html(site_type) .. [[" />
     ]] .. index_html_post_metadata
 end
+M.generate_index_html = generate_index_html
 
 function M.render_index_html(title, description, image)
     ngx.header['Content-Type'] = 'text/html'
-    ngx.say(M.generate_index_html(title, description, image))
+    ngx.say(generate_index_html(title, description, image))
     ngx.eof()
-end
-
-function M.escape_html(str)
-    if not str or type(str) ~= 'string' then
-        str = tostring(str)
-    end
-    str = str:gsub(html_replacement_expr, html_escape_table)
-    return str
 end
 
 return M
