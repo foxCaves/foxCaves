@@ -9,7 +9,7 @@ local index_html_post_metadata = ''
 local html_escape_table = {
     ['&'] = '&amp;',
     ['<'] = '&lt;',
-    ['>'] = '&gt;'
+    ['>'] = '&gt;',
 }
 
 local html_replacement_expr = ''
