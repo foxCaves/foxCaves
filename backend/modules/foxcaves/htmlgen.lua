@@ -10,7 +10,7 @@ local html_escape_table = {
     ['&'] = '&amp;',
     ['<'] = '&lt;',
     ['>'] = '&gt;',
-    ['"'] = '&quot;'
+    ['"'] = '&quot;',
 }
 
 local html_replacement_expr = ''
@@ -69,11 +69,21 @@ local function generate_index_html(title, description, image, site_type)
     end
 
     return index_html_pre_metadata .. [[
-        <meta property="og:title" content="]] .. escape_html(title) .. [[" />
-        <meta property="og:description" content="]] .. escape_html(description) .. [[" />
-        <meta property="og:image" content="]] .. escape_html(image) .. [[" />
-        <meta property="og:image:secure_url" content="]] .. escape_html(image) .. [[" />
-        <meta property="og:type" content="]] .. escape_html(site_type) .. [[" />
+        <meta property="og:title" content="]] .. escape_html(
+        title
+    ) .. [[" />
+        <meta property="og:description" content="]] .. escape_html(
+        description
+    ) .. [[" />
+        <meta property="og:image" content="]] .. escape_html(
+        image
+    ) .. [[" />
+        <meta property="og:image:secure_url" content="]] .. escape_html(
+        image
+    ) .. [[" />
+        <meta property="og:type" content="]] .. escape_html(
+        site_type
+    ) .. [[" />
     ]] .. index_html_post_metadata
 end
 M.generate_index_html = generate_index_html
