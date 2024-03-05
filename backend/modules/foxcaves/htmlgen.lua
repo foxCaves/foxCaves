@@ -2,6 +2,8 @@ local path = require('path')
 local config = require('foxcaves.config')
 
 local ngx = ngx
+local tostring = tostring
+local type = type
 
 local index_html = ''
 local index_html_pre_metadata = ''
@@ -31,9 +33,6 @@ local html_replacement_expr = ''
     index_html_pre_metadata = index_html:sub(1, idx - 1)
     index_html_post_metadata = index_html:sub(idx)
 end)()
-
-local tostring = tostring
-local type = type
 
 local M = {}
 require('foxcaves.module_helper').setmodenv()
