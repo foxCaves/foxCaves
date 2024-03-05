@@ -9,7 +9,7 @@ local index_html_post_metadata = ''
 local html_escape_table = {
     ['&'] = '&amp;',
     ['<'] = '&lt;',
-    ['>'] = '&gt;',
+    ['>'] = '&gt;'
 }
 
 local html_replacement_expr = ''
@@ -52,7 +52,7 @@ function M.generate_index_html(title, description, image)
         description = 'foxCaves'
     end
     if not image then
-        image = 'https://foxcaves.com/static/img/logo.jpg'
+        image = 'https://foxcav.es/static/img/logo.jpg'
     end
 
     return index_html_pre_metadata .. [[
