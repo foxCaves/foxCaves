@@ -15,13 +15,11 @@ dofile(root .. '/init.lua')
 dofile(root .. '/init_worker.lua')
 
 local config = require('foxcaves.config')
+local utils = require('foxcaves.utils')
+local htmlgen = require('foxcaves.htmlgen')
 
-local function url_to_domain(url)
-    return url:gsub('^https?://', ''):gsub(':.*$', '')
-end
-
-local short_domain = url_to_domain(config.http.short_url)
-local main_domain = url_to_domain(config.http.main_url)
+local short_domain = utils.url_to_domain(config.http.short_url)
+local main_domain = utils.url_to_domain(config.http.main_url)
 local upstream_ips_str = ''
 for _, upstream_ip in pairs(config.http.upstream_ips) do
     upstream_ips_str = upstream_ips_str .. 'set_real_ip_from ' .. upstream_ip .. ';\n'
@@ -85,4 +83,8 @@ for name, storage in pairs(storage_map) do
         fh:write('\n\n')
     end
 end
+fh:close()
+
+fh = io.open(path.abs(LUA_ROOT .. '/../html') .. '/static/index_processed.html', 'w')
+fh:write(htmlgen.generate_index_html())
 fh:close()

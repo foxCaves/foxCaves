@@ -1,4 +1,5 @@
 local path = require('path')
+local config = require('foxcaves.config')
 
 local ngx = ngx
 
@@ -50,11 +51,14 @@ function M.get_index_html()
     return index_html
 end
 
-local function generate_index_html(title, description, image, site_type)
-    if not (title or description or image or site_type) then
-        return index_html
-    end
+local FIXED_METADATA =
+    [[
+    <link rel="dns-prefetch" href="]] .. config.http.short_url .. [[" />
+    <meta property="og:site_name" content="foxCaves" />
+    <meta name="twitter:card" content="summary_large_image">
+]]
 
+local function generate_index_html(title, description, image, site_type)
     if not title then
         title = 'foxCaves'
     end
@@ -68,7 +72,7 @@ local function generate_index_html(title, description, image, site_type)
         site_type = 'website'
     end
 
-    return index_html_pre_metadata .. [[
+    return index_html_pre_metadata .. FIXED_METADATA .. [[
         <meta property="og:title" content="]] .. escape_html(
         title
     ) .. [[" />
@@ -78,15 +82,8 @@ local function generate_index_html(title, description, image, site_type)
         <meta property="og:image" content="]] .. escape_html(
         image
     ) .. [[" />
-        <meta property="og:image:secure_url" content="]] .. escape_html(
-        image
-    ) .. [[" />
         <meta property="og:type" content="]] .. escape_html(
         site_type
-    ) .. [[" />
-        <meta name="twitter:card" content="summary_large_image">
-        <meta name="twitter:image" content="]] .. escape_html(
-        image
     ) .. [[" />
     ]] .. index_html_post_metadata
 end
