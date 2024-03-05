@@ -84,6 +84,10 @@ local function generate_index_html(title, description, image, site_type)
         <meta property="og:type" content="]] .. escape_html(
         site_type
     ) .. [[" />
+        <meta name="twitter:card" content="summary_large_image">
+        <meta name="twitter:image" content="]] .. escape_html(
+        image
+    ) .. [[" />
     ]] .. index_html_post_metadata
 end
 M.generate_index_html = generate_index_html
