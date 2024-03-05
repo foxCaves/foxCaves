@@ -2,6 +2,8 @@ local path = require('path')
 local config = require('foxcaves.config')
 
 local ngx = ngx
+local tostring = tostring
+local type = type
 
 local index_html = ''
 local index_html_pre_metadata = ''
@@ -32,9 +34,6 @@ local html_replacement_expr = ''
     index_html_post_metadata = index_html:sub(idx)
 end)()
 
-local tostring = tostring
-local type = type
-
 local M = {}
 require('foxcaves.module_helper').setmodenv()
 
@@ -47,16 +46,18 @@ local function escape_html(str)
 end
 M.escape_html = escape_html
 
-function M.get_index_html()
-    return index_html
-end
-
 local FIXED_METADATA =
     [[
-    <link rel="dns-prefetch" href="]] .. config.http.short_url .. [[" />
+    <link rel="dns-prefetch" href="]] .. escape_html(
+        config.http.short_url
+    ) .. [[" />
     <meta property="og:site_name" content="foxCaves" />
     <meta name="twitter:card" content="summary_large_image">
 ]]
+
+function M.get_index_html()
+    return index_html
+end
 
 local function generate_index_html(title, description, image, site_type)
     if not title then
