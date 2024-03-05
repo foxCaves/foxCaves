@@ -13,8 +13,14 @@ local html_escape_table = {
     ['&'] = '&amp;',
     ['<'] = '&lt;',
     ['>'] = '&gt;',
-    ['"'] = '&quot;',
+    ['"'] = '&quot;'
 }
+
+local FIXED_METADATA = [[
+    <link rel="dns-prefetch" href="]] .. config.http.short_url .. [[" />
+    <meta property="og:site_name" content="foxCaves" />
+    <meta name="twitter:card" content="summary_large_image">
+]]
 
 local html_replacement_expr = ''
 
@@ -50,13 +56,6 @@ function M.get_index_html()
     return index_html
 end
 
-local FIXED_METADATA =
-    [[
-    <link rel="dns-prefetch" href="]] .. config.http.short_url .. [[" />
-    <meta property="og:site_name" content="foxCaves" />
-    <meta name="twitter:card" content="summary_large_image">
-]]
-
 local function generate_index_html(title, description, image, site_type)
     if not title then
         title = 'foxCaves'
@@ -72,18 +71,10 @@ local function generate_index_html(title, description, image, site_type)
     end
 
     return index_html_pre_metadata .. FIXED_METADATA .. [[
-        <meta property="og:title" content="]] .. escape_html(
-        title
-    ) .. [[" />
-        <meta property="og:description" content="]] .. escape_html(
-        description
-    ) .. [[" />
-        <meta property="og:image" content="]] .. escape_html(
-        image
-    ) .. [[" />
-        <meta property="og:type" content="]] .. escape_html(
-        site_type
-    ) .. [[" />
+        <meta property="og:title" content="]] .. escape_html(title) .. [[" />
+        <meta property="og:description" content="]] .. escape_html(description) .. [[" />
+        <meta property="og:image" content="]] .. escape_html(image) .. [[" />
+        <meta property="og:type" content="]] .. escape_html(site_type) .. [[" />
     ]] .. index_html_post_metadata
 end
 M.generate_index_html = generate_index_html
