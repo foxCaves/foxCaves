@@ -16,13 +16,6 @@ local html_escape_table = {
     ['"'] = '&quot;',
 }
 
-local FIXED_METADATA =
-    [[
-    <link rel="dns-prefetch" href="]] .. config.http.short_url .. [[" />
-    <meta property="og:site_name" content="foxCaves" />
-    <meta name="twitter:card" content="summary_large_image">
-]]
-
 local html_replacement_expr = ''
 
 (function()
@@ -52,6 +45,15 @@ local function escape_html(str)
     return str
 end
 M.escape_html = escape_html
+
+local FIXED_METADATA =
+    [[
+    <link rel="dns-prefetch" href="]] .. escape_html(
+        config.http.short_url
+    ) .. [[" />
+    <meta property="og:site_name" content="foxCaves" />
+    <meta name="twitter:card" content="summary_large_image">
+]]
 
 function M.get_index_html()
     return index_html
