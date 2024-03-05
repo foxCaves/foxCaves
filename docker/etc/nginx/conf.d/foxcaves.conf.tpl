@@ -41,7 +41,7 @@ server {
     client_body_buffer_size 64k;
 
     location / {
-        rewrite ^ /static/index.html break;
+        rewrite ^ /static/index_processed.html break;
     }
 
     location /view {
