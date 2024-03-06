@@ -15,6 +15,7 @@ function M.set()
     cookies.set({
         key = CSRF_COOKIE_NAME,
         value = val,
+        samesite = 'Strict'
     })
 
     return val
