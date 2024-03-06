@@ -1,7 +1,7 @@
 return {
     redis = {
         host = "redis",
-        port = 6379,
+        port = 6379
     },
     postgres = {
         host = "postgres",
@@ -9,30 +9,31 @@ return {
         user = "postgres",
         database = "postgres",
         password = "postgres",
-        use_migrations = true,
+        use_migrations = true
     },
     email = {
         host = "localhost",
         port = 25,
-        from = "foxcaves@localhost",
+        from = "foxcaves@localhost"
     },
     cookies = {
         path = "/",
         httponly = true,
         secure = false,
+        samesite = "Lax"
     },
     files = {
-        thumbnail_max_size = 50 * 1024 * 1024,
+        thumbnail_max_size = 50 * 1024 * 1024
     },
     app = {
         enable_user_always_active = true,
-        enable_testing_routes = true,
+        enable_testing_routes = true
     },
     captcha = {
         registration = false,
         login = false,
         forgot_password = false,
-        resend_activation = false,
+        resend_activation = false
     },
     storage = {
         default = "fs",
@@ -40,8 +41,8 @@ return {
         fs = {
             driver = "local",
             chunk_size = 8192,
-            root_folder = "/var/www/foxcaves/storage",
-        },
+            root_folder = "/var/www/foxcaves/storage"
+        }
     },
     http = {
         short_url = "http://short.foxcaves:8080",
@@ -50,11 +51,11 @@ return {
         force_plaintext = true,
         upstream_ips = {"127.0.0.1"},
         auto_ssl = {
-            ca = "letsencrypt-test",
-        },
+            ca = "letsencrypt-test"
+        }
     },
     sentry = {
         dsn = nil,
-        dsn_frontend = nil,
-    },
+        dsn_frontend = nil
+    }
 }
