@@ -17,15 +17,6 @@ local function get_instance()
 end
 
 function M.get(cookie)
-    if not cookie.samesite then
-        cookie.samesite = 'Lax'
-    end
-    if cookie.httponly ~= false then
-        cookie.httponly = true
-    end
-    if not config.http.force_plaintext then
-        cookie.secure = true
-    end
     return get_instance():get(cookie)
 end
 
