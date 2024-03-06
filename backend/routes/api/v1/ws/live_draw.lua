@@ -29,12 +29,12 @@ local EVENT_JOIN = 'j'
 local EVENT_JOINDIRECT = 'J'
 local EVENT_LEAVE = 'l'
 local EVENT_ERROR = 'e'
---local EVENT_IMGBURST = "i"
+-- local EVENT_IMGBURST = "i"
 
 local cEVENT_JOIN = EVENT_JOIN:byte()
 local cEVENT_JOINDIRECT = EVENT_JOINDIRECT:byte()
 local cEVENT_LEAVE = EVENT_LEAVE:byte()
---local cEVENT_MOUSE_CURSOR = EVENT_MOUSE_CURSOR:byte()
+-- local cEVENT_MOUSE_CURSOR = EVENT_MOUSE_CURSOR:byte()
 
 local VALID_BRUSHES = {
     brush = true,
@@ -53,6 +53,7 @@ R.register_route(
     R.make_route_opts({
         allow_guest = true,
         disable_set_cookies = true,
+        disable_api_key = true,
     }),
     function()
         local main_redis = redis.get_shared()

@@ -5,7 +5,7 @@ local file_model = require('foxcaves.models.file')
 local ngx = ngx
 local next = next
 
-R.register_route('/api/v1/users/{user}', 'DELETE', R.make_route_opts(), function(route_vars)
+R.register_route('/api/v1/users/{user}', 'DELETE', R.make_route_opts({ disable_api_key = true }), function(route_vars)
     local user = user_model.get_by_id(route_vars.user)
     if not user then
         return utils.api_error('User not found', 404)

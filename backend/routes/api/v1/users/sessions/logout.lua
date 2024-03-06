@@ -5,6 +5,7 @@ R.register_route(
     'DELETE',
     R.make_route_opts({
         disable_set_cookies = true,
+        disable_api_key = true,
         allow_guest = true,
     }),
     function()
