@@ -1,4 +1,4 @@
-local config = require('foxcaves.config')
+local config = require('foxcaves.config').cookies
 local resty_cookie = require('resty.cookie')
 
 local ngx = ngx
@@ -11,7 +11,7 @@ local function get_instance()
         return ngx.ctx.__cookies
     end
 
-    local cookies = resty_cookie:new(config.cookies)
+    local cookies = resty_cookie:new(config)
     ngx.ctx.__cookies = cookies
     return cookies
 end
