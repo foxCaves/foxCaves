@@ -18,9 +18,6 @@ function M.LOGIN_METHOD_PASSWORD(userdata, password)
     return userdata:check_password(password)
 end
 function M.LOGIN_METHOD_API_KEY(userdata, api_key)
-    if ngx.ctx.route_opts and ngx.ctx.route_opts.disable_api_key then
-        return false
-    end
     return userdata.api_key == api_key
 end
 function M.LOGIN_METHOD_SECURITY_VERSION(userdata, security_version)
@@ -104,6 +101,9 @@ end
 function M.check()
     local user, api_key = parse_authorization_header(ngx.var.http_authorization)
     if user and api_key then
+        if ngx.ctx.route_opts and ngx.ctx.route_opts.disable_api_key then
+            return utils.api_error('This route does not allow API keys', 401)
+        end
         local success = M.login(user, api_key, {
             no_session = true,
             login_method = M.LOGIN_METHOD_API_KEY,
