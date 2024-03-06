@@ -1,16 +1,16 @@
 return {
     redis = {
         host = "127.0.0.1",
-        port = 6379,
+        port = 6379
     },
     postgres = {
         -- pgmoon options
-        use_migrations = true,
+        use_migrations = true
     },
     email = {
         host = "localhost",
         port = 25,
-        from = "foxcaves@localhost",
+        from = "foxcaves@localhost"
         -- username = "user",
         -- password = "pass",
         -- ssl = true,
@@ -19,19 +19,20 @@ return {
         path = "/",
         httponly = true,
         secure = true,
+        samesite = "Lax"
     },
     files = {
-        thumbnail_max_size = 50 * 1024 * 1024,
+        thumbnail_max_size = 50 * 1024 * 1024
     },
     app = {
         enable_user_always_active = false,
-        enable_testing_routes = false,
+        enable_testing_routes = false
     },
     captcha = {
         registration = false,
         login = false,
         forgot_password = false,
-        resend_activation = false,
+        resend_activation = false
     },
     storage = {
         default = "fs",
@@ -39,7 +40,7 @@ return {
         fs = {
             driver = "local",
             chunk_size = 8192,
-            root_folder = "/var/www/foxcaves/storage",
+            root_folder = "/var/www/foxcaves/storage"
         },
 
         s3 = {
@@ -56,9 +57,9 @@ return {
                 pool_size = 100,
                 idle_timeout = 60,
                 max_time = 60 * 60,
-                max_requests = 1000,
-            },
-        },
+                max_requests = 1000
+            }
+        }
     },
     http = {
         short_url = "http://short.foxcaves:8080",
@@ -66,11 +67,11 @@ return {
         redirect_www = true,
         upstream_ips = {"1.2.3.4"},
         auto_ssl = {
-            ca = "letsencrypt-test",
-        },
+            ca = "letsencrypt-test"
+        }
     },
     sentry = {
         dsn = nil,
-        dsn_frontend = nil,
-    },
+        dsn_frontend = nil
+    }
 }
