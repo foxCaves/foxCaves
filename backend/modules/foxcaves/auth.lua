@@ -18,6 +18,9 @@ function M.LOGIN_METHOD_PASSWORD(userdata, password)
     return userdata:check_password(password)
 end
 function M.LOGIN_METHOD_API_KEY(userdata, api_key)
+    if ngx.ctx.route_opts and ngx.ctx.route_opts.disable_api_key then
+        return false
+    end
     return userdata.api_key == api_key
 end
 function M.LOGIN_METHOD_SECURITY_VERSION(userdata, security_version)

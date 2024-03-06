@@ -43,7 +43,7 @@ R.register_route(
 R.register_route(
     '/api/v1/users/{user}/details',
     'GET',
-    R.make_route_opts(),
+    R.make_route_opts({ disable_api_key = true }),
     function(route_vars)
         local user = user_model.get_by_id(convert_user_id(route_vars.user))
         if not user then
