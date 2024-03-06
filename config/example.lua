@@ -19,7 +19,7 @@ return {
         path = "/",
         httponly = true,
         secure = true,
-        samesite = "Lax"
+        samesite = "Strict"
     },
     files = {
         thumbnail_max_size = 50 * 1024 * 1024
