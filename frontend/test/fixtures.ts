@@ -18,7 +18,7 @@ async function getStoragePath(suffix: 'storage' | 'user'): Promise<string> {
 }
 
 export const testGuest = baseTest.extend<object, object>({
-    storageState: async (_, use) => {
+    storageState: async ({}, use) => {
         await use(undefined);
     },
 });
@@ -29,7 +29,7 @@ export const testLoggedIn = baseTest.extend<{ readonly testUser: TestUser }, { w
         await use(workerStorageState);
     },
 
-    testUser: async (_, use) => {
+    testUser: async ({}, use) => {
         await use(JSON.parse(await readFile(await getStoragePath('user'), 'utf8')) as TestUser);
     },
 
