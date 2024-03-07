@@ -11,13 +11,12 @@ WORKDIR /opt/stage
 # Prepare frontend build
 COPY frontend/package.json /opt/stage/
 COPY frontend/package-lock.json /opt/stage/
-RUN npm ci
 COPY frontend/ /opt/stage/
 
 # Actually build frontend
 ARG GIT_REVISION=UNKNOWN
 ENV NODE_ENV=production
-RUN npm run build
+RUN npm ci && npm run build && rm -rf node_modules
 
 RUN find /opt/stage/build -type f -print0 > /tmp/files.txt && \
     cat /tmp/files.txt | xargs -0 -n1 gzip -k && \
@@ -54,22 +53,23 @@ ENV ENVIRONMENT=development
 ENV AWS_EC2_METADATA_DISABLED=true
 
 # OS packages
-RUN apk update && apk add s6 imagemagick git brotli argon2-libs argon2-dev argon2 runuser libuuid openssl openssl-dev certbot certbot-nginx ca-certificates libqrencode-tools gd-dev freetype-dev font-opensans
+RUN apk add --no-cache s6 imagemagick git brotli argon2-libs argon2-dev argon2 runuser libuuid openssl openssl-dev certbot certbot-nginx ca-certificates libqrencode-tools gd-dev freetype-dev font-opensans
 
 # Lua modules
 RUN mkdir -p /usr/local/share/lua/5.1
 RUN opm get openresty/lua-resty-redis openresty/lua-resty-websocket thibaultcha/lua-argon2-ffi GUI/lua-resty-mail openresty/lua-resty-string jkeys089/lua-resty-hmac ledgetech/lua-resty-http
-RUN luarocks install luasocket
-RUN luarocks install luafilesystem
-RUN luarocks install pgmoon
-RUN luarocks install lua-resty-uuid
-RUN luarocks install lpath
-RUN luarocks install luaossl
+RUN luarocks install luasocket &&\
+    luarocks install luafilesystem &&\
+    luarocks install pgmoon  &&\
+    luarocks install lua-resty-uuid &&\
+    luarocks install lpath  &&\
+    luarocks install luaossl 
 RUN git clone --depth 1 --branch v3.0.0 https://github.com/foxCaves/lua-gd /tmp/lua-gd && cd /tmp/lua-gd && luarocks make *.rockspec && cd /tmp && rm -rf /tmp/lua-gd
 RUN git clone --depth 1 --branch v1.0.3 https://github.com/foxCaves/raven-lua.git /tmp/raven-lua && mv /tmp/raven-lua/raven /usr/local/share/lua/5.1/ && rm -rf /tmp/raven-lua
 RUN git clone --depth 1 --branch v0.1.8 https://github.com/foxCaves/lua-resty-cookie.git /tmp/lua-resty-cookie && cp -r /tmp/lua-resty-cookie/lib/* /usr/local/share/lua/5.1/ && rm -rf /tmp/lua-resty-cookie
 RUN git clone --depth 1 --branch v0.3.1 https://github.com/foxCaves/lua-resty-aws-signature.git /tmp/lua-resty-aws-signature && cp -r /tmp/lua-resty-aws-signature/lib/* /usr/local/share/lua/5.1/ && rm -rf /tmp/lua-resty-aws-signature
 
+RUN rm -rf /usr/lib/python3.11 /usr/lib/perl5 /usr/lib/gcc /usr/libexec/gcc
 # Container setup
 RUN adduser -u 1337 --disabled-password foxcaves
 COPY docker /
