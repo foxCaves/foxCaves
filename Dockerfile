@@ -42,7 +42,6 @@ RUN nginx -V 2>&1 | grep -F 'configure argument' | cut -d: -f2- | sed 's~--add-m
     && git submodule update --recursive --init
 
 RUN cd /tmp/openresty \
-    && set -x \
     && eval ./configure --with-compat --add-dynamic-module=/tmp/ngx_brotli $(cat /tmp/nginx-configure-args.txt) \
     && make -j$(nproc) \
     && make -j$(nproc) install
