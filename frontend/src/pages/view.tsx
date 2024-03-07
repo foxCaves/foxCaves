@@ -6,7 +6,7 @@ import { FileModel } from '../models/file';
 import { UserModel } from '../models/user';
 import { AppContext } from '../utils/context';
 import { formatDate } from '../utils/formatting';
-import { logError } from '../utils/misc';
+import { assert, logError } from '../utils/misc';
 
 const TextView: React.FC<{ readonly src: string }> = ({ src }) => {
     const [dataLoading, setDataLoading] = useState(false);
@@ -79,6 +79,7 @@ const FileContentView: React.FC<{ readonly file: FileModel }> = ({ file }) => {
 export const ViewPage: React.FC = () => {
     const { apiAccessor } = useContext(AppContext);
     const { id } = useParams<{ id: string }>();
+    assert(id);
     const [fileLoading, setFileLoading] = useState(false);
     const [fileLoadDone, setFileLoadDone] = useState(false);
     const [fileError, setFileError] = useState('');
@@ -87,7 +88,7 @@ export const ViewPage: React.FC = () => {
 
     const loadFile = useCallback(async () => {
         try {
-            const newFile = await FileModel.getById(id!, apiAccessor);
+            const newFile = await FileModel.getById(id, apiAccessor);
             if (newFile) {
                 setFile(newFile);
                 const newOwner = await UserModel.getById(newFile.owner, apiAccessor);

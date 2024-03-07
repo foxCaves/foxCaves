@@ -24,7 +24,7 @@ export const testGuest = baseTest.extend<object, object>({
     },
 });
 
-export const testLoggedIn = baseTest.extend<{ testUser: TestUser }, { workerStorageState: string }>({
+export const testLoggedIn = baseTest.extend<{ readonly testUser: TestUser }, { workerStorageState: string }>({
     // Use the same storage state for all tests in this worker.
     storageState: async ({ workerStorageState }, use) => {
         await use(workerStorageState);

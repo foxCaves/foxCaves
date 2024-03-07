@@ -8,6 +8,7 @@ import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { App } from './app';
 import { config } from './utils/config';
+import { assert } from './utils/misc';
 
 if (config.no_render) {
     // eslint-disable-next-line no-console
@@ -22,7 +23,10 @@ if (config.no_render) {
         console.warn('Not loading sentry, no DSN!');
     }
 
-    const root = createRoot(document.getElementById('root')!);
+    const mountPoint = document.getElementById('root');
+    assert(mountPoint);
+
+    const root = createRoot(mountPoint);
 
     root.render(
         <React.StrictMode>

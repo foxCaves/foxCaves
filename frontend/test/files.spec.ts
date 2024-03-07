@@ -47,7 +47,8 @@ async function checkFile(src: string, page: Page): Promise<void> {
      * Assume we are on the file view page and check the file
      * Empty src == assume file is supposed to be gone
      */
-    const href = (await page.locator('p', { hasText: 'Direct link' }).locator('a').getAttribute('href'))!;
+    const href = await page.locator('p', { hasText: 'Direct link' }).locator('a').getAttribute('href');
+    assert(href);
     assert(href.includes('http://short.foxcaves:8080'));
 
     const fileRequest = await axios(href, {
@@ -82,7 +83,8 @@ testLoggedIn('Upload image file', async ({ page }) => {
     const file = fileLocator(filename, page);
 
     // Verify thumbnail exists and is a valid image
-    const src = (await file.locator('.card-img-top').getAttribute('src'))!;
+    const src = await file.locator('.card-img-top').getAttribute('src');
+    assert(src);
     assert(src.includes('http://short.foxcaves:8080'));
 
     const thumbnail = await axios(src, {
@@ -106,7 +108,8 @@ testLoggedIn('Upload non-image file', async ({ page }) => {
     const file = fileLocator(filename, page);
 
     // Verify there is no thumbnail
-    const src = (await file.locator('.card-img-top').getAttribute('src'))!;
+    const src = await file.locator('.card-img-top').getAttribute('src');
+    assert(src);
     assert(!src.includes('http://short.foxcaves:8080'));
 
     await viewAndCheckFile(filename, 'test.txt', page);
@@ -125,7 +128,8 @@ testLoggedIn('Delete file', async ({ browser, page }) => {
     const file = fileLocator(filename, page);
 
     // Verify file and thumbnail exist
-    const thumbnailSrc = (await file.locator('.card-img-top').getAttribute('src'))!;
+    const thumbnailSrc = await file.locator('.card-img-top').getAttribute('src');
+    assert(thumbnailSrc);
     assert(thumbnailSrc.includes('http://short.foxcaves:8080'));
     await axios(thumbnailSrc, {
         responseType: 'arraybuffer',
