@@ -1,6 +1,9 @@
 # Frontend build container
 FROM node:lts-alpine AS frontend_builder
 
+# Install packages
+RUN apk --no-cache add brotli gzip
+
 # Prepare build environment
 RUN mkdir /opt/stage
 WORKDIR /opt/stage
@@ -16,6 +19,9 @@ ARG GIT_REVISION=UNKNOWN
 ENV NODE_ENV=production
 RUN npm run build
 
+RUN find /opt/stage/build -type f -print0 > /tmp/files.txt && \
+    cat /tmp/files.txt | xargs -0 -n1 gzip -k && \
+    cat /tmp/files.txt | xargs -0 -n1 brotli -k
 
 # Deployed container
 FROM openresty/openresty:alpine-fat
