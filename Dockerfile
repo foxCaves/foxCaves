@@ -23,15 +23,39 @@ RUN find /opt/stage/build -type f -print0 > /tmp/files.txt && \
     cat /tmp/files.txt | xargs -0 -n1 gzip -k && \
     cat /tmp/files.txt | xargs -0 -n1 brotli -k
 
+FROM openresty/openresty:alpine-fat AS backend-base
+
+FROM backend-base AS backend-builder
+
+RUN export RESTY_VERSION="$(nginx -V 2>&1 | grep -F 'nginx version' | cut -d: -f2- | cut -d/ -f2-)" \
+    && cd /tmp \
+    && curl -fSL https://openresty.org/download/openresty-${RESTY_VERSION}.tar.gz -o /tmp/openresty-${RESTY_VERSION}.tar.gz \
+    && tar -xzf /tmp/openresty-${RESTY_VERSION}.tar.gz \
+    && mv /tmp/openresty-${RESTY_VERSION} /tmp/openresty
+
+RUN apk add --no-cache git zlib-dev pcre-dev openssl-dev libxml2-dev libxslt-dev gd-dev geoip-dev perl-dev
+
+RUN nginx -V 2>&1 | grep -F 'configure argument' | cut -d: -f2- | sed 's~--add-module=[^ ]* ~~g' > /tmp/nginx-configure-args.txt \
+    && git clone https://github.com/google/ngx_brotli.git /tmp/ngx_brotli \
+    && cd /tmp/ngx_brotli \
+    && git reset --hard a71f9312c2deb28875acc7bacfdd5695a111aa53 \
+    && git submodule update --recursive --init
+
+RUN cd /tmp/openresty \
+    && set -x \
+    && eval ./configure --with-compat --add-dynamic-module=/tmp/ngx_brotli $(cat /tmp/nginx-configure-args.txt) \
+    && make -j$(nproc) \
+    && make -j$(nproc) install
+
 # Deployed container
-FROM openresty/openresty:alpine-fat
+FROM backend-base
 
 # Base variables
 ENV ENVIRONMENT=development
 ENV AWS_EC2_METADATA_DISABLED=true
 
 # OS packages
-RUN apk update && apk add s6 imagemagick git argon2-libs argon2-dev argon2 runuser libuuid openssl openssl-dev certbot certbot-nginx ca-certificates libqrencode-tools gd-dev freetype-dev font-opensans
+RUN apk update && apk add s6 imagemagick git brotli argon2-libs argon2-dev argon2 runuser libuuid openssl openssl-dev certbot certbot-nginx ca-certificates libqrencode-tools gd-dev freetype-dev font-opensans
 
 # Lua modules
 RUN mkdir -p /usr/local/share/lua/5.1
@@ -51,6 +75,10 @@ RUN git clone --depth 1 --branch v0.3.1 https://github.com/foxCaves/lua-resty-aw
 RUN adduser -u 1337 --disabled-password foxcaves
 COPY docker /
 COPY docker/etc/nginx/main.conf /usr/local/openresty/nginx/conf/custom.conf
+
+# Copy nginx module(s)
+COPY --from=backend-builder /usr/local/openresty/nginx/nginx/modules/ngx_http_brotli_static_module.so /usr/local/openresty/nginx/nginx/modules/ngx_http_brotli_static_module.so
+COPY --from=backend-builder /usr/local/openresty/nginx/nginx/modules/ngx_http_brotli_filter_module.so /usr/local/openresty/nginx/nginx/modules/ngx_http_brotli_filter_module.so
 
 # Copy backend
 COPY config/testing.lua /var/www/foxcaves/config/testing.lua
