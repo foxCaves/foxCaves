@@ -50,8 +50,11 @@
   "scripts": {
     "start": "webpack serve",
     "build": "rimraf build && webpack build",
-    "lint": "eslint --cache --color ./src ./test webpack.*.ts playwright.*.ts && prettier --check ./src ./test webpack.*.ts playwright.*.ts",
+    "lint": "eslint --report-unused-disable-directives --cache --color ./src ./test webpack.*.ts playwright.*.ts && prettier --check ./src ./test webpack.*.ts playwright.*.ts",
     "fmt": "eslint --fix ./src ./test webpack.*.ts playwright.*.ts && prettier --write ./src ./test webpack.*.ts playwright.*.ts",
     "test": "curl -f -v -s -XPOST http://main.foxcaves:8080/api/v1/system/testing/reset && playwright test"
+  },
+  "devDependencies": {
+    "eslint-plugin-deprecation": "^2.0.0"
   }
 }

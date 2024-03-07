@@ -7,11 +7,12 @@ import Modal from 'react-bootstrap/Modal';
 import { toast } from 'react-toastify';
 import { AppContext } from '../utils/context';
 import { useInputFieldSetter } from '../utils/hooks';
-import { logError } from '../utils/misc';
+import { assert, logError } from '../utils/misc';
 
 export const AccountPage: React.FC = () => {
     const { user, refreshUser, apiAccessor } = useContext(AppContext);
-    const userEmail = user!.email;
+    assert(user);
+    const userEmail = user.email;
 
     const [showDeleteAccountModal, setShowDeleteAccountModal] = useState(false);
     const [currentPassword, setCurrentPasswordCB] = useInputFieldSetter('');
@@ -28,7 +29,7 @@ export const AccountPage: React.FC = () => {
             body.current_password = currentPassword;
             try {
                 await toast.promise(
-                    apiAccessor.fetch(`/api/users/${encodeURIComponent(user!.id)}`, {
+                    apiAccessor.fetch(`/api/users/${encodeURIComponent(user.id)}`, {
                         method,
                         data: body,
                     }),
@@ -146,7 +147,7 @@ export const AccountPage: React.FC = () => {
                     />
                 </FloatingLabel>
                 <FloatingLabel className="mb-3" label="Username">
-                    <Form.Control name="username" placeholder="test_user" readOnly type="text" value={user!.username} />
+                    <Form.Control name="username" placeholder="test_user" readOnly type="text" value={user.username} />
                 </FloatingLabel>
                 <FloatingLabel className="mb-3" label="New password">
                     <Form.Control
@@ -184,7 +185,7 @@ export const AccountPage: React.FC = () => {
                                 placeholder="ABCDefgh"
                                 readOnly
                                 type="text"
-                                value={user!.api_key}
+                                value={user.api_key}
                             />
                             <Form.Label>API key</Form.Label>
                         </FloatingLabel>

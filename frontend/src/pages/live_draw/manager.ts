@@ -2,7 +2,7 @@
 /* eslint-disable no-case-declarations */
 /* eslint-disable max-lines */
 import { FileModel } from '../../models/file';
-import { logError } from '../../utils/misc';
+import { assert, logError } from '../../utils/misc';
 
 const MathPIDouble = Math.PI * 2;
 
@@ -36,7 +36,7 @@ interface BrushData {
     width: number;
     color: string;
     brush?: Brush;
-    customData: Record<string, Record<string, unknown>>;
+    customData: { [k in BrushName]?: Record<string, unknown> };
 }
 
 interface User {
@@ -113,7 +113,9 @@ interface Vertex {
     y: number;
 }
 
-const paintBrushes: Record<string, Brush> = {
+type BrushName = 'brush' | 'circle' | 'erase' | 'line' | 'polygon' | 'rectangle' | 'restore';
+
+const paintBrushes: Record<BrushName, Brush> = {
     rectangle: {
         select(manager, user, foregroundCanvasCTX, backgroundCanvasCTX) {
             backgroundCanvasCTX.lineCap = 'butt';
@@ -294,7 +296,7 @@ const paintBrushes: Record<string, Brush> = {
             this.move(manager, x, y, user, backgroundCanvasCTX);
         },
         move(manager, x, y, user, backgroundCanvasCTX) {
-            backgroundCanvasCTX.strokeStyle = manager.imagePattern!;
+            backgroundCanvasCTX.strokeStyle = manager.imagePattern ?? '#000000';
             backgroundCanvasCTX.lineWidth = user.brushData.width * manager.scaleFactor;
             backgroundCanvasCTX.lineCap = 'round';
 
@@ -416,6 +418,7 @@ const paintBrushes: Record<string, Brush> = {
      * },
      */
     polygon: {
+        /* eslint-disable @typescript-eslint/no-non-null-assertion */
         usesCustomData: true,
         setup(_manager, user) {
             user.brushData.customData.polygon!.vertices = [];
@@ -458,6 +461,7 @@ const paintBrushes: Record<string, Brush> = {
             // flush the array
             user.brushData.customData.polygon!.vertices = [];
         },
+        /* eslint-enable @typescript-eslint/no-non-null-assertion */
     },
 };
 
@@ -467,7 +471,7 @@ function makeLocalUser(manager: LiveDrawManager): LocalUser {
         brushData: {
             width: 0,
             color: 'black',
-            brush: paintBrushes.pencil!,
+            brush: undefined,
             customData: {},
             setWidth(bWidth: number) {
                 if (bWidth === this.width) return;
@@ -482,10 +486,10 @@ function makeLocalUser(manager: LiveDrawManager): LocalUser {
                 this.setBrushAttribsLocal();
                 manager.sendDrawEvent(PaintEvent.COLOR, bColor);
             },
-            setBrush(brush: string) {
+            setBrush(brush: BrushName) {
                 this.brush?.unselectLocal?.();
 
-                this.brush = paintBrushes[brush]!;
+                this.brush = paintBrushes[brush];
                 manager.backgroundCanvasCTX.globalCompositeOperation = 'source-over';
 
                 if (this.brush.selectLocal) {
@@ -534,6 +538,10 @@ function clamp(val: number, min: number, max: number) {
     return Math.max(min, Math.min(max, val));
 }
 
+type NTuple<T, N extends number, R extends T[] = []> = R['length'] extends N ? R : NTuple<T, N, [T, ...R]>;
+
+type StrTuple<N extends number> = NTuple<string, N>;
+
 export class LiveDrawManager {
     public localUser: LocalUser;
 
@@ -566,9 +574,17 @@ export class LiveDrawManager {
         this.foregroundCanvas = foregroundCanvas;
         this.finalCanvas = canvas;
 
-        this.backgroundCanvasCTX = backgroundCanvas.getContext('2d')!;
-        this.foregroundCanvasCTX = foregroundCanvas.getContext('2d')!;
-        this.finalCanvasCTX = canvas.getContext('2d')!;
+        const backgroundCanvasCtx = backgroundCanvas.getContext('2d');
+        const foregroundCanvasCtx = foregroundCanvas.getContext('2d');
+        const finalCanvasCTX = canvas.getContext('2d');
+
+        if (!backgroundCanvasCtx || !foregroundCanvasCtx || !finalCanvasCTX) {
+            throw new Error('failed to acquire drawing contexts');
+        }
+
+        this.backgroundCanvasCTX = backgroundCanvasCtx;
+        this.foregroundCanvasCTX = foregroundCanvasCtx;
+        this.finalCanvasCTX = finalCanvasCTX;
 
         this.localUser = makeLocalUser(this);
         this.canvasPos = canvas.getBoundingClientRect();
@@ -590,7 +606,6 @@ export class LiveDrawManager {
             false,
         );
 
-        // FIXME: ??
         this.finalCanvas.addEventListener(
             'mousemove',
             (event) => {
@@ -772,14 +787,14 @@ export class LiveDrawManager {
 
         switch (eventType) {
             case PaintEvent.JOIN:
-                const [id, name, widthAsString, color, brush] = commands;
+                const [id, name, widthAsString, color, brush] = commands as [string, string, string, string, BrushName];
                 const from: RemotePaintUser = {
                     local: false,
-                    name: name!,
+                    name,
                     brushData: {
-                        width: Number.parseFloat(widthAsString!),
-                        color: color!,
-                        brush: paintBrushes[brush!]!,
+                        width: Number.parseFloat(widthAsString),
+                        color,
+                        brush: paintBrushes[brush],
                         customData: {},
                     },
                     cursorData: {
@@ -790,11 +805,11 @@ export class LiveDrawManager {
                     },
                 };
 
-                paintUsers.set(id!, from);
+                paintUsers.set(id, from);
 
                 for (const [iBrush, pBrush] of Object.entries(paintBrushes)) {
                     if (pBrush.usesCustomData) {
-                        from.brushData.customData[iBrush] = { ...pBrush.defaultCustomData };
+                        from.brushData.customData[iBrush as BrushName] = { ...pBrush.defaultCustomData };
                     }
 
                     if (pBrush.setup) {
@@ -804,14 +819,14 @@ export class LiveDrawManager {
 
                 break;
             case PaintEvent.LEAVE:
-                paintUsers.delete(commands[0]!);
+                paintUsers.delete((commands as [string])[0]);
                 break;
             case PaintEvent.IMG_BURST:
-                if (commands[1] === 'r') {
+                const [, cmd, data] = commands as StrTuple<3>;
+                if (cmd === 'r') {
                     this.sendDrawEvent(
                         PaintEvent.IMG_BURST,
-                        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions, @typescript-eslint/no-unsafe-call
-                        `${commands[2]!}|${this.finalCanvas.toDataURL('image/png').replaceAll(/[\n\r]/g, '')}|`,
+                        `${data}|${this.finalCanvas.toDataURL('image/png').replaceAll(/[\n\r]/g, '')}|`,
                     );
                 } else if (commands[1] === 'a') {
                     const toSet = new Image();
@@ -825,7 +840,7 @@ export class LiveDrawManager {
                         );
                     });
 
-                    toSet.src = commands[2]!;
+                    toSet.src = data;
                 }
 
                 break;
@@ -836,35 +851,48 @@ export class LiveDrawManager {
     }
 
     private recvDrawEvent(eventType: PaintEvent, payload: string[]) {
-        const from = paintUsers.get(payload[0]!)!;
+        const from = paintUsers.get((payload as [string])[0]);
+        if (!from) {
+            // eslint-disable-next-line no-console
+            console.warn('Received draw event for unknown user');
+            return;
+        }
+
         switch (eventType) {
-            case PaintEvent.MOUSE_CURSOR:
-                from.cursorData.x = Number.parseFloat(payload[1]!) * this.scaleFactor;
-                from.cursorData.y = Number.parseFloat(payload[2]!) * this.scaleFactor;
+            case PaintEvent.MOUSE_CURSOR: {
+                const [, xStr, yStr] = payload as StrTuple<3>;
+                from.cursorData.x = Number.parseFloat(xStr) * this.scaleFactor;
+                from.cursorData.y = Number.parseFloat(yStr) * this.scaleFactor;
                 break;
+            }
+
             case PaintEvent.MOUSE_MOVE:
             case PaintEvent.MOUSE_DOWN:
             case PaintEvent.MOUSE_UP:
-            case PaintEvent.MOUSE_DOUBLE_CLICK:
-                this.recvBrushEvent(from, eventType, Number.parseFloat(payload[1]!), Number.parseFloat(payload[2]!));
+            case PaintEvent.MOUSE_DOUBLE_CLICK: {
+                const [, xStr, yStr] = payload as StrTuple<3>;
+                this.recvBrushEvent(from, eventType, Number.parseFloat(xStr), Number.parseFloat(yStr));
                 break;
+            }
+
             case PaintEvent.WIDTH:
-                from.brushData.width = Number.parseFloat(payload[1]!);
+                from.brushData.width = Number.parseFloat((payload as [string, string])[1]);
                 break;
             case PaintEvent.COLOR:
-                from.brushData.color = payload[1]!;
+                [, from.brushData.color] = payload as [string, string];
                 break;
             case PaintEvent.CUSTOM:
                 const { customData } = from.brushData;
-                const [brush, key, value] = payload;
-                if (!customData[brush!]) {
-                    customData[brush!] = {};
+                const [brush, key, value] = payload as [BrushName, string, string];
+                if (!customData[brush]) {
+                    customData[brush] = {};
                 }
 
-                customData[brush!]![key!] = value!;
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                customData[brush]![key] = value;
                 break;
             case PaintEvent.BRUSH:
-                from.brushData.brush = paintBrushes[payload[1]!]!;
+                from.brushData.brush = paintBrushes[(payload as [string, BrushName])[1]];
                 break;
             case PaintEvent.RESET:
                 break;
@@ -898,7 +926,7 @@ export class LiveDrawManager {
                 brush?.move(this, x, y, from, this.backgroundCanvasCTX);
                 break;
             case PaintEvent.MOUSE_DOUBLE_CLICK:
-                brush?.doubleClick!(this, x, y, from, this.backgroundCanvasCTX);
+                brush?.doubleClick?.(this, x, y, from, this.backgroundCanvasCTX);
                 break;
             case PaintEvent.WIDTH:
             case PaintEvent.COLOR:
@@ -1041,7 +1069,9 @@ export class LiveDrawManager {
         baseImage.crossOrigin = 'anonymous';
 
         baseImage.addEventListener('load', () => {
-            const maxWidth = document.getElementById('live-draw-wrapper')!.getBoundingClientRect().width;
+            const wrapper = document.getElementById('live-draw-wrapper');
+            assert(wrapper);
+            const maxWidth = wrapper.getBoundingClientRect().width;
 
             this.scaleFactor = baseImage.width > maxWidth ? maxWidth / baseImage.width : 1;
 
@@ -1061,7 +1091,11 @@ export class LiveDrawManager {
 
             this.backgroundCanvasCTX.drawImage(baseImage, 0, 0);
 
-            this.imagePattern = this.backgroundCanvasCTX.createPattern(baseImage, 'no-repeat')!;
+            this.imagePattern = this.backgroundCanvasCTX.createPattern(baseImage, 'no-repeat') ?? undefined;
+            if (!this.imagePattern) {
+                // eslint-disable-next-line no-console
+                console.warn('failed to create image pattern');
+            }
 
             requestAnimationFrame(() => {
                 this.paintCanvas();
@@ -1072,12 +1106,19 @@ export class LiveDrawManager {
     }
 
     private setupColorSelector() {
-        const hlSelector = document.getElementById('color-selector')!;
-        const hlSelectorMarker = document.getElementById('color-selector-inner')!;
-        const sSelector = document.getElementById('saturation-selector')!;
-        const sSelectorMarker = document.getElementById('saturation-selector-inner')!;
-        const oSelector = document.getElementById('opacity-selector')!;
-        const oSelectorMarker = document.getElementById('opacity-selector-inner')!;
+        const hlSelector = document.getElementById('color-selector');
+        const hlSelectorMarker = document.getElementById('color-selector-inner');
+        const sSelector = document.getElementById('saturation-selector');
+        const sSelectorMarker = document.getElementById('saturation-selector-inner');
+        const oSelector = document.getElementById('opacity-selector');
+        const oSelectorMarker = document.getElementById('opacity-selector-inner');
+
+        assert(hlSelector);
+        assert(hlSelectorMarker);
+        assert(sSelector);
+        assert(sSelectorMarker);
+        assert(oSelector);
+        assert(oSelectorMarker);
 
         let hue = 0;
         let saturation = 100;
@@ -1196,7 +1237,7 @@ export class LiveDrawManager {
     private setupBrushes() {
         for (const [brush, pBrush] of Object.entries(paintBrushes)) {
             if (pBrush.usesCustomData) {
-                this.localUser.brushData.customData[brush] = {
+                this.localUser.brushData.customData[brush as BrushName] = {
                     ...pBrush.defaultCustomData,
                 };
             }

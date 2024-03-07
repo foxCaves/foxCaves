@@ -7,13 +7,23 @@
         "plugin:import/recommended",
         "plugin:import/typescript",
         "prettier",
-        "plugin:unicorn/all"
+        "plugin:unicorn/all",
+        "plugin:deprecation/recommended"
     ],
     "parserOptions": {
         "project": ["./tsconfig.json"]
     },
     "parser": "@typescript-eslint/parser",
-    "plugins": ["@typescript-eslint", "react-hooks", "react", "import", "prettier", "unicorn", "@cspell"],
+    "plugins": [
+        "@typescript-eslint",
+        "react-hooks",
+        "react",
+        "import",
+        "prettier",
+        "unicorn",
+        "@cspell",
+        "deprecation"
+    ],
     "rules": {
         // eslint overrides
         "arrow-body-style": "off",
@@ -135,7 +145,7 @@
         "react-hooks/exhaustive-deps": "error",
         "react-hooks/rules-of-hooks": "error",
         // this is great but has too many false positives
-        "react/jsx-no-leaked-render": "off",
+        "react/jsx-no-leaked-render": "error",
         "react/destructuring-assignment": "error",
         // It is often desirable to pass className
         "react/forbid-component-props": "off",
@@ -217,10 +227,15 @@
             }
         ],
 
-        "@typescript-eslint/max-params": ["error", {"max": 6}],
+        "@typescript-eslint/max-params": ["error", { "max": 6 }],
 
         // Potentially turning these on
-        "@typescript-eslint/prefer-readonly-parameter-types": "off",
+        "@typescript-eslint/prefer-readonly-parameter-types": [
+            "off",
+            {
+                "ignoreInferredTypes": true
+            }
+        ],
         "@typescript-eslint/explicit-function-return-type": "off",
         //"@typescript-eslint/no-magic-numbers": [
         //  "error",
@@ -228,8 +243,8 @@
         //],
         "@typescript-eslint/no-magic-numbers": "off",
         "@typescript-eslint/consistent-type-imports": "off",
-        "@typescript-eslint/sort-type-union-intersection-members": "off",
-        "@typescript-eslint/no-non-null-assertion": "off",
+        "@typescript-eslint/sort-type-constituents": "error",
+        "@typescript-eslint/no-non-null-assertion": "error",
         // Enforced by TS
         "@typescript-eslint/init-declarations": "off",
         "@typescript-eslint/no-use-before-define": "off",

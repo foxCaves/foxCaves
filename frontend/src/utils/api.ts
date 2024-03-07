@@ -41,7 +41,7 @@ export class APIAccessor {
         return method === 'GET' || method === 'HEAD' || method === 'OPTIONS';
     }
 
-    public async refreshCSRFToken(): Promise<void> {
+    public async refreshCSRFToken(): Promise<string> {
         const res = (await this.fetch('/api/v1/system/csrf', {
             method: 'POST',
             data: { refresh: true },
@@ -49,14 +49,15 @@ export class APIAccessor {
         })) as CSRFRequestResponse;
 
         this.csrfToken = res.csrf_token;
+        return res.csrf_token;
     }
 
     public async getCSRFToken(): Promise<string> {
         if (!this.csrfToken) {
-            await this.refreshCSRFToken();
+            return this.refreshCSRFToken();
         }
 
-        return this.csrfToken!;
+        return this.csrfToken;
     }
 
     public async fetch(url: string, info?: APIRequestInfo): Promise<unknown> {

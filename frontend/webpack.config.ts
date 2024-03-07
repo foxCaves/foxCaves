@@ -1,11 +1,8 @@
 import { join } from 'node:path';
-// eslint-disable-next-line import/default
 import ContentReplacePlugin from 'content-replace-webpack-plugin';
 // eslint-disable-next-line import/default
 import CopyPlugin from 'copy-webpack-plugin';
-// eslint-disable-next-line import/default
 import HtmlWebpackPlugin from 'html-webpack-plugin';
-// eslint-disable-next-line import/default
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import { Configuration, DefinePlugin } from 'webpack';
 import 'webpack-dev-server';

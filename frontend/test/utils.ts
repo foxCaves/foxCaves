@@ -42,5 +42,5 @@ export async function doLoginPage(page: Page, user?: TestUser): Promise<TestUser
 }
 
 export function randomID(): string {
-    return randomUUID().split('-')[0]!;
+    return randomUUID().slice(0, 8);
 }

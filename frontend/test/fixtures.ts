@@ -18,20 +18,18 @@ async function getStoragePath(suffix: 'storage' | 'user'): Promise<string> {
 }
 
 export const testGuest = baseTest.extend<object, object>({
-    // eslint-disable-next-line no-empty-pattern
-    storageState: async ({}, use) => {
+    storageState: async (_, use) => {
         await use(undefined);
     },
 });
 
-export const testLoggedIn = baseTest.extend<{ testUser: TestUser }, { workerStorageState: string }>({
+export const testLoggedIn = baseTest.extend<{ readonly testUser: TestUser }, { workerStorageState: string }>({
     // Use the same storage state for all tests in this worker.
     storageState: async ({ workerStorageState }, use) => {
         await use(workerStorageState);
     },
 
-    // eslint-disable-next-line no-empty-pattern
-    testUser: async ({}, use) => {
+    testUser: async (_, use) => {
         await use(JSON.parse(await readFile(await getStoragePath('user'), 'utf8')) as TestUser);
     },
 

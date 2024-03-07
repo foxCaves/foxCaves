@@ -8,19 +8,22 @@ import { Navigate, useParams } from 'react-router-dom';
 import { FileModel } from '../../models/file';
 import { AppContext } from '../../utils/context';
 import { BlobWithName, uploadFile } from '../../utils/file_uploader';
-import { logError } from '../../utils/misc';
+import { assert, logError, noop } from '../../utils/misc';
 import { randomString } from '../../utils/random';
 import { LiveDrawManager } from './manager';
 
 export const LiveDrawRedirectPage: React.FC = () => {
     const { id } = useParams<{ id: string }>();
+    assert(id);
 
-    return <Navigate to={`/live_draw/${id!}/${randomString(12)}`} />;
+    return <Navigate to={`/live_draw/${id}/${randomString(12)}`} />;
 };
 
 export const LiveDrawPage: React.FC = () => {
     const { apiAccessor } = useContext(AppContext);
     const { id, sid } = useParams<{ id: string; sid: string }>();
+    assert(id);
+    assert(sid);
     const [file, setFile] = useState<FileModel | undefined>(undefined);
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const foregroundCanvasRef = useRef<HTMLCanvasElement>(null);
@@ -29,10 +32,10 @@ export const LiveDrawPage: React.FC = () => {
     const managerRef = useRef<LiveDrawManager | undefined>(undefined);
     const [brushWidth, setBrushWidth] = useState(10);
 
-    const fileName = file ? file.name : `ID_${id!}`;
+    const fileName = file ? file.name : `ID_${id}`;
 
     useEffect(() => {
-        FileModel.getById(id!, apiAccessor).then(setFile, logError);
+        FileModel.getById(id, apiAccessor).then(setFile, logError);
     }, [id, apiAccessor]);
 
     const getFileName = useCallback(() => {
@@ -50,7 +53,11 @@ export const LiveDrawPage: React.FC = () => {
     }, []);
 
     const downloadImage = useCallback(() => {
-        const data = canvasRef.current!.toDataURL('image/png');
+        if (!canvasRef.current) {
+            return;
+        }
+
+        const data = canvasRef.current.toDataURL('image/png');
         const link = document.createElement('a');
         link.download = getFileName();
         link.href = data;
@@ -60,7 +67,11 @@ export const LiveDrawPage: React.FC = () => {
     }, [getFileName]);
 
     const saveImage = useCallback(() => {
-        canvasRef.current!.toBlob((blob) => {
+        if (!canvasRef.current) {
+            return;
+        }
+
+        canvasRef.current.toBlob((blob) => {
             const namedBlob = blob as BlobWithName;
             namedBlob.name = getFileName();
             uploadFile(namedBlob, apiAccessor).catch(logError);
@@ -68,25 +79,30 @@ export const LiveDrawPage: React.FC = () => {
     }, [getFileName, apiAccessor]);
 
     useEffect(() => {
+        if (!canvasRef.current || !foregroundCanvasRef.current || !backgroundCanvasRef.current) {
+            return noop;
+        }
+
         const manager = new LiveDrawManager(
-            canvasRef.current!,
-            foregroundCanvasRef.current!,
-            backgroundCanvasRef.current!,
+            canvasRef.current,
+            foregroundCanvasRef.current,
+            backgroundCanvasRef.current,
             setBrushWidth,
         );
 
         managerRef.current = manager;
+
         return () => {
             manager.destroy();
         };
     }, []);
 
     useEffect(() => {
-        if (!file) {
+        if (!file || !managerRef.current) {
             return;
         }
 
-        managerRef.current!.setup(file, sid!);
+        managerRef.current.setup(file, sid);
     }, [file, sid]);
 
     return (

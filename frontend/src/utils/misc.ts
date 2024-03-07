@@ -14,3 +14,9 @@ export const sortByDate = (a: BaseModel, b: BaseModel): number => {
 export function noop(): void {
     // do nothing
 }
+
+export function assert(value: unknown): asserts value {
+    if (!value) {
+        throw new TypeError('assertion failed');
+    }
+}
