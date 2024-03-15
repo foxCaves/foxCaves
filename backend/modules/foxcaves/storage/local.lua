@@ -6,6 +6,7 @@ local os = os
 local io = io
 local error = error
 local setmetatable = setmetatable
+local table = table
 local math_min = math.min
 
 local M = {}
@@ -27,15 +28,32 @@ function M.new(name, config)
 end
 
 local function _get_local_dir_and_name_for(self, id, ftype)
-    local dir = self.config.root_folder .. '/' .. id
-    return dir, dir .. '/' .. ftype
+    local dir = id:sub(1, 2) .. '/' .. id:sub(3, 4) .. '/' .. id
+    return self.config_root_folder, dir .. '/' .. ftype
+end
+
+local function _get_dirs(root_dir, dir, skip_last)
+    local res = {}
+    local i = 1
+    while i do
+        i = dir:find('/', i, true)
+        if i then
+            i = i + 1
+            table.insert(res, root_dir .. '/' .. dir:sub(1, i - 2))
+        elseif not skip_last then
+            table.insert(res, root_dir .. '/' .. dir)
+        end
+    end
 end
 
 function M:upload(id, size, ftype)
-    local dir, filename = _get_local_dir_and_name_for(self, id, ftype)
-    lfs.mkdir(dir)
+    local root_dir, filename = _get_local_dir_and_name_for(self, id, ftype)
+    local dirs = _get_dirs(root_dir, filename, true)
+    for i = 1, #dirs, 1 do
+        lfs.mkdir(dirs[i])
+    end
 
-    local fh = io.open(filename, 'wb')
+    local fh = io.open(root_dir .. '/' .. filename, 'wb')
     if not fh then
         error('Could not open file ' .. filename .. ' for writing')
     end
@@ -60,7 +78,7 @@ function M:upload(id, size, ftype)
 end
 
 function M:download(id, ftype)
-    local _, filename = _get_local_dir_and_name_for(self, id, ftype)
+    local filename = self:get_local_path_for(id, ftype)
 
     local dl = setmetatable(
         {
@@ -78,20 +96,22 @@ function M:download(id, ftype)
 end
 
 function M:delete(id, ftype)
-    local dir, filename = _get_local_dir_and_name_for(self, id, ftype)
-    os.remove(filename)
-    lfs.rmdir(dir)
+    local root_dir, filename = _get_local_dir_and_name_for(self, id, ftype)
+    os.remove(root_dir .. '/' .. filename)
+    local dirs = _get_dirs(root_dir, filename, true)
+    for i = #dirs, 1, -1 do
+        lfs.rmdir(dirs[i])
+    end
 end
 
 function M:get_local_path_for(id, ftype)
-    local _, filename = _get_local_dir_and_name_for(self, id, ftype)
-    return filename
+    local root_dir, filename = _get_local_dir_and_name_for(self, id, ftype)
+    return root_dir .. '/' .. filename
 end
 
 function M:send_to_client(id, ftype)
-    local _, filename = _get_local_dir_and_name_for(self, id, ftype)
     ngx.req.set_uri_args({})
-    ngx.req.set_uri('/fcv-rawget' .. filename, true)
+    ngx.req.set_uri('/fcv-rawget' .. self:get_local_path_for(id, ftype), true)
 end
 
 function UPLOAD:from_callback(cb)
