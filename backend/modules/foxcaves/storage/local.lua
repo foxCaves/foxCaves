@@ -29,7 +29,7 @@ end
 
 local function _get_local_dir_and_name_for(self, id, ftype)
     local dir = id:sub(1, 2) .. '/' .. id:sub(3, 4) .. '/' .. id
-    return self.config_root_folder, dir .. '/' .. ftype
+    return self.config.root_folder, dir .. '/' .. ftype
 end
 
 local function _get_dirs(root_dir, dir, skip_last)
@@ -44,6 +44,7 @@ local function _get_dirs(root_dir, dir, skip_last)
             table.insert(res, root_dir .. '/' .. dir)
         end
     end
+    return res
 end
 
 function M:upload(id, size, ftype)
