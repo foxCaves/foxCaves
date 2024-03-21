@@ -87,8 +87,8 @@ export class APIAccessor {
             try {
                 const data = (await res.json()) as { error: string };
                 desc = data.error;
-            } catch (error) {
-                logError(error as Error);
+            } catch (error: unknown) {
+                logError(error);
             }
 
             throw new HttpError(res.status, desc ?? res.statusText);

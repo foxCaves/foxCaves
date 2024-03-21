@@ -293,6 +293,9 @@
         "@typescript-eslint/restrict-plus-operands": "error",
         "@typescript-eslint/parameter-properties": ["error", { "prefer": "parameter-property" }],
 
+        // This doesn't actually work if you pass it onto an "unknown" function
+        "@typescript-eslint/use-unknown-in-catch-callback-variable": "off",
+
         // unicorn
         // this is good but generates too much noise for now
         "unicorn/prevent-abbreviations": "off",

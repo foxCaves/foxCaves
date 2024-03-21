@@ -33,7 +33,7 @@ async function uploadFileInternal(
                     const data = JSON.parse(xhr.responseText) as { error: string };
                     errorMessage = data.error;
                 } catch (error: unknown) {
-                    logError(error as Error);
+                    logError(error);
                 }
 
                 reject(new HttpError(xhr.status, errorMessage ?? xhr.responseText));

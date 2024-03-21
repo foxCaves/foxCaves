@@ -107,7 +107,7 @@ export const CaptchaContainer: React.FC<CustomRouteHandlerOptions> = ({ page, on
                 setData(newData as CaptchaResponse);
                 setDataLoading(false);
             })
-            .catch((error: Error) => {
+            .catch((error: unknown) => {
                 logError(error);
                 setData(invalidCaptchaResponse);
                 setDataLoading(false);
