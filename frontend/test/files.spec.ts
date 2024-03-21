@@ -21,8 +21,10 @@ async function uploadFile(file: string, page: Page) {
                 name: filename,
                 mimeType: 'application/octet-stream',
             })
-            // eslint-disable-next-line no-console
-            .catch(console.error);
+            .catch((error: unknown) => {
+                // eslint-disable-next-line no-console
+                console.error(error);
+            });
     });
 
     await page.locator('.file-drop-zone').click();

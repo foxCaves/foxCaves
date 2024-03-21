@@ -1000,7 +1000,7 @@ export class LiveDrawManager {
 
             this.socket = webSocket;
         } catch (error: unknown) {
-            logError(error as Error);
+            logError(error);
         }
     }
 
@@ -1013,7 +1013,7 @@ export class LiveDrawManager {
         try {
             this.socket?.send(msg);
         } catch (error: unknown) {
-            logError(error as Error);
+            logError(error);
         }
     }
 

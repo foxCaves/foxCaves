@@ -1,7 +1,7 @@
 import * as Sentry from '@sentry/react';
 import { BaseModel } from '../models/base';
 
-export const logError = (error: Error): void => {
+export const logError = (error: unknown): void => {
     Sentry.captureException(error);
     // eslint-disable-next-line no-console
     console.error(error);
