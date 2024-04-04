@@ -1,4 +1,4 @@
-import { join } from 'node:path';
+import path from 'node:path';
 import ContentReplacePlugin from 'content-replace-webpack-plugin';
 // eslint-disable-next-line import/default
 import CopyPlugin from 'copy-webpack-plugin';
@@ -18,7 +18,7 @@ const config: Configuration = {
     mode,
     entry: './src/index.tsx',
     output: {
-        path: join(PWD, 'build'),
+        path: path.join(PWD, 'build'),
         publicPath: '/static/',
         filename: '[name].[contenthash].js',
         chunkFilename: '[id].[contenthash].js',
@@ -75,7 +75,7 @@ const config: Configuration = {
             index: `/static/index.html`,
         },
         static: {
-            directory: join(PWD, 'public'),
+            directory: path.join(PWD, 'public'),
         },
         proxy: [
             {
