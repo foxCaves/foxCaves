@@ -1,6 +1,6 @@
 import assert from 'node:assert';
 import { readFile } from 'node:fs/promises';
-import { extname, join } from 'node:path';
+import path from 'node:path';
 import { Page } from '@playwright/test';
 import axios from 'axios';
 import sizeOf from 'image-size';
@@ -11,8 +11,8 @@ import { randomID, waitForToast } from './utils';
 const PWD = __dirname;
 
 async function uploadFile(file: string, page: Page) {
-    const filename = `${randomID()}${extname(file)}`;
-    const buffer = await readFile(join(PWD, file));
+    const filename = `${randomID()}${path.extname(file)}`;
+    const buffer = await readFile(path.join(PWD, file));
 
     page.on('filechooser', (fileChooser) => {
         fileChooser
@@ -66,7 +66,7 @@ async function checkFile(src: string, page: Page): Promise<void> {
     assert(fileRequest.status === 200);
 
     const fileData = (await fileRequest.data) as ArrayBuffer;
-    const buffer = await readFile(join(PWD, src));
+    const buffer = await readFile(path.join(PWD, src));
     assert(Buffer.from(fileData).equals(buffer));
 }
 
