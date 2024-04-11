@@ -12,7 +12,7 @@ import { ToastContainer } from 'react-toastify';
 import { LiveLoadingContainer } from './components/liveloading';
 import { CustomDropDownItem, CustomNavLink, CustomRouteHandler, LoginState, RouteWrapper } from './components/route';
 import { UserEmailValidAlert } from './components/user_email_valid_alert';
-import { UserInactiveAlert } from './components/user_inactive_alert copy';
+import { UserNotApprovedAlert } from './components/user_not_approved_alert';
 import { UserDetailsModel } from './models/user';
 import { APIAccessor } from './utils/api';
 import { AppContext, AppContextData } from './utils/context';
@@ -82,7 +82,7 @@ const Routing: FC<{ readonly user?: UserDetailsModel; readonly userLoaded: boole
             </Navbar>
             <Container>
                 <UserEmailValidAlert />
-                <UserInactiveAlert />
+                <UserNotApprovedAlert />
                 <Routes>
                     <Route
                         element={
