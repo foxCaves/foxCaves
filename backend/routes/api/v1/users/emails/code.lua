@@ -42,7 +42,7 @@ R.register_route('/api/v1/users/emails/code', 'POST', R.make_route_opts_anon(), 
         user.email_valid = 1
         if config.app.require_user_approval and user.approved == 0 then
             local email = 'New user ' .. user.username .. ' has registered and is waiting for approval.'
-            mail.admin_send(user, 'Approval queue: ' .. user.username, email)
+            mail.admin_send('Approval queue: ' .. user.username, email)
         end
         user:save()
     elseif action == 'forgot_password' then
