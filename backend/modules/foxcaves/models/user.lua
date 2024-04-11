@@ -312,7 +312,7 @@ function user_mt:can_perform_write()
 end
 
 function user_mt:is_active()
-    return self.email_valid == 1 and self.approved == 1
+    return self.email_valid > 0 and self.approved > 0
 end
 
 function user_mt:get_private()
