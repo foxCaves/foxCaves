@@ -222,7 +222,7 @@ function user_mt:save()
     if self.not_in_db then
         res = database.get_shared():query_single('INSERT INTO users \
                 (id, username, email, password, security_version, api_key, email_valid, approved, storage_quota) VALUES \
-                (%s, %s, %s, %s, %s, %s, %s, %s) \
+                (%s, %s, %s, %s, %s, %s, %s, %s, %s) \
                 RETURNING ' .. database.TIME_COLUMNS, nil, self.id, self.username, self.email, self.password,
             self.security_version, self.api_key, self.email_valid, self.approved, self.storage_quota)
         primary_push_action = 'create'
