@@ -10,6 +10,7 @@ export interface Config {
         readonly resend_activation: boolean;
     };
     readonly backend_revision: boolean;
+    readonly admin_email: string;
 }
 
 declare const FOXCAVES_CONFIG: Config;

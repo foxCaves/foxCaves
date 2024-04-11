@@ -15,7 +15,7 @@ R.register_route(
             limit = tonumber(ngx.var.arg_limit or '0'),
         }
 
-        local query = 'email_valid = 1'
+        local query = 'email_valid > 0'
         if ngx.var.arg_approval_queue then
             query = query .. ' AND approved = 0'
         end
