@@ -31,7 +31,8 @@ local function makeusermt(user)
 end
 
 local user_select =
-    'id, username, email, password, security_version, api_key, active, storage_quota, admin, ' .. database.TIME_COLUMNS
+    'id, username, email, password, security_version, api_key, active, approved, storage_quota, admin, ' ..
+        database.TIME_COLUMNS
 
 function user_model.get_by_query(query, options, ...)
     local users = database.get_shared():query('SELECT ' .. user_select .. ' FROM users WHERE ' .. query, options, ...)
@@ -101,8 +102,10 @@ function user_model.new()
         security_version = 1,
         storage_quota = STORAGE_BASE,
         active = 0,
-        admin = 0,
+        approved = 0,
+        admin = 0
     }
+
     setmetatable(user, user_mt)
     user:make_new_api_key()
     return user
@@ -118,7 +121,7 @@ function user_mt:set_email(email)
         if res then
             return consts.VALIDATION_STATE_TAKEN
         end
-        self.active = 0
+        self.valid_email = 0
         self.require_email_confirmation = true
     end
 
@@ -171,12 +174,8 @@ function user_mt:check_password(password)
 end
 
 function user_mt:calculate_storage_used()
-    local res =
-        database.get_shared():query_single(
-            'SELECT SUM(size) AS storage_used FROM files WHERE uploaded = 1 AND owner = %s',
-            nil,
-            self.id
-        )
+    local res = database.get_shared():query_single(
+        'SELECT SUM(size) AS storage_used FROM files WHERE uploaded = 1 AND owner = %s', nil, self.id)
     return res and res.storage_used or 0
 end
 
@@ -196,7 +195,7 @@ function user_mt:send_event(action, model, data)
         type = 'liveLoading',
         action = action,
         model = model,
-        data = data,
+        data = data
     })
 end
 
@@ -210,49 +209,31 @@ function user_mt:is_admin()
 end
 
 function user_mt:save()
-    if config.app.enable_user_always_active then
+    if config.app.disable_email_confirmation then
         self.require_email_confirmation = nil
-        self.active = 1
+        self.valid_email = 1
+    end
+
+    if not config.app.require_user_approval then
+        self.approved = 1
     end
 
     local res, primary_push_action
     if self.not_in_db then
-        res =
-            database.get_shared():query_single(
-                'INSERT INTO users \
-                (id, username, email, password, security_version, api_key, active, storage_quota) VALUES \
+        res = database.get_shared():query_single('INSERT INTO users \
+                (id, username, email, password, security_version, api_key, valid_email, approved, storage_quota) VALUES \
                 (%s, %s, %s, %s, %s, %s, %s, %s) \
-                RETURNING ' .. database.TIME_COLUMNS,
-                nil,
-                self.id,
-                self.username,
-                self.email,
-                self.password,
-                self.security_version,
-                self.api_key,
-                self.active,
-                self.storage_quota
-            )
+                RETURNING ' .. database.TIME_COLUMNS, nil, self.id, self.username, self.email, self.password,
+            self.security_version, self.api_key, self.valid_email, self.approved, self.storage_quota)
         primary_push_action = 'create'
         self.not_in_db = nil
     else
-        res =
-            database.get_shared():query_single(
-                "UPDATE users \
-                SET username = %s, email = %s, password = %s, security_version = %s, api_key = %s, active = %s, storage_quota = %s, \
+        res = database.get_shared():query_single("UPDATE users \
+                SET username = %s, email = %s, password = %s, security_version = %s, api_key = %s, valid_email = %s, approved = %s, storage_quota = %s, \
                     updated_at = (now() at time zone 'utc') \
                 WHERE id = %s \
-                RETURNING " .. database.TIME_COLUMNS,
-                nil,
-                self.username,
-                self.email,
-                self.password,
-                self.security_version,
-                self.api_key,
-                self.active,
-                self.storage_quota,
-                self.id
-            )
+                RETURNING " .. database.TIME_COLUMNS, nil, self.username, self.email, self.password,
+            self.security_version, self.api_key, self.valid_email, self.approved, self.storage_quota, self.id)
         primary_push_action = 'update'
     end
 
@@ -261,20 +242,23 @@ function user_mt:save()
     if self.require_email_confirmation then
         local emailid = random.string(32)
 
-        local email_text =
-            'You have recently registered or changed your E-Mail on foxCaves.' .. '\nPlease click the following link to activate your E-Mail:\n' .. config.http.main_url .. '/email/code/' .. emailid
+        local email_text = 'You have recently registered or changed your E-Mail on foxCaves.' ..
+                               '\nPlease click the following link to activate your E-Mail:\n' .. config.http.main_url ..
+                               '/email/code/' .. emailid
 
         local redis_inst = redis.get_shared()
         local emailkey = 'emailkeys:' .. emailid
         redis_inst:hmset(emailkey, 'user', self.id, 'action', 'activation')
-        redis_inst:expire(emailkey, 172800) --48 hours
+        redis_inst:expire(emailkey, 172800) -- 48 hours
         mail.send(self, 'Activation E-Mail', email_text)
 
         self.require_email_confirmation = nil
     end
 
     if self.kick_user then
-        self:send_event_raw({ type = 'kick' })
+        self:send_event_raw({
+            type = 'kick'
+        })
 
         self.kick_user = nil
     end
@@ -300,7 +284,11 @@ function user_mt:delete()
 end
 
 function user_mt:can_perform_write()
-    return self.active == 1
+    return self:is_active()
+end
+
+function user_mt:is_active()
+    return self.valid_email == 1 and self.approved == 1
 end
 
 function user_mt:get_private()
@@ -309,11 +297,12 @@ function user_mt:get_private()
         username = self.username,
         email = self.email,
         api_key = self.api_key,
-        active = self.active,
+        active = self:is_active() and 1 or 0,
+        email_valid = self.email_valid,
         storage_used = self:calculate_storage_used(),
         storage_quota = self.storage_quota,
         created_at = self.created_at,
-        updated_at = self.updated_at,
+        updated_at = self.updated_at
     }
 end
 
@@ -342,40 +331,40 @@ function user_model.get_private_fields()
     return {
         id = {
             type = 'uuid',
-            required = true,
+            required = true
         },
         username = {
             type = 'string',
-            required = true,
+            required = true
         },
         email = {
             type = 'string',
-            required = true,
+            required = true
         },
         api_key = {
             type = 'string',
-            required = true,
+            required = true
         },
         active = {
             type = 'integer',
-            required = true,
+            required = true
         },
         storage_used = {
             type = 'integer',
-            required = true,
+            required = true
         },
         storage_quota = {
             type = 'integer',
-            required = true,
+            required = true
         },
         created_at = {
             type = 'timestamp',
-            required = true,
+            required = true
         },
         updated_at = {
             type = 'timestamp',
-            required = true,
-        },
+            required = true
+        }
     }
 end
 
@@ -384,7 +373,7 @@ function user_mt:get_public()
         id = self.id,
         username = self.username,
         created_at = self.created_at,
-        updated_at = self.updated_at,
+        updated_at = self.updated_at
     }
 end
 
@@ -392,20 +381,20 @@ function user_model.get_public_fields()
     return {
         id = {
             type = 'uuid',
-            required = true,
+            required = true
         },
         username = {
             type = 'string',
-            required = true,
+            required = true
         },
         created_at = {
             type = 'timestamp',
-            required = true,
+            required = true
         },
         updated_at = {
             type = 'timestamp',
-            required = true,
-        },
+            required = true
+        }
     }
 end
 

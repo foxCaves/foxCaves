@@ -9,59 +9,59 @@ local function describe_api()
             self = 'Must be the user for which data is being requested',
             active = 'Must be a user with user.active = 1',
             owner = 'Must be the owner of the resource (resource.owner == user.id)',
-            admin = 'Must be an admin',
+            admin = 'Must be an admin'
         },
         types = {
             string = {
                 type = 'string',
-                description = 'An arbitrary string',
+                description = 'An arbitrary string'
             },
             float = {
                 type = 'number',
-                description = 'A floating-point number',
+                description = 'A floating-point number'
             },
             integer = {
                 type = 'number',
-                description = 'An integer number',
+                description = 'An integer number'
             },
             boolean = {
                 type = 'boolean',
-                description = 'A boolean value',
+                description = 'A boolean value'
             },
             uuid = {
                 type = 'string',
-                description = 'A UUID in string form',
+                description = 'A UUID in string form'
             },
             timestamp = {
                 type = 'string',
-                description = 'A timestamp in ISO-8601 format',
+                description = 'A timestamp in ISO-8601 format'
             },
             object = {
                 type = 'object',
                 description = 'An arbitrary object, containing given fields',
-                fields = {},
+                fields = {}
             },
             raw = {
                 type = 'raw',
-                description = 'A raw value, not encoded at all',
+                description = 'A raw value, not encoded at all'
             },
             array = {
                 type = 'array',
                 description = 'An array of arbitrary values, described by item_type',
-                item_type = 'object',
-            },
-        },
+                item_type = 'object'
+            }
+        }
     }
 
-    for _, m in pairs({ 'user', 'file', 'link' }) do
+    for _, m in pairs({'user', 'file', 'link'}) do
         local model = require('foxcaves.models.' .. m)
         res.types[m .. '.public'] = {
             type = 'object',
-            fields = model.get_public_fields(),
+            fields = model.get_public_fields()
         }
         res.types[m .. '.private'] = {
             type = 'object',
-            fields = model.get_private_fields(),
+            fields = model.get_private_fields()
         }
     end
 

@@ -29,6 +29,7 @@ export class UserDetailsModel extends UserModel {
     public storage_quota = 0;
     public storage_used = 0;
     public active = 0;
+    public valid_email = 0;
 
     public static async getById(id: string, apiAccessor: APIAccessor): Promise<UserDetailsModel | undefined> {
         try {
@@ -49,5 +50,9 @@ export class UserDetailsModel extends UserModel {
 
     public isActive(): boolean {
         return this.active > 0;
+    }
+
+    public isValidEmail(): boolean {
+        return this.valid_email > 0;
     }
 }

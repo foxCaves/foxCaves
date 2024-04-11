@@ -26,7 +26,8 @@ return {
     },
     app = {
         enable_user_always_active = false,
-        enable_testing_routes = false
+        enable_testing_routes = false,
+        require_user_approval = true
     },
     captcha = {
         registration = false,
