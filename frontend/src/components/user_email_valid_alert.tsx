@@ -4,7 +4,7 @@ import { toast } from 'react-toastify';
 import { AppContext } from '../utils/context';
 import { logError } from '../utils/misc';
 
-export const UserInactiveAlert: React.FC = () => {
+export const UserEmailValidAlert: React.FC = () => {
     const { user, apiAccessor } = useContext(AppContext);
 
     const requestActivationEmail = useCallback(() => {
@@ -36,7 +36,7 @@ export const UserInactiveAlert: React.FC = () => {
             .catch(logError);
     }, [user, apiAccessor]);
 
-    if (!user || user.isActive()) {
+    if (!user || user.isValidEmail()) {
         return null;
     }
 

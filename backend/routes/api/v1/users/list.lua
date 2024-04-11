@@ -16,6 +16,9 @@ R.register_route(
         }
 
         local query = 'active = 1'
+        if ngx.var.arg_approval_queue then
+            query = query .. ' AND approved = 0'
+        end
 
         local items = user_model.get_by_query(query, query_options)
 

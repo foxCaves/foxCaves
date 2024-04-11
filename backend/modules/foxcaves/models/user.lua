@@ -31,7 +31,7 @@ local function makeusermt(user)
 end
 
 local user_select =
-    'id, username, email, password, security_version, api_key, active, storage_quota, admin, ' .. database.TIME_COLUMNS
+    'id, username, email, password, security_version, api_key, email_valid, approved, storage_quota, admin, ' .. database.TIME_COLUMNS
 
 function user_model.get_by_query(query, options, ...)
     local users = database.get_shared():query('SELECT ' .. user_select .. ' FROM users WHERE ' .. query, options, ...)
@@ -101,8 +101,10 @@ function user_model.new()
         security_version = 1,
         storage_quota = STORAGE_BASE,
         active = 0,
+        approved = 0,
         admin = 0,
     }
+
     setmetatable(user, user_mt)
     user:make_new_api_key()
     return user
@@ -118,7 +120,7 @@ function user_mt:set_email(email)
         if res then
             return consts.VALIDATION_STATE_TAKEN
         end
-        self.active = 0
+        self.email_valid = 0
         self.require_email_confirmation = true
     end
 
@@ -210,9 +212,13 @@ function user_mt:is_admin()
 end
 
 function user_mt:save()
-    if config.app.enable_user_always_active then
+    if config.app.disable_email_confirmation then
         self.require_email_confirmation = nil
-        self.active = 1
+        self.email_valid = 1
+    end
+
+    if not config.app.require_user_approval then
+        self.approved = 1
     end
 
     local res, primary_push_action
@@ -220,8 +226,8 @@ function user_mt:save()
         res =
             database.get_shared():query_single(
                 'INSERT INTO users \
-                (id, username, email, password, security_version, api_key, active, storage_quota) VALUES \
-                (%s, %s, %s, %s, %s, %s, %s, %s) \
+                (id, username, email, password, security_version, api_key, email_valid, approved, storage_quota) VALUES \
+                (%s, %s, %s, %s, %s, %s, %s, %s, %s) \
                 RETURNING ' .. database.TIME_COLUMNS,
                 nil,
                 self.id,
@@ -230,7 +236,8 @@ function user_mt:save()
                 self.password,
                 self.security_version,
                 self.api_key,
-                self.active,
+                self.email_valid,
+                self.approved,
                 self.storage_quota
             )
         primary_push_action = 'create'
@@ -239,7 +246,7 @@ function user_mt:save()
         res =
             database.get_shared():query_single(
                 "UPDATE users \
-                SET username = %s, email = %s, password = %s, security_version = %s, api_key = %s, active = %s, storage_quota = %s, \
+                SET username = %s, email = %s, password = %s, security_version = %s, api_key = %s, email_valid = %s, approved = %s, storage_quota = %s, \
                     updated_at = (now() at time zone 'utc') \
                 WHERE id = %s \
                 RETURNING " .. database.TIME_COLUMNS,
@@ -249,7 +256,8 @@ function user_mt:save()
                 self.password,
                 self.security_version,
                 self.api_key,
-                self.active,
+                self.email_valid,
+                self.approved,
                 self.storage_quota,
                 self.id
             )
@@ -267,7 +275,7 @@ function user_mt:save()
         local redis_inst = redis.get_shared()
         local emailkey = 'emailkeys:' .. emailid
         redis_inst:hmset(emailkey, 'user', self.id, 'action', 'activation')
-        redis_inst:expire(emailkey, 172800) --48 hours
+        redis_inst:expire(emailkey, 172800) -- 48 hours
         mail.send(self, 'Activation E-Mail', email_text)
 
         self.require_email_confirmation = nil
@@ -300,7 +308,11 @@ function user_mt:delete()
 end
 
 function user_mt:can_perform_write()
-    return self.active == 1
+    return self:is_active()
+end
+
+function user_mt:is_active()
+    return self.email_valid == 1 and self.approved == 1
 end
 
 function user_mt:get_private()
@@ -309,7 +321,9 @@ function user_mt:get_private()
         username = self.username,
         email = self.email,
         api_key = self.api_key,
-        active = self.active,
+        active = self:is_active() and 1 or 0,
+        email_valid = self.email_valid,
+        approved = self.approved,
         storage_used = self:calculate_storage_used(),
         storage_quota = self.storage_quota,
         created_at = self.created_at,
@@ -357,6 +371,14 @@ function user_model.get_private_fields()
             required = true,
         },
         active = {
+            type = 'integer',
+            required = true,
+        },
+        approved = {
+            type = 'integer',
+            required = true,
+        },
+        email_valid = {
             type = 'integer',
             required = true,
         },

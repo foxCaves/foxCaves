@@ -38,7 +38,7 @@ R.register_route('/api/v1/users/emails/code', 'POST', R.make_route_opts_anon(), 
     end
 
     if action == 'activation' then
-        user.active = 1
+        user.email_valid = 1
         user:save()
     elseif action == 'forgot_password' then
         local newPassword = random.string(16)

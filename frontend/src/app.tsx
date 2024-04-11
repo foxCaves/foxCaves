@@ -11,7 +11,8 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import { LiveLoadingContainer } from './components/liveloading';
 import { CustomDropDownItem, CustomNavLink, CustomRouteHandler, LoginState, RouteWrapper } from './components/route';
-import { UserInactiveAlert } from './components/user_inactive_alert';
+import { UserEmailValidAlert } from './components/user_email_valid_alert';
+import { UserNotApprovedAlert } from './components/user_not_approved_alert';
 import { UserDetailsModel } from './models/user';
 import { APIAccessor } from './utils/api';
 import { AppContext, AppContextData } from './utils/context';
@@ -80,7 +81,8 @@ const Routing: FC<{ readonly user?: UserDetailsModel; readonly userLoaded: boole
                 </Container>
             </Navbar>
             <Container>
-                <UserInactiveAlert />
+                <UserEmailValidAlert />
+                <UserNotApprovedAlert />
                 <Routes>
                     <Route
                         element={

@@ -26,8 +26,9 @@ return {
         thumbnail_max_size = 50 * 1024 * 1024
     },
     app = {
-        enable_user_always_active = true,
-        enable_testing_routes = true
+        disable_email_confirmation = true,
+        enable_testing_routes = true,
+        require_user_approval = false
     },
     captcha = {
         registration = false,
