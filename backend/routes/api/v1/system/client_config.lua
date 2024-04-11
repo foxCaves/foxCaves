@@ -12,6 +12,7 @@ local config = {
     },
     sentry = { dsn = '' },
     backend_revision = revision.hash,
+    admin_email = config_raw.email.admin_email,
 }
 
 for key, _ in pairs(config.captcha) do
