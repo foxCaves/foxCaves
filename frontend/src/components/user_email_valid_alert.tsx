@@ -42,7 +42,7 @@ export const UserEmailValidAlert: React.FC = () => {
 
     return (
         <Alert variant="danger">
-            <Alert.Heading>Your account is inactive</Alert.Heading>
+            <Alert.Heading>Your E-Mail is not validated</Alert.Heading>
             <p>
                 Your account is inactive. Make sure to click the link in your activation E-Mail.
                 <br />

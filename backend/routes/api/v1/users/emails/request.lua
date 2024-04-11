@@ -7,7 +7,7 @@ local captcha = require('foxcaves.captcha')
 local main_url = require('foxcaves.config').http.main_url
 
 R.register_route('/api/v1/users/emails/request', 'POST', R.make_route_opts_anon(), function()
-    --48 hours
+    -- 48 hours
     local args = utils.get_post_args()
 
     local action = args.action or ''
@@ -56,4 +56,6 @@ R.register_route('/api/v1/users/emails/request', 'POST', R.make_route_opts_anon(
     redis_inst:hmset(emailkey, 'user', user.id, 'action', action)
     redis_inst:expire(emailkey, 172800)
     mail.send(user, subject, emailstr)
+
+    return { ok = true }
 end)
