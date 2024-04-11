@@ -31,8 +31,7 @@ local function makeusermt(user)
 end
 
 local user_select =
-    'id, username, email, password, security_version, api_key, active, approved, storage_quota, admin, ' ..
-        database.TIME_COLUMNS
+    'id, username, email, password, security_version, api_key, active, approved, storage_quota, admin, ' .. database.TIME_COLUMNS
 
 function user_model.get_by_query(query, options, ...)
     local users = database.get_shared():query('SELECT ' .. user_select .. ' FROM users WHERE ' .. query, options, ...)
@@ -103,7 +102,7 @@ function user_model.new()
         storage_quota = STORAGE_BASE,
         active = 0,
         approved = 0,
-        admin = 0
+        admin = 0,
     }
 
     setmetatable(user, user_mt)
@@ -174,8 +173,12 @@ function user_mt:check_password(password)
 end
 
 function user_mt:calculate_storage_used()
-    local res = database.get_shared():query_single(
-        'SELECT SUM(size) AS storage_used FROM files WHERE uploaded = 1 AND owner = %s', nil, self.id)
+    local res =
+        database.get_shared():query_single(
+            'SELECT SUM(size) AS storage_used FROM files WHERE uploaded = 1 AND owner = %s',
+            nil,
+            self.id
+        )
     return res and res.storage_used or 0
 end
 
@@ -195,7 +198,7 @@ function user_mt:send_event(action, model, data)
         type = 'liveLoading',
         action = action,
         model = model,
-        data = data
+        data = data,
     })
 end
 
@@ -220,20 +223,44 @@ function user_mt:save()
 
     local res, primary_push_action
     if self.not_in_db then
-        res = database.get_shared():query_single('INSERT INTO users \
+        res =
+            database.get_shared():query_single(
+                'INSERT INTO users \
                 (id, username, email, password, security_version, api_key, valid_email, approved, storage_quota) VALUES \
                 (%s, %s, %s, %s, %s, %s, %s, %s) \
-                RETURNING ' .. database.TIME_COLUMNS, nil, self.id, self.username, self.email, self.password,
-            self.security_version, self.api_key, self.valid_email, self.approved, self.storage_quota)
+                RETURNING ' .. database.TIME_COLUMNS,
+                nil,
+                self.id,
+                self.username,
+                self.email,
+                self.password,
+                self.security_version,
+                self.api_key,
+                self.valid_email,
+                self.approved,
+                self.storage_quota
+            )
         primary_push_action = 'create'
         self.not_in_db = nil
     else
-        res = database.get_shared():query_single("UPDATE users \
+        res =
+            database.get_shared():query_single(
+                "UPDATE users \
                 SET username = %s, email = %s, password = %s, security_version = %s, api_key = %s, valid_email = %s, approved = %s, storage_quota = %s, \
                     updated_at = (now() at time zone 'utc') \
                 WHERE id = %s \
-                RETURNING " .. database.TIME_COLUMNS, nil, self.username, self.email, self.password,
-            self.security_version, self.api_key, self.valid_email, self.approved, self.storage_quota, self.id)
+                RETURNING " .. database.TIME_COLUMNS,
+                nil,
+                self.username,
+                self.email,
+                self.password,
+                self.security_version,
+                self.api_key,
+                self.valid_email,
+                self.approved,
+                self.storage_quota,
+                self.id
+            )
         primary_push_action = 'update'
     end
 
@@ -242,9 +269,8 @@ function user_mt:save()
     if self.require_email_confirmation then
         local emailid = random.string(32)
 
-        local email_text = 'You have recently registered or changed your E-Mail on foxCaves.' ..
-                               '\nPlease click the following link to activate your E-Mail:\n' .. config.http.main_url ..
-                               '/email/code/' .. emailid
+        local email_text =
+            'You have recently registered or changed your E-Mail on foxCaves.' .. '\nPlease click the following link to activate your E-Mail:\n' .. config.http.main_url .. '/email/code/' .. emailid
 
         local redis_inst = redis.get_shared()
         local emailkey = 'emailkeys:' .. emailid
@@ -256,9 +282,7 @@ function user_mt:save()
     end
 
     if self.kick_user then
-        self:send_event_raw({
-            type = 'kick'
-        })
+        self:send_event_raw({ type = 'kick' })
 
         self.kick_user = nil
     end
@@ -302,7 +326,7 @@ function user_mt:get_private()
         storage_used = self:calculate_storage_used(),
         storage_quota = self.storage_quota,
         created_at = self.created_at,
-        updated_at = self.updated_at
+        updated_at = self.updated_at,
     }
 end
 
@@ -331,40 +355,40 @@ function user_model.get_private_fields()
     return {
         id = {
             type = 'uuid',
-            required = true
+            required = true,
         },
         username = {
             type = 'string',
-            required = true
+            required = true,
         },
         email = {
             type = 'string',
-            required = true
+            required = true,
         },
         api_key = {
             type = 'string',
-            required = true
+            required = true,
         },
         active = {
             type = 'integer',
-            required = true
+            required = true,
         },
         storage_used = {
             type = 'integer',
-            required = true
+            required = true,
         },
         storage_quota = {
             type = 'integer',
-            required = true
+            required = true,
         },
         created_at = {
             type = 'timestamp',
-            required = true
+            required = true,
         },
         updated_at = {
             type = 'timestamp',
-            required = true
-        }
+            required = true,
+        },
     }
 end
 
@@ -373,7 +397,7 @@ function user_mt:get_public()
         id = self.id,
         username = self.username,
         created_at = self.created_at,
-        updated_at = self.updated_at
+        updated_at = self.updated_at,
     }
 end
 
@@ -381,20 +405,20 @@ function user_model.get_public_fields()
     return {
         id = {
             type = 'uuid',
-            required = true
+            required = true,
         },
         username = {
             type = 'string',
-            required = true
+            required = true,
         },
         created_at = {
             type = 'timestamp',
-            required = true
+            required = true,
         },
         updated_at = {
             type = 'timestamp',
-            required = true
-        }
+            required = true,
+        },
     }
 end
 
