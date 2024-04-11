@@ -12,8 +12,12 @@ export const UserNotApprovedAlert: React.FC = () => {
 
     return (
         <Alert variant="danger">
-            <Alert.Heading>Your account is not approved, yet</Alert.Heading>
-            <p>Please wait on administrator approval of your account.</p>
+            <Alert.Heading>Your account is not approved</Alert.Heading>
+            <p>
+                Your account is inactive. Please wait for an administrator to approve your account.
+                <br />
+                While your account is inactive, you can not upload or edit files, and you cannot shorten links.
+            </p>
         </Alert>
     );
 };
