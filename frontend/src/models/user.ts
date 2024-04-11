@@ -29,7 +29,7 @@ export class UserDetailsModel extends UserModel {
     public storage_quota = 0;
     public storage_used = 0;
     public active = 0;
-    public valid_email = 0;
+    public email_valid = 0;
 
     public static async getById(id: string, apiAccessor: APIAccessor): Promise<UserDetailsModel | undefined> {
         try {
@@ -53,6 +53,6 @@ export class UserDetailsModel extends UserModel {
     }
 
     public isValidEmail(): boolean {
-        return this.valid_email > 0;
+        return this.email_valid > 0;
     }
 }

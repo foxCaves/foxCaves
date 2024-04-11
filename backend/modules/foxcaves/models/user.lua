@@ -31,7 +31,7 @@ local function makeusermt(user)
 end
 
 local user_select =
-    'id, username, email, password, security_version, api_key, active, approved, storage_quota, admin, ' .. database.TIME_COLUMNS
+    'id, username, email, password, security_version, api_key, email_valid, approved, storage_quota, admin, ' .. database.TIME_COLUMNS
 
 function user_model.get_by_query(query, options, ...)
     local users = database.get_shared():query('SELECT ' .. user_select .. ' FROM users WHERE ' .. query, options, ...)
@@ -120,7 +120,7 @@ function user_mt:set_email(email)
         if res then
             return consts.VALIDATION_STATE_TAKEN
         end
-        self.valid_email = 0
+        self.email_valid = 0
         self.require_email_confirmation = true
     end
 
@@ -214,7 +214,7 @@ end
 function user_mt:save()
     if config.app.disable_email_confirmation then
         self.require_email_confirmation = nil
-        self.valid_email = 1
+        self.email_valid = 1
     end
 
     if not config.app.require_user_approval then
@@ -226,7 +226,7 @@ function user_mt:save()
         res =
             database.get_shared():query_single(
                 'INSERT INTO users \
-                (id, username, email, password, security_version, api_key, valid_email, approved, storage_quota) VALUES \
+                (id, username, email, password, security_version, api_key, email_valid, approved, storage_quota) VALUES \
                 (%s, %s, %s, %s, %s, %s, %s, %s) \
                 RETURNING ' .. database.TIME_COLUMNS,
                 nil,
@@ -236,7 +236,7 @@ function user_mt:save()
                 self.password,
                 self.security_version,
                 self.api_key,
-                self.valid_email,
+                self.email_valid,
                 self.approved,
                 self.storage_quota
             )
@@ -246,7 +246,7 @@ function user_mt:save()
         res =
             database.get_shared():query_single(
                 "UPDATE users \
-                SET username = %s, email = %s, password = %s, security_version = %s, api_key = %s, valid_email = %s, approved = %s, storage_quota = %s, \
+                SET username = %s, email = %s, password = %s, security_version = %s, api_key = %s, email_valid = %s, approved = %s, storage_quota = %s, \
                     updated_at = (now() at time zone 'utc') \
                 WHERE id = %s \
                 RETURNING " .. database.TIME_COLUMNS,
@@ -256,7 +256,7 @@ function user_mt:save()
                 self.password,
                 self.security_version,
                 self.api_key,
-                self.valid_email,
+                self.email_valid,
                 self.approved,
                 self.storage_quota,
                 self.id
@@ -312,7 +312,7 @@ function user_mt:can_perform_write()
 end
 
 function user_mt:is_active()
-    return self.valid_email == 1 and self.approved == 1
+    return self.email_valid == 1 and self.approved == 1
 end
 
 function user_mt:get_private()
