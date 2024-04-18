@@ -35,7 +35,10 @@ R.register_route(
 R.register_route(
     '/api/v1/users/{user}/approve',
     'POST',
-    R.make_route_opts({ disable_api_key = true }),
+    R.make_route_opts({
+        disable_api_key = true,
+        disable_csrf_checks = true,
+    }),
     function(route_vars)
         local user = user_model.get_by_id(route_vars.user)
         if not user then
