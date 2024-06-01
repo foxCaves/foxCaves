@@ -55,6 +55,6 @@
     "test": "curl -f -v -s -XPOST http://main.foxcaves:8080/api/v1/system/testing/reset && playwright test"
   },
   "devDependencies": {
-    "eslint-plugin-deprecation": "^2.0.0"
+    "eslint-plugin-deprecation": "^3.0.0"
   }
 }
