@@ -889,7 +889,7 @@ export class LiveDrawManager {
                 }
 
                 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                customData[brush]![key] = value;
+                customData[brush][key] = value;
                 break;
             case PaintEvent.BRUSH:
                 from.brushData.brush = paintBrushes[(payload as [string, BrushName])[1]];
