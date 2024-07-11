@@ -557,26 +557,19 @@ export class LiveDrawManager {
     public backgroundCanvasCTX: CanvasRenderingContext2D;
     public foregroundCanvasCTX: CanvasRenderingContext2D;
     public finalCanvasCTX: CanvasRenderingContext2D;
-    public finalCanvas: HTMLCanvasElement;
 
     private shouldConnect = false;
     private socket: WebSocket | undefined = undefined;
 
     public constructor(
-        canvas: HTMLCanvasElement,
+        private readonly finalCanvas: HTMLCanvasElement,
         private readonly backgroundCanvas: HTMLCanvasElement,
         private readonly foregroundCanvas: HTMLCanvasElement,
         public readonly sliderSetBrushWidth: (val: number) => void,
     ) {
-        this.sliderSetBrushWidth = sliderSetBrushWidth;
-
-        this.backgroundCanvas = backgroundCanvas;
-        this.foregroundCanvas = foregroundCanvas;
-        this.finalCanvas = canvas;
-
         const backgroundCanvasCtx = backgroundCanvas.getContext('2d');
         const foregroundCanvasCtx = foregroundCanvas.getContext('2d');
-        const finalCanvasCTX = canvas.getContext('2d');
+        const finalCanvasCTX = finalCanvas.getContext('2d');
 
         if (!backgroundCanvasCtx || !foregroundCanvasCtx || !finalCanvasCTX) {
             throw new Error('failed to acquire drawing contexts');
@@ -587,7 +580,7 @@ export class LiveDrawManager {
         this.finalCanvasCTX = finalCanvasCTX;
 
         this.localUser = makeLocalUser(this);
-        this.canvasPos = canvas.getBoundingClientRect();
+        this.canvasPos = finalCanvas.getBoundingClientRect();
         this.paintCanvas = this.paintCanvas.bind(this);
 
         this.finalCanvas.addEventListener(
@@ -888,7 +881,6 @@ export class LiveDrawManager {
                     customData[brush] = {};
                 }
 
-                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                 customData[brush][key] = value;
                 break;
             case PaintEvent.BRUSH:
