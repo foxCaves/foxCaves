@@ -66,7 +66,7 @@ jobs:
       - name: Add to hostsfile
         run: sudo bash -c "echo '127.0.0.1 main.foxcaves short.foxcaves' >> /etc/hosts"
       - name: Run test container
-        run: docker-compose -f docker-compose.yml -f docker-compose.testing.yml up -d --remove-orphans
+        run: docker compose -f docker compose.yml -f docker compose.testing.yml up -d --remove-orphans
       - name: Run some basic tests
         run: |
           set -ex
@@ -86,8 +86,8 @@ jobs:
       - name: Test container teardown
         if: always()
         run: |
-          docker-compose -f docker-compose.yml -f docker-compose.testing.yml logs
-          docker-compose -f docker-compose.yml -f docker-compose.testing.yml down
+          docker compose -f docker compose.yml -f docker compose.testing.yml logs
+          docker compose -f docker compose.yml -f docker compose.testing.yml down
       - name: Test results upload
         uses: actions/upload-artifact@v4
         if: always()
