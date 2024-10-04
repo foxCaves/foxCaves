@@ -18,7 +18,7 @@ local error_html = ''
     error_html =
         htmlgen.get_index_html():gsub(
             '<script.-src="/api/v1/system/client_config.js".->',
-            '<script type="text/javascript">window.FOXCAVES_CONFIG={no_render:true,sentry:{}};'
+            '<script type="text/javascript">globalThis.FOXCAVES_CONFIG={no_render:true,sentry:{}};'
         ):gsub(
             '</head>',
             [[

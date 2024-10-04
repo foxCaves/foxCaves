@@ -977,7 +977,7 @@ export class LiveDrawManager {
                     return;
                 }
 
-                window.setTimeout(() => {
+                globalThis.setTimeout(() => {
                     this.netConnect(webSocket, file, session_id).catch(logError);
                 }, 1000);
 
