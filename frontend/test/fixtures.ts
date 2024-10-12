@@ -19,30 +19,30 @@ async function getStoragePath(suffix: 'storage' | 'user'): Promise<string> {
 
 export const testGuest = baseTest.extend<object, object>({
     // eslint-disable-next-line no-empty-pattern
-    storageState: async ({}, use) => {
-        await use(undefined);
+    storageState: async ({}, setStorageState) => {
+        await setStorageState(undefined);
     },
 });
 
 export const testLoggedIn = baseTest.extend<{ readonly testUser: TestUser }, { workerStorageState: string }>({
     // Use the same storage state for all tests in this worker.
-    storageState: async ({ workerStorageState }, use) => {
-        await use(workerStorageState);
+    storageState: async ({ workerStorageState }, setStorageState) => {
+        await setStorageState(workerStorageState);
     },
 
     // eslint-disable-next-line no-empty-pattern
-    testUser: async ({}, use) => {
-        await use(JSON.parse(await readFile(await getStoragePath('user'), 'utf8')) as TestUser);
+    testUser: async ({}, setStorageState) => {
+        await setStorageState(JSON.parse(await readFile(await getStoragePath('user'), 'utf8')) as TestUser);
     },
 
     // Authenticate once per worker with a worker-scoped fixture.
     workerStorageState: [
-        async ({ browser }, use) => {
+        async ({ browser }, setStorageState) => {
             const fileName = await getStoragePath('storage');
 
             if (existsSync(fileName)) {
                 // Reuse existing authentication state if any.
-                await use(fileName);
+                await setStorageState(fileName);
                 return;
             }
 
@@ -54,7 +54,7 @@ export const testLoggedIn = baseTest.extend<{ readonly testUser: TestUser }, { w
 
             await page.context().storageState({ path: fileName });
             await page.close();
-            await use(fileName);
+            await setStorageState(fileName);
         },
         { scope: 'worker' },
     ],
