@@ -36,7 +36,7 @@ interface BrushData {
     width: number;
     color: string;
     brush?: Brush;
-    customData: { [k in BrushName]?: Record<string, unknown> };
+    customData: Partial<Record<BrushName, Record<string, unknown>>>;
 }
 
 interface User {
