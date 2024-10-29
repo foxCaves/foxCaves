@@ -778,6 +778,7 @@ export class LiveDrawManager {
             return;
         }
 
+        // eslint-disable-next-line @typescript-eslint/switch-exhaustiveness-check
         switch (eventType) {
             case PaintEvent.JOIN:
                 const [id, name, widthAsString, color, brush] = commands as [string, string, string, string, BrushName];
@@ -851,6 +852,7 @@ export class LiveDrawManager {
             return;
         }
 
+        // eslint-disable-next-line @typescript-eslint/switch-exhaustiveness-check
         switch (eventType) {
             case PaintEvent.MOUSE_CURSOR: {
                 const [, xStr, yStr] = payload as StrTuple<3>;
