@@ -4,7 +4,7 @@
   "dependencies": {
     "@cspell/eslint-plugin": "^8.0.0",
     "@playwright/test": "^1.32.0",
-    "@sentry/react": "8.39.0",
+    "@sentry/react": "8.40.0",
     "@types/node": "^22.0.0",
     "@types/react": "18.3.12",
     "@types/react-bootstrap": "0.32.37",
