@@ -12,6 +12,7 @@ const PWD = __dirname;
 
 type NodeEnv = 'development' | 'production' | undefined;
 
+// eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
 const mode: NodeEnv = (process.env.NODE_ENV as NodeEnv) ?? 'development';
 
 const config: Configuration = {

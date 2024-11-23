@@ -30,6 +30,7 @@ async function uploadFileInternal(
             if (xhr.status < 200 || xhr.status > 299) {
                 let errorMessage;
                 try {
+                    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
                     const data = JSON.parse(xhr.responseText) as { error: string };
                     errorMessage = data.error;
                 } catch (error: unknown) {
@@ -82,6 +83,7 @@ export async function uploadFile(file: FileLike, apiAccessor: APIAccessor): Prom
         toast.done(toastId);
         return fileObj;
     } catch (error: unknown) {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
         toast(`Error uploading file "${file.name}": ${(error as Error).message}`, {
             type: 'error',
             autoClose: 3000,

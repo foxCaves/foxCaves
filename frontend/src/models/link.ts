@@ -22,6 +22,7 @@ export class LinkModel extends BaseModel {
     }
 
     public static async getByUser(user: UserModel, apiAccessor: APIAccessor): Promise<LinkModel[]> {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
         const res = (await apiAccessor.fetch(`/api/v1/users/${encodeURIComponent(user.id)}/links`)) as ListResponse;
         return res.items.map((link) => LinkModel.wrapNew(link));
     }

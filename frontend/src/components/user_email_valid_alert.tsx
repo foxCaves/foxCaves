@@ -27,6 +27,7 @@ export const UserEmailValidAlert: React.FC = () => {
                     pending: 'Requesting new activation E-Mail...',
                     error: {
                         render({ data }) {
+                            // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
                             const err = data as Error;
                             return `Error requesting new activation E-Mail: ${err.message}`;
                         },

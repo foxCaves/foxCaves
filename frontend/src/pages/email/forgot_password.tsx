@@ -40,6 +40,7 @@ export const ForgotPasswordPage: React.FC = () => {
                 pending: 'Sending forgot password E-Mail...',
                 error: {
                     render({ data }) {
+                        // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
                         const err = data as Error;
                         return `Error sending forgot password E-Mail: ${err.message}`;
                     },

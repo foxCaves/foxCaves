@@ -104,6 +104,7 @@ export const CaptchaContainer: React.FC<CustomRouteHandlerOptions> = ({ page, on
                 method: 'POST',
             })
             .then((newData) => {
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
                 setData(newData as CaptchaResponse);
                 setDataLoading(false);
             })

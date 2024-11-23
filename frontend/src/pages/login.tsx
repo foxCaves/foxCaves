@@ -46,6 +46,7 @@ export const LoginPage: React.FC = () => {
                     pending: 'Logging in...',
                     error: {
                         render({ data }) {
+                            // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
                             const err = data as Error;
                             return `Error logging in: ${err.message}`;
                         },
@@ -53,6 +54,7 @@ export const LoginPage: React.FC = () => {
                 },
             );
         } catch (error: unknown) {
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
             logError(error as Error);
             await refreshUser();
         } finally {

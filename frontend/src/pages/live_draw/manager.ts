@@ -430,12 +430,14 @@ const paintBrushes: Record<BrushName, Brush> = {
             // noop
         },
         up(_manager, x, y, user) {
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
             (user.brushData.customData.polygon!.vertices as Vertex[]).push({ x, y });
         },
         move() {
             return true;
         },
         preview(_manager, x, y, user, foregroundCanvasCTX) {
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
             const vertices = user.brushData.customData.polygon!.vertices as Vertex[];
             if (vertices.length === 0) return;
             const firstVert = vertices[0]!;
@@ -449,6 +451,7 @@ const paintBrushes: Record<BrushName, Brush> = {
         doubleClick(_manager, _x, _y, user, backgroundCanvasCTX) {
             backgroundCanvasCTX.strokeStyle = user.brushData.color;
 
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
             const vertices = user.brushData.customData.polygon!.vertices as Vertex[];
             if (vertices.length === 0) return;
             const firstVert = vertices[0]!;
@@ -767,6 +770,7 @@ export class LiveDrawManager {
             return;
         }
 
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
         this.recvDirectEvent(msg.charAt(0) as PaintEvent, msg.slice(1));
     }
 
@@ -781,6 +785,7 @@ export class LiveDrawManager {
         // eslint-disable-next-line @typescript-eslint/switch-exhaustiveness-check
         switch (eventType) {
             case PaintEvent.JOIN:
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
                 const [id, name, widthAsString, color, brush] = commands as [string, string, string, string, BrushName];
                 const from: RemotePaintUser = {
                     local: false,
@@ -803,6 +808,7 @@ export class LiveDrawManager {
 
                 for (const [iBrush, pBrush] of Object.entries(paintBrushes)) {
                     if (pBrush.usesCustomData) {
+                        // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
                         from.brushData.customData[iBrush as BrushName] = { ...pBrush.defaultCustomData };
                     }
 
@@ -813,9 +819,11 @@ export class LiveDrawManager {
 
                 break;
             case PaintEvent.LEAVE:
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
                 paintUsers.delete((commands as [string])[0]);
                 break;
             case PaintEvent.IMG_BURST:
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
                 const [, cmd, data] = commands as StrTuple<3>;
                 if (cmd === 'r') {
                     this.sendDrawEvent(
@@ -845,6 +853,7 @@ export class LiveDrawManager {
     }
 
     private recvDrawEvent(eventType: PaintEvent, payload: string[]) {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
         const from = paintUsers.get((payload as [string])[0]);
         if (!from) {
             // eslint-disable-next-line no-console
@@ -855,6 +864,7 @@ export class LiveDrawManager {
         // eslint-disable-next-line @typescript-eslint/switch-exhaustiveness-check
         switch (eventType) {
             case PaintEvent.MOUSE_CURSOR: {
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
                 const [, xStr, yStr] = payload as StrTuple<3>;
                 from.cursorData.x = Number.parseFloat(xStr) * this.scaleFactor;
                 from.cursorData.y = Number.parseFloat(yStr) * this.scaleFactor;
@@ -865,19 +875,23 @@ export class LiveDrawManager {
             case PaintEvent.MOUSE_DOWN:
             case PaintEvent.MOUSE_UP:
             case PaintEvent.MOUSE_DOUBLE_CLICK: {
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
                 const [, xStr, yStr] = payload as StrTuple<3>;
                 this.recvBrushEvent(from, eventType, Number.parseFloat(xStr), Number.parseFloat(yStr));
                 break;
             }
 
             case PaintEvent.WIDTH:
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
                 from.brushData.width = Number.parseFloat((payload as [string, string])[1]);
                 break;
             case PaintEvent.COLOR:
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
                 [, from.brushData.color] = payload as [string, string];
                 break;
             case PaintEvent.CUSTOM:
                 const { customData } = from.brushData;
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
                 const [brush, key, value] = payload as [BrushName, string, string];
                 if (!customData[brush]) {
                     customData[brush] = {};
@@ -886,6 +900,7 @@ export class LiveDrawManager {
                 customData[brush][key] = value;
                 break;
             case PaintEvent.BRUSH:
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
                 from.brushData.brush = paintBrushes[(payload as [string, BrushName])[1]];
                 break;
             case PaintEvent.RESET:
@@ -961,6 +976,7 @@ export class LiveDrawManager {
                 `/api/v1/files/${encodeURIComponent(file.id)}/live_draw?session=${encodeURIComponent(session_id)}`,
             );
 
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
             const data = (await res.json()) as { url: string };
             const webSocket = new WebSocket(data.url);
 
@@ -970,6 +986,7 @@ export class LiveDrawManager {
                     return;
                 }
 
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
                 this.recvRaw(event.data as string);
             });
 
@@ -1231,6 +1248,7 @@ export class LiveDrawManager {
     private setupBrushes() {
         for (const [brush, pBrush] of Object.entries(paintBrushes)) {
             if (pBrush.usesCustomData) {
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
                 this.localUser.brushData.customData[brush as BrushName] = {
                     ...pBrush.defaultCustomData,
                 };

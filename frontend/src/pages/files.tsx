@@ -48,6 +48,7 @@ const FileView: React.FC<{
                         pending: `Renaming file "${oldName}" to "${newName}"...`,
                         error: {
                             render({ data }) {
+                                // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
                                 const err = data as Error;
                                 return `Error renaming file "${oldName}" to "${newName}": ${err.message}`;
                             },
@@ -158,6 +159,7 @@ export const FilesPage: React.FC = () => {
                 pending: `Deleting file "${deleteFile.name}"...`,
                 error: {
                     render({ data }) {
+                        // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
                         const err = data as Error;
                         return `Error deleting file "${deleteFile.name}": ${err.message}`;
                     },
@@ -195,6 +197,7 @@ export const FilesPage: React.FC = () => {
                 pending: 'Refreshing files...',
                 error: {
                     render({ data }) {
+                        // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
                         const err = data as Error;
                         return `Error refreshing files: ${err.message}`;
                     },
