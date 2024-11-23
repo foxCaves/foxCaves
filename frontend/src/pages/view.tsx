@@ -97,6 +97,7 @@ export const ViewPage: React.FC = () => {
                 setFileError('File not found');
             }
         } catch (error: unknown) {
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
             setFileError((error as Error).message);
         }
 

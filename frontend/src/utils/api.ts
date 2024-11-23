@@ -42,6 +42,7 @@ export class APIAccessor {
     }
 
     public async refreshCSRFToken(): Promise<string> {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
         const res = (await this.fetch('/api/v1/system/csrf', {
             method: 'POST',
             data: { refresh: true },
@@ -85,6 +86,7 @@ export class APIAccessor {
         if (res.status < 200 || res.status > 299) {
             let desc;
             try {
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
                 const data = (await res.json()) as { error: string };
                 desc = data.error;
             } catch (error: unknown) {

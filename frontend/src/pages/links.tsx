@@ -56,6 +56,7 @@ export const LinksPage: React.FC = () => {
                 pending: `Deleting link "${deleteLink.short_url}"...`,
                 error: {
                     render({ data }) {
+                        // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
                         const err = data as Error;
                         return `Error deleting link: ${err.message}`;
                     },
@@ -78,6 +79,7 @@ export const LinksPage: React.FC = () => {
                 pending: `Creating link "${createLinkUrl}"...`,
                 error: {
                     render({ data }) {
+                        // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
                         const err = data as Error;
                         return `Error creating link "${createLinkUrl}": ${err.message}`;
                     },
@@ -124,6 +126,7 @@ export const LinksPage: React.FC = () => {
                 pending: 'Refreshing links...',
                 error: {
                     render({ data }) {
+                        // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
                         const err = data as Error;
                         return `Error refreshing links: ${err.message}`;
                     },

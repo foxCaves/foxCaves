@@ -10,4 +10,5 @@ export interface AppContextData {
     apiAccessor: APIAccessor;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
 export const AppContext = React.createContext<AppContextData>({} as AppContextData);

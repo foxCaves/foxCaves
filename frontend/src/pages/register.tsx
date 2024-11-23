@@ -59,6 +59,7 @@ export const RegistrationPage: React.FC = () => {
                         pending: 'Registering account...',
                         error: {
                             render({ data }) {
+                                // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
                                 const err = data as Error;
                                 return `Error registering account: ${err.message}`;
                             },

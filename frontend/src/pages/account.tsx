@@ -38,6 +38,7 @@ export const AccountPage: React.FC = () => {
                         success: 'Your account changes have been saved!',
                         error: {
                             render({ data }) {
+                                // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
                                 const err = data as Error;
                                 return `Error changing account: ${err.message}`;
                             },
@@ -45,6 +46,7 @@ export const AccountPage: React.FC = () => {
                     },
                 );
             } catch (error: unknown) {
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
                 logError(error as Error);
             }
 

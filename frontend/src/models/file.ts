@@ -31,6 +31,7 @@ export class FileModel extends BaseModel {
     }
 
     public static async getByUser(user: UserModel, apiAccessor: APIAccessor): Promise<FileModel[]> {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
         const res = (await apiAccessor.fetch(`/api/v1/users/${encodeURIComponent(user.id)}/files`)) as ListResponse;
         return res.items.map((i) => FileModel.wrapNew(i));
     }

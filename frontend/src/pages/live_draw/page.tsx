@@ -72,6 +72,7 @@ export const LiveDrawPage: React.FC = () => {
         }
 
         canvasRef.current.toBlob((blob) => {
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
             const namedBlob = blob as BlobWithName;
             namedBlob.name = getFileName();
             uploadFile(namedBlob, apiAccessor).catch(logError);

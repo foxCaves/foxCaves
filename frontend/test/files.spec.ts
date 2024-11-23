@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-type-assertion */
 import assert from 'node:assert';
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';

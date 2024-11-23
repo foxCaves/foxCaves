@@ -11,6 +11,7 @@ export const EmailCodePage: React.FC = () => {
 
     const sendCode = useCallback(async () => {
         try {
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
             const res = (await apiAccessor.fetch('/api/v1/users/emails/code', {
                 method: 'POST',
                 data: { code },
@@ -28,6 +29,7 @@ export const EmailCodePage: React.FC = () => {
                     break;
             }
         } catch (error: unknown) {
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
             setStatus(`Error: ${(error as Error).message}`);
         }
     }, [code, apiAccessor]);

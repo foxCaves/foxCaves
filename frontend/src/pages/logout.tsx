@@ -25,6 +25,7 @@ export const LogoutPage: React.FC = () => {
                     pending: 'Logging out...',
                     error: {
                         render({ data }) {
+                            // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
                             const err = data as Error;
                             return `Error logging out: ${err.message}`;
                         },
@@ -34,6 +35,7 @@ export const LogoutPage: React.FC = () => {
 
             document.location.href = '/';
         } catch (error: unknown) {
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
             logError(error as Error);
             await refreshUser();
         }

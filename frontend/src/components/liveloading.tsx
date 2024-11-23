@@ -24,7 +24,9 @@ interface LiveLoadingContainerInterface {
     readonly children?: React.ReactNode;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
 export const FilesContext = React.createContext<ModelContext<FileModel>>({} as ModelContext<FileModel>);
+// eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
 export const LinksContext = React.createContext<ModelContext<LinkModel>>({} as ModelContext<LinkModel>);
 
 export const LiveLoadingContainer: React.FC<LiveLoadingContainerInterface> = ({ children }) => {
@@ -73,6 +75,7 @@ export const LiveLoadingContainer: React.FC<LiveLoadingContainerInterface> = ({ 
                         break;
                     }
 
+                    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
                     const file = data.data as FileModel;
                     const fileMapCopy = new Map(files);
                     switch (data.action) {
@@ -116,6 +119,7 @@ export const LiveLoadingContainer: React.FC<LiveLoadingContainerInterface> = ({ 
                         break;
                     }
 
+                    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
                     const link = data.data as LinkModel;
                     const linkMapCopy = new Map(links);
                     switch (data.action) {
@@ -159,6 +163,7 @@ export const LiveLoadingContainer: React.FC<LiveLoadingContainerInterface> = ({ 
                         break;
                     }
 
+                    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
                     const newUser = data.data as UserDetailsModel;
                     if (!user || newUser.id !== user.id) {
                         break;
@@ -175,11 +180,14 @@ export const LiveLoadingContainer: React.FC<LiveLoadingContainerInterface> = ({ 
 
     const handleWebSocketMessage = useCallback(
         (event: MessageEvent) => {
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
             const data = JSON.parse(event.data as string) as unknown;
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
             if ((data as { type: string }).type !== 'liveLoading') {
                 return;
             }
 
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
             handleLiveLoadMessage(data as LiveLoadingPayload);
         },
         [handleLiveLoadMessage],
