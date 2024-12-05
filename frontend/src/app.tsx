@@ -34,7 +34,7 @@ const { ViewPage } = lazily(async () => import('./pages/view'));
 
 const Routing: FC<{ readonly user?: UserDetailsModel; readonly userLoaded: boolean }> = ({ user, userLoaded }) => {
     return (
-        <BrowserRouter future={{ v7_startTransition: true }}>
+        <BrowserRouter>
             <Navbar bg="primary" fixed="top" variant="dark">
                 <Container>
                     <LinkContainer to="/">
