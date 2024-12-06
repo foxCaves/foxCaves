@@ -32,7 +32,7 @@ export const LinksContext = React.createContext<ModelContext<LinkModel>>({} as M
 export const LiveLoadingContainer: React.FC<LiveLoadingContainerInterface> = ({ children }) => {
     const [files, setFiles] = useState<ModelMap<FileModel> | undefined>(undefined);
     const [links, setLinks] = useState<ModelMap<LinkModel> | undefined>(undefined);
-    const wsRef = useRef<ReconnectingWebSocket | undefined>();
+    const wsRef = useRef<ReconnectingWebSocket | undefined>(undefined);
     const { user, setUser, apiAccessor } = useContext(AppContext);
     const [curUserId, setCurUserId] = useState<string | undefined>(undefined);
 
