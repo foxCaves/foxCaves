@@ -1,3 +1,4 @@
+import 'react-bootstrap-range-slider/dist/react-bootstrap-range-slider.css';
 import '../../resources/live_draw.css';
 
 import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
