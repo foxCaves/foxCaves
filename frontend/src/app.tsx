@@ -6,9 +6,9 @@ import Dropdown from 'react-bootstrap/Dropdown';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import { lazily } from 'react-lazily';
-import { LinkContainer } from 'react-router-bootstrap';
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Route, Routes } from 'react-router';
 import { ToastContainer } from 'react-toastify';
+import { LinkContainer } from './components/link_container';
 import { LiveLoadingContainer } from './components/liveloading';
 import { CustomDropDownItem, CustomNavLink, CustomRouteHandler, LoginState, RouteWrapper } from './components/route';
 import { UserEmailValidAlert } from './components/user_email_valid_alert';
@@ -34,7 +34,7 @@ const { ViewPage } = lazily(async () => import('./pages/view'));
 
 const Routing: FC<{ readonly user?: UserDetailsModel; readonly userLoaded: boolean }> = ({ user, userLoaded }) => {
     return (
-        <BrowserRouter future={{ v7_startTransition: true }}>
+        <BrowserRouter>
             <Navbar bg="primary" fixed="top" variant="dark">
                 <Container>
                     <LinkContainer to="/">

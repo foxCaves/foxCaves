@@ -2,7 +2,7 @@ import React, { FormEvent, useCallback, useContext, useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import FloatingLabel from 'react-bootstrap/FloatingLabel';
 import Form from 'react-bootstrap/Form';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 import { toast } from 'react-toastify';
 import { CaptchaContainer } from '../components/captcha';
 import { AppContext } from '../utils/context';

@@ -1,9 +1,9 @@
 import React, { ReactElement, Suspense, useContext } from 'react';
 import Dropdown from 'react-bootstrap/Dropdown';
 import Nav from 'react-bootstrap/Nav';
-import { LinkContainer } from 'react-router-bootstrap';
-import { Navigate } from 'react-router-dom';
+import { Navigate } from 'react-router';
 import { AppContext, AppContextData } from '../utils/context';
+import { LinkContainer } from './link_container';
 
 export enum LoginState {
     LoggedIn = 1,
