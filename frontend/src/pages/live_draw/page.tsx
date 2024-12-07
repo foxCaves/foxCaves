@@ -4,7 +4,7 @@ import React, { useCallback, useContext, useEffect, useRef, useState } from 'rea
 import { Form } from 'react-bootstrap';
 import Button from 'react-bootstrap/Button';
 import RangeSlider from 'react-bootstrap-range-slider';
-import { Navigate, useParams } from 'react-router-dom';
+import { Navigate, useParams } from 'react-router';
 import { FileModel } from '../../models/file';
 import { AppContext } from '../../utils/context';
 import { BlobWithName, uploadFile } from '../../utils/file_uploader';

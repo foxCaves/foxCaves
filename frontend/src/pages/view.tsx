@@ -1,7 +1,7 @@
 import '../resources/view.css';
 
 import React, { useCallback, useContext, useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams } from 'react-router';
 import { FileModel } from '../models/file';
 import { UserModel } from '../models/user';
 import { AppContext } from '../utils/context';

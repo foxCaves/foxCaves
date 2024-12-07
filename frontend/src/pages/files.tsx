@@ -10,7 +10,7 @@ import Modal from 'react-bootstrap/Modal';
 import Ratio from 'react-bootstrap/Ratio';
 import { useDropzone } from 'react-dropzone';
 import { LinkContainer } from 'react-router-bootstrap';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 import { toast } from 'react-toastify';
 import { FilesContext } from '../components/liveloading';
 import { StorageUseBar } from '../components/storage_use';
