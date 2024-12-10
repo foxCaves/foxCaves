@@ -7,8 +7,7 @@
         "plugin:import/recommended",
         "plugin:import/typescript",
         "prettier",
-        "plugin:unicorn/all",
-        "plugin:deprecation/recommended"
+        "plugin:unicorn/all"
     ],
     "parserOptions": {
         "project": ["./tsconfig.json"]
@@ -21,8 +20,7 @@
         "import",
         "prettier",
         "unicorn",
-        "@cspell",
-        "deprecation"
+        "@cspell"
     ],
     "rules": {
         // eslint overrides
