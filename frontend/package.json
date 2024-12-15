@@ -30,8 +30,6 @@
         "@types/node": "^22.0.0",
         "@types/react": "19.0.1",
         "@types/react-dom": "19.0.2",
-        "@typescript-eslint/eslint-plugin": "^8.0.0",
-        "@typescript-eslint/parser": "^8.0.0",
         "axios": "^1.7.9",
         "content-replace-webpack-plugin": "^1.0.0",
         "copy-webpack-plugin": "^12.0.0",
@@ -51,6 +49,7 @@
         "ts-loader": "^9.4.2",
         "ts-node": "^10.9.1",
         "typescript": "5.7.2",
+        "typescript-eslint": "^8.18.0",
         "webpack": "^5.76.2",
         "webpack-cli": "^5.0.1",
         "webpack-dev-server": "^5.0.0"
