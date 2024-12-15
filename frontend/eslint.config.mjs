@@ -16,13 +16,13 @@ export default tseslint.config(
     _import.flatConfigs.recommended,
     _import.flatConfigs.typescript,
     eslintPrettierRecommended,
-    react.configs.flat.recommended,
+    react.configs.flat.all,
     cspellESLintPluginRecommended,
     unicorn.configs['flat/all'],
     {
       languageOptions: {
         ecmaVersion: 2025,
-        sourceType: 'script',
+        sourceType: 'module',
 
         parserOptions: {project: ['./tsconfig.json']}
       },
@@ -165,6 +165,10 @@ export default tseslint.config(
         'react/jsx-no-leaked-render': 'error',
         'react/destructuring-assignment': 'error',
         'react/forbid-component-props': 'off',
+        'react/jsx-max-props-per-line': 'off',
+        'react/jsx-newline': 'off',
+        'react/jsx-one-expression-per-line': 'off',
+
 
         'react/jsx-curly-brace-presence': [
           'error', {
@@ -206,6 +210,7 @@ export default tseslint.config(
         'react/prop-types': 'off',
         'react/require-default-props': 'off',
         'react/sort-comp': 'off',
+        'react/jsx-child-element-spacing': 'off',
 
         'react/no-unescaped-entities': [
           'error', {

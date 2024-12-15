@@ -922,32 +922,34 @@ export class LiveDrawManager {
         this.backgroundCanvasCTX.strokeStyle = color;
         this.backgroundCanvasCTX.fillStyle = color;
 
-        brush?.select(this, from, this.foregroundCanvasCTX, this.backgroundCanvasCTX);
+        if (brush) {
+            brush.select(this, from, this.foregroundCanvasCTX, this.backgroundCanvasCTX);
 
-        switch (eventType) {
-            case PaintEvent.MOUSE_DOWN:
-                brush?.down(this, x, y, from);
-                break;
-            case PaintEvent.MOUSE_UP:
-                brush?.up(this, x, y, from, this.backgroundCanvasCTX);
-                break;
-            case PaintEvent.MOUSE_MOVE:
-                brush?.move(this, x, y, from, this.backgroundCanvasCTX);
-                break;
-            case PaintEvent.MOUSE_DOUBLE_CLICK:
-                brush?.doubleClick?.(this, x, y, from, this.backgroundCanvasCTX);
-                break;
-            case PaintEvent.WIDTH:
-            case PaintEvent.COLOR:
-            case PaintEvent.BRUSH:
-            case PaintEvent.MOUSE_CURSOR:
-            case PaintEvent.CUSTOM:
-            case PaintEvent.RESET:
-            case PaintEvent.JOIN:
-            case PaintEvent.LEAVE:
-            case PaintEvent.ERROR:
-            case PaintEvent.IMG_BURST:
-                break;
+            switch (eventType) {
+                case PaintEvent.MOUSE_DOWN:
+                    brush.down(this, x, y, from);
+                    break;
+                case PaintEvent.MOUSE_UP:
+                    brush.up(this, x, y, from, this.backgroundCanvasCTX);
+                    break;
+                case PaintEvent.MOUSE_MOVE:
+                    brush.move(this, x, y, from, this.backgroundCanvasCTX);
+                    break;
+                case PaintEvent.MOUSE_DOUBLE_CLICK:
+                    brush.doubleClick?.(this, x, y, from, this.backgroundCanvasCTX);
+                    break;
+                case PaintEvent.WIDTH:
+                case PaintEvent.COLOR:
+                case PaintEvent.BRUSH:
+                case PaintEvent.MOUSE_CURSOR:
+                case PaintEvent.CUSTOM:
+                case PaintEvent.RESET:
+                case PaintEvent.JOIN:
+                case PaintEvent.LEAVE:
+                case PaintEvent.ERROR:
+                case PaintEvent.IMG_BURST:
+                    break;
+            }
         }
 
         this.localUser.brushData.setBrushAttribsLocal();

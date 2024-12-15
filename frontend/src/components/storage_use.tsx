@@ -18,9 +18,9 @@ export const StorageUseBar: React.FC = () => {
     return (
         <ProgressBar className="position-relative">
             <ProgressBar now={nowPercentage} />
-            <ProgressBarLabel>{`${formatSize(user.storage_used)} / ${formatSizeWithInfinite(
-                user.storage_quota,
-            )}`}</ProgressBarLabel>
+            <ProgressBarLabel>
+                {`${formatSize(user.storage_used)} / ${formatSizeWithInfinite(user.storage_quota)}`}
+            </ProgressBarLabel>
         </ProgressBar>
     );
 };
