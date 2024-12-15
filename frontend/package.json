@@ -2,11 +2,11 @@
     "name": "foxcaves-frontend",
     "version": "0.1.0",
     "dependencies": {
-        "@sentry/react": "8.42.0",
+        "@sentry/react": "8.45.0",
         "bootstrap": "5.3.3",
         "bootswatch": "5.3.3",
         "react": "19.0.0",
-        "react-bootstrap": "2.10.6",
+        "react-bootstrap": "2.10.7",
         "react-bootstrap-range-slider": "3.0.8",
         "react-dom": "19.0.0",
         "react-dropzone": "14.3.5",
