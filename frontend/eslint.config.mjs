@@ -1,4 +1,4 @@
-import cspell from '@cspell/eslint-plugin';
+import cspellESLintPluginRecommended from '@cspell/eslint-plugin/recommended';
 import js from '@eslint/js';
 import _import from 'eslint-plugin-import';
 import eslintPrettierRecommended from 'eslint-plugin-prettier/recommended';
@@ -10,10 +10,16 @@ import tseslint from 'typescript-eslint';
 /* eslint-disable */
 
 export default tseslint.config(
-    {ignores: ['**/dist', 'eslint.config.mjs']}, js.configs.all,
-    ...tseslint.configs.all, _import.flatConfigs.recommended,
-    _import.flatConfigs.typescript, eslintPrettierRecommended, react,
-    reactHooks, cspell, unicorn.configs['flat/all'], {
+    {ignores: ['**/dist', 'eslint.config.mjs']},
+    js.configs.all,
+    ...tseslint.configs.all,
+    _import.flatConfigs.recommended,
+    _import.flatConfigs.typescript,
+    eslintPrettierRecommended,
+    react.configs.flat.recommended,
+    cspellESLintPluginRecommended,
+    unicorn.configs['flat/all'],
+    {
       languageOptions: {
         ecmaVersion: 2025,
         sourceType: 'script',
@@ -28,8 +34,12 @@ export default tseslint.config(
 
         'import/resolver': {typescript: true, node: true}
       },
+      plugins: {
+        'react-hooks': reactHooks,
+      },
 
       rules: {
+        ...reactHooks.configs.recommended.rules,
         'arrow-body-style': 'off',
         camelcase: 'off',
         'class-methods-use-this': 'off',
