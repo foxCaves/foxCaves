@@ -10,7 +10,7 @@ import tseslint from 'typescript-eslint';
 /* eslint-disable */
 
 export default tseslint.config(
-    {ignores: ['**/dist', '**/build', 'eslint.config.mjs']}, js.configs.all,
+    {ignores: ['**/dist', 'build', 'eslint.config.mjs']}, js.configs.all,
     ...tseslint.configs.all, _import.flatConfigs.recommended,
     _import.flatConfigs.typescript, eslintPrettierRecommended,
     react.configs.flat.all, cspellESLintPluginRecommended,
