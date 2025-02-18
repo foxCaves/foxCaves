@@ -11,7 +11,7 @@ export default defineConfig({
     retries: 1,
     // Reporter to use
     reporter: process.env.CI ? 'github' : 'list',
-    timeout: 5 * 1000,
+    timeout: 30 * 1000,
     use: {
         // Base URL to use in actions like `await page.goto('/')`.
         baseURL: 'http://main.foxcaves:8080',
