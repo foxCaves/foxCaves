@@ -127,8 +127,7 @@ function link_mt:save()
     if self.not_in_db then
         res =
             database.get_shared():query_single(
-                'INSERT INTO links (id, owner, url, expires_at) VALUES (%s, %s, %s, %s)' ..
-                ' RETURNING ' .. database.TIME_COLUMNS_EXPIRING,
+                'INSERT INTO links (id, owner, url, expires_at) VALUES (%s, %s, %s, %s)' .. ' RETURNING ' .. database.TIME_COLUMNS_EXPIRING,
                 nil,
                 self.id,
                 self.owner,

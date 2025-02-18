@@ -29,29 +29,27 @@ local file_model = {
 
 require('foxcaves.module_helper').setmodenv()
 
-local mimeHandlers = {
-    image = function(src, dest)
-        exec.cmd(
-            'convert',
-            src,
-            '-thumbnail',
-            'x300',
-            '-resize',
-            '300x<',
-            '-resize',
-            '50%',
-            '-gravity',
-            'center',
-            '-crop',
-            '150x150+0+0',
-            '+repage',
-            '-format',
-            'png',
-            dest
-        )
-        return 'image/png'
-    end
-}
+local mimeHandlers = { image = function(src, dest)
+    exec.cmd(
+        'convert',
+        src,
+        '-thumbnail',
+        'x300',
+        '-resize',
+        '300x<',
+        '-resize',
+        '50%',
+        '-gravity',
+        'center',
+        '-crop',
+        '150x150+0+0',
+        '+repage',
+        '-format',
+        'png',
+        dest
+    )
+    return 'image/png'
+end }
 
 local function file_get_storage_driver(file)
     return storage_drivers[file.storage]
@@ -218,11 +216,9 @@ function file_mt:upload_begin()
     local storage = file_get_storage_driver(self)
     self.uploaded = 0
 
-    self._upload = storage:upload(self.id, self.size, 'file', self:get_mimetype(), {
-        on_abort = function()
-            self:delete()
-        end
-    })
+    self._upload = storage:upload(self.id, self.size, 'file', self:get_mimetype(), { on_abort = function()
+        self:delete()
+    end })
 
     if self.size <= file_model.consts.THUMBNAIL_MAX_SIZE then
         self._file_temp = storage:get_local_path_for(self.id, 'file')
