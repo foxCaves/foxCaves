@@ -170,9 +170,10 @@ function link_mt:get_public()
         expires_at = self.expires_at,
     }
 end
+
 link_mt.get_private = link_mt.get_public
 
-function link_mt.can_view()
+function link_mt.can_view(_, _)
     return true
 end
 
@@ -221,6 +222,7 @@ function link_model.get_public_fields()
         },
     }
 end
+
 link_model.get_private_fields = link_model.get_public_fields
 
 link_mt.__index = link_mt

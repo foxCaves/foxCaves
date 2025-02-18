@@ -331,7 +331,7 @@ function user_mt:get_private()
     }
 end
 
-function user_mt.can_view()
+function user_mt.can_view(_, _)
     return true
 end
 

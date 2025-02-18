@@ -439,9 +439,10 @@ function file_mt:get_public()
     end
     return res
 end
+
 file_mt.get_private = file_mt.get_public
 
-function file_mt.can_view()
+function file_mt.can_view(_, _)
     return true
 end
 
@@ -506,6 +507,7 @@ function file_model.get_public_fields()
         },
     }
 end
+
 file_model.get_private_fields = file_model.get_public_fields
 
 file_mt.__index = file_mt
