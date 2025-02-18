@@ -27,8 +27,8 @@ testLoggedIn('Create link', async ({ page }) => {
     const linkUrl = await createLink(page);
     const link = linkLocator(linkUrl, page);
     const shortUrl = await link.locator('a').nth(0).getAttribute('href');
-    assert(shortUrl);
-    assert(shortUrl.includes('http://short.foxcaves:8080'));
+    assert.ok(shortUrl);
+    assert.ok(shortUrl.includes('http://short.foxcaves:8080'));
 
     await page.goto(shortUrl);
     await page.waitForURL(linkUrl);
