@@ -32,7 +32,7 @@
         "@types/react-dom": "19.0.4",
         "axios": "^1.7.9",
         "content-replace-webpack-plugin": "^1.0.0",
-        "copy-webpack-plugin": "^12.0.0",
+        "copy-webpack-plugin": "^13.0.0",
         "css-loader": "^7.0.0",
         "eslint": "^9.0.0",
         "eslint-config-prettier": "^10.0.0",
