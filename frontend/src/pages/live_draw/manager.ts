@@ -893,9 +893,7 @@ export class LiveDrawManager {
                 const { customData } = from.brushData;
                 // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
                 const [brush, key, value] = payload as [BrushName, string, string];
-                if (!customData[brush]) {
-                    customData[brush] = {};
-                }
+                customData[brush] ??= {};
 
                 customData[brush][key] = value;
                 break;
