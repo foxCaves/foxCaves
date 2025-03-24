@@ -11,12 +11,10 @@ export async function waitForToast(page: Page, text: string, toastClass = 'succe
 }
 
 export async function doLoginPage(page: Page, user?: TestUser): Promise<TestUser> {
-    if (!user) {
-        user = {
-            username: `test_user_${randomUUID()}`,
-            password: `test_password_${randomUUID()}`,
-        };
-    }
+    user ??= {
+        username: `test_user_${randomUUID()}`,
+        password: `test_password_${randomUUID()}`,
+    };
 
     await page.goto('http://main.foxcaves:8080/register');
     await page.locator('input[name="username"]').fill(user.username);
