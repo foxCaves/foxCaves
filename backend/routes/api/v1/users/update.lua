@@ -59,11 +59,11 @@ R.register_route('/api/v1/users/{user}', 'PATCH', R.make_route_opts({ disable_ap
         args.security_version = 'CHANGE'
     end
 
-    if args.api_key then
+    if args.api_key and args.api_key ~= '' then
         user:make_new_api_key()
     end
 
-    if args.security_version then
+    if args.security_version and args.security_version ~= '' then
         user:make_new_security_version()
         obj.security_version = 'CHANGED'
     end
