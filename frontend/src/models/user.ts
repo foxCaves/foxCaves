@@ -31,6 +31,7 @@ export class UserDetailsModel extends UserModel {
     public active = 0;
     public email_valid = 0;
     public approved = 0;
+    public totp_enabled = 0;
 
     public static async getById(id: string, apiAccessor: APIAccessor): Promise<UserDetailsModel | undefined> {
         try {
@@ -59,5 +60,9 @@ export class UserDetailsModel extends UserModel {
 
     public isValidEmail(): boolean {
         return this.email_valid > 0;
+    }
+
+    public isTOTPEnabled(): boolean {
+        return this.totp_enabled > 0;
     }
 }
