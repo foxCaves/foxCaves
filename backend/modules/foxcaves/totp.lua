@@ -4,6 +4,7 @@ local string = string
 local ngx = ngx
 local bit = bit
 local math = math
+local error = error
 local config = require('foxcaves.config').totp or {}
 local random = require('foxcaves.random')
 
