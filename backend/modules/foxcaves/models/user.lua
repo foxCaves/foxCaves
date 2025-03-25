@@ -188,9 +188,6 @@ function user_mt:check_totp(code)
     if not self.totp_secret then
         return true
     end
-    if not code then
-        return false
-    end
     return totp.check(self.totp_secret, code)
 end
 

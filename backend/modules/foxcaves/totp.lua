@@ -70,6 +70,10 @@ function M.generate(secret)
 end
 
 function M.check(secret, code)
+    if not code or code == '' then
+        return false
+    end
+
     local real = totp_counter()
     if hotp(secret, real) == code then
         return true
