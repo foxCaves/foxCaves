@@ -42,9 +42,10 @@ R.register_route('/api/v1/users/{user}', 'PATCH', R.make_route_opts({ disable_ap
         args.security_version = 'CHANGE'
     end
 
-    if args.totp_secret then
-        if args.totp_secret == '' then
+    if args.totp_secret and args.totp_secret ~= '' then
+        if args.totp_secret == 'DISABLE' then
             user.totp_secret = ''
+            obj.totp_secret = 'DISABLED'
         else
             if not totp.is_valid_secret(args.totp_secret) then
                 return utils.api_error('totp_secret invalid')
@@ -53,8 +54,8 @@ R.register_route('/api/v1/users/{user}', 'PATCH', R.make_route_opts({ disable_ap
                 return utils.api_error('totp_code invalid')
             end
             user.totp_secret = args.totp_secret
+            obj.totp_secret = 'CHANGED'
         end
-        obj.totp_secret = 'CHANGED'
         args.security_version = 'CHANGE'
     end
 
