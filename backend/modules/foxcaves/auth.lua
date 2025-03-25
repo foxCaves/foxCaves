@@ -14,12 +14,20 @@ local SESSION_EXPIRE_DELAY_REMEMBER = 30 * 24 * 60 * 60
 local M = {}
 require('foxcaves.module_helper').setmodenv()
 
-function M.LOGIN_METHOD_PASSWORD(userdata, password)
-    return userdata:check_password(password)
+function M.LOGIN_METHOD_PASSWORD(userdata, credential)
+    if not userdata:check_password(credential.password) then
+        return false
+    end
+    if not userdata:check_totp(credential.totp) then
+        return false
+    end
+    return true
 end
+
 function M.LOGIN_METHOD_API_KEY(userdata, api_key)
     return userdata.api_key == api_key
 end
+
 function M.LOGIN_METHOD_SECURITY_VERSION(userdata, security_version)
     return tostring(userdata.security_version) == tostring(security_version)
 end
@@ -122,11 +130,11 @@ function M.check()
         local result = redis_inst:hmget(sessionKey, 'id', 'security_version', 'remember')
         local remember = result[3] == '1'
         if not utils.is_falsy_or_null(result) and M.login(result[1], result[2], {
-            no_session = true,
-            login_with_id = true,
-            login_method = M.LOGIN_METHOD_SECURITY_VERSION,
-            remember = remember,
-        }) then
+                no_session = true,
+                login_with_id = true,
+                login_method = M.LOGIN_METHOD_SECURITY_VERSION,
+                remember = remember,
+            }) then
             ngx.ctx.session_id = session_id
             local session_id_cookie = {
                 key = SESSION_ID_COOKIE_NAME,

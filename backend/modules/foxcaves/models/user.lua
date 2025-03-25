@@ -7,6 +7,7 @@ local events = require('foxcaves.events')
 local mail = require('foxcaves.mail')
 local random = require('foxcaves.random')
 local consts = require('foxcaves.consts')
+local totp = require('foxcaves.totp')
 
 local setmetatable = setmetatable
 local ngx = ngx
@@ -31,7 +32,8 @@ local function makeusermt(user)
 end
 
 local user_select =
-    'id, username, email, password, security_version, api_key, email_valid, approved, storage_quota, admin, ' .. database.TIME_COLUMNS
+    'id, username, email, password, security_version, api_key, email_valid, approved, storage_quota, admin, ' ..
+    database.TIME_COLUMNS
 
 function user_model.get_by_query(query, options, ...)
     local users = database.get_shared():query('SELECT ' .. user_select .. ' FROM users WHERE ' .. query, options, ...)
@@ -103,6 +105,7 @@ function user_model.new()
         active = 0,
         approved = 0,
         admin = 0,
+        totp_enabled = 0,
     }
 
     setmetatable(user, user_mt)
@@ -172,6 +175,26 @@ function user_mt:check_password(password)
     return auth_ok
 end
 
+function user_mt:generate_totp_secret()
+    self.totp_enabled = 0
+    self.totp_secret = totp.new_secret()
+    self:save()
+    return self.totp_secret
+end
+
+function user_mt:check_totp(code)
+    if not self.totp_enabled then
+        return true
+    end
+    if not self.totp_secret then
+        return true
+    end
+    if not code then
+        return false
+    end
+    return totp.check(self.totp_secret, code)
+end
+
 function user_mt:calculate_storage_used()
     local res =
         database.get_shared():query_single(
@@ -226,14 +249,16 @@ function user_mt:save()
         res =
             database.get_shared():query_single(
                 'INSERT INTO users \
-                (id, username, email, password, security_version, api_key, email_valid, approved, storage_quota) VALUES \
-                (%s, %s, %s, %s, %s, %s, %s, %s, %s) \
+                (id, username, email, password, totp_secret, totp_enabled, security_version, api_key, email_valid, approved, storage_quota) VALUES \
+                (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) \
                 RETURNING ' .. database.TIME_COLUMNS,
                 nil,
                 self.id,
                 self.username,
                 self.email,
                 self.password,
+                self.totp_secret,
+                self.totp_enabled,
                 self.security_version,
                 self.api_key,
                 self.email_valid,
@@ -246,7 +271,7 @@ function user_mt:save()
         res =
             database.get_shared():query_single(
                 "UPDATE users \
-                SET username = %s, email = %s, password = %s, security_version = %s, api_key = %s, email_valid = %s, approved = %s, storage_quota = %s, \
+                SET username = %s, email = %s, password = %s, totp_secret = %s, totp_enabled = %s, security_version = %s, api_key = %s, email_valid = %s, approved = %s, storage_quota = %s, \
                     updated_at = (now() at time zone 'utc') \
                 WHERE id = %s \
                 RETURNING " .. database.TIME_COLUMNS,
@@ -254,6 +279,8 @@ function user_mt:save()
                 self.username,
                 self.email,
                 self.password,
+                self.totp_secret,
+                self.totp_enabled,
                 self.security_version,
                 self.api_key,
                 self.email_valid,
@@ -270,7 +297,9 @@ function user_mt:save()
         local emailid = random.string(32)
 
         local email_text =
-            'You have recently registered or changed your E-Mail on foxCaves.' .. '\nPlease click the following link to activate your E-Mail:\n' .. config.http.main_url .. '/email/code/' .. emailid
+            'You have recently registered or changed your E-Mail on foxCaves.' ..
+            '\nPlease click the following link to activate your E-Mail:\n' ..
+            config.http.main_url .. '/email/code/' .. emailid
 
         local redis_inst = redis.get_shared()
         local emailkey = 'emailkeys:' .. emailid
@@ -326,6 +355,7 @@ function user_mt:get_private()
         approved = self.approved,
         storage_used = self:calculate_storage_used(),
         storage_quota = self.storage_quota,
+        totp_enabled = self.totp_enabled,
         created_at = self.created_at,
         updated_at = self.updated_at,
     }
