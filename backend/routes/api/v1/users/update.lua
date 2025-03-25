@@ -24,7 +24,7 @@ R.register_route('/api/v1/users/{user}', 'PATCH', R.make_route_opts({ disable_ap
         username = user.username,
     }
 
-    if args.email then
+    if args.email and args.email ~= '' then
         local emailcheck = user:set_email(args.email)
         if emailcheck == consts.VALIDATION_STATE_INVALID then
             return utils.api_error('email invalid')
