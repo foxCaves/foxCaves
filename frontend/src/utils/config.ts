@@ -9,6 +9,9 @@ export interface Config {
         readonly forgot_password: boolean;
         readonly resend_activation: boolean;
     };
+    readonly totp: {
+        readonly secret_bytes: number;
+    };
     readonly backend_revision: boolean;
     readonly admin_email: string;
 }

@@ -10,6 +10,9 @@ local config = {
         forgot_password = false,
         resend_activation = false,
     },
+    totp = {
+        secret_bytes = config_raw.totp.secret_bytes or 20,
+    },
     sentry = { dsn = '' },
     backend_revision = revision.hash,
     admin_email = config_raw.email.admin_email,

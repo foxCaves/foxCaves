@@ -5,9 +5,10 @@ local ngx = ngx
 local bit = bit
 local math = math
 local error = error
-local config = require('foxcaves.config').totp or {}
+local config = require('foxcaves.config').totp
 local random = require('foxcaves.random')
 
+local secret_bytes = config.secret_bytes or 20
 local max_past = config.max_past or 1
 local max_future = config.max_future or 1
 local max_iterator_max = math.max(max_past, max_future)
@@ -52,7 +53,7 @@ local function hotp(secret, counter)
         error('Invalid secret: ' .. err)
     end
     local hmac = ngx.hmac_sha1(secret_b, ffi.string(counter_union.bytes, 8))
-    local least4 = bit.band(string.byte(hmac, 20), 0x0F)
+    local least4 = bit.band(string.byte(hmac, #hmac), 0x0F)
 
     -- Extract 31 bits (hence the band)
     local dbi_union = uint32_union{ bytes = string.sub(hmac, least4 + 1, least4 + 4) }
@@ -94,7 +95,7 @@ function M.check(secret, code)
 end
 
 function M.new_secret()
-    return base_encoding.encode_base32(random.bytes(20))
+    return base_encoding.encode_base32(random.bytes(secret_bytes))
 end
 
 function M.is_valid_secret(secret)
@@ -102,7 +103,7 @@ function M.is_valid_secret(secret)
     if not dec then
         return false
     end
-    return #dec == 20
+    return #dec == secret_bytes
 end
 
 return M
