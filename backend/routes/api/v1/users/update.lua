@@ -1,6 +1,7 @@
 local utils = require('foxcaves.utils')
 local consts = require('foxcaves.consts')
 local user_model = require('foxcaves.models.user')
+local totp = require('foxcaves.totp')
 local ngx = ngx
 
 R.register_route('/api/v1/users/{user}', 'PATCH', R.make_route_opts({ disable_api_key = true }), function(route_vars)
@@ -38,6 +39,22 @@ R.register_route('/api/v1/users/{user}', 'PATCH', R.make_route_opts({ disable_ap
     if args.password then
         user:set_password(args.password)
         obj.password = 'CHANGED'
+        args.security_version = 'CHANGE'
+    end
+
+    if args.totp_secret then
+        if args.totp_secret == '' then
+            user.totp_secret = ''
+        else
+            if not totp.is_valid_secret(args.totp_secret) then
+                return utils.api_error('totp_secret invalid')
+            end
+            if not totp.check(args.totp_secret, args.totp_code) then
+                return utils.api_error('totp_code invalid')
+            end
+            user.totp_secret = args.totp_secret
+        end
+        obj.totp_secret = 'CHANGED'
         args.security_version = 'CHANGE'
     end
 

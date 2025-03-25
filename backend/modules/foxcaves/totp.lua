@@ -97,4 +97,12 @@ function M.new_secret()
     return base_encoding.encode_base32(random.bytes(20))
 end
 
+function M.is_valid_secret(secret)
+    local dec, _ = base_encoding.decode_base32(secret)
+    if not dec then
+        return false
+    end
+    return #dec == 20
+end
+
 return M
