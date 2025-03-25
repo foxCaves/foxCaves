@@ -10,3 +10,4 @@ contenthash
 Doridian
 Dietzer
 webp
+totp
