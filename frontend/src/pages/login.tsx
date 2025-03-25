@@ -12,6 +12,7 @@ import { logError } from '../utils/misc';
 export const LoginPage: React.FC = () => {
     const [username, setUsernameCB] = useInputFieldSetter('');
     const [password, setPasswordCB] = useInputFieldSetter('');
+    const [totp, setTotpCB] = useInputFieldSetter('');
     const [remember, setRememberCB] = useCheckboxFieldSetter(false);
     const [captchaResponse, setCaptchaResponse] = useState<Record<string, string>>({});
     const [captchaReset, setCaptchaReset] = useState(0);
@@ -36,6 +37,7 @@ export const LoginPage: React.FC = () => {
                         data: {
                             username,
                             password,
+                            totp,
                             remember,
                             ...captchaResponse,
                         },
@@ -61,7 +63,7 @@ export const LoginPage: React.FC = () => {
             setCaptchaResponse({});
             setCaptchaReset((prev) => prev + 1);
         }
-    }, [captchaResponse, username, password, remember, refreshUser, apiAccessor]);
+    }, [captchaResponse, username, password, totp, remember, refreshUser, apiAccessor]);
 
     const submitLoginForm = useCallback(
         (event: FormEvent<HTMLFormElement>) => {
@@ -94,6 +96,16 @@ export const LoginPage: React.FC = () => {
                         required
                         type="password"
                         value={password}
+                    />
+                </FloatingLabel>
+                <FloatingLabel className="mb-3" label="One-time code (2FA)">
+                    <Form.Control
+                        autoComplete="one-time-code"
+                        name="totp"
+                        onChange={setTotpCB}
+                        placeholder="One-time code (if enabled)"
+                        type="text"
+                        value={totp}
                     />
                 </FloatingLabel>
                 <CaptchaContainer onParamChange={setCaptchaResponse} page="login" resetFactor={captchaReset} />

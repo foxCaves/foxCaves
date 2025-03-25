@@ -14,12 +14,20 @@ local SESSION_EXPIRE_DELAY_REMEMBER = 30 * 24 * 60 * 60
 local M = {}
 require('foxcaves.module_helper').setmodenv()
 
-function M.LOGIN_METHOD_PASSWORD(userdata, password)
-    return userdata:check_password(password)
+function M.LOGIN_METHOD_PASSWORD(userdata, credential)
+    if not userdata:check_password(credential.password) then
+        return false
+    end
+    if not userdata:check_totp(credential.totp) then
+        return false
+    end
+    return true
 end
+
 function M.LOGIN_METHOD_API_KEY(userdata, api_key)
     return userdata.api_key == api_key
 end
+
 function M.LOGIN_METHOD_SECURITY_VERSION(userdata, security_version)
     return tostring(userdata.security_version) == tostring(security_version)
 end

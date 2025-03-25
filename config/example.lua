@@ -30,6 +30,10 @@ return {
         enable_testing_routes = false,
         require_user_approval = true
     },
+    totp = {
+        max_past = 1,
+        max_future = 1
+    },
     captcha = {
         registration = false,
         login = false,
@@ -67,7 +71,7 @@ return {
         short_url = "http://short.foxcaves:8080",
         main_url = "http://main.foxcaves:8080",
         redirect_www = true,
-        upstream_ips = {"1.2.3.4"},
+        upstream_ips = { "1.2.3.4" },
         auto_ssl = {
             ca = "letsencrypt-test"
         }

@@ -7,6 +7,7 @@ local events = require('foxcaves.events')
 local mail = require('foxcaves.mail')
 local random = require('foxcaves.random')
 local consts = require('foxcaves.consts')
+local totp = require('foxcaves.totp')
 
 local setmetatable = setmetatable
 local ngx = ngx
@@ -103,6 +104,7 @@ function user_model.new()
         active = 0,
         approved = 0,
         admin = 0,
+        totp_secret = '',
     }
 
     setmetatable(user, user_mt)
@@ -172,6 +174,13 @@ function user_mt:check_password(password)
     return auth_ok
 end
 
+function user_mt:check_totp(code)
+    if not self.totp_secret then
+        return true
+    end
+    return totp.check(self.totp_secret, code)
+end
+
 function user_mt:calculate_storage_used()
     local res =
         database.get_shared():query_single(
@@ -226,14 +235,15 @@ function user_mt:save()
         res =
             database.get_shared():query_single(
                 'INSERT INTO users \
-                (id, username, email, password, security_version, api_key, email_valid, approved, storage_quota) VALUES \
-                (%s, %s, %s, %s, %s, %s, %s, %s, %s) \
+                (id, username, email, password, totp_secret, security_version, api_key, email_valid, approved, storage_quota) VALUES \
+                (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s) \
                 RETURNING ' .. database.TIME_COLUMNS,
                 nil,
                 self.id,
                 self.username,
                 self.email,
                 self.password,
+                self.totp_secret,
                 self.security_version,
                 self.api_key,
                 self.email_valid,
@@ -246,7 +256,7 @@ function user_mt:save()
         res =
             database.get_shared():query_single(
                 "UPDATE users \
-                SET username = %s, email = %s, password = %s, security_version = %s, api_key = %s, email_valid = %s, approved = %s, storage_quota = %s, \
+                SET username = %s, email = %s, password = %s, totp_secret = %s, security_version = %s, api_key = %s, email_valid = %s, approved = %s, storage_quota = %s, \
                     updated_at = (now() at time zone 'utc') \
                 WHERE id = %s \
                 RETURNING " .. database.TIME_COLUMNS,
@@ -254,6 +264,7 @@ function user_mt:save()
                 self.username,
                 self.email,
                 self.password,
+                self.totp_secret,
                 self.security_version,
                 self.api_key,
                 self.email_valid,
@@ -326,6 +337,7 @@ function user_mt:get_private()
         approved = self.approved,
         storage_used = self:calculate_storage_used(),
         storage_quota = self.storage_quota,
+        totp_enabled = self.totp_secret and self.totp_secret ~= '' and 1 or 0,
         created_at = self.created_at,
         updated_at = self.updated_at,
     }
