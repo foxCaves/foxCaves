@@ -12,13 +12,14 @@ local max_future = config.max_future or 1
 local max_iterator_max = math.max(max_past, max_future)
 
 local is_little = ffi.abi('le')
-local uint32_union = ffi.typeof [[
+local uint32_union = ffi.typeof[[
   union {
     char bytes[4];
     uint32_t uint32;
   }
 ]]
-local uint64_union = ffi.typeof [[
+local uint64_union =
+    ffi.typeof[[
   union {
     char bytes[8];
     struct {
@@ -37,7 +38,7 @@ local function totp_counter()
 end
 
 local function hotp(secret, counter)
-    local counter_union = uint64_union { uint64 = counter }
+    local counter_union = uint64_union{ uint64 = counter }
 
     if is_little then
         local tmp = bit.bswap(counter_union.uint32_hi)
@@ -53,7 +54,7 @@ local function hotp(secret, counter)
     local least4 = bit.band(string.byte(hmac, 20), 0x0F)
 
     -- Extract 31 bits (hence the band)
-    local dbi_union = uint32_union { bytes = string.sub(hmac, least4 + 1, least4 + 4) }
+    local dbi_union = uint32_union{ bytes = string.sub(hmac, least4 + 1, least4 + 4) }
     local dbi = dbi_union.uint32
     if is_little then
         dbi = bit.bswap(dbi)

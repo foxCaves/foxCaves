@@ -32,8 +32,7 @@ local function makeusermt(user)
 end
 
 local user_select =
-    'id, username, email, password, security_version, api_key, email_valid, approved, storage_quota, admin, ' ..
-    database.TIME_COLUMNS
+    'id, username, email, password, security_version, api_key, email_valid, approved, storage_quota, admin, ' .. database.TIME_COLUMNS
 
 function user_model.get_by_query(query, options, ...)
     local users = database.get_shared():query('SELECT ' .. user_select .. ' FROM users WHERE ' .. query, options, ...)
@@ -297,9 +296,7 @@ function user_mt:save()
         local emailid = random.string(32)
 
         local email_text =
-            'You have recently registered or changed your E-Mail on foxCaves.' ..
-            '\nPlease click the following link to activate your E-Mail:\n' ..
-            config.http.main_url .. '/email/code/' .. emailid
+            'You have recently registered or changed your E-Mail on foxCaves.' .. '\nPlease click the following link to activate your E-Mail:\n' .. config.http.main_url .. '/email/code/' .. emailid
 
         local redis_inst = redis.get_shared()
         local emailkey = 'emailkeys:' .. emailid

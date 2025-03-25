@@ -130,11 +130,11 @@ function M.check()
         local result = redis_inst:hmget(sessionKey, 'id', 'security_version', 'remember')
         local remember = result[3] == '1'
         if not utils.is_falsy_or_null(result) and M.login(result[1], result[2], {
-                no_session = true,
-                login_with_id = true,
-                login_method = M.LOGIN_METHOD_SECURITY_VERSION,
-                remember = remember,
-            }) then
+            no_session = true,
+            login_with_id = true,
+            login_method = M.LOGIN_METHOD_SECURITY_VERSION,
+            remember = remember,
+        }) then
             ngx.ctx.session_id = session_id
             local session_id_cookie = {
                 key = SESSION_ID_COOKIE_NAME,

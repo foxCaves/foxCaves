@@ -4,7 +4,6 @@ local user_model = require('foxcaves.models.user')
 local link_model = require('foxcaves.models.link')
 local file_model = require('foxcaves.models.file')
 local app_config = require('foxcaves.config').app
-local totp = require('foxcaves.totp')
 
 if not app_config.enable_testing_routes then return end
 
