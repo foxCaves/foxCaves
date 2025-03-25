@@ -62,7 +62,7 @@ local function hotp(secret, counter)
     dbi = bit.band(dbi, 0x7FFFFFFF)
 
     -- Truncate to 6 digit codes
-    return dbi % 1000000
+    return string.format("%06d", dbi % 1000000)
 end
 
 function M.generate(secret)
