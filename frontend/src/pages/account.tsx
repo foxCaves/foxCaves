@@ -29,7 +29,7 @@ export const AccountPage: React.FC = () => {
             body.current_password = currentPassword;
             try {
                 await toast.promise(
-                    apiAccessor.fetch(`/api/users/${encodeURIComponent(user.id)}`, {
+                    apiAccessor.fetch(`/api/v1/users/${encodeURIComponent(user.id)}`, {
                         method,
                         data: body,
                     }),
