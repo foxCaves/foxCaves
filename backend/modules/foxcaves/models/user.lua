@@ -105,6 +105,7 @@ function user_model.new()
         approved = 0,
         admin = 0,
         totp_enabled = 0,
+        totp_secret = '',
     }
 
     setmetatable(user, user_mt)
@@ -172,13 +173,6 @@ function user_mt:check_password(password)
         self:save()
     end
     return auth_ok
-end
-
-function user_mt:generate_totp_secret()
-    self.totp_enabled = 0
-    self.totp_secret = totp.new_secret()
-    self:save()
-    return self.totp_secret
 end
 
 function user_mt:check_totp(code)
