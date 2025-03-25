@@ -36,7 +36,7 @@ R.register_route('/api/v1/users/{user}', 'PATCH', R.make_route_opts({ disable_ap
         obj.active = user:is_active() and 1 or 0
     end
 
-    if args.password then
+    if args.password and args.password ~= '' then
         user:set_password(args.password)
         obj.password = 'CHANGED'
         args.security_version = 'CHANGE'
