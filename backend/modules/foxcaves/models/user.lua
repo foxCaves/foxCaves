@@ -104,7 +104,6 @@ function user_model.new()
         active = 0,
         approved = 0,
         admin = 0,
-        totp_enabled = 0,
         totp_secret = '',
     }
 
@@ -176,9 +175,6 @@ function user_mt:check_password(password)
 end
 
 function user_mt:check_totp(code)
-    if not self.totp_enabled then
-        return true
-    end
     if not self.totp_secret then
         return true
     end
@@ -239,8 +235,8 @@ function user_mt:save()
         res =
             database.get_shared():query_single(
                 'INSERT INTO users \
-                (id, username, email, password, totp_secret, totp_enabled, security_version, api_key, email_valid, approved, storage_quota) VALUES \
-                (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) \
+                (id, username, email, password, totp_secret, security_version, api_key, email_valid, approved, storage_quota) VALUES \
+                (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s) \
                 RETURNING ' .. database.TIME_COLUMNS,
                 nil,
                 self.id,
@@ -248,7 +244,6 @@ function user_mt:save()
                 self.email,
                 self.password,
                 self.totp_secret,
-                self.totp_enabled,
                 self.security_version,
                 self.api_key,
                 self.email_valid,
@@ -261,7 +256,7 @@ function user_mt:save()
         res =
             database.get_shared():query_single(
                 "UPDATE users \
-                SET username = %s, email = %s, password = %s, totp_secret = %s, totp_enabled = %s, security_version = %s, api_key = %s, email_valid = %s, approved = %s, storage_quota = %s, \
+                SET username = %s, email = %s, password = %s, totp_secret = %s, security_version = %s, api_key = %s, email_valid = %s, approved = %s, storage_quota = %s, \
                     updated_at = (now() at time zone 'utc') \
                 WHERE id = %s \
                 RETURNING " .. database.TIME_COLUMNS,
@@ -270,7 +265,6 @@ function user_mt:save()
                 self.email,
                 self.password,
                 self.totp_secret,
-                self.totp_enabled,
                 self.security_version,
                 self.api_key,
                 self.email_valid,
@@ -343,7 +337,7 @@ function user_mt:get_private()
         approved = self.approved,
         storage_used = self:calculate_storage_used(),
         storage_quota = self.storage_quota,
-        totp_enabled = self.totp_enabled,
+        totp_enabled = self.totp_secret and self.totp_secret ~= '' and 1 or 0,
         created_at = self.created_at,
         updated_at = self.updated_at,
     }
