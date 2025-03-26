@@ -5,32 +5,30 @@ import Container from 'react-bootstrap/Container';
 import Dropdown from 'react-bootstrap/Dropdown';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
-import { lazily } from 'react-lazily';
 import { BrowserRouter, Route, Routes } from 'react-router';
 import { ToastContainer } from 'react-toastify';
 import { LinkContainer } from './components/link_container';
 import { LiveLoadingContainer } from './components/liveloading';
-import { CustomDropDownItem, CustomNavLink, CustomRouteHandler, LoginState, RouteWrapper } from './components/route';
+import { CustomDropDownItem, CustomNavLink, CustomRouteHandler, LoginState } from './components/route';
 import { UserEmailValidAlert } from './components/user_email_valid_alert';
 import { UserNotApprovedAlert } from './components/user_not_approved_alert';
 import { UserDetailsModel } from './models/user';
+import { AccountPage } from './pages/account';
+import { EmailCodePage } from './pages/email/code';
+import { ForgotPasswordPage } from './pages/email/forgot_password';
+import { FilesPage } from './pages/files';
+import { HomePage } from './pages/home';
+import { PrivacyPolicyPage } from './pages/legal/privacy_policy';
+import { TermsOfServicePage } from './pages/legal/terms_of_service';
+import { LinksPage } from './pages/links';
+import { LiveDrawPage, LiveDrawRedirectPage } from './pages/live_draw/page';
+import { LoginPage } from './pages/login';
+import { LogoutPage } from './pages/logout';
+import { RegistrationPage } from './pages/register';
+import { ViewPage } from './pages/view';
 import { APIAccessor } from './utils/api';
 import { AppContext, AppContextData } from './utils/context';
 import { logError } from './utils/misc';
-
-const { AccountPage } = lazily(async () => import('./pages/account'));
-const { EmailCodePage } = lazily(async () => import('./pages/email/code'));
-const { ForgotPasswordPage } = lazily(async () => import('./pages/email/forgot_password'));
-const { FilesPage } = lazily(async () => import('./pages/files'));
-const { HomePage } = lazily(async () => import('./pages/home'));
-const { PrivacyPolicyPage } = lazily(async () => import('./pages/legal/privacy_policy'));
-const { TermsOfServicePage } = lazily(async () => import('./pages/legal/terms_of_service'));
-const { LinksPage } = lazily(async () => import('./pages/links'));
-const { LiveDrawPage, LiveDrawRedirectPage } = lazily(async () => import('./pages/live_draw/page'));
-const { LoginPage } = lazily(async () => import('./pages/login'));
-const { LogoutPage } = lazily(async () => import('./pages/logout'));
-const { RegistrationPage } = lazily(async () => import('./pages/register'));
-const { ViewPage } = lazily(async () => import('./pages/view'));
 
 const Routing: FC<{ readonly user?: UserDetailsModel; readonly userLoaded: boolean }> = ({ user, userLoaded }) => {
     return (
@@ -124,78 +122,15 @@ const Routing: FC<{ readonly user?: UserDetailsModel; readonly userLoaded: boole
                         }
                         path="/account"
                     />
-                    <Route
-                        element={
-                            <RouteWrapper>
-                                <LogoutPage />
-                            </RouteWrapper>
-                        }
-                        path="/logout"
-                    />
-                    <Route
-                        element={
-                            <RouteWrapper>
-                                <ViewPage />
-                            </RouteWrapper>
-                        }
-                        path="/view/:id"
-                    />
-                    <Route
-                        element={
-                            <RouteWrapper>
-                                <LiveDrawPage />
-                            </RouteWrapper>
-                        }
-                        path="/live_draw/:id/:sid"
-                    />
-                    <Route
-                        element={
-                            <RouteWrapper>
-                                <LiveDrawRedirectPage />
-                            </RouteWrapper>
-                        }
-                        path="/live_draw/:id"
-                    />
-                    <Route
-                        element={
-                            <RouteWrapper>
-                                <ForgotPasswordPage />
-                            </RouteWrapper>
-                        }
-                        path="/email/forgot_password"
-                    />
-                    <Route
-                        element={
-                            <RouteWrapper>
-                                <EmailCodePage />
-                            </RouteWrapper>
-                        }
-                        path="/email/code/:code"
-                    />
-                    <Route
-                        element={
-                            <RouteWrapper>
-                                <PrivacyPolicyPage />
-                            </RouteWrapper>
-                        }
-                        path="/legal/privacy_policy"
-                    />
-                    <Route
-                        element={
-                            <RouteWrapper>
-                                <TermsOfServicePage />
-                            </RouteWrapper>
-                        }
-                        path="/legal/terms_of_service"
-                    />
-                    <Route
-                        element={
-                            <RouteWrapper>
-                                <HomePage />
-                            </RouteWrapper>
-                        }
-                        path="/"
-                    />
+                    <Route element={<LogoutPage />} path="/logout" />
+                    <Route element={<ViewPage />} path="/view/:id" />
+                    <Route element={<LiveDrawPage />} path="/live_draw/:id/:sid" />
+                    <Route element={<LiveDrawRedirectPage />} path="/live_draw/:id" />
+                    <Route element={<ForgotPasswordPage />} path="/email/forgot_password" />
+                    <Route element={<EmailCodePage />} path="/email/code/:code" />
+                    <Route element={<PrivacyPolicyPage />} path="/legal/privacy_policy" />
+                    <Route element={<TermsOfServicePage />} path="/legal/terms_of_service" />
+                    <Route element={<HomePage />} path="/" />
                     <Route element={<h3>404 - Page not found</h3>} path="/*" />
                 </Routes>
             </Container>
