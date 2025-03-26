@@ -12,7 +12,7 @@ local config = {
     },
     totp = {
         secret_bytes = config_raw.totp.secret_bytes or 20,
-        issuer = config_raw.totp.issuer or 'foxCaves',
+        issuer = config_raw.totp.issuer or 'foxCaves UNKNOWN',
     },
     sentry = { dsn = '' },
     backend_revision = revision.hash,
