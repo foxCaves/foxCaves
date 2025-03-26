@@ -1,4 +1,4 @@
-import React, { ReactElement, Suspense, useContext } from 'react';
+import React, { ReactElement, useContext } from 'react';
 import Dropdown from 'react-bootstrap/Dropdown';
 import Nav from 'react-bootstrap/Nav';
 import { Navigate } from 'react-router';
@@ -24,18 +24,11 @@ export const CustomRouteHandler: React.FC<CustomRouteHandlerOptions> = ({ login,
         } else if (login === LoginState.LoggedOut && user) {
             component = <Navigate to="/" />;
         } else if (children) {
-            component = <RouteWrapper>{children}</RouteWrapper>;
+            component = children;
         }
     }
 
     return component;
-};
-
-interface RouteWrapperOptions {
-    readonly children?: ReactElement;
-}
-export const RouteWrapper: React.FC<RouteWrapperOptions> = ({ children }) => {
-    return <Suspense fallback={<h3>Loading...</h3>}>{children}</Suspense>;
 };
 
 function shouldRender(login: LoginState | undefined, ctx: AppContextData) {
