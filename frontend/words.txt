@@ -11,3 +11,4 @@ Doridian
 Dietzer
 webp
 totp
+otpauth

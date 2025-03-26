@@ -56,8 +56,7 @@ export const LoginPage: React.FC = () => {
                 },
             );
         } catch (error: unknown) {
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
-            logError(error as Error);
+            logError(error);
             await refreshUser();
         } finally {
             setCaptchaResponse({});
@@ -82,7 +81,7 @@ export const LoginPage: React.FC = () => {
                     <Form.Control
                         name="username"
                         onChange={setUsernameCB}
-                        placeholder="test user"
+                        placeholder="Username"
                         required
                         type="text"
                         value={username}
@@ -92,7 +91,7 @@ export const LoginPage: React.FC = () => {
                     <Form.Control
                         name="password"
                         onChange={setPasswordCB}
-                        placeholder="password"
+                        placeholder="Password"
                         required
                         type="password"
                         value={password}
