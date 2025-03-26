@@ -35,7 +35,7 @@ return {
         max_past = 1,
         max_future = 1,
         secret_bytes = 20,
-        issuer = "foxCaves"
+        issuer = "foxCaves TESTING"
     },
     captcha = {
         registration = false,
