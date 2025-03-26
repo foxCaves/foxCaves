@@ -11,6 +11,7 @@ export interface Config {
     };
     readonly totp: {
         readonly secret_bytes: number;
+        readonly issuer: string;
     };
     readonly backend_revision: boolean;
     readonly admin_email: string;

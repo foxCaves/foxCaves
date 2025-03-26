@@ -5,6 +5,8 @@
         "@sentry/react": "9.9.0",
         "bootstrap": "5.3.3",
         "bootswatch": "5.3.3",
+        "hi-base32": "^0.5.1",
+        "qrcode.react": "^4.2.0",
         "react": "19.0.0",
         "react-bootstrap": "2.10.9",
         "react-bootstrap-range-slider": "3.0.8",

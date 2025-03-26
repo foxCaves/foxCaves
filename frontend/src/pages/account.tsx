@@ -1,3 +1,5 @@
+import { encode as encodeBase32 } from 'hi-base32';
+import { QRCodeSVG } from 'qrcode.react';
 import React, { FormEvent, useCallback, useContext, useEffect, useState } from 'react';
 import { Col, Row } from 'react-bootstrap';
 import Button from 'react-bootstrap/Button';
@@ -5,20 +7,32 @@ import FloatingLabel from 'react-bootstrap/FloatingLabel';
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
 import { toast } from 'react-toastify';
+import { config } from '../utils/config';
 import { AppContext } from '../utils/context';
 import { useInputFieldSetter } from '../utils/hooks';
 import { assert, logError } from '../utils/misc';
 
+function generateTotpSecret(): string {
+    const vals = new Uint8Array(config.totp.secret_bytes);
+    crypto.getRandomValues(vals);
+    return encodeBase32(vals);
+}
+
+// eslint-disable-next-line max-lines-per-function
 export const AccountPage: React.FC = () => {
     const { user, refreshUser, apiAccessor } = useContext(AppContext);
     assert(user);
     const userEmail = user.email;
 
     const [showDeleteAccountModal, setShowDeleteAccountModal] = useState(false);
+    const [showConfigureTotpModal, setShowConfigureTotpModal] = useState(false);
+    const [showForceEnableTotpModal, setShowForceEnableTotpModal] = useState(false);
     const [currentPassword, setCurrentPasswordCB] = useInputFieldSetter('');
     const [newPassword, setNewPasswordCB] = useInputFieldSetter('');
     const [newPasswordConfirm, setNewPasswordConfirmCB] = useInputFieldSetter('');
     const [email, setEmailCB, setEmail] = useInputFieldSetter(userEmail);
+    const [newTotpSecret, setNewTotpSecret] = useState('');
+    const [newTotpCode, setNewTotpCode] = useInputFieldSetter('');
 
     useEffect(() => {
         setEmail(userEmail);
@@ -46,8 +60,7 @@ export const AccountPage: React.FC = () => {
                     },
                 );
             } catch (error: unknown) {
-                // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
-                logError(error as Error);
+                logError(error);
             }
 
             await refreshUser();
@@ -107,6 +120,50 @@ export const AccountPage: React.FC = () => {
         [sendUserChange, newPassword, newPasswordConfirm, email],
     );
 
+    const handleDisableTotp = useCallback(
+        (event: FormEvent) => {
+            event.preventDefault();
+            sendUserChange({
+                totp_secret: 'DISABLE',
+            })
+                .then(() => {
+                    setShowConfigureTotpModal(false);
+                })
+                .catch(logError);
+        },
+        [sendUserChange],
+    );
+
+    const handleEnableTotp = useCallback(
+        (event: FormEvent) => {
+            event.preventDefault();
+            sendUserChange({
+                totp_secret: newTotpSecret,
+                totp_code: newTotpCode,
+            })
+                .then(() => {
+                    setShowConfigureTotpModal(false);
+                })
+                .catch(logError);
+        },
+        [sendUserChange, newTotpCode, newTotpSecret],
+    );
+
+    const doShowConfigureTotpModal = useCallback(() => {
+        setNewTotpSecret(generateTotpSecret());
+        setShowConfigureTotpModal(true);
+    }, []);
+
+    const doShowForceEnableTotpModal = useCallback(() => {
+        doShowConfigureTotpModal();
+        setShowForceEnableTotpModal(true);
+    }, [doShowConfigureTotpModal]);
+
+    const doHideConfigureTotpModal = useCallback(() => {
+        setShowConfigureTotpModal(false);
+        setShowForceEnableTotpModal(false);
+    }, []);
+
     const doShowDeleteAccountModal = useCallback(() => {
         setShowDeleteAccountModal(true);
     }, []);
@@ -124,14 +181,112 @@ export const AccountPage: React.FC = () => {
 
                 <Modal.Body>
                     <p>Are you sure to delete your account?</p>
+                    <Form>
+                        <FloatingLabel className="mb-3" label="Current password">
+                            <Form.Control
+                                name="currentPassword"
+                                onChange={setCurrentPasswordCB}
+                                placeholder="Password"
+                                required
+                                type="password"
+                                value={currentPassword}
+                            />
+                        </FloatingLabel>
+                    </Form>
                 </Modal.Body>
 
                 <Modal.Footer>
                     <Button onClick={doHideDeleteAccountModal} variant="secondary">
-                        No
+                        Cancel
                     </Button>
                     <Button onClick={handleDeleteAccount} variant="danger">
-                        Yes, delete all my data
+                        Delete all my data
+                    </Button>
+                </Modal.Footer>
+            </Modal>
+            <Modal
+                onHide={doHideConfigureTotpModal}
+                show={showConfigureTotpModal && !showForceEnableTotpModal ? user.isTOTPEnabled() : undefined}
+            >
+                <Modal.Header closeButton>
+                    <Modal.Title>Configure two-factor</Modal.Title>
+                </Modal.Header>
+
+                <Modal.Body>
+                    <p>To disable two-factor authentication, provide your current password</p>
+                    <p>To change to another device, use the "Change" button</p>
+                    <Form onSubmit={handleDisableTotp}>
+                        <FloatingLabel className="mb-3" label="Current password">
+                            <Form.Control
+                                name="currentPassword"
+                                onChange={setCurrentPasswordCB}
+                                placeholder="Password"
+                                required
+                                type="password"
+                                value={currentPassword}
+                            />
+                        </FloatingLabel>
+                    </Form>
+                </Modal.Body>
+
+                <Modal.Footer>
+                    <Button onClick={doHideConfigureTotpModal} variant="secondary">
+                        Cancel
+                    </Button>
+                    <Button onClick={doShowForceEnableTotpModal} variant="warning">
+                        Change
+                    </Button>
+                    <Button onClick={handleDisableTotp} variant="danger">
+                        Disable
+                    </Button>
+                </Modal.Footer>
+            </Modal>
+            <Modal
+                onHide={doHideConfigureTotpModal}
+                show={showConfigureTotpModal ? showForceEnableTotpModal || !user.isTOTPEnabled() : undefined}
+            >
+                <Modal.Header closeButton>
+                    <Modal.Title>Configure two-factor</Modal.Title>
+                </Modal.Header>
+
+                <Modal.Body>
+                    <p>Scan the below code and enter the generated code to enable two-factor authentication.</p>
+                    <p className="text-center">
+                        <QRCodeSVG
+                            value={`otpauth://totp/${encodeURI(user.username)}?secret=${encodeURIComponent(newTotpSecret)}&issuer=${encodeURIComponent(config.totp.issuer)}`}
+                        />
+                    </p>
+                    <p>Secret key: {newTotpSecret}</p>
+                    <Form onSubmit={handleEnableTotp}>
+                        <FloatingLabel className="mb-3" label="Current password">
+                            <Form.Control
+                                name="currentPassword"
+                                onChange={setCurrentPasswordCB}
+                                placeholder="Password"
+                                required
+                                type="password"
+                                value={currentPassword}
+                            />
+                        </FloatingLabel>
+                        <FloatingLabel className="mb-3" label="One-time code">
+                            <Form.Control
+                                autoComplete="one-time-code"
+                                name="totp"
+                                onChange={setNewTotpCode}
+                                placeholder="One-time code"
+                                type="text"
+                                value={newTotpCode}
+                            />
+                        </FloatingLabel>
+                    </Form>
+                </Modal.Body>
+
+                <Modal.Footer>
+                    <Button onClick={doHideConfigureTotpModal} variant="secondary">
+                        Cancel
+                    </Button>
+                    <Button onClick={handleEnableTotp} variant="success">
+                        Enable
                     </Button>
                 </Modal.Footer>
             </Modal>
@@ -142,20 +297,20 @@ export const AccountPage: React.FC = () => {
                     <Form.Control
                         name="currentPassword"
                         onChange={setCurrentPasswordCB}
-                        placeholder="password"
+                        placeholder="Password"
                         required
                         type="password"
                         value={currentPassword}
                     />
                 </FloatingLabel>
                 <FloatingLabel className="mb-3" label="Username">
-                    <Form.Control name="username" placeholder="test_user" readOnly type="text" value={user.username} />
+                    <Form.Control name="username" placeholder="Username" readOnly type="text" value={user.username} />
                 </FloatingLabel>
                 <FloatingLabel className="mb-3" label="New password">
                     <Form.Control
                         name="newPassword"
                         onChange={setNewPasswordCB}
-                        placeholder="password"
+                        placeholder="Password"
                         type="password"
                         value={newPassword}
                     />
@@ -164,19 +319,13 @@ export const AccountPage: React.FC = () => {
                     <Form.Control
                         name="newPasswordConfirm"
                         onChange={setNewPasswordConfirmCB}
-                        placeholder="password"
+                        placeholder="Password"
                         type="password"
                         value={newPasswordConfirm}
                     />
                 </FloatingLabel>
                 <FloatingLabel className="mb-3" label="E-Mail">
-                    <Form.Control
-                        name="email"
-                        onChange={setEmailCB}
-                        placeholder="test@example.com"
-                        type="email"
-                        value={email}
-                    />
+                    <Form.Control name="email" onChange={setEmailCB} placeholder="E-Mail" type="email" value={email} />
                     <Form.Label>E-Mail</Form.Label>
                 </FloatingLabel>
                 <Row>
@@ -184,7 +333,7 @@ export const AccountPage: React.FC = () => {
                         <FloatingLabel className="mb-3" label="API key">
                             <Form.Control
                                 name="api_key"
-                                placeholder="ABCDefgh"
+                                placeholder="API key"
                                 readOnly
                                 type="text"
                                 value={user.api_key}
@@ -202,6 +351,11 @@ export const AccountPage: React.FC = () => {
                     <Col>
                         <Button size="lg" type="submit" variant="primary">
                             Change password / E-Mail
+                        </Button>
+                    </Col>
+                    <Col>
+                        <Button onClick={doShowConfigureTotpModal} size="lg" type="button" variant="primary">
+                            Configure two-factor
                         </Button>
                     </Col>
                     <Col>

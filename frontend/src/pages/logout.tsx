@@ -35,8 +35,7 @@ export const LogoutPage: React.FC = () => {
 
             document.location.href = '/';
         } catch (error: unknown) {
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
-            logError(error as Error);
+            logError(error);
             await refreshUser();
         }
     }, [refreshUser, apiAccessor]);
