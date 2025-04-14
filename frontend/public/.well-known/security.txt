@@ -1,2 +1,2 @@
-Contact: mailto:security@doridian.net
+Contact: mailto:foxcaves@doridian.net
 Preferred-Languages: en, de

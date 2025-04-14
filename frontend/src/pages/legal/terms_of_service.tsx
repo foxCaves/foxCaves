@@ -1,6 +1,10 @@
 import React from 'react';
+import { config } from '../../utils/config';
 
 export const TermsOfServicePage: React.FC = () => {
+    const appDomain = new URL(config.urls.app).hostname;
+    const cdnDomain = new URL(config.urls.cdn).hostname;
+
     return (
         <>
             <h1>Terms of Service</h1>
@@ -13,8 +17,8 @@ export const TermsOfServicePage: React.FC = () => {
                 <ol>
                     <li>"foxCaves" refers to foxcav.es and excludes its shareholders, owners, or operators.</li>
                     <li>
-                        "foxCaves Network" refers to any website, product, or service owned and/or operated under the
-                        foxcaves.doridian.net or fcv.doridian.net domains
+                        "foxCaves Network" refers to any website, product, or service owned and/or operated under the{' '}
+                        <strong>{appDomain}</strong> or <strong>{cdnDomain}</strong> domains
                     </li>
                     <li>
                         "Content" refers to any image file that is shared, uploaded, or distributed through the foxCaves
