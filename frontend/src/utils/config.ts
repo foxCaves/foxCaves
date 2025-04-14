@@ -13,6 +13,10 @@ export interface Config {
         readonly secret_bytes: number;
         readonly issuer: string;
     };
+    readonly url: {
+        readonly app: string;
+        readonly cdn: string;
+    };
     readonly backend_revision: boolean;
     readonly admin_email: string;
 }

@@ -4,7 +4,7 @@ local mail = require('foxcaves.mail')
 local random = require('foxcaves.random')
 local user_model = require('foxcaves.models.user')
 local captcha = require('foxcaves.captcha')
-local main_url = require('foxcaves.config').http.main_url
+local app_url = require('foxcaves.config').http.app_url
 
 R.register_route('/api/v1/users/emails/request', 'POST', R.make_route_opts_anon(), function()
     -- 48 hours
@@ -49,7 +49,7 @@ R.register_route('/api/v1/users/emails/request', 'POST', R.make_route_opts_anon(
     else
         return utils.api_error('action invalid')
     end
-    emailstr = emailstr .. ' just click on the following link:\n' .. main_url .. '/email/code/' .. emailid
+    emailstr = emailstr .. ' just click on the following link:\n' .. app_url .. '/email/code/' .. emailid
 
     local redis_inst = redis.get_shared()
     local emailkey = 'emailkeys:' .. emailid

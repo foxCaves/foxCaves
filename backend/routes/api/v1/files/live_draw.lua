@@ -1,5 +1,5 @@
 local utils = require('foxcaves.utils')
-local WS_URL = ngx.re.gsub(require('foxcaves.config').http.main_url, '^http', 'ws', 'o')
+local WS_URL = ngx.re.gsub(require('foxcaves.config').http.app_url, '^http', 'ws', 'o')
 
 local ngx = ngx
 

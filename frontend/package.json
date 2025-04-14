@@ -20,7 +20,7 @@
         "build": "rimraf build && webpack build",
         "lint": "eslint --report-unused-disable-directives --cache --color ./src ./test webpack.*.ts playwright.*.ts && prettier --check ./src ./test webpack.*.ts playwright.*.ts",
         "fmt": "eslint --fix ./src ./test webpack.*.ts playwright.*.ts && prettier --write ./src ./test webpack.*.ts playwright.*.ts",
-        "test": "curl -f -v -s -XPOST http://main.foxcaves:8080/api/v1/system/testing/reset && playwright test"
+        "test": "curl -f -v -s -XPOST http://app.foxcaves:8080/api/v1/system/testing/reset && playwright test"
     },
     "devDependencies": {
         "@cspell/eslint-plugin": "^8.0.0",

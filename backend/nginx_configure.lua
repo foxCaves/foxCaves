@@ -19,7 +19,7 @@ local utils = require('foxcaves.utils')
 local htmlgen = require('foxcaves.htmlgen')
 
 local cdn_domain = utils.url_to_domain(config.http.cdn_url)
-local main_domain = utils.url_to_domain(config.http.main_url)
+local app_domain = utils.url_to_domain(config.http.app_url)
 local upstream_ips_str = ''
 for _, upstream_ip in pairs(config.http.upstream_ips) do
     upstream_ips_str = upstream_ips_str .. 'set_real_ip_from ' .. upstream_ip .. ';\n'
@@ -35,7 +35,7 @@ local nginx_configs =
         '/etc/nginx/csp-main.conf',
         '/etc/nginx/csp-cdn.conf',
     }
-local domains = { main_domain, cdn_domain }
+local domains = { app_domain, cdn_domain }
 
 if config.http.force_plaintext then
     listener_config = '/etc/nginx/listener-plaintext.conf'
@@ -46,7 +46,7 @@ if config.http.redirect_www then
     table.insert(nginx_configs, '/etc/nginx/conf.d/www-foxcaves.conf')
 
     table.insert(domains, 'www.' .. cdn_domain)
-    table.insert(domains, 'www.' .. main_domain)
+    table.insert(domains, 'www.' .. app_domain)
 end
 
 for _, nginx_config in pairs(nginx_configs) do
@@ -54,8 +54,8 @@ for _, nginx_config in pairs(nginx_configs) do
     local data = fh:read('*a')
     fh:close()
 
-    data = data:gsub('__MAIN_URL__', config.http.main_url)
-    data = data:gsub('__MAIN_DOMAIN__', main_domain)
+    data = data:gsub('__APP_URL__', config.http.app_url)
+    data = data:gsub('__APP_DOMAIN__', app_domain)
     data = data:gsub('__CDN_URL__', config.http.cdn_url)
     data = data:gsub('__CDN_DOMAIN__', cdn_domain)
     data = data:gsub('__UPSTREAM_IPS__', upstream_ips_str)
@@ -66,7 +66,7 @@ for _, nginx_config in pairs(nginx_configs) do
     fh:close()
 end
 
-if config.http.enable_acme and not path.exists('/etc/letsencrypt/live/' .. main_domain .. '/fullchain.pem') then
+if config.http.enable_acme and not path.exists('/etc/letsencrypt/live/' .. app_domain .. '/fullchain.pem') then
     local cmd = 'certbot --standalone certonly'
     for _, domain in pairs(domains) do
         cmd = cmd .. ' -d ' .. domain

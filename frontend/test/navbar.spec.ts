@@ -1,7 +1,7 @@
 import { testGuest, testLoggedIn } from './fixtures';
 
 testGuest('Navbar as guest', async ({ page }) => {
-    await page.goto('http://main.foxcaves:8080/');
+    await page.goto('http://app.foxcaves:8080/');
     await page.locator('text="Welcome, Guest!"').waitFor();
 
     await page.locator('.nav-link', { hasText: 'Login' }).waitFor();
@@ -18,7 +18,7 @@ testGuest('Navbar as guest', async ({ page }) => {
 });
 
 testLoggedIn('Navbar logged-in', async ({ page, testUser }) => {
-    await page.goto('http://main.foxcaves:8080/');
+    await page.goto('http://app.foxcaves:8080/');
     await page.locator(`text="Welcome, ${testUser.username}!"`).waitFor();
 
     await page.locator('.nav-link', { hasText: 'Login' }).waitFor({

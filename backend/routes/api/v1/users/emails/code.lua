@@ -4,7 +4,7 @@ local config = require('foxcaves.config')
 local mail = require('foxcaves.mail')
 local random = require('foxcaves.random')
 local user_model = require('foxcaves.models.user')
-local main_url = require('foxcaves.config').http.main_url
+local app_url = require('foxcaves.config').http.app_url
 local ngx = ngx
 
 local function invalid_code()
@@ -54,7 +54,7 @@ R.register_route('/api/v1/users/emails/code', 'POST', R.make_route_opts_anon(), 
         user:save()
 
         local email =
-            'Here is your new password:\n' .. newPassword .. '\nPlease log in at ' .. main_url .. '/login and change it as soon as possible.'
+            'Here is your new password:\n' .. newPassword .. '\nPlease log in at ' .. app_url .. '/login and change it as soon as possible.'
         mail.send(user, 'New password', email)
     end
 

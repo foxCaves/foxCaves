@@ -14,7 +14,7 @@ export default defineConfig({
     timeout: 30 * 1000,
     use: {
         // Base URL to use in actions like `await page.goto('/')`.
-        baseURL: 'http://main.foxcaves:8080',
+        baseURL: 'http://app.foxcaves:8080',
         // Collect trace when retrying the failed test.
         trace: 'on-first-retry',
         screenshot: 'only-on-failure',
@@ -30,7 +30,7 @@ export default defineConfig({
     // Run your local dev server before starting the tests.
     webServer: {
         command: 'cd .. && docker compose up --build',
-        url: 'http://main.foxcaves:8080',
+        url: 'http://app.foxcaves:8080',
         reuseExistingServer: true,
     },
 });

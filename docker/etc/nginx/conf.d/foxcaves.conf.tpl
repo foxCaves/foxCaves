@@ -16,9 +16,9 @@ real_ip_header proxy_protocol;
 
 server {
     listen unix:/run/nginx-lua-api.sock default;
-    server_name __MAIN_DOMAIN__;
+    server_name __APP_DOMAIN__;
     include /etc/nginx/basics.conf;
-    include /etc/nginx/csp-main.conf;
+    include /etc/nginx/csp-app.conf;
 
     real_ip_header X-Real-IP;
 
@@ -35,9 +35,9 @@ server {
 
 server {
     include __LISTENER_CONFIG__;
-    server_name __MAIN_DOMAIN__;
+    server_name __APP_DOMAIN__;
     include /etc/nginx/basics.conf;
-    include /etc/nginx/csp-main.conf;
+    include /etc/nginx/csp-app.conf;
 
     root /var/www/foxcaves/html;
     client_max_body_size 10M;
@@ -108,7 +108,7 @@ server {
     add_header Access-Control-Expose-Headers "Content-Type, Content-Length, Content-Range, CSRF-Token" always;
 
     location = / {
-        return 302 __MAIN_URL__;
+        return 302 __APP_URL__;
     }
 
     location / {

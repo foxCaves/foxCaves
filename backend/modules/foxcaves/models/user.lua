@@ -281,7 +281,7 @@ function user_mt:save()
         local emailid = random.string(32)
 
         local email_text =
-            'You have recently registered or changed your E-Mail on foxCaves.' .. '\nPlease click the following link to activate your E-Mail:\n' .. config.http.main_url .. '/email/code/' .. emailid
+            'You have recently registered or changed your E-Mail on foxCaves.' .. '\nPlease click the following link to activate your E-Mail:\n' .. config.http.app_url .. '/email/code/' .. emailid
 
         local redis_inst = redis.get_shared()
         local emailkey = 'emailkeys:' .. emailid
