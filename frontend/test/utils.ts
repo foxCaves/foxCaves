@@ -16,16 +16,16 @@ export async function doLoginPage(page: Page, user?: TestUser): Promise<TestUser
         password: `test_password_${randomUUID()}`,
     };
 
-    await page.goto('http://main.foxcaves:8080/register');
+    await page.goto('http://app.foxcaves:8080/register');
     await page.locator('input[name="username"]').fill(user.username);
     await page.locator('input[name="password"]').fill(user.password);
     await page.locator('input[name="passwordConfirm"]').fill(user.password);
-    await page.locator('input[name="email"]').fill(`${user.username}@main.foxcaves`);
+    await page.locator('input[name="email"]').fill(`${user.username}@app.foxcaves`);
     await page.getByLabel('I agree to the Terms of Service and Privacy Policy').check();
     await page.getByRole('button').locator('text="Register"').click();
     await waitForToast(page, 'Registration successful');
 
-    await page.goto('http://main.foxcaves:8080/login');
+    await page.goto('http://app.foxcaves:8080/login');
     await page.locator('input[name="username"]').fill(user.username);
     await page.locator('input[name="password"]').fill(user.password);
     await page.getByLabel('Remember me').check();
@@ -33,7 +33,7 @@ export async function doLoginPage(page: Page, user?: TestUser): Promise<TestUser
     await waitForToast(page, 'Logged in');
     await page.locator(`text="Welcome, ${user.username}!"`).waitFor();
 
-    await page.goto('http://main.foxcaves:8080');
+    await page.goto('http://app.foxcaves:8080');
     await page.locator(`text="Welcome, ${user.username}!"`).waitFor();
 
     return user;

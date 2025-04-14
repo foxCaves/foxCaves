@@ -60,17 +60,17 @@ jobs:
             ghcr.io/foxcaves/foxcaves/foxcaves:latest
       # Run tests
       - name: Add to hostsfile
-        run: sudo bash -c "echo '127.0.0.1 main.foxcaves cdn.foxcaves' >> /etc/hosts"
+        run: sudo bash -c "echo '127.0.0.1 app.foxcaves cdn.foxcaves' >> /etc/hosts"
       - name: Run test container
         run: docker compose -f docker-compose.yml -f docker-compose.testing.yml up -d --remove-orphans
       - name: Run some basic tests
         run: |
           set -ex
           HTTP_GET='curl -XGET -m 5 -s -f'
-          timeout 30s bash -c "until $HTTP_GET http://main.foxcaves:8080/api/v1/system/info; do sleep 1; done" || true
-          $HTTP_GET -I http://main.foxcaves:8080/files
-          $HTTP_GET -I http://main.foxcaves:8080/api/v1/system/info
-          [ "$($HTTP_GET http://main.foxcaves:8080/api/v1/system/info | jq -r .release)" == "${{ github.sha }}" ]
+          timeout 30s bash -c "until $HTTP_GET http://app.foxcaves:8080/api/v1/system/info; do sleep 1; done" || true
+          $HTTP_GET -I http://app.foxcaves:8080/files
+          $HTTP_GET -I http://app.foxcaves:8080/api/v1/system/info
+          [ "$($HTTP_GET http://app.foxcaves:8080/api/v1/system/info | jq -r .release)" == "${{ github.sha }}" ]
       - name: Prepare tests
         working-directory: ./frontend
         run: npm ci && npx playwright install chromium --with-deps

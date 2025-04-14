@@ -76,12 +76,12 @@ function fileLocator(filename: string, page: Page) {
 }
 
 testLoggedIn('Files page', async ({ page }) => {
-    await page.goto('http://main.foxcaves:8080/files');
+    await page.goto('http://app.foxcaves:8080/files');
     await page.waitForSelector('text="Refresh"');
 });
 
 testLoggedIn('Upload image file', async ({ page }) => {
-    await page.goto('http://main.foxcaves:8080/files');
+    await page.goto('http://app.foxcaves:8080/files');
     const filename = await uploadFile('test.jpg', page);
     const file = fileLocator(filename, page);
 
@@ -106,7 +106,7 @@ testLoggedIn('Upload image file', async ({ page }) => {
 });
 
 testLoggedIn('Upload non-image file', async ({ page }) => {
-    await page.goto('http://main.foxcaves:8080/files');
+    await page.goto('http://app.foxcaves:8080/files');
     const filename = await uploadFile('test.txt', page);
     const file = fileLocator(filename, page);
 
@@ -119,7 +119,7 @@ testLoggedIn('Upload non-image file', async ({ page }) => {
 });
 
 testLoggedIn('Delete file', async ({ browser, page }) => {
-    await page.goto('http://main.foxcaves:8080/files');
+    await page.goto('http://app.foxcaves:8080/files');
     const filename = await uploadFile('test.jpg', page);
 
     // Second secondary page to the file view
@@ -127,7 +127,7 @@ testLoggedIn('Delete file', async ({ browser, page }) => {
     const filePage = await browser.newPage({ storageState: undefined });
     await filePage.goto(page.url());
 
-    await page.goto('http://main.foxcaves:8080/files');
+    await page.goto('http://app.foxcaves:8080/files');
     const file = fileLocator(filename, page);
 
     // Verify file and thumbnail exist

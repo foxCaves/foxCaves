@@ -15,7 +15,7 @@ local config = {
         issuer = config_raw.totp.issuer or 'foxCaves UNKNOWN',
     },
     urls = {
-        main = config_raw.http.main_url,
+        app = config_raw.http.app_url,
         cdn = config_raw.http.cdn_url,
     },
     sentry = { dsn = '' },

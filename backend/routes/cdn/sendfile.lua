@@ -1,7 +1,7 @@
 local utils = require('foxcaves.utils')
 local file_model = require('foxcaves.models.file')
 local mimetypes = require('foxcaves.mimetypes')
-local main_url = require('foxcaves.config').http.main_url
+local app_url = require('foxcaves.config').http.app_url
 local ngx = ngx
 
 R.register_route_multi_method(
@@ -26,7 +26,7 @@ R.register_route_multi_method(
         if not disposition_type then
             ngx.status = 302
             utils.add_cdn_cache_control()
-            ngx.redirect(main_url .. '/view/' .. file.id)
+            ngx.redirect(app_url .. '/view/' .. file.id)
             return
         end
 

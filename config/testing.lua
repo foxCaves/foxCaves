@@ -54,7 +54,7 @@ return {
     },
     http = {
         cdn_url = "http://cdn.foxcaves:8080",
-        main_url = "http://main.foxcaves:8080",
+        app_url = "http://app.foxcaves:8080",
         redirect_www = false,
         force_plaintext = true,
         upstream_ips = { "127.0.0.1" },
