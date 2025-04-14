@@ -80,19 +80,19 @@ const config: Configuration = {
         proxy: [
             {
                 path: '/api',
-                target: 'https://foxcav.es:443',
+                target: 'https://foxcaves.doridian.net:443',
                 changeOrigin: true,
                 headers: {
-                    Host: 'foxcav.es',
+                    Host: 'foxcaves.doridian.net',
                 },
             },
             {
                 path: '/api/v1/ws',
-                target: 'wss://foxcav.es:443',
+                target: 'wss://foxcaves.doridian.net:443',
                 changeOrigin: true,
                 ws: true,
                 headers: {
-                    Host: 'foxcav.es',
+                    Host: 'foxcaves.doridian.net',
                 },
             },
         ],
