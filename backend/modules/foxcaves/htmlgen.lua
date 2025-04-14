@@ -67,7 +67,7 @@ local function generate_index_html(title, description, image, site_type)
         description = 'foxCaves'
     end
     if not image then
-        image = 'https://foxcav.es/static/img/logo.jpg'
+        image = 'https://foxcaves.doridian.net/static/img/logo.jpg'
     end
     if not site_type then
         site_type = 'website'

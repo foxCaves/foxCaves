@@ -14,7 +14,7 @@ export const TermsOfServicePage: React.FC = () => {
                     <li>"foxCaves" refers to foxcav.es and excludes its shareholders, owners, or operators.</li>
                     <li>
                         "foxCaves Network" refers to any website, product, or service owned and/or operated under the
-                        foxcav.es or f0x.es domains
+                        foxcaves.doridian.net or fcv.doridian.net domains
                     </li>
                     <li>
                         "Content" refers to any image file that is shared, uploaded, or distributed through the foxCaves
@@ -97,7 +97,7 @@ export const TermsOfServicePage: React.FC = () => {
                 </p>
                 <p>
                     If you wish to report content that violates these terms, please report it to{' '}
-                    <a href="mailto:abuse@foxcav.es">abuse@foxcav.es</a>
+                    <a href="mailto:foxcaves@doridian.net">foxcaves@doridian.net</a>
                 </p>
             </section>
             <section id="misc">
@@ -106,7 +106,7 @@ export const TermsOfServicePage: React.FC = () => {
                 </div>
                 <p>
                     foxCaves reserves the right to change this agreement at any time without prior notice. This
-                    agreement was last updated 14th April 2023.
+                    agreement was last updated 13th April 2025.
                 </p>
             </section>
         </>
