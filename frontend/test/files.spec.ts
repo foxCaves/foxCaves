@@ -41,7 +41,7 @@ async function viewAndCheckFile(filename: string, src: string, page: Page): Prom
      */
     const file = fileLocator(filename, page);
     await file.locator('.dropdown-toggle').click();
-    await file.locator('.dropdown-item').getByText('View').click();
+    await file.locator('.dropdown-item').getByText('View', { exact: true }).click();
     await checkFile(src, page);
 }
 
@@ -140,9 +140,9 @@ testLoggedIn('Delete file', async ({ browser, page }) => {
     });
 
     await file.locator('.dropdown-toggle').click();
-    await file.locator('.dropdown-item').getByText('Delete').click();
+    await file.locator('.dropdown-item').getByText('Delete', { exact: true }).click();
 
-    await page.locator('.btn-primary').getByText('Yes').click();
+    await page.locator('.btn-primary').getByText('Yes', { exact: true }).click();
     await waitForToast(page, 'Deleted file');
 
     await page.locator(`text="${filename}"`).waitFor({
