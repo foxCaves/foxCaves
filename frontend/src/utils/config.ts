@@ -13,7 +13,7 @@ export interface Config {
         readonly secret_bytes: number;
         readonly issuer: string;
     };
-    readonly url: {
+    readonly urls: {
         readonly app: string;
         readonly cdn: string;
     };
