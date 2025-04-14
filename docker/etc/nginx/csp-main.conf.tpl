@@ -1,1 +1,1 @@
-add_header Content-Security-Policy "default-src 'self'; img-src 'self' data: __SHORT_DOMAIN__; connect-src 'self' __SHORT_DOMAIN__; media-src 'self' __SHORT_DOMAIN__; frame-src __SHORT_DOMAIN__; frame-ancestors 'none'" always;
+add_header Content-Security-Policy "default-src 'self'; img-src 'self' data: __CDN_DOMAIN__; connect-src 'self' __CDN_DOMAIN__; media-src 'self' __CDN_DOMAIN__; frame-src __CDN_DOMAIN__; frame-ancestors 'none'" always;

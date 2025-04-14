@@ -95,9 +95,9 @@ server {
 
 server {
     include __LISTENER_CONFIG__;
-    server_name __SHORT_DOMAIN__;
+    server_name __CDN_DOMAIN__;
     include /etc/nginx/basics.conf;
-    include /etc/nginx/csp-short.conf;
+    include /etc/nginx/csp-cdn.conf;
 
     set $fcv_proxy_host "";
     set $fcv_proxy_uri "";

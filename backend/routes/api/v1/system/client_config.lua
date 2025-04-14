@@ -14,6 +14,10 @@ local config = {
         secret_bytes = config_raw.totp.secret_bytes or 20,
         issuer = config_raw.totp.issuer or 'foxCaves UNKNOWN',
     },
+    urls = {
+        main = config_raw.http.main_url,
+        cdn = config_raw.http.cdn_url,
+    },
     sentry = { dsn = '' },
     backend_revision = revision.hash,
     admin_email = config_raw.email.admin_email,

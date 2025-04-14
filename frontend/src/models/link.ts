@@ -5,7 +5,7 @@ import { UserModel } from './user';
 export class LinkModel extends BaseModel {
     public id = '';
     public url = '';
-    public short_url = '';
+    public target = '';
     public owner = '';
 
     public static async getById(id: string, apiAccessor: APIAccessor): Promise<LinkModel | undefined> {

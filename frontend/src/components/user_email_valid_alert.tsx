@@ -47,7 +47,7 @@ export const UserEmailValidAlert: React.FC = () => {
             <p>
                 Your account is inactive. Make sure to click the link in your activation E-Mail.
                 <br />
-                While your account is inactive, you can not upload or edit files, and you cannot shorten links.
+                While your account is inactive, you can not upload or edit files, and you cannot create links.
             </p>
             <Alert.Link onClick={requestActivationEmail}>Re-send activation E-Mail</Alert.Link>
         </Alert>

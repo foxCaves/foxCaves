@@ -20,7 +20,7 @@ export const UserNotApprovedAlert: React.FC = () => {
                     Please contact an administrator at <a href={`mailto:${adminEmail}`}>{adminEmail}</a> for more
                     information.
                     <br />
-                    While your account is inactive, you can not upload or edit files, and you cannot shorten links.
+                    While your account is inactive, you can not upload or edit files, and you cannot create links.
                 </p>
             </Alert>
         );
@@ -32,7 +32,7 @@ export const UserNotApprovedAlert: React.FC = () => {
             <p>
                 Your account is inactive. Please wait for an administrator to approve your account.
                 <br />
-                While your account is inactive, you can not upload or edit files, and you cannot shorten links.
+                While your account is inactive, you can not upload or edit files, and you cannot create links.
             </p>
         </Alert>
     );

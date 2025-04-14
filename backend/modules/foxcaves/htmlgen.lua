@@ -49,7 +49,7 @@ M.escape_html = escape_html
 local FIXED_METADATA =
     [[
     <link rel="dns-prefetch" href="]] .. escape_html(
-        config.http.short_url
+        config.http.cdn_url
     ) .. [[" />
     <meta property="og:site_name" content="foxCaves" />
     <meta name="twitter:card" content="summary_large_image">

@@ -16,14 +16,14 @@ R.register_route(
         link:set_owner(ngx.ctx.user)
 
         local args = utils.get_post_args()
-        local url = args.url or ''
+        local target = args.target or ''
 
-        if url == '' then
-            return utils.api_error('No URL')
+        if target == '' then
+            return utils.api_error('No target')
         end
 
-        if not link:set_url(args.url) then
-            return utils.api_error('Invalid URL')
+        if not link:set_target(target) then
+            return utils.api_error('Invalid target')
         end
 
         expiry_utils.parse_expiry(args, link)
@@ -40,7 +40,7 @@ R.register_route(
                 type = 'object',
                 required = true,
                 fields = {
-                    url = {
+                    target = {
                         type = 'string',
                         description = 'The URL the link should point to',
                         required = true,

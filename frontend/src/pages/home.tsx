@@ -20,7 +20,7 @@ export const HomePage: React.FC = () => {
                 </a>
                 <br />
                 <br />
-                All short links have also changed from <strong>https://f0x.es</strong> to{' '}
+                All links have also changed from <strong>https://f0x.es</strong> to{' '}
                 <strong>https://fcv.doridian.net</strong>
                 <br />
                 <br />
@@ -29,7 +29,7 @@ export const HomePage: React.FC = () => {
             <br />
             <h4>What is foxCaves?</h4>
             <p>
-                foxCaves is a platform to upload your files and share them with friends as well create short-links.
+                foxCaves is a platform to upload your files and share them with friends as well create links.
                 <br />
                 There is pre-made configurations for ShareX here:{' '}
                 <a href="https://github.com/foxCaves/sharex" rel="noreferrer" target="_blank">

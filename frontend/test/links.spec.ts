@@ -7,7 +7,7 @@ async function createLink(page: Page) {
     const linkUrl = `http://main.foxcaves:8080?${randomID()}`;
     await page.locator('.btn-primary').getByText('Create new link').click();
     await page.locator('input[name="createLink"]').fill(linkUrl);
-    await page.locator('.btn-primary').getByText('Shorten').click();
+    await page.locator('.btn-primary').getByText('Create').click();
     await waitForToast(page, 'Created link');
     await linkLocator(linkUrl, page).waitFor();
     return linkUrl;
@@ -26,11 +26,11 @@ testLoggedIn('Create link', async ({ page }) => {
     await page.goto('http://main.foxcaves:8080/links');
     const linkUrl = await createLink(page);
     const link = linkLocator(linkUrl, page);
-    const shortUrl = await link.locator('a').nth(0).getAttribute('href');
-    assert.ok(shortUrl);
-    assert.ok(shortUrl.includes('http://short.foxcaves:8080'));
+    const url = await link.locator('a').nth(0).getAttribute('href');
+    assert.ok(url);
+    assert.ok(url.includes('http://cdn.foxcaves:8080'));
 
-    await page.goto(shortUrl);
+    await page.goto(url);
     await page.waitForURL(linkUrl);
 });
 
