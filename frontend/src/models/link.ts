@@ -27,10 +27,10 @@ export class LinkModel extends BaseModel {
         return res.items.map((link) => LinkModel.wrapNew(link));
     }
 
-    public static async create(url: string, apiAccessor: APIAccessor): Promise<LinkModel> {
+    public static async create(target: string, apiAccessor: APIAccessor): Promise<LinkModel> {
         const api = await apiAccessor.fetch('/api/v1/links', {
             method: 'POST',
-            data: { url },
+            data: { target },
         });
 
         return LinkModel.wrapNew(api);
