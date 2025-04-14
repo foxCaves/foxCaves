@@ -110,7 +110,7 @@ export const TermsOfServicePage: React.FC = () => {
                 </div>
                 <p>
                     foxCaves reserves the right to change this agreement at any time without prior notice. This
-                    agreement was last updated 13th April 2025.
+                    agreement was last updated 14th April 2025.
                 </p>
             </section>
         </>
