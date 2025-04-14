@@ -9,6 +9,24 @@ export const HomePage: React.FC = () => {
             <br />
             <h3>Welcome to foxCaves!</h3>
             <br />
+            <h4>Domain move</h4>
+            <p>
+                Please note this site has moved domains!
+                <br />
+                <br />
+                We are now online at{' '}
+                <a href="https://foxcaves.doridian.net" rel="noreferrer" target="_blank">
+                    https://foxcaves.doridian.net
+                </a>
+                <br />
+                <br />
+                All short links have also changed from
+                <strong>https://f0x.es</strong> to <strong>https://fcv.doridian.net</strong>
+                <br />
+                <br />
+                Please update your bookmarks and links accordingly!
+            </p>
+            <br />
             <h4>What is foxCaves?</h4>
             <p>
                 foxCaves is a platform to upload your files and share them with friends as well create short-links.
