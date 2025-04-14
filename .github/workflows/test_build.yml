@@ -1,9 +1,7 @@
 name: Test/Build
-
 concurrency:
   group: testbuild-${{ github.ref }}
   cancel-in-progress: true
-
 on:
   push:
     branches:
@@ -15,7 +13,6 @@ on:
       - synchronize
   merge_group: {}
   workflow_call: {}
-
 jobs:
   lint:
     uses: ./.github/workflows/lint.yml
@@ -61,10 +58,9 @@ jobs:
             GIT_REVISION=${{ github.sha }}
           tags: |
             ghcr.io/foxcaves/foxcaves/foxcaves:latest
-
       # Run tests
       - name: Add to hostsfile
-        run: sudo bash -c "echo '127.0.0.1 main.foxcaves short.foxcaves' >> /etc/hosts"
+        run: sudo bash -c "echo '127.0.0.1 main.foxcaves cdn.foxcaves' >> /etc/hosts"
       - name: Run test container
         run: docker compose -f docker-compose.yml -f docker-compose.testing.yml up -d --remove-orphans
       - name: Run some basic tests
@@ -94,12 +90,10 @@ jobs:
         with:
           name: playwright-test-results
           path: frontend/test-results/
-
       # Push if we are on main
       - name: Push Docker image
         run: docker push ghcr.io/foxcaves/foxcaves/foxcaves:latest
         if: github.ref == 'refs/heads/main'
-
       # https://github.com/docker/build-push-action/issues/252 (prevent cache from growing indefinitely)
       - name: Move cache
         run: |

@@ -18,7 +18,7 @@ local config = require('foxcaves.config')
 local utils = require('foxcaves.utils')
 local htmlgen = require('foxcaves.htmlgen')
 
-local short_domain = utils.url_to_domain(config.http.short_url)
+local cdn_domain = utils.url_to_domain(config.http.cdn_url)
 local main_domain = utils.url_to_domain(config.http.main_url)
 local upstream_ips_str = ''
 for _, upstream_ip in pairs(config.http.upstream_ips) do
@@ -33,9 +33,9 @@ local nginx_configs =
         '/etc/nginx/conf.d/http-foxcaves.conf',
         '/etc/nginx/listener.conf',
         '/etc/nginx/csp-main.conf',
-        '/etc/nginx/csp-short.conf',
+        '/etc/nginx/csp-cdn.conf',
     }
-local domains = { main_domain, short_domain }
+local domains = { main_domain, cdn_domain }
 
 if config.http.force_plaintext then
     listener_config = '/etc/nginx/listener-plaintext.conf'
@@ -45,7 +45,7 @@ end
 if config.http.redirect_www then
     table.insert(nginx_configs, '/etc/nginx/conf.d/www-foxcaves.conf')
 
-    table.insert(domains, 'www.' .. short_domain)
+    table.insert(domains, 'www.' .. cdn_domain)
     table.insert(domains, 'www.' .. main_domain)
 end
 
@@ -56,8 +56,8 @@ for _, nginx_config in pairs(nginx_configs) do
 
     data = data:gsub('__MAIN_URL__', config.http.main_url)
     data = data:gsub('__MAIN_DOMAIN__', main_domain)
-    data = data:gsub('__SHORT_URL__', config.http.short_url)
-    data = data:gsub('__SHORT_DOMAIN__', short_domain)
+    data = data:gsub('__CDN_URL__', config.http.cdn_url)
+    data = data:gsub('__CDN_DOMAIN__', cdn_domain)
     data = data:gsub('__UPSTREAM_IPS__', upstream_ips_str)
     data = data:gsub('__LISTENER_CONFIG__', listener_config)
 

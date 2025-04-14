@@ -41,7 +41,7 @@ async function viewAndCheckFile(filename: string, src: string, page: Page): Prom
      */
     const file = fileLocator(filename, page);
     await file.locator('.dropdown-toggle').click();
-    await file.locator('.dropdown-item').getByText('View').click();
+    await file.locator('.dropdown-item').getByText('View', { exact: true }).click();
     await checkFile(src, page);
 }
 
@@ -52,7 +52,7 @@ async function checkFile(src: string, page: Page): Promise<void> {
      */
     const href = await page.locator('p', { hasText: 'Direct link' }).locator('a').getAttribute('href');
     assert.ok(href);
-    assert.ok(href.includes('http://short.foxcaves:8080'));
+    assert.ok(href.includes('http://cdn.foxcaves:8080'));
 
     const fileRequest = await axios(href, {
         responseType: 'arraybuffer',
@@ -88,7 +88,7 @@ testLoggedIn('Upload image file', async ({ page }) => {
     // Verify thumbnail exists and is a valid image
     const src = await file.locator('.card-img-top').getAttribute('src');
     assert.ok(src);
-    assert.ok(src.includes('http://short.foxcaves:8080'));
+    assert.ok(src.includes('http://cdn.foxcaves:8080'));
 
     const thumbnail = await axios(src, {
         responseType: 'arraybuffer',
@@ -113,7 +113,7 @@ testLoggedIn('Upload non-image file', async ({ page }) => {
     // Verify there is no thumbnail
     const src = await file.locator('.card-img-top').getAttribute('src');
     assert.ok(src);
-    assert.ok(!src.includes('http://short.foxcaves:8080'));
+    assert.ok(!src.includes('http://cdn.foxcaves:8080'));
 
     await viewAndCheckFile(filename, 'test.txt', page);
 });
@@ -133,16 +133,16 @@ testLoggedIn('Delete file', async ({ browser, page }) => {
     // Verify file and thumbnail exist
     const thumbnailSrc = await file.locator('.card-img-top').getAttribute('src');
     assert.ok(thumbnailSrc);
-    assert.ok(thumbnailSrc.includes('http://short.foxcaves:8080'));
+    assert.ok(thumbnailSrc.includes('http://cdn.foxcaves:8080'));
     await axios(thumbnailSrc, {
         responseType: 'arraybuffer',
         validateStatus: (status: number) => status === 200,
     });
 
     await file.locator('.dropdown-toggle').click();
-    await file.locator('.dropdown-item').getByText('Delete').click();
+    await file.locator('.dropdown-item').getByText('Delete', { exact: true }).click();
 
-    await page.locator('.btn-primary').getByText('Yes').click();
+    await page.locator('.btn-primary').getByText('Yes', { exact: true }).click();
     await waitForToast(page, 'Deleted file');
 
     await page.locator(`text="${filename}"`).waitFor({

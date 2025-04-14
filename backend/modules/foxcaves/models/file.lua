@@ -2,7 +2,7 @@ local lfs = require('lfs')
 local database = require('foxcaves.database')
 local random = require('foxcaves.random')
 local user_model = require('foxcaves.models.user')
-local short_url = require('foxcaves.config').http.short_url
+local cdn_url = require('foxcaves.config').http.cdn_url
 local exec = require('foxcaves.exec')
 local mimetypes = require('foxcaves.mimetypes')
 local utils = require('foxcaves.utils')
@@ -420,7 +420,7 @@ function file_mt:get_extension()
 end
 
 function file_mt:get_public()
-    local short_url_file = short_url .. '/f/' .. self.id
+    local cdn_url_file = cdn_url .. '/f/' .. self.id
 
     local res = {
         id = self.id,
@@ -430,12 +430,12 @@ function file_mt:get_public()
         created_at = self.created_at,
         updated_at = self.updated_at,
         expires_at = self.expires_at,
-        view_url = short_url_file,
-        direct_url = short_url_file .. '?raw=1',
-        download_url = short_url_file .. '?dl=1',
+        view_url = cdn_url_file,
+        direct_url = cdn_url_file .. '?raw=1',
+        download_url = cdn_url_file .. '?dl=1',
     }
     if self.thumbnail_mimetype and self.thumbnail_mimetype ~= '' then
-        res.thumbnail_url = short_url .. '/t/' .. self.id
+        res.thumbnail_url = cdn_url .. '/t/' .. self.id
     end
     return res
 end

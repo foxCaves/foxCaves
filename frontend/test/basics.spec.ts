@@ -39,7 +39,7 @@ testGuest('Log out', async ({ page }) => {
 
     await page.goto('http://main.foxcaves:8080/logout');
 
-    await page.locator('.btn-primary').getByText('Yes').click();
+    await page.locator('.btn-primary').getByText('Yes', { exact: true }).click();
     await page.locator('text="Welcome, Guest!"').waitFor();
 
     await page.goto('http://main.foxcaves:8080');

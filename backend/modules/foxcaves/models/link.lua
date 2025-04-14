@@ -1,6 +1,6 @@
 local database = require('foxcaves.database')
 local random = require('foxcaves.random')
-local short_url = require('foxcaves.config').http.short_url
+local cdn_url = require('foxcaves.config').http.cdn_url
 local user_model = require('foxcaves.models.user')
 
 local ngx = ngx
@@ -19,7 +19,7 @@ local function makelinkmt(link)
     return link
 end
 
-local link_select = 'id, owner, url, ' .. database.TIME_COLUMNS_EXPIRING
+local link_select = 'id, owner, target, ' .. database.TIME_COLUMNS_EXPIRING
 
 function link_model.get_by_query(query, options, ...)
     return link_model.get_by_query_raw(
@@ -117,8 +117,8 @@ function link_mt:set_owner(user)
     self.owner = user.id or user
 end
 
-function link_mt:set_url(url)
-    self.url = url
+function link_mt:set_target(target)
+    self.target = target
     return true
 end
 
@@ -127,11 +127,11 @@ function link_mt:save()
     if self.not_in_db then
         res =
             database.get_shared():query_single(
-                'INSERT INTO links (id, owner, url, expires_at) VALUES (%s, %s, %s, %s)' .. ' RETURNING ' .. database.TIME_COLUMNS_EXPIRING,
+                'INSERT INTO links (id, owner, target, expires_at) VALUES (%s, %s, %s, %s)' .. ' RETURNING ' .. database.TIME_COLUMNS_EXPIRING,
                 nil,
                 self.id,
                 self.owner,
-                self.url,
+                self.target,
                 self.expires_at or ngx.null
             )
         primary_push_action = 'create'
@@ -140,13 +140,13 @@ function link_mt:save()
         res =
             database.get_shared():query_single(
                 "UPDATE links \
-                SET owner = %s, url = %s, \
+                SET owner = %s, target = %s, \
                 expires_at = %s, updated_at = (now() at time zone 'utc') \
                 WHERE id = %s \
                 RETURNING " .. database.TIME_COLUMNS_EXPIRING,
                 nil,
                 self.owner,
-                self.url,
+                self.target,
                 self.expires_at or ngx.null,
                 self.id
             )
@@ -162,9 +162,9 @@ end
 function link_mt:get_public()
     return {
         id = self.id,
-        url = self.url,
+        target = self.target,
         owner = self.owner,
-        short_url = short_url .. '/' .. self.id,
+        url = cdn_url .. '/' .. self.id,
         created_at = self.created_at,
         updated_at = self.updated_at,
         expires_at = self.expires_at,
@@ -204,7 +204,7 @@ function link_model.get_public_fields()
             type = 'uuid',
             required = true,
         },
-        short_url = {
+        target = {
             type = 'string',
             required = true,
         },

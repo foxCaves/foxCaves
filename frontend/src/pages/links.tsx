@@ -19,13 +19,13 @@ const LinkView: React.FC<{
     return (
         <tr>
             <td>
-                <a href={link.short_url} rel="noreferrer" target="_blank">
-                    {link.short_url}
+                <a href={link.url} rel="noreferrer" target="_blank">
+                    {link.url}
                 </a>
             </td>
             <td>
-                <a href={link.url} rel="noreferrer" target="_blank">
-                    {link.url}
+                <a href={link.target} rel="noreferrer" target="_blank">
+                    {link.target}
                 </a>
             </td>
             <td>
@@ -52,8 +52,8 @@ export const LinksPage: React.FC = () => {
 
         toast
             .promise(deleteLink.delete(apiAccessor), {
-                success: `Deleted link "${deleteLink.short_url}"!`,
-                pending: `Deleting link "${deleteLink.short_url}"...`,
+                success: `Deleted link "${deleteLink.url}"!`,
+                pending: `Deleting link "${deleteLink.url}"...`,
                 error: {
                     render({ data }) {
                         // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
@@ -153,7 +153,7 @@ export const LinksPage: React.FC = () => {
                 </Modal.Header>
 
                 <Modal.Body>
-                    <p>Are you sure to delete the link "{deleteLink?.short_url}"?</p>
+                    <p>Are you sure to delete the link "{deleteLink?.url}"?</p>
                 </Modal.Body>
 
                 <Modal.Footer>
@@ -167,12 +167,12 @@ export const LinksPage: React.FC = () => {
             </Modal>
             <Modal onHide={hideCreateLinkDialog} show={showCreateLink}>
                 <Modal.Header closeButton>
-                    <Modal.Title>Shorten link</Modal.Title>
+                    <Modal.Title>Create link</Modal.Title>
                 </Modal.Header>
 
                 <Modal.Body>
                     <p>
-                        Please enter the link you would like to shorten:
+                        Please enter the target of the link:
                         <Form.Control
                             name="createLink"
                             onChange={setCreateLinkUrlCB}
@@ -187,7 +187,7 @@ export const LinksPage: React.FC = () => {
                         Cancel
                     </Button>
                     <Button onClick={handleCreateLink} variant="primary">
-                        Shorten
+                        Create
                     </Button>
                 </Modal.Footer>
             </Modal>
@@ -206,7 +206,7 @@ export const LinksPage: React.FC = () => {
             <Table bordered striped>
                 <thead>
                     <tr>
-                        <th>Short link</th>
+                        <th>Link</th>
                         <th>Target</th>
                         <th>Actions</th>
                     </tr>
