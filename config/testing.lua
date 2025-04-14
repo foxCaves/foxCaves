@@ -53,7 +53,7 @@ return {
         }
     },
     http = {
-        short_url = "http://short.foxcaves:8080",
+        cdn_url = "http://cdn.foxcaves:8080",
         main_url = "http://main.foxcaves:8080",
         redirect_www = false,
         force_plaintext = true,
