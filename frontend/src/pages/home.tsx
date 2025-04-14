@@ -20,8 +20,8 @@ export const HomePage: React.FC = () => {
                 </a>
                 <br />
                 <br />
-                All short links have also changed from
-                <strong>https://f0x.es</strong> to <strong>https://fcv.doridian.net</strong>
+                All short links have also changed from <strong>https://f0x.es</strong> to{' '}
+                <strong>https://fcv.doridian.net</strong>
                 <br />
                 <br />
                 Please update your bookmarks and links accordingly!
