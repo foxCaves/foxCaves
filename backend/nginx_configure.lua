@@ -32,7 +32,7 @@ local nginx_configs =
         '/etc/nginx/conf.d/foxcaves.conf',
         '/etc/nginx/conf.d/http-foxcaves.conf',
         '/etc/nginx/listener.conf',
-        '/etc/nginx/csp-main.conf',
+        '/etc/nginx/csp-app.conf',
         '/etc/nginx/csp-cdn.conf',
     }
 local domains = { app_domain, cdn_domain }
