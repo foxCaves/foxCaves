@@ -15,13 +15,12 @@ export const HomePage: React.FC = () => {
                 <br />
                 <br />
                 We are now online at{' '}
-                <a href="https://foxcaves.doridian.net" rel="noreferrer" target="_blank">
-                    https://foxcaves.doridian.net
+                <a href={config.urls.app} rel="noreferrer" target="_blank">
+                    {config.urls.app}
                 </a>
                 <br />
                 <br />
-                All links have also changed from <strong>https://f0x.es</strong> to{' '}
-                <strong>https://fcv.doridian.net</strong>
+                All links have also changed from <strong>https://f0x.es</strong> to <strong>{config.urls.cdn}</strong>
                 <br />
                 <br />
                 Please update your bookmarks and links accordingly!
