@@ -55,3 +55,25 @@ export async function doLoginPage(page: Page, user?: Omit<TestUser, 'apiKey'>, a
 export function randomID(): string {
     return randomUUID().slice(0, 8);
 }
+
+interface ApiReqData {
+    data?: unknown;
+    httpCredentials?: {
+        username: string;
+        password: string;
+        send: 'always';
+    };
+}
+
+export function apiReqData(user?: TestUser, data?: unknown): ApiReqData {
+    return {
+        data,
+        httpCredentials: user
+            ? {
+                  username: user.username,
+                  password: user.apiKey,
+                  send: 'always',
+              }
+            : undefined,
+    };
+}

@@ -1,7 +1,7 @@
 import assert from 'node:assert';
 import { Locator, Page } from '@playwright/test';
 import { testLoggedIn } from './fixtures';
-import { doLoginPage, TestUser } from './utils';
+import { apiReqData, doLoginPage, TestUser } from './utils';
 
 interface NewsItem {
     id: string;
@@ -12,12 +12,7 @@ interface NewsItem {
 async function createNews(page: Page, user: TestUser, news: Omit<NewsItem, 'id'>): Promise<NewsItem> {
     news.title = `test_news_${news.title}`;
 
-    const resp = await page.request.post('http://app.foxcaves:8080/api/v1/news', {
-        data: news,
-        headers: {
-            Authorization: `Bearer ${user.apiKey}`,
-        },
-    });
+    const resp = await page.request.post('http://app.foxcaves:8080/api/v1/news', apiReqData(user, news));
     // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
     const respNews = (await resp.json()) as NewsItem;
     assert.ok(respNews.id);
@@ -56,11 +51,10 @@ testLoggedIn('Delete link', async ({ browser, page }) => {
 
     const newsLocator = await waitForNews(page, news);
 
-    const resp = await adminPage.request.delete(`http://app.foxcaves:8080/api/v1/news/${news.id}`, {
-        headers: {
-            Authorization: `Bearer ${adminUser.apiKey}`,
-        },
-    });
+    const resp = await adminPage.request.delete(
+        `http://app.foxcaves:8080/api/v1/news/${news.id}`,
+        apiReqData(adminUser),
+    );
     assert.ok(resp.ok());
 
     await adminPage.close();
