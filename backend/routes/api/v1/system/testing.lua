@@ -1,14 +1,16 @@
+local env = require('foxcaves.env')
+local consts = require('foxcaves.consts')
+if env.id ~= consts.ENV_TESTING then return end
+
 local error = error
 local next = next
 local user_model = require('foxcaves.models.user')
 local link_model = require('foxcaves.models.link')
 local file_model = require('foxcaves.models.file')
 local news_model = require('foxcaves.models.news')
-local env = require('foxcaves.env')
-local consts = require('foxcaves.consts')
 local database = require('foxcaves.database')
 
-if env.id ~= consts.ENV_TESTING then return end
+local ngx = ngx
 
 local testing_opts = R.make_route_opts({
     check_login = false,
