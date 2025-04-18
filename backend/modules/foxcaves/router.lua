@@ -208,7 +208,7 @@ local function route_execute()
 
     ngx.header['FoxCaves-Route-ID'] = handler.id
     if env.id == consts.ENV_TESTING then
-        ngx.header['FoxCaves-Testing-Mode'] = "!WARNING! TESTING MODE ENABLED - THIS IS A SECURITY RISK !WARNING!"
+        ngx.header['FoxCaves-Testing-Mode'] = '!WARNING! TESTING MODE ENABLED - THIS IS A SECURITY RISK !WARNING!'
     end
 
     local opts = handler.options or {}
