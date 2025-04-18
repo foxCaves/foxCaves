@@ -5,7 +5,7 @@ CREATE TABLE news (
     author UUID REFERENCES users (id),
     editor UUID REFERENCES users (id) NULL,
     created_at timestamp without time zone DEFAULT (now() at time zone 'utc'),
-    updated_at timestamp without time zone DEFAULT (now() at time zone 'utc'),
+    updated_at timestamp without time zone DEFAULT (now() at time zone 'utc')
 );
 
 CREATE INDEX ON news ("author");

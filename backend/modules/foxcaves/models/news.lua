@@ -17,7 +17,7 @@ local function makenewsmt(news)
     return news
 end
 
-local news_select = 'id, author, title, content, ' .. database.TIME_COLUMNS_EXPIRING
+local news_select = 'id, author, editor, title, content, ' .. database.TIME_COLUMNS
 
 function news_model.count_by_query(query, ...)
     local res = database.get_shared():query_single('SELECT COUNT(id) AS count FROM news WHERE ' .. query, nil, ...)
@@ -88,7 +88,7 @@ function news_mt:save()
     if self.not_in_db then
         res =
             database.get_shared():query_single(
-                'INSERT INTO news (id, author, editor, title, content) VALUES (%s, %s, %s, %s, %s)' .. ' RETURNING ' .. database.TIME_COLUMNS_EXPIRING,
+                'INSERT INTO news (id, author, editor, title, content) VALUES (%s, %s, %s, %s, %s)' .. ' RETURNING ' .. database.TIME_COLUMNS,
                 nil,
                 self.id,
                 self.author,
@@ -105,7 +105,7 @@ function news_mt:save()
                 SET author = %s, editor = %s,title = %s, content = %s \
                 updated_at = (now() at time zone 'utc') \
                 WHERE id = %s \
-                RETURNING " .. database.TIME_COLUMNS_EXPIRING,
+                RETURNING " .. database.TIME_COLUMNS,
                 nil,
                 self.author,
                 self.editor,

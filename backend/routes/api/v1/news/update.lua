@@ -26,6 +26,10 @@ R.register_route(
             news.content = args.content
             had_edits = true
         end
+        if args.update_author and ngx.ctx.user:is_admin() then
+            news:set_author(ngx.ctx.user)
+            had_edits = true
+        end
 
         if had_edits then
             news:set_editor(ngx.ctx.user)
@@ -56,6 +60,11 @@ R.register_route(
                     content = {
                         type = 'string',
                         description = 'The new content of the news item',
+                        required = false,
+                    },
+                    update_author = {
+                        type = 'boolean',
+                        description = '[ADMIN ONLY] Whether to update the author of the news item (default: false)',
                         required = false,
                     },
                 },

@@ -8,7 +8,7 @@ local table_insert = table.insert
 R.register_route(
     '/api/v1/news',
     'GET',
-    R.make_route_opts_admin(),
+    R.make_route_opts_anon(),
     function()
         local query_options = {
             offset = tonumber(ngx.var.arg_offset or '0'),
