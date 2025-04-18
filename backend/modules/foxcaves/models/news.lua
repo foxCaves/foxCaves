@@ -61,7 +61,7 @@ function news_model.new()
         id = uuid.generate_random(),
         editor = nil,
     }
-    setmetatable(news, news_model)
+    setmetatable(news, news_mt)
     return news
 end
 
