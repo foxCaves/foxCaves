@@ -10,7 +10,7 @@ interface NewsItem {
 
 async function createNews(page: Page, news: Omit<NewsItem, 'id'>): Promise<NewsItem> {
     if (!news.title.startsWith('test_news_')) {
-        throw new Error('News title must start with test_news_');
+        news.title = `test_news_${news.title}`;
     }
 
     const resp = await page.request.post('http://app.foxcaves:8080/api/v1/news', {
@@ -34,7 +34,7 @@ async function waitForNews(page: Page, news: NewsItem): Promise<Locator> {
 
 testLoggedIn('Home page', async ({ page }) => {
     const news = await createNews(page, {
-        title: 'test_news_initial',
+        title: 'initial',
         content: 'Initial news to ensure loading is done',
     });
 
