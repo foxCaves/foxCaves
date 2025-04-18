@@ -19,13 +19,15 @@ async function createNews(page: Page, user: TestUser, news: Omit<NewsItem, 'id'>
     return respNews;
 }
 
-async function waitForNews(page: Page, news: NewsItem): Promise<Locator> {
+async function waitForNews(page: Page, news: NewsItem, state: 'attached' | 'detached' = 'attached'): Promise<Locator> {
     await page.goto('http://app.foxcaves:8080');
     const locator = page.locator(`text="${news.title}"`);
     await locator.waitFor({
-        state: 'attached',
+        state,
     });
-    await page.waitForSelector(`text="${news.content}"`);
+    await page.locator(`text="${news.content}"`).waitFor({
+        state,
+    });
     return locator;
 }
 
@@ -49,17 +51,12 @@ testLoggedIn('Delete news', async ({ browser, page }) => {
         content: 'Make sure news deletion works',
     });
 
-    const newsLocator = await waitForNews(page, news);
-
     const resp = await adminPage.request.delete(
         `http://app.foxcaves:8080/api/v1/news/${news.id}`,
         apiReqData(adminUser),
     );
     assert.ok(resp.ok());
-
     await adminPage.close();
 
-    await newsLocator.waitFor({
-        state: 'detached',
-    });
+    await waitForNews(page, news, 'detached');
 });
