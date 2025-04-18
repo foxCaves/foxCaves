@@ -1,6 +1,7 @@
 import assert from 'node:assert';
 import { Locator, Page } from '@playwright/test';
 import { testLoggedIn } from './fixtures';
+import { doLoginPage, TestUser } from './utils';
 
 interface NewsItem {
     id: string;
@@ -8,11 +9,14 @@ interface NewsItem {
     content: string;
 }
 
-async function createNews(page: Page, news: Omit<NewsItem, 'id'>): Promise<NewsItem> {
+async function createNews(page: Page, user: TestUser, news: Omit<NewsItem, 'id'>): Promise<NewsItem> {
     news.title = `test_news_${news.title}`;
 
     const resp = await page.request.post('http://app.foxcaves:8080/api/v1/news', {
         data: news,
+        headers: {
+            Authorization: `Bearer ${user.apiKey}`,
+        },
     });
     // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
     const respNews = (await resp.json()) as NewsItem;
@@ -31,24 +35,35 @@ async function waitForNews(page: Page, news: NewsItem): Promise<Locator> {
 }
 
 testLoggedIn('Home page', async ({ page }) => {
-    const news = await createNews(page, {
+    const adminPage = await page.context().newPage();
+    const adminUser = await doLoginPage(adminPage, undefined, true);
+    const news = await createNews(adminPage, adminUser, {
         title: 'initial',
         content: 'Initial news to ensure loading is done',
     });
+    await adminPage.close();
 
     await waitForNews(page, news);
 });
 
 testLoggedIn('Delete link', async ({ page }) => {
-    const news = await createNews(page, {
+    const adminPage = await page.context().newPage();
+    const adminUser = await doLoginPage(adminPage, undefined, true);
+    const news = await createNews(adminPage, adminUser, {
         title: 'deletion',
         content: 'Make sure news deletion works',
     });
 
     const newsLocator = await waitForNews(page, news);
 
-    const resp = await page.request.delete(`http://app.foxcaves:8080/api/v1/news/{news.id}`);
+    const resp = await adminPage.request.delete(`http://app.foxcaves:8080/api/v1/news/${news.id}`, {
+        headers: {
+            Authorization: `Bearer ${adminUser.apiKey}`,
+        },
+    });
     assert.ok(resp.ok());
+
+    await adminPage.close();
 
     await newsLocator.waitFor({
         state: 'detached',

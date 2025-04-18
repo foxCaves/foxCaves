@@ -4,13 +4,14 @@ import { Page } from '@playwright/test';
 export interface TestUser {
     username: string;
     password: string;
+    apiKey: string;
 }
 
 export async function waitForToast(page: Page, text: string, toastClass = 'success'): Promise<void> {
     await page.locator(`.Toastify__toast--${toastClass}`, { hasText: text }).waitFor();
 }
 
-export async function doLoginPage(page: Page, user?: TestUser, admin?: boolean): Promise<TestUser> {
+export async function doLoginPage(page: Page, user?: Omit<TestUser, 'apiKey'>, admin?: boolean): Promise<TestUser> {
     user ??= {
         username: `test_user_${randomUUID()}`,
         password: `test_password_${randomUUID()}`,
@@ -43,7 +44,12 @@ export async function doLoginPage(page: Page, user?: TestUser, admin?: boolean):
         }
     }
 
-    return user;
+    await page.goto('http://app.foxcaves:8080');
+    const apiKey = await page.locator('input[name="api_key"]').inputValue();
+    return {
+        ...user,
+        apiKey,
+    };
 }
 
 export function randomID(): string {
