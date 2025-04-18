@@ -9,7 +9,9 @@ local function describe_api()
             self = 'Must be the user for which data is being requested',
             active = 'Must be a user with user.active = 1',
             owner = 'Must be the owner of the resource (resource.owner == user.id)',
-            admin = 'Must be an admin',
+            author = 'Must be the author of the resource (resource.author == user.id)',
+            editor = 'Must be the editor of the resource (resource.editor == user.id)',
+            admin = 'Must be an admin (admins can do anything, so this just exists to document admin-only routes)',
         },
         types = {
             string = {
@@ -53,7 +55,7 @@ local function describe_api()
         },
     }
 
-    for _, m in pairs({ 'user', 'file', 'link' }) do
+    for _, m in pairs({ 'user', 'file', 'link', 'news' }) do
         local model = require('foxcaves.models.' .. m)
         res.types[m .. '.public'] = {
             type = 'object',

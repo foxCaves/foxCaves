@@ -203,12 +203,7 @@ function user_mt:send_event_raw(data)
 end
 
 function user_mt:send_event(action, model, data)
-    self:send_event_raw({
-        type = 'liveLoading',
-        action = action,
-        model = model,
-        data = data,
-    })
+    events.push('user:' .. self.id, action, model, data)
 end
 
 function user_mt:send_self_event(action)

@@ -1,12 +1,13 @@
 import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { FileModel } from '../models/file';
 import { LinkModel } from '../models/link';
+import { NewsModel } from '../models/news';
 import { UserDetailsModel } from '../models/user';
 import { AppContext } from '../utils/context';
 import { noop } from '../utils/misc';
 import { ReconnectingWebSocket } from '../utils/websocket_autoreconnect';
 
-type ModelMap<T> = Map<string, T>;
+export type ModelMap<T> = Map<string, T>;
 
 interface ModelContext<T> {
     models: ModelMap<T> | undefined;
@@ -16,7 +17,7 @@ interface ModelContext<T> {
 
 interface LiveLoadingPayload {
     action: 'create' | 'delete' | 'update';
-    model: 'file' | 'link' | 'user';
+    model: 'file' | 'link' | 'news' | 'user';
     data: unknown;
 }
 
@@ -28,8 +29,12 @@ interface LiveLoadingContainerInterface {
 export const FilesContext = React.createContext<ModelContext<FileModel>>({} as ModelContext<FileModel>);
 // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
 export const LinksContext = React.createContext<ModelContext<LinkModel>>({} as ModelContext<LinkModel>);
+// eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+export const NewsContext = React.createContext<ModelContext<NewsModel>>({} as ModelContext<NewsModel>);
 
+// eslint-disable-next-line max-lines-per-function
 export const LiveLoadingContainer: React.FC<LiveLoadingContainerInterface> = ({ children }) => {
+    const [news, setNews] = useState<ModelMap<NewsModel> | undefined>(undefined);
     const [files, setFiles] = useState<ModelMap<FileModel> | undefined>(undefined);
     const [links, setLinks] = useState<ModelMap<LinkModel> | undefined>(undefined);
     const wsRef = useRef<ReconnectingWebSocket | undefined>(undefined);
@@ -65,6 +70,16 @@ export const LiveLoadingContainer: React.FC<LiveLoadingContainerInterface> = ({ 
 
         setLinks(linkMap);
     }, [user, apiAccessor]);
+
+    const refreshNews = useCallback(async () => {
+        const newsArray = await NewsModel.getAll(apiAccessor);
+        const newsMap: ModelMap<NewsModel> = new Map();
+        for (const link of newsArray) {
+            newsMap.set(link.id, link);
+        }
+
+        setNews(newsMap);
+    }, [apiAccessor]);
 
     const handleLiveLoadMessage = useCallback(
         // eslint-disable-next-line complexity
@@ -173,9 +188,53 @@ export const LiveLoadingContainer: React.FC<LiveLoadingContainerInterface> = ({ 
                     setUser(mergedNewUser);
                     break;
                 }
+
+                case 'news': {
+                    if (!news) {
+                        break;
+                    }
+
+                    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+                    const newsItem = data.data as NewsModel;
+                    const newsMapCopy = new Map(news);
+                    switch (data.action) {
+                        case 'update': {
+                            const oldNews = newsMapCopy.get(newsItem.id);
+                            if (!oldNews) {
+                                break;
+                            }
+
+                            oldNews.wrap(newsItem);
+                            setNews(newsMapCopy);
+                            break;
+                        }
+
+                        case 'create': {
+                            if (newsMapCopy.has(newsItem.id)) {
+                                break;
+                            }
+
+                            newsMapCopy.set(newsItem.id, NewsModel.wrapNew(newsItem));
+                            setNews(newsMapCopy);
+                            break;
+                        }
+
+                        case 'delete': {
+                            if (!newsMapCopy.has(newsItem.id)) {
+                                break;
+                            }
+
+                            newsMapCopy.delete(newsItem.id);
+                            setNews(newsMapCopy);
+                            break;
+                        }
+                    }
+
+                    break;
+                }
             }
         },
-        [files, links, setUser, user],
+        [files, links, news, setUser, user],
     );
 
     const handleWebSocketMessage = useCallback(
@@ -256,9 +315,20 @@ export const LiveLoadingContainer: React.FC<LiveLoadingContainerInterface> = ({ 
         [files, refreshFiles, setFiles],
     );
 
+    const newsContext = useMemo(
+        () => ({
+            models: news,
+            set: setNews,
+            refresh: refreshNews,
+        }),
+        [news, setNews, refreshNews],
+    );
+
     return (
-        <LinksContext.Provider value={linksContext}>
-            <FilesContext.Provider value={filesContext}>{children}</FilesContext.Provider>
-        </LinksContext.Provider>
+        <NewsContext.Provider value={newsContext}>
+            <LinksContext.Provider value={linksContext}>
+                <FilesContext.Provider value={filesContext}>{children}</FilesContext.Provider>
+            </LinksContext.Provider>
+        </NewsContext.Provider>
     );
 };
