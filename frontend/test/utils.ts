@@ -4,13 +4,14 @@ import { Page } from '@playwright/test';
 export interface TestUser {
     username: string;
     password: string;
+    apiKey: string;
 }
 
 export async function waitForToast(page: Page, text: string, toastClass = 'success'): Promise<void> {
     await page.locator(`.Toastify__toast--${toastClass}`, { hasText: text }).waitFor();
 }
 
-export async function doLoginPage(page: Page, user?: TestUser): Promise<TestUser> {
+export async function doLoginPage(page: Page, user?: Omit<TestUser, 'apiKey'>, admin?: boolean): Promise<TestUser> {
     user ??= {
         username: `test_user_${randomUUID()}`,
         password: `test_password_${randomUUID()}`,
@@ -36,9 +37,41 @@ export async function doLoginPage(page: Page, user?: TestUser): Promise<TestUser
     await page.goto('http://app.foxcaves:8080');
     await page.locator(`text="Welcome, ${user.username}!"`).waitFor();
 
-    return user;
+    await page.goto('http://app.foxcaves:8080/account');
+    const apiKey = await page.locator('input[name="api_key"]').inputValue();
+    const testUser: TestUser = {
+        ...user,
+        apiKey,
+    };
+
+    if (admin) {
+        const resp = await page.request.post(
+            'http://app.foxcaves:8080/api/v1/system/testing/promote',
+            apiReqData(testUser),
+        );
+        if (!resp.ok()) {
+            throw new Error(`Failed to promote user: ${resp.status()} ${await resp.text()}`);
+        }
+    }
+
+    return testUser;
 }
 
 export function randomID(): string {
     return randomUUID().slice(0, 8);
+}
+
+interface ApiReqData {
+    data?: unknown;
+    headers?: Record<string, string>;
+}
+
+export function apiReqData(user: TestUser, data?: unknown): ApiReqData {
+    const auth = `${user.username}:${user.apiKey}`;
+    return {
+        data,
+        headers: {
+            Authorization: `Basic ${btoa(auth)}`,
+        },
+    };
 }

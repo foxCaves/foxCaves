@@ -1,30 +1,60 @@
-import React from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Link } from 'react-router';
+import { ModelMap, NewsContext } from '../components/liveloading';
+import { NewsModel } from '../models/news';
 import { config, frontendRevision } from '../utils/config';
+import { logError, sortByDate } from '../utils/misc';
+
+const NewsView: React.FC<{
+    readonly newsItem: NewsModel;
+}> = ({ newsItem }) => {
+    return (
+        <>
+            <h4>{newsItem.title}</h4>
+            <p>{newsItem.content}</p>
+        </>
+    );
+};
+
+const NewsList: React.FC<{
+    readonly news?: ModelMap<NewsModel>;
+    readonly loading: boolean;
+}> = ({ news, loading }) => {
+    if (loading || !news) {
+        return <h4>Loading...</h4>;
+    }
+
+    return Array.from(news.values())
+        .sort(sortByDate)
+        .map((newsItem) => <NewsView key={newsItem.id} newsItem={newsItem} />);
+};
 
 export const HomePage: React.FC = () => {
+    const { refresh, models } = useContext(NewsContext);
+    const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        if (loading || models) {
+            return;
+        }
+
+        setLoading(true);
+        refresh().then(() => {
+            setLoading(false);
+        }, logError);
+    }, [refresh, loading, models]);
+
     return (
         <>
             <h1>Home</h1>
             <br />
-            <h3>Welcome to foxCaves!</h3>
+            <h2>Welcome to foxCaves!</h2>
             <br />
-            <h4>Domain move</h4>
-            <p>
-                Please note this site has moved domains!
-                <br />
-                <br />
-                We are now online at{' '}
-                <a href={config.urls.app} rel="noreferrer" target="_blank">
-                    {config.urls.app}
-                </a>
-                <br />
-                <br />
-                All links have also changed from <strong>https://f0x.es</strong> to <strong>{config.urls.cdn}</strong>
-                <br />
-                <br />
-                Please update your bookmarks and links accordingly!
-            </p>
+            <h3>News</h3>
+            <br />
+            <NewsList loading={loading} news={models} />
+            <br />
+            <h3>Links and things</h3>
             <br />
             <h4>What is foxCaves?</h4>
             <p>
@@ -45,7 +75,6 @@ export const HomePage: React.FC = () => {
                 <br />
                 Backend revision: {config.backend_revision}
             </p>
-            <br />
             <h4>Legal</h4>
             <p>
                 <Link to="/legal/terms_of_service">Terms of service</Link>
