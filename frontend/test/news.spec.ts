@@ -29,7 +29,7 @@ async function waitForNews(page: Page, news: NewsItem): Promise<Locator> {
     return locator;
 }
 
-testLoggedIn('Home page', async ({ browser, page }) => {
+testLoggedIn('Home page with test news', async ({ browser, page }) => {
     const adminPage = await browser.newPage({ storageState: undefined });
     const adminUser = await doLoginPage(adminPage, undefined, true);
     const news = await createNews(adminPage, adminUser, {
@@ -41,7 +41,7 @@ testLoggedIn('Home page', async ({ browser, page }) => {
     await waitForNews(page, news);
 });
 
-testLoggedIn('Delete link', async ({ browser, page }) => {
+testLoggedIn('Delete news', async ({ browser, page }) => {
     const adminPage = await browser.newPage({ storageState: undefined });
     const adminUser = await doLoginPage(adminPage, undefined, true);
     const news = await createNews(adminPage, adminUser, {

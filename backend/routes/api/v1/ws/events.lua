@@ -31,7 +31,7 @@ R.register_route(
         end
 
         redis_inst:set_timeout(5000)
-        local _, rerr = redis_inst:subscribe('push:user:' .. ngx.ctx.user.id)
+        local _, rerr = redis_inst:subscribe('push:global', 'push:user:' .. ngx.ctx.user.id)
         if rerr then
             kick()
             return

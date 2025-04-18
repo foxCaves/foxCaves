@@ -74,8 +74,8 @@ export const LiveLoadingContainer: React.FC<LiveLoadingContainerInterface> = ({ 
     const refreshNews = useCallback(async () => {
         const newsArray = await NewsModel.getAll(apiAccessor);
         const newsMap: ModelMap<NewsModel> = new Map();
-        for (const link of newsArray) {
-            newsMap.set(link.id, link);
+        for (const newsItem of newsArray) {
+            newsMap.set(newsItem.id, newsItem);
         }
 
         setNews(newsMap);
@@ -321,7 +321,7 @@ export const LiveLoadingContainer: React.FC<LiveLoadingContainerInterface> = ({ 
             set: setNews,
             refresh: refreshNews,
         }),
-        [news, setNews, refreshNews],
+        [news, refreshNews, setNews],
     );
 
     return (
