@@ -9,9 +9,7 @@ interface NewsItem {
 }
 
 async function createNews(page: Page, news: Omit<NewsItem, 'id'>): Promise<NewsItem> {
-    if (!news.title.startsWith('test_news_')) {
-        news.title = `test_news_${news.title}`;
-    }
+    news.title = `test_news_${news.title}`;
 
     const resp = await page.request.post('http://app.foxcaves:8080/api/v1/news', {
         data: news,
