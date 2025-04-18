@@ -44,7 +44,7 @@ export async function doLoginPage(page: Page, user?: Omit<TestUser, 'apiKey'>, a
         }
     }
 
-    await page.goto('http://app.foxcaves:8080');
+    await page.goto('http://app.foxcaves:8080/account');
     const apiKey = await page.locator('input[name="api_key"]').inputValue();
     return {
         ...user,
