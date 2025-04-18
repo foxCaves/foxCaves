@@ -88,7 +88,7 @@ function news_mt:save()
     if self.not_in_db then
         res =
             database.get_shared():query_single(
-                'INSERT INTO news (id, author, editor, title, content) VALUES (%s, %s, %s, %s, %s)' .. ' RETURNING ' .. database.TIME_COLUMNS,
+                'INSERT INTO news (id, author, editor, title, content) VALUES (%s, %s, %s, %s, %s) RETURNING ' .. database.TIME_COLUMNS,
                 nil,
                 self.id,
                 self.author,
@@ -102,7 +102,7 @@ function news_mt:save()
         res =
             database.get_shared():query_single(
                 "UPDATE news \
-                SET author = %s, editor = %s,title = %s, content = %s \
+                SET author = %s, editor = %s, title = %s, content = %s, \
                 updated_at = (now() at time zone 'utc') \
                 WHERE id = %s \
                 RETURNING " .. database.TIME_COLUMNS,

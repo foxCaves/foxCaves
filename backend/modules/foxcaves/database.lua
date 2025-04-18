@@ -6,6 +6,7 @@ local error = error
 local ngx = ngx
 local unpack = unpack
 local setmetatable = setmetatable
+local table = table
 
 local M = {}
 require('foxcaves.module_helper').setmodenv()
@@ -21,14 +22,17 @@ local db_meta = {}
 function db_meta:query(query, options, ...)
     local args = { ... }
     if #args > 0 then
+        local db_args = {}
         for i, v in next, args do
+            local dbv
             if v == nil or v == ngx.null then
-                args[i] = 'NULL'
+                dbv = 'NULL'
             else
-                args[i] = self.db:escape_literal(v)
+                dbv = self.db:escape_literal(v)
             end
+            table.insert(db_args, dbv)
         end
-        query = query:format(unpack(args))
+        query = query:format(unpack(db_args))
     end
 
     if options then
