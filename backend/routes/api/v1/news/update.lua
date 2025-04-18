@@ -1,5 +1,6 @@
 local utils = require('foxcaves.utils')
 local news_model = require('foxcaves.models.news')
+local user_model = require('foxcaves.models.user')
 local ngx = ngx
 
 R.register_route(
@@ -26,8 +27,12 @@ R.register_route(
             news.content = args.content
             had_edits = true
         end
-        if args.update_author and ngx.ctx.user:is_admin() then
-            news:set_author(ngx.ctx.user)
+        if args.author and args.author ~= '' and ngx.ctx.user:is_admin() then
+            local author = user_model.get_by_id(args.author)
+            if not author then
+                return utils.api_error('New author not found')
+            end
+            news:set_author(author)
             had_edits = true
         end
 
@@ -62,9 +67,9 @@ R.register_route(
                         description = 'The new content of the news item',
                         required = false,
                     },
-                    update_author = {
-                        type = 'boolean',
-                        description = '[ADMIN ONLY] Whether to update the author of the news item (default: false)',
+                    author = {
+                        type = 'uuid',
+                        description = 'The new author of the news item (admin only)',
                         required = false,
                     },
                 },
