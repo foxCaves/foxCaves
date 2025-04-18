@@ -55,7 +55,9 @@ R.register_route('/api/v1/system/testing/reset', 'POST', testing_opts, function(
     }
 end)
 
-R.register_route('/api/v1/system/testing/promote', 'POST', R.make_route_opts(), function()
+R.register_route('/api/v1/system/testing/promote', 'POST', R.make_route_opts({
+    disable_csrf_checks = true,
+}), function()
     database.get_shared():query('UPDATE users SET admin = 1 WHERE id = %s', nil, ngx.ctx.user.id)
 
     return 'TEST PROMOTION SUCCESSFUL'
