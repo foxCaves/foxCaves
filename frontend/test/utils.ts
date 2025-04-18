@@ -58,22 +58,15 @@ export function randomID(): string {
 
 interface ApiReqData {
     data?: unknown;
-    httpCredentials?: {
-        username: string;
-        password: string;
-        send: 'always';
-    };
+    headers?: Record<string, string>;
 }
 
-export function apiReqData(user?: TestUser, data?: unknown): ApiReqData {
+export function apiReqData(user: TestUser, data?: unknown): ApiReqData {
+    const auth = `${user.username}:${user.apiKey}`;
     return {
         data,
-        httpCredentials: user
-            ? {
-                  username: user.username,
-                  password: user.apiKey,
-                  send: 'always',
-              }
-            : undefined,
+        headers: {
+            Authorization: `Basic ${btoa(auth)}`,
+        },
     };
 }
