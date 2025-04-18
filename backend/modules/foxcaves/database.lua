@@ -23,7 +23,7 @@ function db_meta:query(query, options, ...)
     local args = { ... }
     if #args > 0 then
         local db_args = {}
-        for i, v in next, args do
+        for _, v in next, args do
             local dbv
             if v == nil or v == ngx.null then
                 dbv = 'NULL'
