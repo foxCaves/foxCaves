@@ -1,5 +1,5 @@
 CREATE TABLE news (
-    id VARCHAR(32) PRIMARY KEY,
+    id UUID PRIMARY KEY,
     title TEXT,
     content TEXT,
     author UUID REFERENCES users (id),

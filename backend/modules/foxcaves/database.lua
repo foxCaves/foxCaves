@@ -1,12 +1,11 @@
 local utils = require('foxcaves.utils')
 local config = require('foxcaves.config').postgres
 local pgmoon = require('pgmoon')
-local next = next
 local error = error
 local ngx = ngx
 local unpack = unpack
 local setmetatable = setmetatable
-local table = table
+local select = select
 
 local M = {}
 require('foxcaves.module_helper').setmodenv()
@@ -20,17 +19,19 @@ M.TIME_COLUMNS_EXPIRING = "to_json(expires_at at time zone 'utc') as expires_at_
 
 local db_meta = {}
 function db_meta:query(query, options, ...)
-    local args = { ... }
-    if #args > 0 then
+    local args = {
+        n = select('#', ...),
+        ...,
+    }
+    if args.n > 0 then
         local db_args = {}
-        for _, v in next, args do
-            local dbv
+        for i = 1, args.n do
+            local v = args[i]
             if v == nil or v == ngx.null then
-                dbv = 'NULL'
+                db_args[i] = 'NULL'
             else
-                dbv = self.db:escape_literal(v)
+                db_args[i] = self.db:escape_literal(v)
             end
-            table.insert(db_args, dbv)
         end
         query = query:format(unpack(db_args))
     end

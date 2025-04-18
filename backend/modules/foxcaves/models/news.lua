@@ -121,7 +121,7 @@ function news_mt:save()
     self:send_event(primary_push_action)
 end
 
-function news_model:get_public()
+function news_mt:get_public()
     return {
         id = self.id,
         title = self.title,
@@ -133,13 +133,13 @@ function news_model:get_public()
     }
 end
 
-news_model.get_private = news_model.get_public
+news_mt.get_private = news_mt.get_public
 
-function news_model.can_view(_, _)
+function news_mt.can_view(_, _)
     return true
 end
 
-function news_model:can_edit(user)
+function news_mt:can_edit(user)
     if not user then
         return false
     end
