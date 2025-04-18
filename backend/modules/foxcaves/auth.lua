@@ -107,7 +107,6 @@ local function parse_authorization_header(auth)
 end
 
 function M.check()
-    ngx.log(ngx.ERR, 'Auth header: ' .. tostring(ngx.var.http_authorization))
     local user, api_key = parse_authorization_header(ngx.var.http_authorization)
     if user and api_key then
         if ngx.ctx.route_opts and ngx.ctx.route_opts.disable_api_key then
