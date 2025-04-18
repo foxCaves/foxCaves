@@ -10,7 +10,7 @@ export async function waitForToast(page: Page, text: string, toastClass = 'succe
     await page.locator(`.Toastify__toast--${toastClass}`, { hasText: text }).waitFor();
 }
 
-export async function doLoginPage(page: Page, user?: TestUser): Promise<TestUser> {
+export async function doLoginPage(page: Page, user?: TestUser, admin?: boolean): Promise<TestUser> {
     user ??= {
         username: `test_user_${randomUUID()}`,
         password: `test_password_${randomUUID()}`,
@@ -35,6 +35,13 @@ export async function doLoginPage(page: Page, user?: TestUser): Promise<TestUser
 
     await page.goto('http://app.foxcaves:8080');
     await page.locator(`text="Welcome, ${user.username}!"`).waitFor();
+
+    if (admin) {
+        const resp = await page.request.post('http://app.foxcaves:8080/api/v1/system/testing/promote');
+        if (!resp.ok()) {
+            throw new Error(`Failed to promote user: ${resp.status()} ${await resp.text()}`);
+        }
+    }
 
     return user;
 }
