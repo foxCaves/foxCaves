@@ -4,10 +4,11 @@ local user_model = require('foxcaves.models.user')
 local link_model = require('foxcaves.models.link')
 local file_model = require('foxcaves.models.file')
 local news_model = require('foxcaves.models.news')
-local app_config = require('foxcaves.config').app
+local env = require('foxcaves.env')
+local consts = require('foxcaves.consts')
 local database = require('foxcaves.database')
 
-if not app_config.enable_testing_routes then return end
+if env.id ~= consts.ENV_TESTING then return end
 
 local testing_opts = R.make_route_opts({
     check_login = false,
