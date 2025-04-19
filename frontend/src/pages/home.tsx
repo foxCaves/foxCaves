@@ -1,4 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
+import Markdown from 'react-markdown';
 import { Link } from 'react-router';
 import { ModelMap, NewsContext } from '../components/liveloading';
 import { NewsModel } from '../models/news';
@@ -11,7 +12,9 @@ const NewsView: React.FC<{
     return (
         <>
             <h4>{newsItem.title}</h4>
-            <p>{newsItem.content}</p>
+            <p>
+                <Markdown>{newsItem.content}</Markdown>
+            </p>
         </>
     );
 };
