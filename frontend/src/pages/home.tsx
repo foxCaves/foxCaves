@@ -50,15 +50,10 @@ export const HomePage: React.FC = () => {
     return (
         <>
             <h1>Home</h1>
-            <br />
             <h2>Welcome to foxCaves!</h2>
-            <br />
             <h3>News</h3>
-            <br />
             <NewsList loading={loading} news={models} />
-            <br />
             <h3>Links and things</h3>
-            <br />
             <h4>What is foxCaves?</h4>
             <p>
                 foxCaves is a platform to upload your files and share them with friends as well create links.
