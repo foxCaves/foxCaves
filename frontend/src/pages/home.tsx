@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import Markdown from 'react-markdown'
+import Markdown from 'react-markdown';
 import { Link } from 'react-router';
 import { ModelMap, NewsContext } from '../components/liveloading';
 import { NewsModel } from '../models/news';
