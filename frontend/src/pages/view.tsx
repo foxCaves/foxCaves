@@ -1,6 +1,7 @@
 import '../resources/view.css';
 
 import React, { useCallback, useContext, useEffect, useState } from 'react';
+import Markdown from 'react-markdown';
 import { useParams } from 'react-router';
 import { FileModel } from '../models/file';
 import { UserModel } from '../models/user';
@@ -8,7 +9,15 @@ import { AppContext } from '../utils/context';
 import { formatDate } from '../utils/formatting';
 import { assert, logError } from '../utils/misc';
 
-const TextView: React.FC<{ readonly src: string }> = ({ src }) => {
+type ElementCtor = (data?: string) => React.ReactElement;
+
+const newPreElement = (data?: string): React.ReactElement => <pre>{data}</pre>;
+const newMarkdownElement = (data?: string): React.ReactElement => <Markdown>{data}</Markdown>;
+
+const TextView: React.FC<{
+    readonly src: string;
+    readonly ctor: ElementCtor;
+}> = ({ src, ctor }) => {
     const [dataLoading, setDataLoading] = useState(false);
     const [data, setData] = useState<string | undefined>();
 
@@ -27,7 +36,14 @@ const TextView: React.FC<{ readonly src: string }> = ({ src }) => {
             .catch(logError);
     }, [src, data, dataLoading]);
 
-    return <pre>{data}</pre>;
+    if (dataLoading) {
+        return <p>Loading file content for preview...</p>;
+    }
+    if (data === undefined) {
+        return <p>Could not load file content for preview</p>;
+    }
+
+    return ctor(data);
 };
 
 // eslint-disable-next-line complexity
@@ -55,7 +71,9 @@ const FileContentView: React.FC<{ readonly file: FileModel }> = ({ file }) => {
         case 'xml':
         case 'yaml':
         case 'yml':
-            return <TextView src={file.direct_url} />;
+            return <TextView ctor={newPreElement} src={file.direct_url} />;
+        case 'md':
+            return <TextView ctor={newMarkdownElement} src={file.direct_url} />;
         case 'bmp':
         case 'gif':
         case 'jpeg':
@@ -72,7 +90,7 @@ const FileContentView: React.FC<{ readonly file: FileModel }> = ({ file }) => {
             // eslint-disable-next-line react/iframe-missing-sandbox
             return <iframe className="mw-100 preview-iframe" src={file.direct_url} title="PDF preview" />;
         default:
-            return <h3>No preview available</h3>;
+            return <p>No preview available</p>;
     }
 };
 
@@ -150,6 +168,8 @@ export const ViewPage: React.FC = () => {
             <p>
                 Download link: <a href={file.download_url}>{file.download_url}</a>
             </p>
+            <h3>File preview</h3>
+            <hr />
             <FileContentView file={file} />
         </>
     );
