@@ -1,1 +1,1 @@
-add_header Content-Security-Policy "default-src 'none'; style-src 'self' http: data:; img-src 'self' http: data:; media-src 'self' http: data:; frame-ancestors __APP_DOMAIN__" always;
+add_header Content-Security-Policy "default-src 'none'; style-src 'self' __PROTO__ data:; img-src 'self' __PROTO__ data:; media-src 'self' __PROTO__ data:; frame-ancestors __APP_DOMAIN__" always;
