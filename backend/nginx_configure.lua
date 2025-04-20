@@ -1,11 +1,9 @@
 local os_execute = os.execute
 
 package.loaded['resty.http'] = {}
-package.loaded['resty.aws-signature'] = {
-    new = function()
-        return {}
-    end
-}
+package.loaded['resty.aws-signature'] = { new = function()
+    return {}
+end }
 rawset(_G, 'ngx', {
     ctx = {},
     worker = false,
@@ -30,13 +28,13 @@ end
 local listener_config = '/etc/nginx/listener.conf'
 
 local nginx_configs =
-{
-    '/etc/nginx/conf.d/foxcaves.conf',
-    '/etc/nginx/conf.d/http-foxcaves.conf',
-    '/etc/nginx/listener.conf',
-    '/etc/nginx/csp-app.conf',
-    '/etc/nginx/csp-cdn.conf',
-}
+    {
+        '/etc/nginx/conf.d/foxcaves.conf',
+        '/etc/nginx/conf.d/http-foxcaves.conf',
+        '/etc/nginx/listener.conf',
+        '/etc/nginx/csp-app.conf',
+        '/etc/nginx/csp-cdn.conf',
+    }
 local domains = { app_domain, cdn_domain }
 
 if config.http.force_plaintext then
