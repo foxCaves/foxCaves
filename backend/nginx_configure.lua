@@ -54,6 +54,7 @@ for _, nginx_config in pairs(nginx_configs) do
     local data = fh:read('*a')
     fh:close()
 
+    data = data:gsub('__PROTO__', config.http.force_plaintext and 'http:' or 'https:')
     data = data:gsub('__APP_URL__', config.http.app_url)
     data = data:gsub('__APP_DOMAIN__', app_domain)
     data = data:gsub('__CDN_URL__', config.http.cdn_url)

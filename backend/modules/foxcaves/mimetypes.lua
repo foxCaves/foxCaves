@@ -1,14 +1,6 @@
 local EXTENSION_TO_MIMETYPE = {}
 local MIMETYPE_TO_EXTENSIONS = {}
 
-local MIMETYPE_SAFE_SUBSTITUTIONS = {
-    ['application/javascript'] = 'text/plain',
-    ['application/xhtml+xml'] = 'text/plain',
-    ['text/html'] = 'text/plain',
-    ['text/javascript'] = 'text/plain',
-    ['text/xml'] = 'text/plain',
-}
-
 local function load_mimetypes()
     local fh = io.open('/usr/local/openresty/nginx/conf/mime.types', 'r')
 
@@ -66,10 +58,6 @@ end
 
 function M.get_mimetype_for(extension)
     return EXTENSION_TO_MIMETYPE[extension] or 'application/octet-stream'
-end
-
-function M.get_safe_mimetype(mimetype)
-    return MIMETYPE_SAFE_SUBSTITUTIONS[mimetype] or mimetype
 end
 
 return M
