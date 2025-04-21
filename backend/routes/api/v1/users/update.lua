@@ -2,7 +2,9 @@ local utils = require('foxcaves.utils')
 local consts = require('foxcaves.consts')
 local user_model = require('foxcaves.models.user')
 local totp = require('foxcaves.totp')
+
 local ngx = ngx
+local next = next
 
 R.register_route('/api/v1/users/{user}', 'PATCH', R.make_route_opts({ disable_api_key = true }), function(route_vars)
     local user = user_model.get_by_id(route_vars.user)
@@ -19,11 +21,7 @@ R.register_route('/api/v1/users/{user}', 'PATCH', R.make_route_opts({ disable_ap
         return utils.api_error('current_password invalid', 403)
     end
 
-    local obj = {
-        id = user.id,
-        username = user.username,
-    }
-
+    local changes_obj = {}
     if args.email and args.email ~= '' then
         local emailcheck = user:set_email(args.email)
         if emailcheck == consts.VALIDATION_STATE_INVALID then
@@ -31,21 +29,21 @@ R.register_route('/api/v1/users/{user}', 'PATCH', R.make_route_opts({ disable_ap
         elseif emailcheck == consts.VALIDATION_STATE_TAKEN then
             return utils.api_error('email taken')
         end
-        obj.email = user.email
-        obj.email_valid = user.email_valid
-        obj.active = user:is_active() and 1 or 0
+        changes_obj.email = user.email
+        changes_obj.email_valid = user.email_valid
+        changes_obj.active = user:is_active() and 1 or 0
     end
 
     if args.password and args.password ~= '' then
         user:set_password(args.password)
-        obj.password = 'CHANGED'
+        changes_obj.password = 'CHANGED'
         args.security_version = 'CHANGE'
     end
 
     if args.totp_secret and args.totp_secret ~= '' then
         if args.totp_secret == 'DISABLE' then
             user.totp_secret = ''
-            obj.totp_secret = 'DISABLED'
+            changes_obj.totp_secret = 'DISABLED'
         else
             if not totp.is_valid_secret(args.totp_secret) then
                 return utils.api_error('totp_secret invalid')
@@ -54,7 +52,7 @@ R.register_route('/api/v1/users/{user}', 'PATCH', R.make_route_opts({ disable_ap
                 return utils.api_error('totp_code invalid')
             end
             user.totp_secret = args.totp_secret
-            obj.totp_secret = 'CHANGED'
+            changes_obj.totp_secret = 'CHANGED'
         end
         args.security_version = 'CHANGE'
     end
@@ -65,13 +63,14 @@ R.register_route('/api/v1/users/{user}', 'PATCH', R.make_route_opts({ disable_ap
 
     if args.security_version and args.security_version ~= '' then
         user:make_new_security_version()
-        obj.security_version = 'CHANGED'
+        changes_obj.security_version = 'CHANGED'
     end
 
     user:save()
 
-    obj.updated_at = user.updated_at
-    obj.created_at = user.created_at
-
-    return obj
+    local user_obj = user:get_private()
+    for k, v in next, changes_obj do
+        user_obj[k] = v
+    end
+    return user_obj
 end)
