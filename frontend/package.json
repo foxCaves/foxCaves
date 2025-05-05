@@ -24,7 +24,7 @@
         "test": "curl -f -v -s -XPOST http://app.foxcaves:8080/api/v1/system/testing/reset && playwright test"
     },
     "devDependencies": {
-        "@cspell/eslint-plugin": "^8.0.0",
+        "@cspell/eslint-plugin": "^9.0.0",
         "@eslint/compat": "^1.2.4",
         "@eslint/eslintrc": "^3.2.0",
         "@eslint/js": "^9.16.0",
