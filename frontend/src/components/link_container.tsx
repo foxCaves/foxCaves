@@ -3,7 +3,7 @@ import { useHref, useMatch, useNavigate } from 'react-router';
 import { logError } from '../utils/misc';
 
 const isModifiedEvent = (event: React.MouseEvent<HTMLAnchorElement>) =>
-    !!(event.metaKey || event.altKey || event.ctrlKey || event.shiftKey);
+    event.metaKey || event.altKey || event.ctrlKey || event.shiftKey;
 
 interface LinkContainerInterface {
     readonly children: React.ReactElement;
