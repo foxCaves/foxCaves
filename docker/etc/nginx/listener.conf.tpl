@@ -4,8 +4,8 @@ http2 on;
 listen 443 ssl;
 listen [::]:443 ssl;
 
-listen 8443 ssl proxy_protocol;
-listen [::]:8443 ssl proxy_protocol;
+listen 444 ssl proxy_protocol;
+listen [::]:444 ssl proxy_protocol;
 
 ssl_certificate /etc/letsencrypt/live/__APP_DOMAIN__/fullchain.pem;
 ssl_certificate_key /etc/letsencrypt/live/__APP_DOMAIN__/privkey.pem;
