@@ -6,8 +6,11 @@ local os = os
 local io = io
 local error = error
 local setmetatable = setmetatable
+local tostring = tostring
 local table = table
 local math_min = math.min
+
+local EEXIST = 17
 
 local M = {}
 M.__index = M
@@ -51,12 +54,21 @@ function M:upload(id, size, ftype)
     local root_dir, filename = _get_local_dir_and_name_for(self, id, ftype)
     local dirs = _get_dirs(root_dir, filename, true)
     for i = 1, #dirs, 1 do
-        lfs.mkdir(dirs[i])
+        local ok, errstr, errno = lfs.mkdir(dirs[i])
+        if not ok and errno ~= EEXIST then
+            error(
+                'Could not create directory ' .. dirs[i] .. ' for ' .. filename .. ': ' .. tostring(
+                    errstr
+                ) .. ' (' .. tostring(errno) .. ')'
+            )
+        end
     end
 
-    local fh = io.open(root_dir .. '/' .. filename, 'wb')
+    local fh, errstr, errno = io.open(root_dir .. '/' .. filename, 'wb')
     if not fh then
-        error('Could not open file ' .. filename .. ' for writing')
+        error(
+            'Could not open file ' .. filename .. ' for writing: ' .. tostring(errstr) .. ' (' .. tostring(errno) .. ')'
+        )
     end
 
     local ul = setmetatable(
