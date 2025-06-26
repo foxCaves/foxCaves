@@ -4,7 +4,7 @@
     "dependencies": {
         "@sentry/react": "9.31.0",
         "bootstrap": "5.3.7",
-        "bootswatch": "5.3.6",
+        "bootswatch": "5.3.7",
         "hi-base32": "^0.5.1",
         "qrcode.react": "^4.2.0",
         "react": "19.1.0",
