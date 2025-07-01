@@ -2,7 +2,7 @@
     "name": "foxcaves-frontend",
     "version": "0.1.0",
     "dependencies": {
-        "@sentry/react": "9.33.0",
+        "@sentry/react": "9.34.0",
         "bootstrap": "5.3.7",
         "bootswatch": "5.3.7",
         "hi-base32": "^0.5.1",
