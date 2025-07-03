@@ -1,1 +1,0 @@
-require('foxcaves.random').seed()

@@ -5,7 +5,6 @@ return {
     },
     postgres = {
         -- pgmoon options
-        use_migrations = true
     },
     email = {
         host = "localhost",
@@ -28,7 +27,8 @@ return {
     app = {
         disable_email_confirmation = false,
         enable_testing_routes = false,
-        require_user_approval = true
+        require_user_approval = true,
+        expiry_check_period = 60 * 15, -- 15 minutes
     },
     totp = {
         max_past = 1,

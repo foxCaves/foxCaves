@@ -2,6 +2,13 @@ local config = require('foxcaves.config').postgres
 local consts = require('foxcaves.consts')
 local pgmoon = require('pgmoon')
 local lfs = require('lfs')
+local table = table
+local ngx = ngx
+local ipairs = ipairs
+local io = io
+
+local M = {}
+require('foxcaves.module_helper').setmodenv()
 
 local function process_migration_dir(db, ran_migrations, dir)
     local file_array = {}
@@ -10,7 +17,7 @@ local function process_migration_dir(db, ran_migrations, dir)
         local attributes = lfs.attributes(absfile)
         if file:sub(1, 1) ~= '.' and attributes.mode == 'file' then
             if ran_migrations[file] then
-                print('Skipping: ' .. file)
+                ngx.log(ngx.NOTICE, 'Skipping: ' .. file)
             else
                 table.insert(file_array, file)
             end
@@ -19,7 +26,7 @@ local function process_migration_dir(db, ran_migrations, dir)
     table.sort(file_array)
     for _, file in ipairs(file_array) do
         local absfile = dir .. '/' .. file
-        print('Running: ' .. file)
+        ngx.log(ngx.NOTICE, 'Running: ' .. file)
         local fh = io.open(absfile, 'r')
         local data = fh:read('*a')
         fh:close()
@@ -57,8 +64,10 @@ local function setup_db()
     db:disconnect()
 end
 
-if config.use_migrations then
-    print('Running migrator...')
+function M.ngx_init()
+    ngx.log(ngx.NOTICE, 'Running migrator...')
     setup_db()
-    print('Migrator done!')
+    ngx.log(ngx.NOTICE, 'Migrator done!')
 end
+
+return M
