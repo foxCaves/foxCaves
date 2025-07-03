@@ -58,9 +58,10 @@ jobs:
             GIT_REVISION=${{ github.sha }}
           tags: |
             ghcr.io/foxcaves/foxcaves/foxcaves:latest
-            ghcr.io/foxcaves/foxcaves/foxcaves:dev-${{ github.event.number || 'branch' }}
-      - name: Push dev Docker image
-        run: docker push ghcr.io/foxcaves/foxcaves/foxcaves:dev-${{ github.event.number || 'branch' }}
+            ghcr.io/foxcaves/foxcaves/foxcaves:pr-${{ github.event.number || 'unknown' }}
+      - name: Push PR dev Docker image
+        run: docker push ghcr.io/foxcaves/foxcaves/foxcaves:pr-${{ github.event.number || 'unknown' }}
+        if: github.event_name == 'pull_request'
       # Run tests
       - name: Add to hostsfile
         run: sudo bash -c "echo '127.0.0.1 app.foxcaves cdn.foxcaves' >> /etc/hosts"
