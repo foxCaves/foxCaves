@@ -60,7 +60,14 @@ cjson.decode_max_depth(10)
 cjson.decode_invalid_numbers(false)
 
 -- Perform early initialization
+local oldlog = ngx.log
+if not oldlog then
+    rawset(ngx, 'log', function() end)
+end
 require('foxcaves.acme').init()
+if not oldlog then
+    rawset(ngx, 'log', nil)
+end
 
 -- Protect global table(s)
 for k, v in pairs(_G) do
@@ -69,4 +76,5 @@ for k, v in pairs(_G) do
     end
 end
 
+-- Perform late initialization
 require('foxcaves.random').seed()
