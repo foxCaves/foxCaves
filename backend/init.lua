@@ -60,12 +60,12 @@ cjson.decode_max_depth(10)
 cjson.decode_invalid_numbers(false)
 
 -- Perform early initialization
-local oldlog = ngx.log
-if not oldlog then
+local ngx_log = ngx.log
+if not ngx_log then
     rawset(ngx, 'log', function() end)
 end
 require('foxcaves.acme').init()
-if not oldlog then
+if not ngx_log then
     rawset(ngx, 'log', nil)
 end
 
