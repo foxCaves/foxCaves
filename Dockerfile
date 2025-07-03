@@ -54,7 +54,7 @@ ENV ENVIRONMENT=development
 ENV AWS_EC2_METADATA_DISABLED=true
 
 # OS packages
-RUN apk update && apk add s6 imagemagick git brotli argon2-libs argon2-dev argon2 runuser libuuid openssl openssl-dev certbot certbot-nginx ca-certificates libqrencode-tools gd-dev freetype-dev font-opensans
+RUN apk update && apk add s6 imagemagick git brotli argon2-libs argon2-dev argon2 runuser libuuid openssl openssl-dev ca-certificates libqrencode-tools gd-dev freetype-dev font-opensans
 
 # Lua modules
 RUN mkdir -p /usr/local/share/lua/5.1 /usr/local/lib/lua/5.1
@@ -63,6 +63,7 @@ RUN luarocks install luasocket
 RUN luarocks install luafilesystem
 RUN luarocks install pgmoon
 RUN luarocks install lua-resty-uuid
+RUN luarocks install lua-resty-acme
 RUN luarocks install lpath
 RUN luarocks install luaossl
 RUN git clone --depth 1 --branch v3.0.0 https://github.com/foxCaves/lua-gd /tmp/lua-gd && cd /tmp/lua-gd && luarocks make *.rockspec && cd /tmp && rm -rf /tmp/lua-gd

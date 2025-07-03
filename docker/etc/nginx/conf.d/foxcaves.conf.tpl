@@ -7,6 +7,7 @@ lua_socket_log_errors off;
 lua_ssl_trusted_certificate /etc/ssl/certs/ca-certificates.crt;
 lua_ssl_verify_depth 10;
 
+lua_shared_dict acme 16m;
 lua_shared_dict foxcaves 1m;
 
 __UPSTREAM_IPS__
