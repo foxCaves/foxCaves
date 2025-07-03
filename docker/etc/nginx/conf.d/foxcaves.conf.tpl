@@ -7,6 +7,7 @@ lua_socket_log_errors off;
 lua_ssl_trusted_certificate /etc/ssl/certs/ca-certificates.crt;
 lua_ssl_verify_depth 10;
 
+lua_shared_dict acme 16m;
 lua_shared_dict foxcaves 1m;
 
 __UPSTREAM_IPS__
@@ -22,7 +23,7 @@ server {
 
     real_ip_header X-Real-IP;
 
-    location /api/v1 {
+    location /api/v1/ {
         gzip on;
         brotli on;
 
@@ -50,7 +51,7 @@ server {
         rewrite ^ /static/index_processed.html break;
     }
 
-    location /view {
+    location /view/ {
         gzip on;
         brotli on;
 
@@ -59,14 +60,14 @@ server {
         content_by_lua_file /var/www/foxcaves/lua/nginx_run.lua;
     }
 
-    location /static {
+    location /static/ {
         gzip_static on;
         brotli_static on;
 
         expires 1h;
     }
 
-    location /api/v1 {
+    location /api/v1/ {
         gzip on;
         brotli on;
 

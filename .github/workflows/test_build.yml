@@ -58,6 +58,10 @@ jobs:
             GIT_REVISION=${{ github.sha }}
           tags: |
             ghcr.io/foxcaves/foxcaves/foxcaves:latest
+            ghcr.io/foxcaves/foxcaves/foxcaves:pr-${{ github.event.number || 'unknown' }}
+      - name: Push PR dev Docker image
+        run: docker push ghcr.io/foxcaves/foxcaves/foxcaves:pr-${{ github.event.number || 'unknown' }}
+        if: github.event_name == 'pull_request'
       # Run tests
       - name: Add to hostsfile
         run: sudo bash -c "echo '127.0.0.1 app.foxcaves cdn.foxcaves' >> /etc/hosts"
@@ -90,8 +94,7 @@ jobs:
         with:
           name: playwright-test-results
           path: frontend/test-results/
-      # Push if we are on main
-      - name: Push Docker image
+      - name: Push production Docker image
         run: docker push ghcr.io/foxcaves/foxcaves/foxcaves:latest
         if: github.ref == 'refs/heads/main'
       # https://github.com/docker/build-push-action/issues/252 (prevent cache from growing indefinitely)

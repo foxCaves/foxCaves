@@ -1,5 +1,3 @@
-local os_execute = os.execute
-
 package.loaded['resty.http'] = {}
 package.loaded['resty.aws-signature'] = { new = function()
     return {}
@@ -35,7 +33,6 @@ local nginx_configs =
         '/etc/nginx/csp-app.conf',
         '/etc/nginx/csp-cdn.conf',
     }
-local domains = { app_domain, cdn_domain }
 
 if config.http.force_plaintext then
     listener_config = '/etc/nginx/listener-plaintext.conf'
@@ -44,9 +41,6 @@ end
 
 if config.http.redirect_www then
     table.insert(nginx_configs, '/etc/nginx/conf.d/www-foxcaves.conf')
-
-    table.insert(domains, 'www.' .. cdn_domain)
-    table.insert(domains, 'www.' .. app_domain)
 end
 
 for _, nginx_config in pairs(nginx_configs) do
@@ -65,14 +59,6 @@ for _, nginx_config in pairs(nginx_configs) do
     fh = io.open(nginx_config, 'w')
     fh:write(data)
     fh:close()
-end
-
-if config.http.enable_acme and not path.exists('/etc/letsencrypt/live/' .. app_domain .. '/fullchain.pem') then
-    local cmd = 'certbot --standalone certonly'
-    for _, domain in pairs(domains) do
-        cmd = cmd .. ' -d ' .. domain
-    end
-    os_execute(cmd)
 end
 
 local fh = io.open('/etc/nginx/conf.d/dynamic.conf', 'w')
