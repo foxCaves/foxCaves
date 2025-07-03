@@ -45,6 +45,7 @@ local function process_migration_dir(db, ran_migrations, dir)
         db_query_err(db, migration_query)
     end
 end
+
 local function setup_db()
     local db = pgmoon.new(config)
     local _, err = db:connect()
