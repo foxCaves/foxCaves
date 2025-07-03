@@ -1,5 +1,5 @@
-#!/bin/sh
-set -e
+#!/bin/bash
+set -euo pipefail
 
 export CAPTCHA_FONT=/usr/share/fonts/opensans/OpenSans-Regular.ttf
 
@@ -10,9 +10,9 @@ chown foxcaves:foxcaves /var/www/foxcaves/tmp /var/www/foxcaves/storage
 # SSL setup
 mkdir -p /etc/letsencrypt/storage
 
-openssl req -x509 -newkey rsa:2048 -keyout /etc/letsencrypt/snakeoil.key -out /etc/letsencrypt/snakeoil.crt -sha256 -days 3650 -nodes -subj '/CN=snakeoil'
+openssl req -x509 -newkey rsa:2048 -keyout /etc/letsencrypt/snakeoil.key -out /etc/letsencrypt/snakeoil.crt -sha256 -days 3650 -nodes -subj '/CN=snakeoil' >/dev/null 2>/dev/null
 if [ ! -f /etc/letsencrypt/account.key ]; then
-    openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:4096 -out /etc/letsencrypt/account.key
+    openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:4096 -out /etc/letsencrypt/account.key >/dev/null 2>/dev/null
 fi
 
 chown root:root /etc/letsencrypt

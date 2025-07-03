@@ -6,9 +6,18 @@ local table = table
 local ngx = ngx
 local ipairs = ipairs
 local io = io
+local error = error
 
 local M = {}
 require('foxcaves.module_helper').setmodenv()
+
+local function db_query_err(db, query)
+    local res, qerr = db:query(query)
+    if not res then
+        error(qerr)
+    end
+    return res
+end
 
 local function process_migration_dir(db, ran_migrations, dir)
     local file_array = {}
@@ -33,9 +42,10 @@ local function process_migration_dir(db, ran_migrations, dir)
 
         local migration_query =
             'BEGIN;\n' .. data .. 'INSERT INTO migrations (name) VALUES (' .. db:escape_literal(file) .. ');\nCOMMIT;'
-        db:query_err(migration_query)
+        db_query_err(db, migration_query)
     end
 end
+
 local function setup_db()
     local db = pgmoon.new(config)
     local _, err = db:connect()
@@ -43,17 +53,9 @@ local function setup_db()
         error(err)
     end
 
-    function db:query_err(query)
-        local res, qerr = self:query(query)
-        if not res then
-            error(qerr)
-        end
-        return res
-    end
+    db_query_err(db, 'CREATE TABLE IF NOT EXISTS migrations (name VARCHAR(255) PRIMARY KEY);')
 
-    db:query_err('CREATE TABLE IF NOT EXISTS migrations (name VARCHAR(255) PRIMARY KEY);')
-
-    local ran_migrations_arr = db:query_err('SELECT name FROM migrations;')
+    local ran_migrations_arr = db_query_err(db, 'SELECT name FROM migrations;')
     local ran_migrations = {}
     for _, row in ipairs(ran_migrations_arr) do
         ran_migrations[row.name] = true
