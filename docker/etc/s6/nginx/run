@@ -16,7 +16,7 @@ if [ ! -f /etc/letsencrypt/account.key ]; then
 fi
 chown root:foxcaves /etc/letsencrypt/account.key
 chmod 640 /etc/letsencrypt/account.key
-chown -R root:foxcaves /etc/letsencrypt/storage
+chown -R foxcaves:foxcaves /etc/letsencrypt/storage
 chmod 700 /etc/letsencrypt/storage
 # END SSL setup
 
