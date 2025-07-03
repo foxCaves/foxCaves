@@ -1,5 +1,3 @@
-local os_execute = os.execute
-
 package.loaded['resty.http'] = {}
 package.loaded['resty.aws-signature'] = { new = function()
     return {}

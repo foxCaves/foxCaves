@@ -17,12 +17,10 @@ require('foxcaves.module_helper').setmodenv()
 function M.init()
     autossl.init({
         tos_accepted = true,
-        account_key_path = "/etc/letsencrypt/account.key",
-        account_email = "ssl@" .. app_domain,
+        account_key_path = '/etc/letsencrypt/account.key',
+        account_email = 'ssl@' .. app_domain,
         domain_whitelist = domains,
-        storage_config = {
-            dir = '/etc/letsencrypt/storage',
-        },
+        storage_config = { dir = '/etc/letsencrypt/storage' },
     })
 end
 
