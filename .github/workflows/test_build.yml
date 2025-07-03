@@ -59,6 +59,8 @@ jobs:
           tags: |
             ghcr.io/foxcaves/foxcaves/foxcaves:latest
             ghcr.io/foxcaves/foxcaves/foxcaves:${{ github.sha }}
+      - name: Push dev Docker image
+        run: docker push ghcr.io/foxcaves/foxcaves/foxcaves:${{ github.sha }}
       # Run tests
       - name: Add to hostsfile
         run: sudo bash -c "echo '127.0.0.1 app.foxcaves cdn.foxcaves' >> /etc/hosts"
@@ -91,9 +93,6 @@ jobs:
         with:
           name: playwright-test-results
           path: frontend/test-results/
-      # Push
-      - name: Push dev Docker image
-        run: docker push ghcr.io/foxcaves/foxcaves/foxcaves:${{ github.sha }}
       - name: Push production Docker image
         run: docker push ghcr.io/foxcaves/foxcaves/foxcaves:latest
         if: github.ref == 'refs/heads/main'
