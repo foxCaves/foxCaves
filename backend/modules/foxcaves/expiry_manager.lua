@@ -19,17 +19,15 @@ local function handler(premature)
 
     local links = expiry_utils.delete_expired(link_model)
     local files = expiry_utils.delete_expired(file_model)
-    ngx.log(ngx.NOTICE, "Expired links: ", #links, ", files: ", #files)
- end
+    ngx.log(ngx.NOTICE, 'Expired links: ', #links, ', files: ', #files)
+end
 
 start = function()
-    if running then
-        return
-    end
+    if running then return end
 
     local ok, err = ngx.timer.at(delay, handler)
     if not ok then
-        ngx.log(ngx.ERR, "failed to create expiry timer: ", err)
+        ngx.log(ngx.ERR, 'failed to create expiry timer: ', err)
         return
     end
     running = true
