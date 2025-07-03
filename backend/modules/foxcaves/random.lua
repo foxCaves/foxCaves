@@ -26,6 +26,9 @@ function M.seed()
     math.randomseed(seed)
 end
 
+M.init = M.seed
+M.init_worker = M.seed
+
 local default_chars =
     {
         'A',

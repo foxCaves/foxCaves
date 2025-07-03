@@ -1,5 +1,6 @@
-local path = require('path')
-local root = path.abs(debug.getinfo(1, 'S').source:sub(2):match('(.*/)'))
-dofile(root .. '/init_worker.lua')
-
+require('foxcaves.random').init_worker()
 require('foxcaves.acme').init_worker()
+
+if ngx.worker.id() == 0 then
+    require('foxcaves.expiry_manager').init_single_worker()
+end

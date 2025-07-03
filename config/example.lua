@@ -5,7 +5,6 @@ return {
     },
     postgres = {
         -- pgmoon options
-        use_migrations = true
     },
     email = {
         host = "localhost",

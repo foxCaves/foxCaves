@@ -8,34 +8,25 @@ local delay = require('foxcaves.config').app.expiry_check_period
 local M = {}
 require('foxcaves.module_helper').setmodenv()
 
-local running = false
-local start
-
-local function handler(premature)
-    if not premature then
-        running = false
-        start()
-    end
-
+local function handler()
     local links = expiry_utils.delete_expired(link_model)
     local files = expiry_utils.delete_expired(file_model)
     ngx.log(ngx.NOTICE, 'Expired links: ', #links, ', files: ', #files)
 end
 
-start = function()
-    if running then return end
+function M.init_single_worker()
+    if ngx.worker.id() ~= 0 then
+        ngx.log(ngx.DEBUG, 'Expiry manager only runs in the first worker')
+        return
+    end
 
-    local ok, err = ngx.timer.at(delay, handler)
+    local ok, err = ngx.timer.every(delay, handler)
     if not ok then
         ngx.log(ngx.ERR, 'failed to create expiry timer: ', err)
         return
     end
-    running = true
-end
 
-function M.init()
-    start()
-    handler(true)
+    ngx.log(ngx.NOTICE, 'Expiry manager initialized, checking every ', delay, ' seconds')
 end
 
 return M

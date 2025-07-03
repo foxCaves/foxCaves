@@ -9,7 +9,6 @@ return {
         user = "postgres",
         database = "postgres",
         password = "postgres",
-        use_migrations = true
     },
     email = {
         host = "localhost",
