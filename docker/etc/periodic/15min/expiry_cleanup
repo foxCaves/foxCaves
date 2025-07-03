@@ -1,3 +1,0 @@
-#!/bin/sh
-
-exec curl --unix-socket /run/nginx-lua-api.sock -s 'http://app.foxcaves/api/v1/system/expire' -XPOST

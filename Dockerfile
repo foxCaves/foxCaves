@@ -54,7 +54,7 @@ ENV ENVIRONMENT=development
 ENV AWS_EC2_METADATA_DISABLED=true
 
 # OS packages
-RUN apk update && apk add s6 imagemagick git brotli argon2-libs argon2-dev argon2 runuser libuuid openssl openssl-dev ca-certificates libqrencode-tools gd-dev freetype-dev font-opensans
+RUN apk update && apk add imagemagick git brotli argon2-libs argon2-dev argon2 runuser libuuid openssl openssl-dev ca-certificates libqrencode-tools gd-dev freetype-dev font-opensans
 
 # Lua modules
 RUN mkdir -p /usr/local/share/lua/5.1 /usr/local/lib/lua/5.1
@@ -95,4 +95,4 @@ RUN echo "$GIT_REVISION" > /var/www/foxcaves/.revision
 
 # Runtime environment setup
 EXPOSE 80 443 8080 8443
-ENTRYPOINT ["s6-svscan", "/etc/s6"]
+ENTRYPOINT ["/entrypoint.sh"]
