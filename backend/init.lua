@@ -47,6 +47,13 @@ rawset(_G, 'debug', {
     traceback = _debug.traceback,
 })
 
+-- Protect global table(s)
+for k, v in pairs(_G) do
+    if not getmetatable(v) and type(v) == 'table' then
+        protect_table(v, k)
+    end
+end
+
 -- Load module path
 local path = require('path')
 local root = path.abs(debug.getinfo(1, 'S').source:sub(2):match('(.*/)'))
@@ -59,22 +66,4 @@ local cjson = require('cjson')
 cjson.decode_max_depth(10)
 cjson.decode_invalid_numbers(false)
 
--- Perform early initialization
-local ngx_log = ngx.log
-if not ngx_log then
-    rawset(ngx, 'log', function() end)
-end
-require('foxcaves.acme').init()
-if not ngx_log then
-    rawset(ngx, 'log', nil)
-end
-
--- Protect global table(s)
-for k, v in pairs(_G) do
-    if not getmetatable(v) and type(v) == 'table' then
-        protect_table(v, k)
-    end
-end
-
--- Perform late initialization
 require('foxcaves.random').seed()
