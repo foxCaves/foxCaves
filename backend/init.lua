@@ -5,9 +5,14 @@ _G.dns_query_timeout = 10 * 1000
 require('path')
 require('lfs')
 
+local allow_read_unknown = false
+
 local function protect_table(tbl, name)
     return setmetatable(tbl, {
         __index = function(_, k)
+            if allow_read_unknown then
+                return nil
+            end
             error('Attempt to read unknown from table ' .. name .. ': ' .. k)
         end,
         __newindex = function(_, k)
@@ -67,4 +72,6 @@ cjson.decode_max_depth(10)
 cjson.decode_invalid_numbers(false)
 
 require('foxcaves.random').seed()
+allow_read_unknown = true
 require('foxcaves.acme').init()
+allow_read_unknown = false
