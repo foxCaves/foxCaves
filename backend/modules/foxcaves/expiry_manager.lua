@@ -21,8 +21,13 @@ function M.init_single_worker()
         return
     end
 
-    handler()
     ngx.log(ngx.NOTICE, 'expiry manager initialized, checking every ', delay, ' seconds')
+
+    local ok, err = ngx.timer.at(0, handler) -- Run immediately on startup
+    if not ok then
+        ngx.log(ngx.ERR, 'failed to schedule initial expiry check: ', err)
+        return
+    end
 end
 
 return M
