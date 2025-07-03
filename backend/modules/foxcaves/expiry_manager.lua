@@ -21,6 +21,7 @@ function M.init_single_worker()
         return
     end
 
+    handler()
     ngx.log(ngx.NOTICE, 'expiry manager initialized, checking every ', delay, ' seconds')
 end
 
