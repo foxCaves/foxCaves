@@ -64,7 +64,7 @@ local function setup_db()
     db:disconnect()
 end
 
-function M.init()
+function M.ngx_init()
     ngx.log(ngx.NOTICE, 'Running migrator...')
     setup_db()
     ngx.log(ngx.NOTICE, 'Migrator done!')

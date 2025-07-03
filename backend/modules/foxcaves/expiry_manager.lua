@@ -14,7 +14,7 @@ local function handler()
     ngx.log(ngx.NOTICE, 'Expired links: ', #links, ', files: ', #files)
 end
 
-function M.init_single_worker()
+function M.ngx_init_single_worker()
     local ok, err = ngx.timer.every(delay, handler)
     if not ok then
         ngx.log(ngx.ERR, 'failed to create expiry timer: ', err)

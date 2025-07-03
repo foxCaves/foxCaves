@@ -26,8 +26,8 @@ function M.seed()
     math.randomseed(seed)
 end
 
-M.init = M.seed
-M.init_worker = M.seed
+M.ngx_init = M.seed
+M.ngx_init_worker = M.seed
 
 local default_chars =
     {
