@@ -6,6 +6,7 @@ local table = table
 local ngx = ngx
 local ipairs = ipairs
 local io = io
+local error = error
 
 local M = {}
 require('foxcaves.module_helper').setmodenv()
