@@ -15,18 +15,13 @@ local function handler()
 end
 
 function M.init_single_worker()
-    if ngx.worker.id() ~= 0 then
-        ngx.log(ngx.DEBUG, 'Expiry manager only runs in the first worker')
-        return
-    end
-
     local ok, err = ngx.timer.every(delay, handler)
     if not ok then
         ngx.log(ngx.ERR, 'failed to create expiry timer: ', err)
         return
     end
 
-    ngx.log(ngx.NOTICE, 'Expiry manager initialized, checking every ', delay, ' seconds')
+    ngx.log(ngx.NOTICE, 'expiry manager initialized, checking every ', delay, ' seconds')
 end
 
 return M
