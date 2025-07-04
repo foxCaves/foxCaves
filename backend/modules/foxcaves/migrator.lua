@@ -73,6 +73,7 @@ local function try_setup_db()
     ngx.log(ngx.NOTICE, 'running migrator...')
     local ok, err = pcall(setup_db)
     if ok then
+        ngx.shared.foxcaves.migrator_done = true
         ngx.log(ngx.NOTICE, 'migrator done!')
         return
     end
@@ -89,6 +90,7 @@ schedule_try_setup_db = function()
 end
 
 function M.hook_ngx_init_single_worker()
+    ngx.shared.foxcaves.migrator_done = false
     schedule_try_setup_db()
 end
 
