@@ -14,7 +14,7 @@ local function handler()
     ngx.log(ngx.NOTICE, 'Expired links: ', #links, ', files: ', #files)
 end
 
-hooks.register('post_database_init', function()
+hooks.register('database_ready', function()
     local ok, err = ngx.timer.every(delay, handler)
     if not ok then
         ngx.log(ngx.ERR, 'failed to create expiry timer: ', err)
