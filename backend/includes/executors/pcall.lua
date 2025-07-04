@@ -3,10 +3,7 @@ local router = require('foxcaves.router')
 local pcall = pcall
 local ngx = ngx
 
-local M = {}
-require('foxcaves.module_helper').setmodenv()
-
-function M.run()
+return function()
     local isok, err = pcall(router.execute)
     ngx.req.discard_body()
     if not isok then
@@ -17,5 +14,3 @@ function M.run()
     utils.__on_shutdown()
     ngx.eof()
 end
-
-return M

@@ -35,7 +35,6 @@ end)()
 
 ngx.log(ngx.WARN, 'USING DEBUG EXECUTOR')
 
-local M = {}
 require('foxcaves.module_helper').setmodenv()
 
 local function make_table_recurse(var, done, depth)
@@ -260,7 +259,7 @@ local function debug_trace(err)
     return error_html:format(table.concat(out, ''))
 end
 
-function M.run()
+return function()
     local isok, err = xpcall(router.execute, debug_trace)
     ngx.req.discard_body()
     if not isok then
@@ -273,5 +272,3 @@ function M.run()
     utils.__on_shutdown()
     ngx.eof()
 end
-
-return M
