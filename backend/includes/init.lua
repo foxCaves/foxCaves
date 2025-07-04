@@ -56,7 +56,7 @@ end
 
 -- Load module path
 local path = require('path')
-local root = path.abs(debug.getinfo(1, 'S').source:sub(2):match('(.*/)'))
+local root = path.abs(debug.getinfo(1, 'S').source:sub(2):match('(.*/)') .. '/../')
 package.path = package.path .. ';' .. path.abs(root .. '/modules'):gsub('//+', '/') .. '/?.lua;'
 
 rawset(_G, 'LUA_ROOT', path.abs(root))

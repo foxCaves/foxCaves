@@ -30,6 +30,7 @@ return {
         enable_testing_routes = true,
         require_user_approval = false,
         expiry_check_period = 60 * 15, -- 15 minutes
+        executor = "debug",
     },
     totp = {
         max_past = 1,
