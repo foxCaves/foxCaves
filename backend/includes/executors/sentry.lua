@@ -7,16 +7,13 @@ local raven = require('raven')
 local raven_sender = require('raven.senders.ngx')
 local ngx = ngx
 
-local M = {}
-require('foxcaves.module_helper').setmodenv()
-
 local rvn = raven.new({
     sender = raven_sender.new({ dsn = sentry_config.dsn }),
     environment = env.name,
     release = revision.hash,
 })
 
-function M.run()
+return function()
     local isok, err = rvn:call_ext(
         {
             user = ngx.ctx.user and ngx.ctx.user:get_public(),
@@ -36,5 +33,3 @@ function M.run()
     utils.__on_shutdown()
     ngx.eof()
 end
-
-return M
