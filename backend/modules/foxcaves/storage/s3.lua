@@ -1,3 +1,4 @@
+-- NO_AUTOLOAD
 local http = require('resty.http')
 local awssig = require('resty.aws-signature')
 local utils = require('foxcaves.utils')

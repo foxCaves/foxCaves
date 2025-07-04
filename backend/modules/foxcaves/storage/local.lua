@@ -1,3 +1,4 @@
+-- NO_AUTOLOAD
 local lfs = require('lfs')
 local utils = require('foxcaves.utils')
 
