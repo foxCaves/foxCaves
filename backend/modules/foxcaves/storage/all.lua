@@ -1,10 +1,8 @@
-local all_config = require('foxcaves.config').storage
+local all_config = require('foxcaves.config').storage.backends
 local driver_map = {}
 
 for key, config in pairs(all_config) do
-    if key ~= 'default' then
-        driver_map[key] = require('foxcaves.storage.' .. config.driver).new(key, config)
-    end
+    driver_map[key] = require('foxcaves.storage.' .. config.driver).new(key, config)
 end
 
 return driver_map

@@ -46,11 +46,13 @@ return {
     storage = {
         default = "fs",
 
-        fs = {
-            driver = "local",
-            chunk_size = 8192,
-            root_folder = "/var/www/foxcaves/storage"
-        }
+        backends = {
+            fs = {
+                driver = "local",
+                chunk_size = 8192,
+                root_folder = "/var/www/foxcaves/storage"
+            },
+        },
     },
     http = {
         cdn_url = "http://cdn.foxcaves:8080",
