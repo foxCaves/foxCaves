@@ -242,7 +242,7 @@ local function route_execute()
 end
 
 function M.execute()
-    if not ngx.shared.foxcaves.database_ready then
+    if ngx.shared.foxcaves.database_ready ~= 'y' then
         ngx.status = 502
         ngx.header['Content-Type'] = 'text/plain'
         ngx.print('System is still initializing, please try again later')
