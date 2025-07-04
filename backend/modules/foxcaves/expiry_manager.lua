@@ -1,6 +1,7 @@
 local expiry_utils = require('foxcaves.expiry_utils')
 local link_model = require('foxcaves.models.link')
 local file_model = require('foxcaves.models.file')
+local hooks = require('foxcaves.hooks')
 local delay = require('foxcaves.config').app.expiry_check_period
 local ngx = ngx
 
@@ -13,7 +14,7 @@ local function handler()
     ngx.log(ngx.NOTICE, 'Expired links: ', #links, ', files: ', #files)
 end
 
-function M.hook_post_database_init()
+hooks.register('post_database_init', function()
     local ok, err = ngx.timer.every(delay, handler)
     if not ok then
         ngx.log(ngx.ERR, 'failed to create expiry timer: ', err)
@@ -27,6 +28,6 @@ function M.hook_post_database_init()
         ngx.log(ngx.ERR, 'failed to schedule initial expiry check: ', err)
         return
     end
-end
+end)
 
 return M

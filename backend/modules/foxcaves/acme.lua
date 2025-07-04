@@ -1,6 +1,7 @@
 local autossl = require('resty.acme.autossl')
 local config = require('foxcaves.config')
 local utils = require('foxcaves.utils')
+local hooks = require('foxcaves.hooks')
 
 local cdn_domain = utils.url_to_domain(config.http.cdn_url)
 local app_domain = utils.url_to_domain(config.http.app_url)
@@ -14,7 +15,7 @@ end
 local M = {}
 require('foxcaves.module_helper').setmodenv()
 
-function M.hook_ngx_init()
+hooks.register('ngx_init', function()
     autossl.init({
         tos_accepted = true,
         account_key_path = '/etc/letsencrypt/account.key',
@@ -26,11 +27,11 @@ function M.hook_ngx_init()
             shm_name = 'acme',
         },
     })
-end
+end)
 
-function M.hook_ngx_init_worker()
+hooks.register('ngx_init_worker', function()
     autossl.init_worker()
-end
+end)
 
 M.ssl_certificate = autossl.ssl_certificate
 M.serve_http_challenge = autossl.serve_http_challenge
