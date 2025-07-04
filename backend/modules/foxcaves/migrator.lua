@@ -1,5 +1,6 @@
 local config = require('foxcaves.config').postgres
 local consts = require('foxcaves.consts')
+local hooks = require('foxcaves.hooks')
 local pgmoon = require('pgmoon')
 local lfs = require('lfs')
 local table = table
@@ -73,8 +74,9 @@ local function try_setup_db()
     ngx.log(ngx.NOTICE, 'running migrator...')
     local ok, err = pcall(setup_db)
     if ok then
-        ngx.shared.foxcaves.migrator_done = true
+        ngx.shared.foxcaves.database_ready = true
         ngx.log(ngx.NOTICE, 'migrator done!')
+        hooks.call('post_database_init')
         return
     end
 
@@ -90,7 +92,7 @@ schedule_try_setup_db = function()
 end
 
 function M.hook_ngx_init_single_worker()
-    ngx.shared.foxcaves.migrator_done = false
+    ngx.shared.foxcaves.database_ready = false
     schedule_try_setup_db()
 end
 
