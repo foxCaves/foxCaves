@@ -65,5 +65,3 @@ rawset(_G, 'LUA_ROOT', path.abs(root))
 local cjson = require('cjson')
 cjson.decode_max_depth(10)
 cjson.decode_invalid_numbers(false)
-
-require('foxcaves.random').seed()
