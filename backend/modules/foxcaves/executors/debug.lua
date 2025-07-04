@@ -1,4 +1,3 @@
--- NO_AUTOLOAD
 local utils = require('foxcaves.utils')
 local router = require('foxcaves.router')
 local htmlgen = require('foxcaves.htmlgen')
