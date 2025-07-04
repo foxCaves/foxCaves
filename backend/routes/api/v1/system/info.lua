@@ -5,9 +5,6 @@ local utils = require('foxcaves.utils')
 local ngx = ngx
 
 R.register_route('/api/v1/system/info', 'GET', R.make_route_opts_anon(), function()
-    if not ngx.shared.foxcaves.database_ready then
-        return utils.api_error('System is still initializing, please try again later', 502)
-    end
     return {
         environment = env,
         release = revision.hash,
