@@ -33,6 +33,8 @@ local error_html = ''
         ):gsub('<body>.*</body>', '<body><div class="container">%%s</div></body>')
 end)()
 
+ngx.log(ngx.WARN, 'USING DEBUG EXECUTOR')
+
 local M = {}
 require('foxcaves.module_helper').setmodenv()
 

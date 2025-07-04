@@ -1,1 +1,1 @@
-require('foxcaves.executors.auto').run()
+foxcaves_executor.run()

@@ -29,6 +29,7 @@ return {
         enable_testing_routes = false,
         require_user_approval = true,
         expiry_check_period = 60 * 15, -- 15 minutes
+        executor = "pcall",
     },
     totp = {
         max_past = 1,
