@@ -7,6 +7,7 @@ local ngx = ngx
 local ipairs = ipairs
 local io = io
 local error = error
+local pcall = pcall
 
 local M = {}
 require('foxcaves.module_helper').setmodenv()
@@ -66,10 +67,29 @@ local function setup_db()
     db:disconnect()
 end
 
-function M.ngx_init()
-    ngx.log(ngx.NOTICE, 'Running migrator...')
-    setup_db()
-    ngx.log(ngx.NOTICE, 'Migrator done!')
+local schedule_try_setup_db
+
+local function try_setup_db()
+    ngx.log(ngx.NOTICE, 'running migrator...')
+    local ok, err = pcall(setup_db)
+    if ok then
+        ngx.log(ngx.NOTICE, 'migrator done!')
+        return
+    end
+
+    ngx.log(ngx.ERR, 'failed to run migrator: ', err)
+    schedule_try_setup_db()
+end
+
+schedule_try_setup_db = function()
+    local ok, err = ngx.timer.at(1, try_setup_db)
+    if not ok then
+        ngx.log(ngx.ERR, 'failed to schedule migrator: ', err)
+    end
+end
+
+function M.hook_ngx_init_single_worker()
+    schedule_try_setup_db()
 end
 
 return M
