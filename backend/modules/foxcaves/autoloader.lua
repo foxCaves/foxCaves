@@ -3,15 +3,12 @@ local require = require
 local type = type
 local ngx = ngx
 local io = io
-local pairs = pairs
 local package = package
 local lfs = require('lfs')
 local MODULE_ROOT = require('foxcaves.consts').MODULE_ROOT
 
 local M = {}
 require('foxcaves.module_helper').setmodenv()
-
-local loaded = false
 
 local function load_module(absfile)
     local mod_name = absfile:sub(MODULE_ROOT:len() + 1):gsub('%.lua$', ''):gsub('/', '.')
@@ -58,23 +55,8 @@ local function scan_module_dir(dir)
     end
 end
 
-function M.autoload()
+function M.run()
     scan_module_dir(MODULE_ROOT)
-    loaded = true
-end
-
-function M.get_modules()
-    if not loaded then
-        M.autoload()
-    end
-
-    local modules = {}
-    for name, tbl in pairs(package.loaded) do
-        if name:sub(1, 9) == 'foxcaves.' and type(tbl) == 'table' then
-            modules[name] = tbl
-        end
-    end
-    return modules
 end
 
 return M

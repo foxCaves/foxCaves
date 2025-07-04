@@ -1,3 +1,4 @@
+local hooks = require('foxcaves.hooks')
 local io = io
 local table = table
 local math = math
@@ -26,8 +27,8 @@ local function seed_lua_random()
     math.randomseed(seed)
 end
 
-M.hook_ngx_init = seed_lua_random
-M.hook_ngx_init_worker = seed_lua_random
+hooks.register('ngx_init', seed_lua_random)
+hooks.register('ngx_init_worker', seed_lua_random)
 
 local default_chars =
     {

@@ -76,7 +76,7 @@ local function try_setup_db()
     if ok then
         ngx.shared.foxcaves:set('database_ready', true)
         ngx.log(ngx.NOTICE, 'migrator done!')
-        hooks.call('post_database_init')
+        hooks.call('database_ready')
         return
     end
 
@@ -91,9 +91,9 @@ schedule_try_setup_db = function()
     end
 end
 
-function M.hook_ngx_init_single_worker()
+hooks.register('ngx_init_single_worker', function()
     ngx.shared.foxcaves:set('database_ready', false)
     schedule_try_setup_db()
-end
+end)
 
 return M
