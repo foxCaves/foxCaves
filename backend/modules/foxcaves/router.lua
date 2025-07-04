@@ -4,7 +4,6 @@ local utils = require('foxcaves.utils')
 local auth = require('foxcaves.auth')
 local csrf = require('foxcaves.csrf')
 local consts = require('foxcaves.consts')
-local env = require('foxcaves.env')
 local module_helper = require('foxcaves.module_helper')
 local empty_table = module_helper.make_empty_table('ROUTER_EMPTY')
 
@@ -208,9 +207,6 @@ local function route_execute()
     end
 
     ngx.header['FoxCaves-Route-ID'] = handler.id
-    if env.id == consts.ENV_TESTING then
-        ngx.header['FoxCaves-Testing-Mode'] = '!WARNING! TESTING MODE ENABLED - THIS IS A SECURITY RISK !WARNING!'
-    end
 
     local opts = handler.options or {}
     ngx.ctx.route_opts = opts

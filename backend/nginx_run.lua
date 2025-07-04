@@ -1,1 +1,1 @@
-require('foxcaves.loaders.auto').run()
+require('foxcaves.executors.auto').run()

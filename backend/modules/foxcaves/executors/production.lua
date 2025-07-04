@@ -1,21 +1,31 @@
--- NO_AUTOLOAD
 local utils = require('foxcaves.utils')
 local router = require('foxcaves.router')
-local raven = require('raven')
-local raven_sender = require('raven.senders.ngx')
 local env = require('foxcaves.env')
 local revision = require('foxcaves.revision')
 local sentry_config = require('foxcaves.config').sentry
 local ngx = ngx
 
+local raven = require('raven')
+local raven_sender = require('raven.senders.ngx')
+
 local M = {}
 require('foxcaves.module_helper').setmodenv()
 
-local rvn = raven.new({
-    sender = raven_sender.new({ dsn = sentry_config.dsn }),
-    environment = env.name,
-    release = revision.hash,
-})
+local rvn
+
+if sentry_config.dsn then
+    rvn = raven.new({
+        sender = raven_sender.new({ dsn = sentry_config.dsn }),
+        environment = env.name,
+        release = revision.hash,
+    })
+else
+    ngx.log(ngx.WARN, 'Sentry is not configured, using no-op Raven instance')
+    rvn = {}
+    function rvn.call_ext(_, _, func)
+        return pcall(func)
+    end
+end
 
 function M.run()
     local isok, err = rvn:call_ext(
