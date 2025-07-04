@@ -35,8 +35,6 @@ end)()
 
 ngx.log(ngx.WARN, 'USING DEBUG EXECUTOR')
 
-require('foxcaves.module_helper').setmodenv()
-
 local function make_table_recurse(var, done, depth)
     depth = depth or 0
     local t = type(var)
