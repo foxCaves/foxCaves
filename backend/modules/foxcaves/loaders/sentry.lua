@@ -1,3 +1,4 @@
+-- NO_AUTOLOAD
 local utils = require('foxcaves.utils')
 local router = require('foxcaves.router')
 local raven = require('raven')
