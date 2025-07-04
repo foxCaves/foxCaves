@@ -14,7 +14,7 @@ end
 local M = {}
 require('foxcaves.module_helper').setmodenv()
 
-function M.ngx_init()
+function M.hook_ngx_init()
     autossl.init({
         tos_accepted = true,
         account_key_path = '/etc/letsencrypt/account.key',
@@ -28,7 +28,7 @@ function M.ngx_init()
     })
 end
 
-function M.ngx_init_worker()
+function M.hook_ngx_init_worker()
     autossl.init_worker()
 end
 

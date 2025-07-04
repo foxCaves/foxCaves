@@ -117,11 +117,11 @@ local function s3_request(self, method, path, query, body, rawHeaders, opts)
 end
 
 local function _cache_get(key)
-    return ngx.shared.foxcaves['storage_s3_' .. key]
+    return ngx.shared.foxcaves:get('storage_s3_' .. key)
 end
 
 local function _cache_set(key, val)
-    ngx.shared.foxcaves['storage_s3_' .. key] = val
+    ngx.shared.foxcaves:set('storage_s3_' .. key, val)
 end
 
 function M.new(name, config)
