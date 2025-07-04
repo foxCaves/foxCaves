@@ -45,28 +45,30 @@ return {
     storage = {
         default = "fs",
 
-        fs = {
-            driver = "local",
-            chunk_size = 8192,
-            root_folder = "/var/www/foxcaves/storage"
-        },
+        backends = {
+            fs = {
+                driver = "local",
+                chunk_size = 8192,
+                root_folder = "/var/www/foxcaves/storage"
+            },
 
-        s3 = {
-            driver = "s3",
-            chunk_size = 5 * 1024 * 1024,
-            read_chunk_size = 8192,
+            s3 = {
+                driver = "s3",
+                chunk_size = 5 * 1024 * 1024,
+                read_chunk_size = 8192,
 
-            access_key = "",
-            secret_key = "",
-            bucket = "example",
-            host = "s3.us-west-001.backblazeb2.com",
+                access_key = "",
+                secret_key = "",
+                bucket = "example",
+                host = "s3.us-west-001.backblazeb2.com",
 
-            keepalive = {
-                pool_size = 100,
-                idle_timeout = 60,
-                max_time = 60 * 60,
-                max_requests = 1000
-            }
+                keepalive = {
+                    pool_size = 100,
+                    idle_timeout = 60,
+                    max_time = 60 * 60,
+                    max_requests = 1000
+                }
+            },
         }
     },
     http = {
