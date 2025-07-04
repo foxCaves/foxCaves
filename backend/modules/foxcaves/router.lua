@@ -6,6 +6,7 @@ local csrf = require('foxcaves.csrf')
 local consts = require('foxcaves.consts')
 local env = require('foxcaves.env')
 local module_helper = require('foxcaves.module_helper')
+local empty_table = module_helper.make_empty_table('ROUTER_EMPTY')
 
 local explode = utils.explode
 local type = type
@@ -128,7 +129,7 @@ function ROUTE_REG_MT.register_route(url, method, options, func, descriptor)
         id = route_id,
         url = url,
         method = method,
-        func = setfenv(func, module_helper.EMPTY_TABLE),
+        func = setfenv(func, empty_table),
         options = options,
         descriptor = descriptor,
     }
