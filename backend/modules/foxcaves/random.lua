@@ -14,7 +14,7 @@ function M.bytes(len)
     return ret
 end
 
-function M.seed()
+local function seed_lua_random()
     local seed_str = M.bytes(4)
     local seed = 0
     for i = 1, 4 do
@@ -26,8 +26,8 @@ function M.seed()
     math.randomseed(seed)
 end
 
-M.hook_ngx_init = M.seed
-M.hook_ngx_init_worker = M.seed
+M.hook_ngx_init = seed_lua_random
+M.hook_ngx_init_worker = seed_lua_random
 
 local default_chars =
     {
