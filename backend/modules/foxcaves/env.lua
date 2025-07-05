@@ -15,4 +15,5 @@ end
 return {
     id = id,
     name = str,
+    is_debug = id == consts.ENV_DEVELOPMENT or id == consts.ENV_TESTING,
 }

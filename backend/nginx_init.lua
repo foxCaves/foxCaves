@@ -6,6 +6,7 @@ dofile(root .. '/includes/autoloader.lua')
 
 local ngx = ngx
 local hooks = require('foxcaves.hooks')
+local env = require('foxcaves.env')
 
 local executor_name = require('foxcaves.config').app.executor
 ngx.log(ngx.NOTICE, 'Using executor: ', executor_name)
@@ -20,8 +21,11 @@ local function executor_wrapper()
     if not isok then
         ngx.status = 500
         ngx.header['Cache-Control'] = 'no-cache, no-store'
-        if err_out then
-            ngx.print(err_out)
+        if env.is_debug then
+            if not ngx.header['Content-Type'] then
+                ngx.header['Content-Type'] = 'text/plain'
+            end
+            ngx.print(err_out or err)
         end
         ngx.log(ngx.ERR, 'Lua error: ' .. err)
     end

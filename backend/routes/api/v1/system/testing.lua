@@ -1,6 +1,5 @@
 local env = require('foxcaves.env')
-local consts = require('foxcaves.consts')
-if env.id ~= consts.ENV_TESTING and env.id ~= consts.ENV_DEVELOPMENT then return end
+if not env.is_debug then return end
 
 local error = error
 local next = next
