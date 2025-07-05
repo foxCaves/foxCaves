@@ -20,7 +20,6 @@ local function executor_wrapper()
     if not isok then
         ngx.status = 500
         ngx.header['Cache-Control'] = 'no-cache, no-store'
-        ngx.header['Content-Type'] = 'text/html'
         if err_out then
             ngx.print(err_out)
         end
