@@ -1,5 +1,3 @@
-local setfenv = setfenv
-
 local path = require('path')
 local root = path.abs(debug.getinfo(1, 'S').source:sub(2):match('(.*/)'))
 dofile(root .. '/includes/init.lua')
