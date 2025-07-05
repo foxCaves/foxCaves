@@ -5,7 +5,7 @@ local auth = require('foxcaves.auth')
 local csrf = require('foxcaves.csrf')
 local consts = require('foxcaves.consts')
 local module_helper = require('foxcaves.module_helper')
-local empty_table = module_helper.make_empty_table('ROUTER_EMPTY')
+local empty_table = module_helper.make_empty_table('ROUTER')
 
 local explode = utils.explode
 local type = type

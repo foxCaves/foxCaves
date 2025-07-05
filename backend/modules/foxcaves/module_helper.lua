@@ -2,13 +2,15 @@ local setfenv = setfenv
 local protect_table = protect_table
 
 local M = {}
-setfenv(1, protect_table({}, 'MODULE_HELPER_EMPTY'))
-
-function M.make_empty_table(name)
-    return protect_table({}, name)
+local function make_empty_table(name)
+    return protect_table({}, name .. '_EMPTY')
 end
 
-local empty_table = M.make_empty_table('MODULE_EMPTY')
+setfenv(1, make_empty_table('MODULE_HELPER'))
+
+M.make_empty_table = make_empty_table
+
+local empty_table = make_empty_table('MODULE')
 function M.setmodenv()
     setfenv(2, empty_table)
 end
