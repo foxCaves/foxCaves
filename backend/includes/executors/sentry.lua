@@ -1,4 +1,3 @@
-local hooks = require('foxcaves.hooks')
 local router = require('foxcaves.router')
 local env = require('foxcaves.env')
 local revision = require('foxcaves.revision')
@@ -24,12 +23,5 @@ return function()
         },
         router.execute
     )
-    ngx.req.discard_body()
-    if not isok then
-        ngx.status = 500
-        ngx.header['Cache-Control'] = 'no-cache, no-store'
-        ngx.log(ngx.ERR, 'Lua error: ' .. err)
-    end
-    hooks.call('context_end')
-    ngx.eof()
+    return isok, err, nil
 end
