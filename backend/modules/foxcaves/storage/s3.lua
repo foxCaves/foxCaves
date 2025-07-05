@@ -1,6 +1,6 @@
 local http = require('resty.http')
 local awssig = require('resty.aws-signature')
-local utils = require('foxcaves.utils')
+local hooks = require('foxcaves.hooks')
 
 local setmetatable = setmetatable
 local error = error
@@ -185,7 +185,7 @@ function M:upload(id, size, ftype, mimeType, opts)
         UPLOAD
     )
 
-    utils.register_shutdown(function()
+    hooks.register_ctx('shutdown', function()
         ul:abort_if_not_done()
     end)
 
@@ -205,7 +205,7 @@ function M:download(id, ftype)
         DOWNLOAD
     )
 
-    utils.register_shutdown(function()
+    hooks.register_ctx('shutdown', function()
         dl:close()
     end)
 

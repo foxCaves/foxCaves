@@ -1,5 +1,5 @@
 local resty_redis = require('resty.redis')
-local utils = require('foxcaves.utils')
+local hooks = require('foxcaves.hooks')
 local config = require('foxcaves.config').redis
 local error = error
 local ngx = ngx
@@ -21,11 +21,11 @@ function M.make(close_on_shutdown)
     end
 
     if close_on_shutdown then
-        utils.register_shutdown(function()
+        hooks.register_ctx('shutdown', function()
             redis:close()
         end)
     else
-        utils.register_shutdown(function()
+        hooks.register_ctx('shutdown', function()
             redis:set_keepalive(config.keepalive_timeout or 10000, config.keepalive_count or 10)
         end)
     end

@@ -27,8 +27,8 @@ local function seed_lua_random()
     math.randomseed(seed)
 end
 
-hooks.register('ngx_init', seed_lua_random)
-hooks.register('ngx_init_worker', seed_lua_random)
+hooks.register_global('ngx_init', seed_lua_random)
+hooks.register_global('ngx_init_worker', seed_lua_random)
 
 local default_chars =
     {

@@ -1,6 +1,7 @@
 local utils = require('foxcaves.utils')
 local router = require('foxcaves.router')
 local htmlgen = require('foxcaves.htmlgen')
+local hooks = require('foxcaves.hooks')
 
 local ngx = ngx
 local xpcall = xpcall
@@ -267,6 +268,6 @@ return function()
         ngx.print(err)
         ngx.log(ngx.ERR, 'Lua error: ' .. err)
     end
-    utils.__on_shutdown()
+    hooks.call('shutdown')
     ngx.eof()
 end

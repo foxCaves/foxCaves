@@ -1,4 +1,4 @@
-local utils = require('foxcaves.utils')
+local hooks = require('foxcaves.hooks')
 local router = require('foxcaves.router')
 local env = require('foxcaves.env')
 local revision = require('foxcaves.revision')
@@ -30,6 +30,6 @@ return function()
         ngx.header['Cache-Control'] = 'no-cache, no-store'
         ngx.log(ngx.ERR, 'Lua error: ' .. err)
     end
-    utils.__on_shutdown()
+    hooks.call('shutdown')
     ngx.eof()
 end

@@ -9,21 +9,6 @@ local setmetatable = setmetatable
 local M = {}
 require('foxcaves.module_helper').setmodenv()
 
-function M.register_shutdown(func)
-    if not ngx.ctx.shutdown_funcs then
-        ngx.ctx.shutdown_funcs = {}
-    end
-    table.insert(ngx.ctx.shutdown_funcs, func)
-end
-function M.__on_shutdown()
-    if not ngx.ctx.shutdown_funcs then return end
-
-    for _, v in next, ngx.ctx.shutdown_funcs do
-        v()
-    end
-    ngx.ctx.shutdown_funcs = nil
-end
-
 function M.get_post_args()
     ngx.req.read_body()
     local ctype = ngx.var.http_content_type
