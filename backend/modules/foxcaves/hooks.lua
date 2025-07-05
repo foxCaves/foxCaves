@@ -2,11 +2,14 @@ local require = require
 local pairs = pairs
 local next = next
 local ngx = ngx
+local error = error
 
 local M = {}
 require('foxcaves.module_helper').setmodenv()
 
 local hooks_table = {}
+
+local global_only_hooks = { ngx_init = true } -- Called by init_by_lua*, therefor has no ngx.ctx
 
 local function register(tbl, name, func)
     local hook_table = tbl[name]
@@ -46,6 +49,10 @@ function M.unregister_global(name, func)
 end
 
 function M.register_ctx(name, func)
+    if global_only_hooks[name] then
+        error("Cannot register context hook for '" .. name .. "' as it is a global-only hook.")
+    end
+
     local tbl = ngx.ctx.hooks_table
     if not tbl then
         tbl = {}
@@ -66,7 +73,7 @@ end
 
 function M.call(name, ...)
     call(hooks_table, name, ...)
-    if ngx.ctx and ngx.ctx.hooks_table then
+    if not global_only_hooks[name] and ngx.ctx.hooks_table then
         call(ngx.ctx.hooks_table, name, ...)
     end
 end
