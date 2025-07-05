@@ -12,9 +12,10 @@ local function handler()
     local links = expiry_utils.delete_expired(link_model)
     local files = expiry_utils.delete_expired(file_model)
     ngx.log(ngx.NOTICE, 'Expired links: ', #links, ', files: ', #files)
+    hooks.call('context_end')
 end
 
-hooks.register('database_ready', function()
+hooks.register_global('database_ready', function()
     local ok, err = ngx.timer.every(delay, handler)
     if not ok then
         ngx.log(ngx.ERR, 'failed to create expiry timer: ', err)

@@ -1,5 +1,5 @@
-local utils = require('foxcaves.utils')
 local config = require('foxcaves.config').postgres
+local hooks = require('foxcaves.hooks')
 local pgmoon = require('pgmoon')
 local error = error
 local ngx = ngx
@@ -74,7 +74,7 @@ function M.make()
         error('Error connecting to Postgres: ' .. err)
     end
 
-    utils.register_shutdown(function()
+    hooks.register_ctx('context_end', function()
         database:keepalive(config.keepalive_timeout or 10000, config.keepalive_count or 10)
     end)
 

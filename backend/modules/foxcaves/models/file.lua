@@ -6,6 +6,7 @@ local cdn_url = require('foxcaves.config').http.cdn_url
 local exec = require('foxcaves.exec')
 local mimetypes = require('foxcaves.mimetypes')
 local utils = require('foxcaves.utils')
+local hooks = require('foxcaves.hooks')
 local storage_default = require('foxcaves.config').storage.default
 local storage_drivers = require('foxcaves.storage.all')
 
@@ -225,7 +226,7 @@ function file_mt:upload_begin()
         if not self._file_temp then
             local file_temp = os.tmpname()
             self._file_temp = file_temp
-            utils.register_shutdown(function()
+            hooks.register_ctx('context_end', function()
                 os.remove(file_temp)
             end)
             self._fh_tmp = io.open(file_temp, 'wb')
@@ -270,7 +271,7 @@ local function file_thumbnail_process(self)
 
     local thumb_temp = os.tmpname()
     self._thumb_temp = thumb_temp
-    utils.register_shutdown(function()
+    hooks.register_ctx('context_end', function()
         os.remove(thumb_temp)
     end)
 

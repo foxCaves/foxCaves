@@ -91,7 +91,7 @@ schedule_try_setup_db = function()
     end
 end
 
-hooks.register('ngx_init_single_worker', function()
+hooks.register_global('ngx_init_single_worker', function()
     ngx.shared.foxcaves:set('database_ready', false)
     schedule_try_setup_db()
 end)

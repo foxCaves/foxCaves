@@ -1,5 +1,5 @@
 local lfs = require('lfs')
-local utils = require('foxcaves.utils')
+local hooks = require('foxcaves.hooks')
 
 local ngx = ngx
 local os = os
@@ -83,7 +83,7 @@ function M:upload(id, size, ftype)
         UPLOAD
     )
 
-    utils.register_shutdown(function()
+    hooks.register_ctx('context_end', function()
         ul:abort_if_not_done()
     end)
 
@@ -101,7 +101,7 @@ function M:download(id, ftype)
         DOWNLOAD
     )
 
-    utils.register_shutdown(function()
+    hooks.register_ctx('context_end', function()
         dl:close()
     end)
 
