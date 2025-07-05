@@ -26,7 +26,7 @@ local function executor_wrapper()
         end
         ngx.log(ngx.ERR, 'Lua error: ' .. err)
     end
-    hooks.call('request_end')
+    hooks.call('context_end')
     ngx.eof()
 end
 setfenv(executor_wrapper, executor_table)
