@@ -9,7 +9,11 @@ require('foxcaves.module_helper').setmodenv()
 
 local hooks_table = {}
 
-local global_only_hooks = { ngx_init = true } -- Called by init_by_lua*, therefor has no ngx.ctx
+local global_only_hooks = {
+    ngx_init = true,
+    ngx_init_worker = true,
+    ngx_init_single_worker = true,
+}
 
 local function register(tbl, name, func)
     local hook_table = tbl[name]
