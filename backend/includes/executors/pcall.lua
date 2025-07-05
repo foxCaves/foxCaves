@@ -11,6 +11,6 @@ return function()
         ngx.header['Cache-Control'] = 'no-cache, no-store'
         ngx.log(ngx.ERR, 'Lua error: ' .. err)
     end
-    hooks.call('shutdown')
+    hooks.call('request_end')
     ngx.eof()
 end

@@ -185,7 +185,7 @@ function M:upload(id, size, ftype, mimeType, opts)
         UPLOAD
     )
 
-    hooks.register_ctx('shutdown', function()
+    hooks.register_ctx('request_end', function()
         ul:abort_if_not_done()
     end)
 
@@ -205,7 +205,7 @@ function M:download(id, ftype)
         DOWNLOAD
     )
 
-    hooks.register_ctx('shutdown', function()
+    hooks.register_ctx('request_end', function()
         dl:close()
     end)
 

@@ -226,7 +226,7 @@ function file_mt:upload_begin()
         if not self._file_temp then
             local file_temp = os.tmpname()
             self._file_temp = file_temp
-            hooks.register_ctx('shutdown', function()
+            hooks.register_ctx('request_end', function()
                 os.remove(file_temp)
             end)
             self._fh_tmp = io.open(file_temp, 'wb')
@@ -271,7 +271,7 @@ local function file_thumbnail_process(self)
 
     local thumb_temp = os.tmpname()
     self._thumb_temp = thumb_temp
-    hooks.register_ctx('shutdown', function()
+    hooks.register_ctx('request_end', function()
         os.remove(thumb_temp)
     end)
 

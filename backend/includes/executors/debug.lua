@@ -268,6 +268,6 @@ return function()
         ngx.print(err)
         ngx.log(ngx.ERR, 'Lua error: ' .. err)
     end
-    hooks.call('shutdown')
+    hooks.call('request_end')
     ngx.eof()
 end
