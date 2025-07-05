@@ -46,9 +46,12 @@ function M.unregister_global(name, func)
 end
 
 function M.register_ctx(name, func)
-    local tbl = ngx.ctx.hooks_table or {}
+    local tbl = ngx.ctx.hooks_table
+    if not tbl then
+        tbl = {}
+        ngx.ctx.hooks_table = tbl
+    end
     register(tbl, name, func)
-    ngx.ctx.hooks_table = tbl
 end
 
 function M.unregister_ctx(name, func)
