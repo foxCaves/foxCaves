@@ -74,7 +74,7 @@ function M.make()
         error('Error connecting to Postgres: ' .. err)
     end
 
-    hooks.register_ctx('request_end', function()
+    hooks.register_ctx('context_end', function()
         database:keepalive(config.keepalive_timeout or 10000, config.keepalive_count or 10)
     end)
 

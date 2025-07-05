@@ -12,6 +12,7 @@ local function handler()
     local links = expiry_utils.delete_expired(link_model)
     local files = expiry_utils.delete_expired(file_model)
     ngx.log(ngx.NOTICE, 'Expired links: ', #links, ', files: ', #files)
+    hooks.call('context_end')
 end
 
 hooks.register_global('database_ready', function()

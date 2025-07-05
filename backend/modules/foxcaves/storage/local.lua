@@ -83,7 +83,7 @@ function M:upload(id, size, ftype)
         UPLOAD
     )
 
-    hooks.register_ctx('request_end', function()
+    hooks.register_ctx('context_end', function()
         ul:abort_if_not_done()
     end)
 
@@ -101,7 +101,7 @@ function M:download(id, ftype)
         DOWNLOAD
     )
 
-    hooks.register_ctx('request_end', function()
+    hooks.register_ctx('context_end', function()
         dl:close()
     end)
 

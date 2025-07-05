@@ -21,11 +21,11 @@ function M.make(close_on_shutdown)
     end
 
     if close_on_shutdown then
-        hooks.register_ctx('request_end', function()
+        hooks.register_ctx('context_end', function()
             redis:close()
         end)
     else
-        hooks.register_ctx('request_end', function()
+        hooks.register_ctx('context_end', function()
             redis:set_keepalive(config.keepalive_timeout or 10000, config.keepalive_count or 10)
         end)
     end
