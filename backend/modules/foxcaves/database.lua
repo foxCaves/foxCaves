@@ -75,9 +75,6 @@ function M.make()
     end
 
     hooks.register_ctx('request_end', function()
-        if database == ngx.ctx.__database then
-            ngx.ctx.__database = nil
-        end
         database:keepalive(config.keepalive_timeout or 10000, config.keepalive_count or 10)
     end)
 

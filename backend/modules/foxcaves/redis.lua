@@ -22,16 +22,10 @@ function M.make(close_on_shutdown)
 
     if close_on_shutdown then
         hooks.register_ctx('request_end', function()
-            if redis == ngx.ctx.__redis then
-                ngx.ctx.__redis = nil
-            end
             redis:close()
         end)
     else
         hooks.register_ctx('request_end', function()
-            if redis == ngx.ctx.__redis then
-                ngx.ctx.__redis = nil
-            end
             redis:set_keepalive(config.keepalive_timeout or 10000, config.keepalive_count or 10)
         end)
     end
