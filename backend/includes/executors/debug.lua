@@ -254,14 +254,14 @@ local function debug_trace(err)
 
         table.insert(out, '</div></div>')
     end
-    return error_html:format(table.concat(out, ''))
+    return { debug.traceback(), error_html:format(table.concat(out, '')) }
 end
 
 return function()
-    local isok, err = xpcall(router.execute, debug_trace)
+    local isok, err_info = xpcall(router.execute, debug_trace)
     if not isok then
         ngx.header['Content-Type'] = 'text/html'
-        return isok, err, err
+        return isok, err_info[1], err_info[2]
     end
-    return isok, err, nil
+    return true
 end
