@@ -67,7 +67,7 @@ end
 function M.call(name, ...)
     call(hooks_table, name, ...)
     if ngx.ctx and ngx.ctx.hooks_table then
-        return call(ngx.ctx.hooks_table, name, ...)
+        call(ngx.ctx.hooks_table, name, ...)
     end
 end
 
