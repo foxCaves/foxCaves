@@ -3,3 +3,5 @@ hooks.call('ngx_init_worker')
 if ngx.worker.id() == 0 then
     hooks.call('ngx_init_single_worker')
 end
+
+ngx.ctx.hooks_table = nil
