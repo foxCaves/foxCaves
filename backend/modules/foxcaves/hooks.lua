@@ -7,7 +7,7 @@ local error = error
 local M = {}
 require('foxcaves.module_helper').setmodenv()
 
-local hooks_table = {}
+local global_hooks_table = {}
 
 local global_only_hooks = {
     ngx_init = true,
@@ -19,7 +19,7 @@ local function register(tbl, name, func)
     local hook_table = tbl[name]
     if not hook_table then
         hook_table = {}
-        hooks_table[name] = hook_table
+        tbl[name] = hook_table
     end
 
     hook_table[func] = true
@@ -31,7 +31,7 @@ local function unregister(tbl, name, func)
 
     hook_table[func] = nil
     if next(hook_table) == nil then
-        hooks_table[name] = nil
+        tbl[name] = nil
     end
 end
 
@@ -45,11 +45,11 @@ local function call(tbl, name, ...)
 end
 
 function M.register_global(name, func)
-    register(hooks_table, name, func)
+    register(global_hooks_table, name, func)
 end
 
 function M.unregister_global(name, func)
-    unregister(hooks_table, name, func)
+    unregister(global_hooks_table, name, func)
 end
 
 function M.register_ctx(name, func)
@@ -76,7 +76,7 @@ function M.unregister_ctx(name, func)
 end
 
 function M.call(name, ...)
-    call(hooks_table, name, ...)
+    call(global_hooks_table, name, ...)
     if not global_only_hooks[name] and ngx.ctx.hooks_table then
         call(ngx.ctx.hooks_table, name, ...)
     end
