@@ -1,7 +1,6 @@
 local utils = require('foxcaves.utils')
 local router = require('foxcaves.router')
 local htmlgen = require('foxcaves.htmlgen')
-local hooks = require('foxcaves.hooks')
 
 local ngx = ngx
 local xpcall = xpcall
@@ -255,19 +254,14 @@ local function debug_trace(err)
 
         table.insert(out, '</div></div>')
     end
-    return error_html:format(table.concat(out, ''))
+    return { debug.traceback(), error_html:format(table.concat(out, '')) }
 end
 
 return function()
-    local isok, err = xpcall(router.execute, debug_trace)
-    ngx.req.discard_body()
+    local isok, err_info = xpcall(router.execute, debug_trace)
     if not isok then
-        ngx.status = 500
-        ngx.header['Cache-Control'] = 'no-cache, no-store'
         ngx.header['Content-Type'] = 'text/html'
-        ngx.print(err)
-        ngx.log(ngx.ERR, 'Lua error: ' .. err)
+        return isok, err_info[1], err_info[2]
     end
-    hooks.call('context_end')
-    ngx.eof()
+    return true
 end

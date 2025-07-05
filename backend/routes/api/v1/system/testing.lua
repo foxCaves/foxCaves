@@ -1,6 +1,6 @@
 local env = require('foxcaves.env')
 local consts = require('foxcaves.consts')
-if env.id ~= consts.ENV_TESTING then return end
+if env.id ~= consts.ENV_TESTING and env.id ~= consts.ENV_DEVELOPMENT then return end
 
 local error = error
 local next = next
@@ -11,6 +11,8 @@ local news_model = require('foxcaves.models.news')
 local database = require('foxcaves.database')
 
 local ngx = ngx
+
+ngx.log(ngx.WARN, 'TESTING ROUTES ENABLED')
 
 local testing_opts = R.make_route_opts({
     check_login = false,
