@@ -6,7 +6,6 @@ import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import { Configuration, DefinePlugin } from 'webpack';
 import 'webpack-dev-server';
 
-// eslint-disable-next-line unicorn/prefer-module
 const PWD = __dirname;
 
 type NodeEnv = 'development' | 'production' | undefined;
