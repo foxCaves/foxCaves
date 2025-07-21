@@ -8,7 +8,6 @@ import sizeOf from 'image-size';
 import { testLoggedIn } from './fixtures';
 import { randomID, waitForToast } from './utils';
 
-// eslint-disable-next-line unicorn/prefer-module
 const PWD = __dirname;
 
 async function uploadFile(file: string, page: Page) {
