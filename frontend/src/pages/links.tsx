@@ -213,6 +213,7 @@ export const LinksPage: React.FC = () => {
                 </thead>
                 <tbody>
                     {Array.from(models.values())
+                        // eslint-disable-next-line unicorn/no-array-sort
                         .sort(sortByDate)
                         .map((link) => (
                             <LinkView key={link.id} link={link} setDeleteLink={setDeleteLink} />

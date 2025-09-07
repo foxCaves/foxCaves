@@ -263,6 +263,7 @@ export const FilesPage: React.FC = () => {
             <Container className="mt-2 justify-content-center">
                 <Row>
                     {Array.from(models.values())
+                        // eslint-disable-next-line unicorn/no-array-sort
                         .sort(sortByDate)
                         .map((file) => {
                             return (
