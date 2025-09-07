@@ -43,7 +43,7 @@
         "eslint-plugin-prettier": "^5.0.0-alpha.0",
         "eslint-plugin-react": "^7.32.2",
         "eslint-plugin-react-hooks": "^6.0.0",
-        "eslint-plugin-unicorn": "^60.0.0",
+        "eslint-plugin-unicorn": "^61.0.0",
         "html-webpack-plugin": "^5.5.0",
         "image-size": "^2.0.0",
         "mini-css-extract-plugin": "^2.7.5",

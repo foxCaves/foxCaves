@@ -27,9 +27,12 @@ const NewsList: React.FC<{
         return <h4>Loading...</h4>;
     }
 
-    return Array.from(news.values())
+    const ret = Array.from(news.values())
+        // eslint-disable-next-line unicorn/no-array-sort
         .sort(sortByDate)
         .map((newsItem) => <NewsView key={newsItem.id} newsItem={newsItem} />);
+
+    return ret;
 };
 
 export const HomePage: React.FC = () => {
