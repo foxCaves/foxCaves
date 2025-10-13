@@ -31,7 +31,7 @@
         "@playwright/test": "^1.32.0",
         "@types/node": "^24.0.3",
         "@types/react": "19.2.2",
-        "@types/react-dom": "19.2.1",
+        "@types/react-dom": "19.2.2",
         "axios": "^1.7.9",
         "content-replace-webpack-plugin": "^1.0.0",
         "copy-webpack-plugin": "^13.0.0",
