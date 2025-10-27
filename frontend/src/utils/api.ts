@@ -62,9 +62,7 @@ export class APIAccessor {
     }
 
     public async fetch(url: string, info?: APIRequestInfo): Promise<unknown> {
-        const init: RequestInit = {};
-
-        init.headers = { ...info?.headers };
+        const init: RequestInit = { headers: { ...info?.headers } };
 
         if (info) {
             init.method = info.method;
