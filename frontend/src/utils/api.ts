@@ -62,7 +62,7 @@ export class APIAccessor {
     }
 
     public async fetch(url: string, info?: APIRequestInfo): Promise<unknown> {
-        const headers = { ...info?.headers };
+        const headers: Record<string, string> = { ...info?.headers };
         const init: RequestInit = { headers };
 
         if (info) {
