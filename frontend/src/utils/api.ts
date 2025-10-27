@@ -62,21 +62,23 @@ export class APIAccessor {
     }
 
     public async fetch(url: string, info?: APIRequestInfo): Promise<unknown> {
-        const init: RequestInit = { headers: { ...info?.headers } };
+        const init: RequestInit = {};
+        const headers = { ...info?.headers };
+        init.headers = headers;
 
         if (info) {
             init.method = info.method;
 
             if (info.data) {
                 init.body = JSON.stringify(info.data);
-                init.headers['Content-Type'] = 'application/json';
+                headers['Content-Type'] = 'application/json';
             } else if (info.body) {
                 init.body = info.body;
             }
         }
 
         if (!info?.disableCSRF && !APIAccessor.isReadOnlyMethod(init.method)) {
-            init.headers['CSRF-Token'] = await this.getCSRFToken();
+            headers['CSRF-Token'] = await this.getCSRFToken();
         }
 
         const res = await fetch(url, init);
