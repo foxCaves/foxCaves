@@ -10,10 +10,11 @@ local select = select
 local M = {}
 require('foxcaves.module_helper').setmodenv()
 
-config.charset = "utf8"
+config.charset = 'utf8'
 config.max_packet_size = 1024 * 1024
 
-M.TIME_COLUMNS = 'DATE_FORMAT(updated_at, "%%Y-%%m-%%dT%%H:%%i:%%sZ") as updated_at_str, DATE_FORMAT(created_at, "%%Y-%%m-%%dT%%H:%%i:%%sZ") as created_at_str'
+M.TIME_COLUMNS =
+    'DATE_FORMAT(updated_at, "%%Y-%%m-%%dT%%H:%%i:%%sZ") as updated_at_str, DATE_FORMAT(created_at, "%%Y-%%m-%%dT%%H:%%i:%%sZ") as created_at_str'
 M.TIME_COLUMNS_EXPIRING = 'DATE_FORMAT(expires_at, "%%Y-%%m-%%dT%%H:%%i:%%sZ") as expires_at_str, ' .. M.TIME_COLUMNS
 
 local db_meta = {}
