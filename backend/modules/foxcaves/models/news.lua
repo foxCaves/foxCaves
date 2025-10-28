@@ -84,35 +84,22 @@ function news_mt:delete()
 end
 
 function news_mt:save()
-    local res, primary_push_action
+    local primary_push_action
+    local res =
+        database.get_shared():query_single(
+            'REPLACE INTO news (id, author, editor, title, content) VALUES (%s, %s, %s, %s, %s) RETURNING ' .. database.TIME_COLUMNS,
+            nil,
+            self.id,
+            self.author,
+            self.editor,
+            self.title,
+            self.content
+        )
+
     if self.not_in_db then
-        res =
-            database.get_shared():query_single(
-                'INSERT INTO news (id, author, editor, title, content) VALUES (%s, %s, %s, %s, %s) RETURNING ' .. database.TIME_COLUMNS,
-                nil,
-                self.id,
-                self.author,
-                self.editor,
-                self.title,
-                self.content
-            )
         primary_push_action = 'create'
         self.not_in_db = nil
     else
-        res =
-            database.get_shared():query_single(
-                'UPDATE news \
-                SET author = %s, editor = %s, title = %s, content = %s, \
-                updated_at = now() \
-                WHERE id = %s \
-                RETURNING ' .. database.TIME_COLUMNS,
-                nil,
-                self.author,
-                self.editor,
-                self.title,
-                self.content,
-                self.id
-            )
         primary_push_action = 'update'
     end
 

@@ -363,43 +363,27 @@ function file_mt:migrate(destination_storage_name)
 end
 
 function file_mt:save(force_push_action)
-    local res, primary_push_action
+    local primary_push_action
+    local res =
+        database.get_shared():query_single(
+            'REPLACE INTO files \
+            (id, name, owner, size, thumbnail_mimetype, uploaded, storage, expires_at) VALUES (%s, %s, %s, %s, %s, %s, %s, %s) \
+            RETURNING ' .. database.TIME_COLUMNS_EXPIRING,
+            nil,
+            self.id,
+            self.name,
+            self.owner,
+            self.size,
+            self.thumbnail_mimetype or '',
+            self.uploaded,
+            self.storage,
+            self.expires_at or ngx.null
+        )
+
     if self.not_in_db then
-        res =
-            database.get_shared():query_single(
-                'INSERT INTO files \
-                (id, name, owner, size, thumbnail_mimetype, uploaded, storage, expires_at) VALUES (%s, %s, %s, %s, %s, %s, %s, %s) \
-                RETURNING ' .. database.TIME_COLUMNS_EXPIRING,
-                nil,
-                self.id,
-                self.name,
-                self.owner,
-                self.size,
-                self.thumbnail_mimetype or '',
-                self.uploaded,
-                self.storage,
-                self.expires_at or ngx.null
-            )
         primary_push_action = 'create'
         self.not_in_db = nil
     else
-        res =
-            database.get_shared():query_single(
-                'UPDATE files \
-                SET name = %s, owner = %s, size = %s, thumbnail_mimetype = %s, uploaded = %s, storage = %s, \
-                expires_at = %s, updated_at = now() \
-                WHERE id = %s \
-                RETURNING ' .. database.TIME_COLUMNS_EXPIRING,
-                nil,
-                self.name,
-                self.owner,
-                self.size,
-                self.thumbnail_mimetype or '',
-                self.uploaded,
-                self.storage,
-                self.expires_at or ngx.null,
-                self.id
-            )
         primary_push_action = 'update'
     end
 

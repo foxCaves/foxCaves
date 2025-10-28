@@ -261,6 +261,9 @@ return function()
     local isok, err_info = xpcall(router.execute, debug_trace)
     if not isok then
         ngx.header['Content-Type'] = 'text/html'
+        if type(err_info) ~= 'table' then
+            return isok, tostring(err_info), nil
+        end
         return isok, err_info[1], err_info[2]
     end
     return true
