@@ -1,6 +1,6 @@
-local config = require('foxcaves.config').postgres
+local config = require('foxcaves.config').mysql
 local hooks = require('foxcaves.hooks')
-local pgmoon = require('pgmoon')
+local mysql = require('resty.mysql')
 local error = error
 local ngx = ngx
 local unpack = unpack
@@ -10,12 +10,12 @@ local select = select
 local M = {}
 require('foxcaves.module_helper').setmodenv()
 
-config.socket_type = 'nginx'
+config.charset = 'utf8'
+config.max_packet_size = 1024 * 1024
 
 M.TIME_COLUMNS =
-    "to_json(updated_at at time zone 'utc') as updated_at_str, " .. "to_json(created_at at time zone 'utc') as created_at_str"
-
-M.TIME_COLUMNS_EXPIRING = "to_json(expires_at at time zone 'utc') as expires_at_str, " .. M.TIME_COLUMNS
+    'DATE_FORMAT(updated_at, "%%Y-%%m-%%dT%%H:%%i:%%sZ") as updated_at_str, DATE_FORMAT(created_at, "%%Y-%%m-%%dT%%H:%%i:%%sZ") as created_at_str'
+M.TIME_COLUMNS_EXPIRING = 'DATE_FORMAT(expires_at, "%%Y-%%m-%%dT%%H:%%i:%%sZ") as expires_at_str, ' .. M.TIME_COLUMNS
 
 local db_meta = {}
 function db_meta:query(query, options, ...)
@@ -30,7 +30,7 @@ function db_meta:query(query, options, ...)
             if v == nil or v == ngx.null then
                 db_args[i] = 'NULL'
             else
-                db_args[i] = self.db:escape_literal(v)
+                db_args[i] = ngx.quote_sql_str(v)
             end
         end
         query = query:format(unpack(db_args))
@@ -38,10 +38,13 @@ function db_meta:query(query, options, ...)
 
     if options then
         if options.order_by then
+            local res = ngx.re.match(options.order_by.column, '^[a-z_]+$', 'o')
+            if not res then
+                error('Invalid order_by column: ' .. options.order_by.column)
+            end
+
             query =
-                query .. ' ORDER BY ' .. self.db:escape_identifier(
-                    options.order_by.column
-                ) .. ' ' .. (options.order_by.desc and 'DESC' or 'ASC')
+                query .. ' ORDER BY `' .. options.order_by.column .. '` ' .. (options.order_by.desc and 'DESC' or 'ASC')
         end
 
         -- No need to escape these, Lua would error if they were not numbers
@@ -55,7 +58,7 @@ function db_meta:query(query, options, ...)
 
     local res, err = self.db:query(query)
     if not res then
-        error('Postgres query error: ' .. err .. '! During query: ' .. query)
+        error('MySQL query error: ' .. err .. '! During query: ' .. query)
     end
     return res
 end
@@ -68,14 +71,18 @@ end
 db_meta.__index = db_meta
 
 function M.make()
-    local database = pgmoon.new(config)
-    local _, err = database:connect()
-    if err then
-        error('Error connecting to Postgres: ' .. err)
+    local database, err = mysql:new()
+    if not database then
+        error('Error creating MySQL object: ' .. err)
+    end
+    local ok
+    ok, err = database:connect(config)
+    if not ok then
+        error('Error connecting to MySQL: ' .. err)
     end
 
     hooks.register_ctx('context_end', function()
-        database:keepalive(config.keepalive_timeout or 10000, config.keepalive_count or 10)
+        database:set_keepalive(config.keepalive_timeout or 10000, config.keepalive_count or 10)
     end)
 
     return setmetatable({ db = database }, db_meta)

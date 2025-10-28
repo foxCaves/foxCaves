@@ -16,6 +16,7 @@ local ngx = ngx
 local next = next
 local setmetatable = setmetatable
 local error = error
+local tonumber = tonumber
 
 local file_mt = {}
 
@@ -25,7 +26,7 @@ local file_model = {
         EXT_MAX_LEN = 32,
         THUMBNAIL_MAX_SIZE = require('foxcaves.config').files.thumbnail_max_size,
     },
-    expired_query = "uploaded = 0 AND created_at < ((now() - (INTERVAL '1 day')) at time zone 'utc')",
+    expired_query = 'uploaded = 0 AND created_at < (now() - INTERVAL 1 day)',
 }
 
 require('foxcaves.module_helper').setmodenv()
@@ -59,6 +60,7 @@ end
 local function makefilemt(file)
     database.transfer_time_columns(file, file)
     file.not_in_db = nil
+    file.size = tonumber(file.size)
     setmetatable(file, file_mt)
     return file
 end
@@ -136,7 +138,7 @@ function file_model.get_by_id(id)
 
     local files = file_model.get_by_query('id = %s', nil, id)
     if files and files[1] then
-        return makefilemt(files[1])
+        return files[1]
     end
     return nil
 end
@@ -363,43 +365,35 @@ function file_mt:migrate(destination_storage_name)
 end
 
 function file_mt:save(force_push_action)
-    local res, primary_push_action
+    local primary_push_action
+    local res =
+        database.get_shared():query_single(
+            'INSERT INTO files \
+            (id, name, owner, size, thumbnail_mimetype, uploaded, storage, expires_at) VALUES (%s, %s, %s, %s, %s, %s, %s, %s) \
+            ON DUPLICATE KEY UPDATE \
+            name = VALUES(name), \
+            owner = VALUES(owner), \
+            size = VALUES(size), \
+            thumbnail_mimetype = VALUES(thumbnail_mimetype), \
+            uploaded = VALUES(uploaded), \
+            storage = VALUES(storage), \
+            expires_at = VALUES(expires_at) \
+            RETURNING ' .. database.TIME_COLUMNS_EXPIRING,
+            nil,
+            self.id,
+            self.name,
+            self.owner,
+            self.size,
+            self.thumbnail_mimetype or '',
+            self.uploaded,
+            self.storage,
+            self.expires_at or ngx.null
+        )
+
     if self.not_in_db then
-        res =
-            database.get_shared():query_single(
-                'INSERT INTO files \
-                (id, name, owner, size, thumbnail_mimetype, uploaded, storage, expires_at) VALUES (%s, %s, %s, %s, %s, %s, %s, %s) \
-                RETURNING ' .. database.TIME_COLUMNS_EXPIRING,
-                nil,
-                self.id,
-                self.name,
-                self.owner,
-                self.size,
-                self.thumbnail_mimetype or '',
-                self.uploaded,
-                self.storage,
-                self.expires_at or ngx.null
-            )
         primary_push_action = 'create'
         self.not_in_db = nil
     else
-        res =
-            database.get_shared():query_single(
-                "UPDATE files \
-                SET name = %s, owner = %s, size = %s, thumbnail_mimetype = %s, uploaded = %s, storage = %s, \
-                expires_at = %s, updated_at = (now() at time zone 'utc') \
-                WHERE id = %s \
-                RETURNING " .. database.TIME_COLUMNS_EXPIRING,
-                nil,
-                self.name,
-                self.owner,
-                self.size,
-                self.thumbnail_mimetype or '',
-                self.uploaded,
-                self.storage,
-                self.expires_at or ngx.null,
-                self.id
-            )
         primary_push_action = 'update'
     end
 

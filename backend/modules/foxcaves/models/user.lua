@@ -12,6 +12,7 @@ local totp = require('foxcaves.totp')
 local setmetatable = setmetatable
 local ngx = ngx
 local next = next
+local tonumber = tonumber
 
 local user_mt = {}
 local user_model = {}
@@ -27,6 +28,12 @@ local STORAGE_BASE = 1 * GIGABYTE
 local function makeusermt(user)
     database.transfer_time_columns(user, user)
     user.not_in_db = nil
+    local fields = user_model.get_private_fields()
+    for field, field_cfg in next, fields do
+        if field_cfg.type == 'integer' then
+            user[field] = tonumber(user[field])
+        end
+    end
     setmetatable(user, user_mt)
     return user
 end
@@ -188,7 +195,7 @@ function user_mt:calculate_storage_used()
             nil,
             self.id
         )
-    return res and res.storage_used or 0
+    return res and tonumber(res.storage_used) or 0
 end
 
 function user_mt:has_free_storage_for(size)
@@ -225,48 +232,40 @@ function user_mt:save()
         self.approved = 1
     end
 
-    local res, primary_push_action
+    local primary_push_action
+    local res =
+        database.get_shared():query_single(
+            'INSERT INTO users \
+            (id, username, email, password, totp_secret, security_version, api_key, email_valid, approved, storage_quota) VALUES \
+            (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s) \
+            ON DUPLICATE KEY UPDATE \
+            username = VALUES(username), \
+            email = VALUES(email), \
+            password = VALUES(password), \
+            totp_secret = VALUES(totp_secret), \
+            security_version = VALUES(security_version), \
+            api_key = VALUES(api_key), \
+            email_valid = VALUES(email_valid), \
+            approved = VALUES(approved), \
+            storage_quota = VALUES(storage_quota) \
+            RETURNING ' .. database.TIME_COLUMNS,
+            nil,
+            self.id,
+            self.username,
+            self.email,
+            self.password,
+            self.totp_secret,
+            self.security_version,
+            self.api_key,
+            self.email_valid,
+            self.approved,
+            self.storage_quota
+        )
+
     if self.not_in_db then
-        res =
-            database.get_shared():query_single(
-                'INSERT INTO users \
-                (id, username, email, password, totp_secret, security_version, api_key, email_valid, approved, storage_quota) VALUES \
-                (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s) \
-                RETURNING ' .. database.TIME_COLUMNS,
-                nil,
-                self.id,
-                self.username,
-                self.email,
-                self.password,
-                self.totp_secret,
-                self.security_version,
-                self.api_key,
-                self.email_valid,
-                self.approved,
-                self.storage_quota
-            )
         primary_push_action = 'create'
         self.not_in_db = nil
     else
-        res =
-            database.get_shared():query_single(
-                "UPDATE users \
-                SET username = %s, email = %s, password = %s, totp_secret = %s, security_version = %s, api_key = %s, email_valid = %s, approved = %s, storage_quota = %s, \
-                    updated_at = (now() at time zone 'utc') \
-                WHERE id = %s \
-                RETURNING " .. database.TIME_COLUMNS,
-                nil,
-                self.username,
-                self.email,
-                self.password,
-                self.totp_secret,
-                self.security_version,
-                self.api_key,
-                self.email_valid,
-                self.approved,
-                self.storage_quota,
-                self.id
-            )
         primary_push_action = 'update'
     end
 

@@ -8,12 +8,12 @@ services:
   redis:
     volumes:
       - redis:/data
-  postgres:
+  mysql:
     volumes:
-      - postgres:/var/lib/postgresql/data
+      - mysql:/var/lib/mysql
 
 volumes:
   site_config: {}
   site_storage: {}
   redis: {}
-  postgres: {}
+  mysql: {}

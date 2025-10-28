@@ -92,7 +92,7 @@ function link_model.get_by_id(id)
 
     local links = link_model.get_by_query('id = %s', nil, id)
     if links and links[1] then
-        return makelinkmt(links[1])
+        return links[1]
     end
     return nil
 end
@@ -123,33 +123,25 @@ function link_mt:set_target(target)
 end
 
 function link_mt:save()
-    local res, primary_push_action
+    local primary_push_action
+    local res =
+        database.get_shared():query_single(
+            'INSERT INTO links (id, owner, target, expires_at) VALUES (%s, %s, %s, %s) ON DUPLICATE KEY UPDATE \
+            owner = VALUES(owner), \
+            target = VALUES(target), \
+            expires_at = VALUES(expires_at) \
+            RETURNING ' .. database.TIME_COLUMNS_EXPIRING,
+            nil,
+            self.id,
+            self.owner,
+            self.target,
+            self.expires_at or ngx.null
+        )
+
     if self.not_in_db then
-        res =
-            database.get_shared():query_single(
-                'INSERT INTO links (id, owner, target, expires_at) VALUES (%s, %s, %s, %s)' .. ' RETURNING ' .. database.TIME_COLUMNS_EXPIRING,
-                nil,
-                self.id,
-                self.owner,
-                self.target,
-                self.expires_at or ngx.null
-            )
         primary_push_action = 'create'
         self.not_in_db = nil
     else
-        res =
-            database.get_shared():query_single(
-                "UPDATE links \
-                SET owner = %s, target = %s, \
-                expires_at = %s, updated_at = (now() at time zone 'utc') \
-                WHERE id = %s \
-                RETURNING " .. database.TIME_COLUMNS_EXPIRING,
-                nil,
-                self.owner,
-                self.target,
-                self.expires_at or ngx.null,
-                self.id
-            )
         primary_push_action = 'update'
     end
 
