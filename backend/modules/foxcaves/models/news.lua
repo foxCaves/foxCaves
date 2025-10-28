@@ -50,7 +50,7 @@ function news_model.get_by_id(id)
 
     local news = news_model.get_by_query('id = %s', nil, id)
     if news and news[1] then
-        return makenewsmt(news[1])
+        return news[1]
     end
     return nil
 end

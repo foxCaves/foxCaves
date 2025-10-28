@@ -92,7 +92,7 @@ function link_model.get_by_id(id)
 
     local links = link_model.get_by_query('id = %s', nil, id)
     if links and links[1] then
-        return makelinkmt(links[1])
+        return links[1]
     end
     return nil
 end

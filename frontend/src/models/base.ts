@@ -1,6 +1,6 @@
 export class BaseModel {
-    public created_at: Date = new Date();
-    public updated_at: Date = new Date();
+    public created_at: Date = new Date(0);
+    public updated_at: Date = new Date(0);
 
     public convertDates(): void {
         this.created_at = new Date(this.created_at);
