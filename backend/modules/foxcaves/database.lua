@@ -10,6 +10,9 @@ local select = select
 local M = {}
 require('foxcaves.module_helper').setmodenv()
 
+config.charset = "utf8"
+config.max_packet_size = 1024 * 1024
+
 M.TIME_COLUMNS = 'JSON_VALUE(updated_at, "$") as updated_at_str, JSON_VALUE(created_at, "$") as created_at_str'
 M.TIME_COLUMNS_EXPIRING = 'JSON_VALUE(expires_at, "$") as expires_at_str, ' .. M.TIME_COLUMNS
 

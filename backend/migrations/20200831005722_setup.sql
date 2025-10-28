@@ -1,17 +1,17 @@
 CREATE TABLE users (
-    id UUID PRIMARY KEY,
-    username VARCHAR(255),
-    email VARCHAR(255),
-    password VARCHAR(255),
+    id UUID NOT NULL PRIMARY KEY,
+    username VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    password VARCHAR(255) NOT NULL,
     email_valid INT NOT NULL,
     storage_quota BIGINT NOT NULL,
     security_version INT NOT NULL,
-    api_key VARCHAR(255),
+    api_key VARCHAR(255) NOT NULL,
     admin INT NOT NULL DEFAULT 0,
     approved INT NOT NULL,
     totp_secret VARCHAR(255) NOT NULL,
-    created_at timestamp,
-    updated_at timestamp
+    created_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
 CREATE UNIQUE INDEX username ON users(username);
@@ -19,16 +19,16 @@ CREATE UNIQUE INDEX email ON users(email);
 
 
 CREATE TABLE files (
-    id VARCHAR(32) PRIMARY KEY,
-    owner UUID REFERENCES users (id),
-    name VARCHAR(255),
-    size BIGINT,
-    thumbnail_mimetype VARCHAR(255),
+    id VARCHAR(32) NOT NULL PRIMARY KEY,
+    owner UUID NOT NULL REFERENCES users (id) ON UPDATE CASCADE,
+    name VARCHAR(255) NOT NULL,
+    size BIGINT NOT NULL,
+    thumbnail_mimetype VARCHAR(255) NOT NULL,
     uploaded INT NOT NULL,
     storage VARCHAR(16) NOT NULL,
-    created_at timestamp,
-    updated_at timestamp,
-    expires_at timestamp
+    created_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    expires_at timestamp NULL
 );
 
 CREATE INDEX `owner` ON files(`owner`);
@@ -42,12 +42,12 @@ CREATE INDEX `size` ON files(`size`);
 
 
 CREATE TABLE links (
-    id VARCHAR(32) PRIMARY KEY,
-    owner UUID REFERENCES users (id),
-    target VARCHAR(4096),
-    created_at timestamp,
-    updated_at timestamp,
-    expires_at timestamp
+    id VARCHAR(32) NOT NULL PRIMARY KEY,
+    owner UUID NOT NULL REFERENCES users (id) ON UPDATE CASCADE,
+    target VARCHAR(4096) NOT NULL,
+    created_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    expires_at timestamp NULL
 );
 
 CREATE INDEX `owner` ON links(`owner`);
@@ -58,13 +58,13 @@ CREATE INDEX `expires_at` ON links(`expires_at`);
 
 
 CREATE TABLE news (
-    id UUID PRIMARY KEY,
-    title TEXT,
-    content TEXT,
-    author UUID REFERENCES users(id),
-    editor UUID NULL REFERENCES users(id),
-    created_at timestamp,
-    updated_at timestamp
+    id UUID NOT NULL PRIMARY KEY,
+    title TEXT NOT NULL,
+    content TEXT NOT NULL,
+    author UUID NOT NULL REFERENCES users(id) ON UPDATE CASCADE,
+    editor UUID NULL REFERENCES users(id) ON UPDATE CASCADE,
+    created_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
 CREATE INDEX `author` ON news(`author`);
