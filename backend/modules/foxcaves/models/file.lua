@@ -16,6 +16,7 @@ local ngx = ngx
 local next = next
 local setmetatable = setmetatable
 local error = error
+local tonumber = tonumber
 
 local file_mt = {}
 
@@ -59,6 +60,7 @@ end
 local function makefilemt(file)
     database.transfer_time_columns(file, file)
     file.not_in_db = nil
+    file.size = tonumber(file.size)
     setmetatable(file, file_mt)
     return file
 end
