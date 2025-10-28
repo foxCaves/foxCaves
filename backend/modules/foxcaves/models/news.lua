@@ -87,7 +87,12 @@ function news_mt:save()
     local primary_push_action
     local res =
         database.get_shared():query_single(
-            'REPLACE INTO news (id, author, editor, title, content) VALUES (%s, %s, %s, %s, %s) RETURNING ' .. database.TIME_COLUMNS,
+            'INSERT INTO news (id, author, editor, title, content) VALUES (%s, %s, %s, %s, %s) ON DUPLICATE KEY UPDATE \
+            author = VALUES(author), \
+            editor = VALUES(editor), \
+            title = VALUES(title), \
+            content = VALUES(content) \
+            RETURNING ' .. database.TIME_COLUMNS,
             nil,
             self.id,
             self.author,

@@ -126,7 +126,11 @@ function link_mt:save()
     local primary_push_action
     local res =
         database.get_shared():query_single(
-            'REPLACE INTO links (id, owner, target, expires_at) VALUES (%s, %s, %s, %s)' .. ' RETURNING ' .. database.TIME_COLUMNS_EXPIRING,
+            'INSERT INTO links (id, owner, target, expires_at) VALUES (%s, %s, %s, %s) ON DUPLICATE KEY UPDATE \
+            owner = VALUES(owner), \
+            target = VALUES(target), \
+            expires_at = VALUES(expires_at) \
+            RETURNING ' .. database.TIME_COLUMNS_EXPIRING,
             nil,
             self.id,
             self.owner,

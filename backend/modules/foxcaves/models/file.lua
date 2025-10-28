@@ -368,8 +368,16 @@ function file_mt:save(force_push_action)
     local primary_push_action
     local res =
         database.get_shared():query_single(
-            'REPLACE INTO files \
+            'INSERT INTO files \
             (id, name, owner, size, thumbnail_mimetype, uploaded, storage, expires_at) VALUES (%s, %s, %s, %s, %s, %s, %s, %s) \
+            ON DUPLICATE KEY UPDATE \
+            name = VALUES(name), \
+            owner = VALUES(owner), \
+            size = VALUES(size), \
+            thumbnail_mimetype = VALUES(thumbnail_mimetype), \
+            uploaded = VALUES(uploaded), \
+            storage = VALUES(storage), \
+            expires_at = VALUES(expires_at) \
             RETURNING ' .. database.TIME_COLUMNS_EXPIRING,
             nil,
             self.id,

@@ -235,9 +235,19 @@ function user_mt:save()
     local primary_push_action
     local res =
         database.get_shared():query_single(
-            'REPLACE INTO users \
+            'INSERT INTO users \
             (id, username, email, password, totp_secret, security_version, api_key, email_valid, approved, storage_quota) VALUES \
             (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s) \
+            ON DUPLICATE KEY UPDATE \
+            username = VALUES(username), \
+            email = VALUES(email), \
+            password = VALUES(password), \
+            totp_secret = VALUES(totp_secret), \
+            security_version = VALUES(security_version), \
+            api_key = VALUES(api_key), \
+            email_valid = VALUES(email_valid), \
+            approved = VALUES(approved), \
+            storage_quota = VALUES(storage_quota) \
             RETURNING ' .. database.TIME_COLUMNS,
             nil,
             self.id,
