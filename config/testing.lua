@@ -3,12 +3,12 @@ return {
         host = "redis",
         port = 6379
     },
-    postgres = {
-        host = "postgres",
-        port = 5432,
-        user = "postgres",
-        database = "postgres",
-        password = "postgres",
+    mysql = {
+        host = "mysql",
+        port = 3306,
+        user = "foxcaves",
+        database = "foxcaves",
+        password = "foxcaves",
     },
     email = {
         host = "localhost",

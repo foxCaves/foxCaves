@@ -28,18 +28,19 @@ services:
       test: redis-cli PING
       interval: 60s
       timeout: 10s
-  postgres:
-    image: postgres:alpine
+  mysql:
+    image: mariadb:latest
     restart: unless-stopped
     sysctls:
       - net.ipv6.conf.all.disable_ipv6=1
     environment:
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: postgres
-      POSTGRES_USER: postgres
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: foxcaves
+      MYSQL_USER: foxcaves
+      MYSQL_PASSWORD: foxcaves
     volumes:
-      - ./data/postgres:/var/lib/postgresql/data
+      - ./data/mysql:/var/lib/mysql
     healthcheck:
-      test: su postgres -c pg_isready
+      test: mysqladmin ping -h localhost -u root -proot
       interval: 60s
       timeout: 10s

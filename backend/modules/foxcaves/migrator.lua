@@ -1,7 +1,7 @@
-local config = require('foxcaves.config').postgres
+local config = require('foxcaves.config').mysql
 local consts = require('foxcaves.consts')
 local hooks = require('foxcaves.hooks')
-local pgmoon = require('pgmoon')
+local mysql = require('resty.mysql')
 local lfs = require('lfs')
 local table = table
 local ngx = ngx
@@ -49,10 +49,13 @@ local function process_migration_dir(db, ran_migrations, dir)
 end
 
 local function setup_db()
-    local db = pgmoon.new(config)
-    local _, err = db:connect()
-    if err then
-        error(err)
+    local db, err = mysql:new()
+    if not db then
+        error('Error creating MySQL object: ' .. err)
+    end
+    local ok, err = db:connect(config)
+    if not ok then
+        error('Error connecting to MySQL: ' .. err)
     end
 
     db_query_err(db, 'CREATE TABLE IF NOT EXISTS migrations (name VARCHAR(255) PRIMARY KEY);')
@@ -65,7 +68,7 @@ local function setup_db()
 
     process_migration_dir(db, ran_migrations, consts.LUA_ROOT .. '/migrations')
 
-    db:disconnect()
+    db:close()
 end
 
 local schedule_try_setup_db

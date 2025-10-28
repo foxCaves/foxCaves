@@ -1,6 +1,6 @@
-local config = require('foxcaves.config').postgres
+local config = require('foxcaves.config').mysql
 local hooks = require('foxcaves.hooks')
-local pgmoon = require('pgmoon')
+local mysql = require('resty.mysql')
 local error = error
 local ngx = ngx
 local unpack = unpack
@@ -68,10 +68,13 @@ end
 db_meta.__index = db_meta
 
 function M.make()
-    local database = pgmoon.new(config)
-    local _, err = database:connect()
-    if err then
-        error('Error connecting to Postgres: ' .. err)
+    local database, err = mysql:new()
+    if not database then
+        error('Error creating MySQL object: ' .. err)
+    end
+    local ok, err = database:connect(config)
+    if not ok then
+        error('Error connecting to MySQL: ' .. err)
     end
 
     hooks.register_ctx('context_end', function()
