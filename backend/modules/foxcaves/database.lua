@@ -13,8 +13,8 @@ require('foxcaves.module_helper').setmodenv()
 config.charset = "utf8"
 config.max_packet_size = 1024 * 1024
 
-M.TIME_COLUMNS = 'JSON_VALUE(updated_at, "$") as updated_at_str, JSON_VALUE(created_at, "$") as created_at_str'
-M.TIME_COLUMNS_EXPIRING = 'JSON_VALUE(expires_at, "$") as expires_at_str, ' .. M.TIME_COLUMNS
+M.TIME_COLUMNS = 'DATE_FORMAT(updated_at, "%%Y-%%m-%%dT%%H:%%i:%%sZ") as updated_at_str, DATE_FORMAT(created_at, "%%Y-%%m-%%dT%%H:%%i:%%sZ") as created_at_str'
+M.TIME_COLUMNS_EXPIRING = 'DATE_FORMAT(expires_at, "%%Y-%%m-%%dT%%H:%%i:%%sZ") as expires_at_str, ' .. M.TIME_COLUMNS
 
 local db_meta = {}
 function db_meta:query(query, options, ...)
