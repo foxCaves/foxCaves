@@ -55,7 +55,7 @@ function db_meta:query(query, options, ...)
 
     local res, err = self.db:query(query)
     if not res then
-        error('Postgres query error: ' .. err .. '! During query: ' .. query)
+        error('MySQL query error: ' .. err .. '! During query: ' .. query)
     end
     return res
 end

@@ -6,7 +6,7 @@ services:
     sysctls:
       - net.ipv6.conf.all.disable_ipv6=1
     links:
-      - postgres:postgres
+      - mysql:mysql
       - redis:redis
     volumes:
       - ./config:/var/www/foxcaves/config
