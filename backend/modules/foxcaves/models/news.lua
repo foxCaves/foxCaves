@@ -101,11 +101,11 @@ function news_mt:save()
     else
         res =
             database.get_shared():query_single(
-                "UPDATE news \
+                'UPDATE news \
                 SET author = %s, editor = %s, title = %s, content = %s, \
-                updated_at = (now() at time zone 'utc') \
+                updated_at = now() \
                 WHERE id = %s \
-                RETURNING " .. database.TIME_COLUMNS,
+                RETURNING ' .. database.TIME_COLUMNS,
                 nil,
                 self.author,
                 self.editor,

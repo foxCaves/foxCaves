@@ -10,12 +10,8 @@ local select = select
 local M = {}
 require('foxcaves.module_helper').setmodenv()
 
-config.socket_type = 'nginx'
-
-M.TIME_COLUMNS =
-    "to_json(updated_at at time zone 'utc') as updated_at_str, " .. "to_json(created_at at time zone 'utc') as created_at_str"
-
-M.TIME_COLUMNS_EXPIRING = "to_json(expires_at at time zone 'utc') as expires_at_str, " .. M.TIME_COLUMNS
+M.TIME_COLUMNS = 'JSON_VALUE(updated_at, "$") as updated_at_str, JSON_VALUE(created_at, "$") as created_at_str'
+M.TIME_COLUMNS_EXPIRING = 'JSON_VALUE(expires_at, "$") as expires_at_str, ' .. M.TIME_COLUMNS
 
 local db_meta = {}
 function db_meta:query(query, options, ...)
@@ -30,7 +26,7 @@ function db_meta:query(query, options, ...)
             if v == nil or v == ngx.null then
                 db_args[i] = 'NULL'
             else
-                db_args[i] = self.db:escape_literal(v)
+                db_args[i] = ngx.quote_sql_str(v)
             end
         end
         query = query:format(unpack(db_args))
@@ -38,10 +34,13 @@ function db_meta:query(query, options, ...)
 
     if options then
         if options.order_by then
+            local res = ngx.re.match(options.order_by.column, '^[a-z_]+$', 'o')
+            if not res then
+                error('Invalid order_by column: ' .. options.order_by.column)
+            end
+
             query =
-                query .. ' ORDER BY ' .. self.db:escape_identifier(
-                    options.order_by.column
-                ) .. ' ' .. (options.order_by.desc and 'DESC' or 'ASC')
+                query .. ' ORDER BY `' .. options.order_by.column .. '` ' .. (options.order_by.desc and 'DESC' or 'ASC')
         end
 
         -- No need to escape these, Lua would error if they were not numbers
@@ -72,13 +71,14 @@ function M.make()
     if not database then
         error('Error creating MySQL object: ' .. err)
     end
-    local ok, err = database:connect(config)
+    local ok
+    ok, err = database:connect(config)
     if not ok then
         error('Error connecting to MySQL: ' .. err)
     end
 
     hooks.register_ctx('context_end', function()
-        database:keepalive(config.keepalive_timeout or 10000, config.keepalive_count or 10)
+        database:set_keepalive(config.keepalive_timeout or 10000, config.keepalive_count or 10)
     end)
 
     return setmetatable({ db = database }, db_meta)

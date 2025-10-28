@@ -25,7 +25,7 @@ local file_model = {
         EXT_MAX_LEN = 32,
         THUMBNAIL_MAX_SIZE = require('foxcaves.config').files.thumbnail_max_size,
     },
-    expired_query = "uploaded = 0 AND created_at < ((now() - (INTERVAL '1 day')) at time zone 'utc')",
+    expired_query = 'uploaded = 0 AND created_at < (now() - INTERVAL 1 day)',
 }
 
 require('foxcaves.module_helper').setmodenv()
@@ -385,11 +385,11 @@ function file_mt:save(force_push_action)
     else
         res =
             database.get_shared():query_single(
-                "UPDATE files \
+                'UPDATE files \
                 SET name = %s, owner = %s, size = %s, thumbnail_mimetype = %s, uploaded = %s, storage = %s, \
-                expires_at = %s, updated_at = (now() at time zone 'utc') \
+                expires_at = %s, updated_at = now() \
                 WHERE id = %s \
-                RETURNING " .. database.TIME_COLUMNS_EXPIRING,
+                RETURNING ' .. database.TIME_COLUMNS_EXPIRING,
                 nil,
                 self.name,
                 self.owner,

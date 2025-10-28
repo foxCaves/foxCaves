@@ -24,7 +24,7 @@ function M.parse_expiry(args, model, prefix)
         if expires_in > 0 then
             local res =
                 database.get_shared():query_single(
-                    "SELECT to_json((now() + %s * (INTERVAL '1 second')) at time zone 'utc') as expires_at_str",
+                    'SELECT CAST((now() + %s * INTERVAL 1 second) AS JSON) AS expires_at_str',
                     nil,
                     expires_in
                 )
@@ -37,7 +37,7 @@ function M.parse_expiry(args, model, prefix)
 end
 
 function M.delete_expired(model)
-    local query = 'expires_at IS NOT NULL AND expires_at < now()'
+    local query = '(expires_at IS NOT NULL AND expires_at < now())'
     if model.expired_query then
         query = query .. ' OR (' .. model.expired_query .. ')'
     end

@@ -139,11 +139,11 @@ function link_mt:save()
     else
         res =
             database.get_shared():query_single(
-                "UPDATE links \
+                'UPDATE links \
                 SET owner = %s, target = %s, \
-                expires_at = %s, updated_at = (now() at time zone 'utc') \
+                expires_at = %s, updated_at = now() \
                 WHERE id = %s \
-                RETURNING " .. database.TIME_COLUMNS_EXPIRING,
+                RETURNING ' .. database.TIME_COLUMNS_EXPIRING,
                 nil,
                 self.owner,
                 self.target,

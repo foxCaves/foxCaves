@@ -2,14 +2,14 @@ CREATE TABLE news (
     id UUID PRIMARY KEY,
     title TEXT,
     content TEXT,
-    author UUID REFERENCES users (id),
-    editor UUID REFERENCES users (id) NULL,
-    created_at timestamp without time zone DEFAULT (now() at time zone 'utc'),
-    updated_at timestamp without time zone DEFAULT (now() at time zone 'utc')
+    author UUID REFERENCES users(id),
+    editor UUID NULL REFERENCES users(id),
+    created_at timestamp,
+    updated_at timestamp
 );
 
-CREATE INDEX ON news ("author");
-CREATE INDEX ON news ("editor");
+CREATE INDEX `author` ON news(`author`);
+CREATE INDEX `editor` ON news(`editor`);
 
-CREATE INDEX ON news ("created_at");
-CREATE INDEX ON news ("updated_at");
+CREATE INDEX `created_at` ON news(`created_at`);
+CREATE INDEX `updated_at` ON news(`updated_at`);

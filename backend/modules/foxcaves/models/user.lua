@@ -250,11 +250,11 @@ function user_mt:save()
     else
         res =
             database.get_shared():query_single(
-                "UPDATE users \
+                'UPDATE users \
                 SET username = %s, email = %s, password = %s, totp_secret = %s, security_version = %s, api_key = %s, email_valid = %s, approved = %s, storage_quota = %s, \
-                    updated_at = (now() at time zone 'utc') \
+                    updated_at = now() \
                 WHERE id = %s \
-                RETURNING " .. database.TIME_COLUMNS,
+                RETURNING ' .. database.TIME_COLUMNS,
                 nil,
                 self.username,
                 self.email,
