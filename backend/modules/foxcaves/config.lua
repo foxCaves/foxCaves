@@ -8,6 +8,8 @@ local function load_config_file(name)
     end
     func = setfenv(func, {
         os = { getenv = os.getenv },
+        tostring = tostring,
+        tonumber = tonumber,
     })
     return func()
 end
