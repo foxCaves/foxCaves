@@ -6,7 +6,9 @@ local function load_config_file(name)
     if not func then
         error('Failed loding config: ' .. err)
     end
-    func = setfenv(func, {})
+    func = setfenv(func, {
+        os = { getenv = os.getenv },
+    })
     return func()
 end
 
