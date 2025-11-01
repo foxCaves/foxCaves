@@ -71,7 +71,7 @@ jobs:
         run: |
           set -ex
           HTTP_GET='curl -XGET -m 5 -s -f'
-          timeout 30s bash -c "until $HTTP_GET http://app.foxcaves:8080/api/v1/system/ready; do sleep 1; done" || true
+          timeout 30s bash -c "until $HTTP_GET http://app.foxcaves:8080/readyz; do sleep 1; done" || true
           timeout 30s bash -c "until $HTTP_GET http://app.foxcaves:8080/healthz; do sleep 1; done" || true
           $HTTP_GET -I http://app.foxcaves:8080/files
           $HTTP_GET -I http://app.foxcaves:8080/api/v1/system/info
