@@ -12,7 +12,7 @@ services:
       - ./config:/var/www/foxcaves/config
       - ./data/storage:/var/www/foxcaves/storage
     healthcheck:
-      test: 'curl -s -f --resolve "app.foxcaves:443:127.0.0.1" --insecure "https://app.foxcaves/api/v1/system/info" >/dev/null || exit 1'
+      test: 'curl -s -f --resolve "app.foxcaves:443:127.0.0.1" --insecure "https://app.foxcaves/healthz" >/dev/null || exit 1'
       interval: 60s
       timeout: 10s
     ports:
