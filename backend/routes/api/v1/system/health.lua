@@ -1,4 +1,4 @@
-R.register_route('/api/v1/system/health', 'GET', R.make_route_opts_anon(), function()
+R.register_route('/healthz', 'GET', R.make_route_opts_anon(), function()
     return { health = 'OK' }
 end)
 
