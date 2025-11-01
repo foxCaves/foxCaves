@@ -1,5 +1,8 @@
 resolver local=on;
 
+access_log off;
+log_not_found off;
+
 init_by_lua_file /var/www/foxcaves/lua/nginx_init.lua;
 init_worker_by_lua_file /var/www/foxcaves/lua/nginx_init_worker.lua;
 lua_socket_log_errors off;
