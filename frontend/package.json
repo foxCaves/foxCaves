@@ -30,7 +30,7 @@
         "@eslint/js": "^9.16.0",
         "@playwright/test": "^1.32.0",
         "@types/node": "^24.0.3",
-        "@types/react": "19.2.3",
+        "@types/react": "19.2.4",
         "@types/react-dom": "19.2.3",
         "axios": "^1.7.9",
         "content-replace-webpack-plugin": "^1.0.0",
