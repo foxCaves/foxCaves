@@ -25,7 +25,7 @@
     },
     "devDependencies": {
         "@cspell/eslint-plugin": "^9.0.0",
-        "@eslint/compat": "^1.2.4",
+        "@eslint/compat": "^2.0.0",
         "@eslint/eslintrc": "^3.2.0",
         "@eslint/js": "^9.16.0",
         "@playwright/test": "^1.32.0",
