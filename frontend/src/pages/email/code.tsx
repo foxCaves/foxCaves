@@ -39,6 +39,7 @@ export const EmailCodePage: React.FC = () => {
             return;
         }
 
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setLoading(true);
         sendCode().catch(logError);
     }, [loading, sendCode]);

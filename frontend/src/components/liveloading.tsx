@@ -292,6 +292,7 @@ export const LiveLoadingContainer: React.FC<LiveLoadingContainerInterface> = ({ 
             return;
         }
 
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setCurUserId(newUserId);
         setFiles(undefined);
         setLinks(undefined);

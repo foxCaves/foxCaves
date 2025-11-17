@@ -26,6 +26,7 @@ const TextView: React.FC<{
             return;
         }
 
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setDataLoading(true);
         fetch(src)
             .then(async (response) => response.text())
@@ -128,6 +129,7 @@ export const ViewPage: React.FC = () => {
             return;
         }
 
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setFileLoading(true);
         loadFile().catch(logError);
     }, [fileLoading, fileLoadDone, loadFile]);

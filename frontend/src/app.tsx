@@ -168,6 +168,7 @@ export const App: React.FC = () => {
             return;
         }
 
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setUserLoadStarted(true);
         refreshUser().then(() => {
             setUserLoadStarted(false);
