@@ -83,11 +83,13 @@ export const CaptchaContainer: React.FC<CustomRouteHandlerOptions> = ({ page, on
     }, [enabled, setData, onParamChange, setResponseText]);
 
     useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setReload();
     }, [resetFactor, setReload]);
 
     useEffect(() => {
         if (!enabled) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             setReload();
         }
     }, [enabled, setReload]);
@@ -97,6 +99,7 @@ export const CaptchaContainer: React.FC<CustomRouteHandlerOptions> = ({ page, on
             return;
         }
 
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setDataLoading(true);
 
         apiAccessor

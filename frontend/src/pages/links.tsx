@@ -113,6 +113,7 @@ export const LinksPage: React.FC = () => {
             return;
         }
 
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setLoading(true);
         refresh().then(() => {
             setLoading(false);
