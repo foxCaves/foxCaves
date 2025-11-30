@@ -16,7 +16,7 @@ on:
 jobs:
   lint:
     runs-on: ubuntu-24.04
-    uses: ./.github/workflows/lint.yml
+    uses: ./.forgejo/workflows/lint.yml
     secrets: inherit
   docker:
     runs-on: ubuntu-24.04
