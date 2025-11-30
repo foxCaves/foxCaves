@@ -1,26 +1,18 @@
 name: Test/Build
+
 concurrency:
   group: testbuild-${{ github.ref }}
   cancel-in-progress: true
+
 on:
   push:
     branches:
       - main
   pull_request:
-    types:
-      - opened
-      - reopened
-      - synchronize
-  merge_group: {}
-  workflow_call: {}
+
 jobs:
-  lint:
-    runs-on: ubuntu-24.04
-    uses: ./.forgejo/workflows/lint.yml
-    secrets: inherit
   docker:
     runs-on: ubuntu-24.04
-    needs: [lint]
     permissions:
       packages: write
       contents: read
