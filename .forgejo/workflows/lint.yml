@@ -42,7 +42,7 @@ jobs:
       - name: Check out the repo
         uses: https://data.forgejo.org/actions/checkout@v6
       - name: Lint backend
-        uses: https://github.com/nebularg/actions-luacheck@v1
+        uses: https://github.com/nebularg/actions-luacheck@v1.1.2
         with:
           path: backend
           annotate: error
