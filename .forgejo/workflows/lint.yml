@@ -9,20 +9,21 @@ on:
 
 jobs:
   frontend:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
       contents: read
       checks: write
     steps:
       - name: Check out the repo
-        uses: actions/checkout@v6
+        uses: https://data.forgejo.org/actions/checkout@v6
       - name: Set up Node.js
-        uses: actions/setup-node@v6
+        uses: https://data.forgejo.org/actions/setup-node@v6
         with:
           node-version: lts/*
           check-latest: true
           cache: npm
           cache-dependency-path: frontend/package-lock.json
+          token: ${{ secrets.EXT_GITHUB_TOKEN }}
       - name: Install Node.js dependencies
         run: npm ci
         working-directory: frontend
@@ -30,25 +31,26 @@ jobs:
         run: npm run lint
         working-directory: frontend
   backend:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
       contents: read
       checks: write
     steps:
       - name: Check out the repo
-        uses: actions/checkout@v6
+        uses: https://data.forgejo.org/actions/checkout@v6
       - name: Lint backend
-        uses: nebularg/actions-luacheck@v1
+        uses: https://github.com/nebularg/actions-luacheck@v1
         with:
           path: backend
           annotate: error
       - name: Set up Node.js
-        uses: actions/setup-node@v6
+        uses: https://data.forgejo.org/actions/setup-node@v6
         with:
           node-version: lts/*
           check-latest: true
           cache: npm
           cache-dependency-path: backend/package-lock.json
+          token: ${{ secrets.EXT_GITHUB_TOKEN }}
       - name: Install Node.js dependencies
         run: npm ci
         working-directory: backend
