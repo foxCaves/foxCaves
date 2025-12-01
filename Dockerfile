@@ -76,7 +76,7 @@ COPY --from=frontend_builder /opt/stage/build /usr/share/foxcaves/html
 
 RUN ln -s /usr/local/openresty/bin /usr/local/openresty/nginx/
 
-# Implant version
+# Implant environment variables
 ARG GIT_REVISION=UNKNOWN
 ENV GIT_REVISION=${GIT_REVISION}
 ENV FCV_LUA_ROOT=/usr/share/foxcaves/lua
