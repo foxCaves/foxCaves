@@ -25,7 +25,7 @@ chmod 700 "${FCV_STORAGE_ROOT}/acme/storage"
 
 export FCV_NGINX_ROOT="$(mktemp -d)"
 cp -r "${FCV_NGINX_TEMPLATE_ROOT}"/* "${FCV_NGINX_ROOT}"
-chmod -R 700 "${FCV_NGINX_ROOT}"
+chmod -R 755 "${FCV_NGINX_ROOT}"
 "${FCV_LUAJIT}/bin/luajit" "${FCV_LUA_ROOT}/nginx_configure.lua"
 
 mkdir -p "${FCV_NGINX_ROOT}/logs"
