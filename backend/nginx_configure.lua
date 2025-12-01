@@ -28,6 +28,7 @@ local nginx_configs =
         nginx_root .. '/basics.conf',
         nginx_root .. '/conf.d/foxcaves.conf',
         nginx_root .. '/conf.d/http-foxcaves.conf',
+        nginx_root .. '/conf.d/mime.conf',
         nginx_root .. '/csp-app.conf',
         nginx_root .. '/csp-cdn.conf',
         nginx_root .. '/listener.conf',

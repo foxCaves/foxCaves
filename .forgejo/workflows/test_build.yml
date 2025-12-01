@@ -77,9 +77,9 @@ jobs:
         run: |
           docker compose -f docker-compose.yml -f docker-compose.testing.yml logs
           docker compose -f docker-compose.yml -f docker-compose.testing.yml down
-      - name: Test results upload
-        uses: actions/upload-artifact@v5
-        if: always()
-        with:
-          name: playwright-test-results
-          path: frontend/test-results/
+      # - name: Test results upload
+      #   uses: actions/upload-artifact@v5
+      #   if: always()
+      #   with:
+      #     name: playwright-test-results
+      #     path: frontend/test-results/
