@@ -88,4 +88,4 @@ ENV CAPTCHA_FONT=/usr/share/fonts/opensans/OpenSans-Regular.ttf
 
 # Runtime environment setup
 EXPOSE 80 443 8080 8443
-ENTRYPOINT ["/bin/foxcaves" "--skip-env"]
+ENTRYPOINT ["/bin/foxcaves", "--skip-env"]
