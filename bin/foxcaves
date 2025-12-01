@@ -23,7 +23,7 @@ chmod 640 "${FCV_STORAGE_ROOT}/acme/account.key"
 chmod 700 "${FCV_STORAGE_ROOT}/acme/storage"
 # END SSL setup
 
-if [ "$(id -u)" -eq 0 ]; then
+if [ "$(id -u)" -eq '0' ]; then
     chown foxcaves:foxcaves "${FCV_STORAGE_ROOT}/storage"
     chown foxcaves:foxcaves -R "${FCV_STORAGE_ROOT}/acme"
 fi
