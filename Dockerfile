@@ -62,7 +62,6 @@ RUN git clone --depth 1 --branch 1.3.0 https://github.com/spacewander/lua-resty-
 
 # Container setup
 RUN adduser -u 1337 --disabled-password foxcaves
-COPY docker /
 COPY nginx /etc/nginx
 
 # Copy backend
