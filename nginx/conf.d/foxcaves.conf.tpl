@@ -19,7 +19,7 @@ set_real_ip_from unix:;
 real_ip_header proxy_protocol;
 
 server {
-    listen unix:/run/foxcaves-nginx-api.sock default;
+    listen unix:__FCV_NGINX_ROOT__/api.sock default;
     server_name __APP_DOMAIN__;
     include basics.conf;
     include csp-app.conf;
@@ -87,7 +87,7 @@ server {
         limit_except POST GET {
             deny all;
         }
-        proxy_pass http://unix:/run/foxcaves-nginx-api.sock;
+        proxy_pass http://unix:__FCV_NGINX_ROOT__/api.sock;
     }
 }
 

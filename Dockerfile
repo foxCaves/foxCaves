@@ -76,6 +76,7 @@ COPY --from=frontend_builder /opt/stage/build /usr/share/foxcaves/html
 # Implant version
 ARG GIT_REVISION=UNKNOWN
 ENV GIT_REVISION=${GIT_REVISION}
+ENV FCV_STORAGE_ROOT=/var/lib/foxcaves
 ENV FCV_LUA_ROOT=/usr/share/foxcaves/lua
 ENV FCV_FRONTEND_ROOT=/usr/share/foxcaves/html
 ENV FCV_NGINX_TEMPLATE_ROOT=/etc/nginx

@@ -1,5 +1,6 @@
 local autossl = require('resty.acme.autossl')
 local config = require('foxcaves.config')
+local consts = require('foxcaves.consts')
 local utils = require('foxcaves.utils')
 local hooks = require('foxcaves.hooks')
 
@@ -18,12 +19,12 @@ require('foxcaves.module_helper').setmodenv()
 hooks.register_global('ngx_init', function()
     autossl.init({
         tos_accepted = true,
-        account_key_path = '/var/lib/foxcaves/acme/account.key',
+        account_key_path = consts.FCV_STORAGE_ROOT .. '/acme/account.key',
         account_email = 'ssl@' .. app_domain,
         domain_whitelist = domains,
         storage_adapter = 'file',
         storage_config = {
-            dir = '/var/lib/foxcaves/acme/storage',
+            dir = consts.FCV_STORAGE_ROOT .. '/acme/storage',
             shm_name = 'acme',
         },
     })
