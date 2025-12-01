@@ -174,6 +174,7 @@
                 export LUAJIT='${pkgs.luajit}'
                 export LUA_CPATH='${luaCPath}'
                 export LUA_PATH='${luaPath}'
+                export PATH="$PATH:${pkgs.coreutils}/bin"
               '';
             in
             ''
