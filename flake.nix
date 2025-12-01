@@ -256,8 +256,8 @@
         };
       in
       {
-        packages.frontend = frontend;
-        packages.backend = backend;
+        packages.foxcaves-frontend = frontend;
+        packages.foxcaves = main;
         packages.default = main;
       }
     );
