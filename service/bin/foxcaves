@@ -27,5 +27,4 @@ chmod -R 700 "${FCV_NGINX_ROOT}"
 "${FCV_LUAJIT}/bin/luajit" "${FCV_LUA_ROOT}/nginx_configure.lua"
 
 mkdir -p "${FCV_NGINX_ROOT}/logs"
-rm -f "${FCV_NGINX_ROOT}/api.sock"
 exec "${FCV_NGINX}/bin/openresty" -p "${FCV_NGINX_ROOT}" -c "${FCV_NGINX_ROOT}/main.conf" -e stderr
