@@ -63,19 +63,22 @@ RUN git clone --depth 1 --branch 1.3.0 https://github.com/spacewander/lua-resty-
 # Container setup
 RUN adduser -u 1337 --disabled-password foxcaves
 COPY docker /
-COPY docker/etc/nginx/main.conf /usr/local/openresty/nginx/conf/custom.conf
 
 # Copy backend
-COPY config/testing.lua /var/www/foxcaves/config/testing.lua
-COPY config/example.lua /var/www/foxcaves/config/example.lua
-COPY backend /var/www/foxcaves/lua
+COPY config/testing.lua /etc/foxcaves/testing.lua
+COPY config/example.lua /etc/foxcaves/example.lua
+COPY backend /usr/share/foxcaves/lua
 
 # Copy frontend
-COPY --from=frontend_builder /opt/stage/build /var/www/foxcaves/html/static
+COPY --from=frontend_builder /opt/stage/build /usr/share/foxcaves/html
 
 # Implant version
 ARG GIT_REVISION=UNKNOWN
-RUN echo "$GIT_REVISION" > /var/www/foxcaves/.revision
+RUN echo "$GIT_REVISION" > /usr/share/foxcaves/.revision
+
+ENV LUA_ROOT=/usr/share/foxcaves/lua
+ENV FRONTEND_ROOT=/usr/share/foxcaves/html
+ENV NGINX_TEMPLATE_ROOT=/etc/nginx
 
 # Runtime environment setup
 EXPOSE 80 443 8080 8443

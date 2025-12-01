@@ -2,7 +2,6 @@ local error = error
 local setmetatable = setmetatable
 _G.dns_query_timeout = 10 * 1000
 
-require('path')
 require('lfs')
 
 local function protect_table(tbl, name)
@@ -55,11 +54,10 @@ for k, v in pairs(_G) do
 end
 
 -- Load module path
-local path = require('path')
-local root = path.abs(debug.getinfo(1, 'S').source:sub(2):match('(.*/)') .. '/../')
-package.path = package.path .. ';' .. path.abs(root .. '/modules'):gsub('//+', '/') .. '/?.lua;'
-
-rawset(_G, 'LUA_ROOT', path.abs(root))
+local modules_root = os.getenv('LUA_ROOT') .. '/modules'
+package.path = package.path .. ';' .. modules_root:gsub('//+', '/') .. '/?.lua;'
+local consts = dofile(modules_root .. '/foxcaves/consts.lua')
+rawset(_G, 'LUA_ROOT', consts.LUA_ROOT)
 
 -- Secure cjson
 local cjson = require('cjson')

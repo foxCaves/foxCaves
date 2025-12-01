@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+set -xeuo pipefail
+
+source "$(dirname "$0")/../share/foxcaves/env.sh"
+
+export CAPTCHA_FONT=/usr/share/fonts/opensans/OpenSans-Regular.ttf
+
+export NGINX_ROOT="$(mktemp -d)"
+cp -r "${NGINX_TEMPLATE_ROOT}"/* "${NGINX_ROOT}"
+"${LUAJIT}/bin/luajit" "${LUA_ROOT}/nginx_configure.lua"
+
+rm -f /run/foxcaves-nginx-api.sock
+
+exec "${OPENRESTY}/bin/openresty" -c "${NGINX_ROOT}/nginx.conf" -g "daemon off;"

@@ -1,5 +1,5 @@
 local env = require('foxcaves.env')
-local CONFIG_ROOT = require('path').abs(require('foxcaves.consts').ROOT .. '/config')
+local CONFIG_ROOT = require('foxcaves.consts').CONFIG_ROOT
 
 local function load_config_file(name)
     local func, err = loadfile(CONFIG_ROOT .. '/' .. name .. '.lua')

@@ -14,9 +14,9 @@ M.ENV_STAGING = 4
 M.ENV_INVALID = -1
 
 -- Load paths
-local path = require('path')
-M.LUA_ROOT = path.abs(debug.getinfo(1, 'S').source:sub(2):match('(.*/)') .. '/../../')
-M.MODULE_ROOT = path.abs(debug.getinfo(1, 'S').source:sub(2):match('(.*/)') .. '/../')
-M.ROOT = path.abs(M.LUA_ROOT .. '/../')
+M.CONFIG_ROOT = os.getenv('CONFIG_ROOT') or '/etc/foxcaves'
+M.LUA_ROOT = os.getenv('LUA_ROOT')
+M.FRONTEND_ROOT = os.getenv('FRONTEND_ROOT')
+M.MODULE_ROOT = M.LUA_ROOT .. '/modules'
 
 return M

@@ -3,8 +3,8 @@ resolver local=on;
 access_log off;
 log_not_found off;
 
-init_by_lua_file /usr/share/foxcaves/lua/nginx_init.lua;
-init_worker_by_lua_file /usr/share/foxcaves/lua/nginx_init_worker.lua;
+init_by_lua_file __LUA_ROOT__/nginx_init.lua;
+init_worker_by_lua_file __LUA_ROOT__/nginx_init_worker.lua;
 lua_socket_log_errors off;
 
 lua_ssl_trusted_certificate /etc/ssl/certs/ca-certificates.crt;
@@ -32,7 +32,7 @@ server {
         client_max_body_size 0;
         default_type application/json;
         types { }
-        content_by_lua_file /usr/share/foxcaves/lua/nginx_run.lua;
+        content_by_lua_file __LUA_ROOT__/nginx_run.lua;
     }
 }
 
@@ -42,14 +42,13 @@ server {
     include /etc/nginx/basics.conf;
     include /etc/nginx/csp-app.conf;
 
-    root /usr/share/foxcaves/html;
     client_max_body_size 10M;
     client_body_buffer_size 64k;
 
     location / {
         gzip_static on;
 
-        rewrite ^ /static/index_processed.html break;
+        alias __NGINX_ROOT__/index_processed.html;
     }
 
     location /view/ {
@@ -57,13 +56,14 @@ server {
 
         default_type text/html;
         types { }
-        content_by_lua_file /usr/share/foxcaves/lua/nginx_run.lua;
+        content_by_lua_file __LUA_ROOT__/nginx_run.lua;
     }
 
     location /static/ {
         gzip_static on;
 
         expires 1h;
+        alias __FRONTEND_ROOT__/;
     }
 
     location /api/v1/ {
@@ -71,7 +71,7 @@ server {
 
         default_type application/json;
         types { }
-        content_by_lua_file /usr/share/foxcaves/lua/nginx_run.lua;
+        content_by_lua_file __LUA_ROOT__/nginx_run.lua;
     }
 
     location = /api/v1/files {
@@ -88,7 +88,6 @@ server {
             deny all;
         }
         proxy_pass http://unix:/run/foxcaves-nginx-api.sock;
-
     }
 }
 
@@ -119,7 +118,7 @@ server {
 
         gzip on;
 
-        rewrite_by_lua_file /usr/share/foxcaves/lua/nginx_run.lua;
+        rewrite_by_lua_file __LUA_ROOT__/nginx_run.lua;
     }
 
     location = /fcv-s3get {

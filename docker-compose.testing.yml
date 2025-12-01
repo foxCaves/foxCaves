@@ -3,8 +3,8 @@ services:
     environment:
       ENVIRONMENT: testing
     volumes:
-      - site_config:/var/www/foxcaves/config
-      - site_storage:/var/www/foxcaves/storage
+      - site_config:/etc/foxcaves
+      - site_storage:/var/lib/foxcaves/storage
   redis:
     volumes:
       - redis:/data

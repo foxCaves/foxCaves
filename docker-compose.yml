@@ -9,8 +9,8 @@ services:
       - mysql:mysql
       - redis:redis
     volumes:
-      - ./config:/var/www/foxcaves/config
-      - ./data/storage:/var/www/foxcaves/storage
+      - ./config:/etc/foxcaves
+      - ./data/storage:/var/lib/foxcaves/storage
     healthcheck:
       test: 'curl -s -f --resolve "app.foxcaves:443:127.0.0.1" --insecure "https://app.foxcaves/healthz" >/dev/null || exit 1'
       interval: 60s

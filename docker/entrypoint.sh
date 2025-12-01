@@ -4,28 +4,28 @@ set -euo pipefail
 export CAPTCHA_FONT=/usr/share/fonts/opensans/OpenSans-Regular.ttf
 
 # Basic directory structure
-mkdir -p /var/www/foxcaves/tmp /var/www/foxcaves/storage
-chown foxcaves:foxcaves /var/www/foxcaves/tmp /var/www/foxcaves/storage
+mkdir -p /var/lib/foxcaves/storage
+chown foxcaves:foxcaves /var/lib/foxcaves/storage
 
 # SSL setup
-mkdir -p /etc/letsencrypt/storage
+mkdir -p /var/lib/foxcaves/acme
 
-openssl req -x509 -newkey rsa:2048 -keyout /etc/letsencrypt/snakeoil.key -out /etc/letsencrypt/snakeoil.crt -sha256 -days 3650 -nodes -subj '/CN=snakeoil' >/dev/null 2>/dev/null
-if [ ! -f /etc/letsencrypt/account.key ]; then
-    openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:4096 -out /etc/letsencrypt/account.key >/dev/null 2>/dev/null
+openssl req -x509 -newkey rsa:2048 -keyout /var/lib/foxcaves/acme/snakeoil.key -out /var/lib/foxcaves/acme/snakeoil.crt -sha256 -days 3650 -nodes -subj '/CN=snakeoil' >/dev/null 2>/dev/null
+if [ ! -f /var/lib/foxcaves/acme/account.key ]; then
+    openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:4096 -out /var/lib/foxcaves/acme/account.key >/dev/null 2>/dev/null
 fi
 
-chown root:root /etc/letsencrypt
+chown root:foxcaves /var/lib/foxcaves/acme/account.key
+chmod 640 /var/lib/foxcaves/acme/account.key
 
-chown root:foxcaves /etc/letsencrypt/account.key
-chmod 640 /etc/letsencrypt/account.key
-
-chown -R foxcaves:foxcaves /etc/letsencrypt/storage
-chmod 700 /etc/letsencrypt/storage
+chown -R foxcaves:foxcaves /var/lib/foxcaves/acme/storage
+chmod 700 /var/lib/foxcaves/acme/storage
 # END SSL setup
 
-luajit /var/www/foxcaves/lua/nginx_configure.lua
+export NGINX_ROOT="$(mktemp -d)"
+cp -r /etc/nginx/* "${NGINX_ROOT}"
+luajit /usr/share/foxcaves/lua/nginx_configure.lua
 
-rm -f /run/nginx-lua-api.sock
+rm -f /run/foxcaves-nginx-api.sock
 
-exec /usr/local/openresty/bin/openresty -c /usr/local/openresty/nginx/conf/custom.conf
+exec /usr/local/openresty/bin/openresty -c "${NGINX_ROOT}/nginx.conf" -g "daemon off;"

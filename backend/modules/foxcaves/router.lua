@@ -19,7 +19,7 @@ local table = table
 
 local G = _G
 
-local ROUTES_ROOT = require('path').abs(consts.LUA_ROOT .. '/routes')
+local ROUTES_ROOT = consts.LUA_ROOT .. '/routes'
 
 local M = {}
 require('foxcaves.module_helper').setmodenv()

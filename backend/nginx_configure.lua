@@ -7,9 +7,8 @@ rawset(_G, 'ngx', {
     worker = false,
 })
 
-local path = require('path')
-local root = path.abs(debug.getinfo(1, 'S').source:sub(2):match('(.*/)'))
-dofile(root .. '/includes/init.lua')
+dofile(os.getenv('LUA_ROOT') .. '/includes/init.lua')
+local nginx_root = os.getenv('NGINX_ROOT') or '/etc/nginx'
 
 local config = require('foxcaves.config')
 local utils = require('foxcaves.utils')
@@ -22,24 +21,24 @@ for _, upstream_ip in pairs(config.http.upstream_ips) do
     upstream_ips_str = upstream_ips_str .. 'set_real_ip_from ' .. upstream_ip .. ';\n'
 end
 
-local listener_config = '/etc/nginx/listener.conf'
+local listener_config = nginx_root .. '/listener.conf'
 
 local nginx_configs =
     {
-        '/etc/nginx/conf.d/foxcaves.conf',
-        '/etc/nginx/conf.d/http-foxcaves.conf',
-        '/etc/nginx/listener.conf',
-        '/etc/nginx/csp-app.conf',
-        '/etc/nginx/csp-cdn.conf',
+        nginx_root .. '/conf.d/foxcaves.conf',
+        nginx_root .. '/conf.d/http-foxcaves.conf',
+        nginx_root .. '/listener.conf',
+        nginx_root .. '/csp-app.conf',
+        nginx_root .. '/csp-cdn.conf',
     }
 
 if config.http.force_plaintext then
-    listener_config = '/etc/nginx/listener-plaintext.conf'
-    table.insert(nginx_configs, '/etc/nginx/listener-plaintext.conf')
+    listener_config = nginx_root .. '/listener-plaintext.conf'
+    table.insert(nginx_configs, nginx_root .. '/listener-plaintext.conf')
 end
 
 if config.http.redirect_www then
-    table.insert(nginx_configs, '/etc/nginx/conf.d/www-foxcaves.conf')
+    table.insert(nginx_configs, nginx_root .. '/conf.d/www-foxcaves.conf')
 end
 
 for _, nginx_config in pairs(nginx_configs) do
@@ -54,13 +53,16 @@ for _, nginx_config in pairs(nginx_configs) do
     data = data:gsub('__CDN_DOMAIN__', cdn_domain)
     data = data:gsub('__UPSTREAM_IPS__', upstream_ips_str)
     data = data:gsub('__LISTENER_CONFIG__', listener_config)
+    data = data:gsub('__LUA_ROOT__', os.getenv('LUA_ROOT'))
+    data = data:gsub('__FRONTEND_ROOT__', os.getenv('FRONTEND_ROOT'))
+    data = data:gsub('__NGINX_ROOT__', nginx_root)
 
     fh = io.open(nginx_config, 'w')
     fh:write(data)
     fh:close()
 end
 
-local fh = io.open('/etc/nginx/conf.d/dynamic.conf', 'w')
+local fh = io.open(nginx_root .. '/conf.d/dynamic.conf', 'w')
 local storage_map = require('foxcaves.storage.all')
 for name, storage in pairs(storage_map) do
     if storage.build_nginx_config then
@@ -71,6 +73,6 @@ for name, storage in pairs(storage_map) do
 end
 fh:close()
 
-fh = io.open(path.abs(LUA_ROOT .. '/../html') .. '/static/index_processed.html', 'w')
+fh = io.open(nginx_root .. '/index_processed.html', 'w')
 fh:write(htmlgen.generate_index_html())
 fh:close()

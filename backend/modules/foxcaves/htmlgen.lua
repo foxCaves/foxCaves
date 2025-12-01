@@ -1,5 +1,5 @@
-local path = require('path')
 local config = require('foxcaves.config')
+local consts = require('foxcaves.consts')
 
 local ngx = ngx
 local tostring = tostring
@@ -25,7 +25,7 @@ local html_replacement_expr = ''
 
     html_replacement_expr = '[' .. html_replacement_expr .. ']'
 
-    local fh = io.open(path.abs(LUA_ROOT .. '/../html') .. '/static/index.html', 'r')
+    local fh = io.open(consts.FRONTEND_ROOT .. '/index.html', 'r')
     index_html = fh:read('*a')
     fh:close()
 

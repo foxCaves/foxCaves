@@ -1,7 +1,5 @@
-local path = require('path')
-local root = path.abs(debug.getinfo(1, 'S').source:sub(2):match('(.*/)'))
+local root = os.getenv('LUA_ROOT')
 dofile(root .. '/includes/init.lua')
-
 dofile(root .. '/includes/autoloader.lua')
 
 local hooks = require('foxcaves.hooks')
