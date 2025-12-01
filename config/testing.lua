@@ -50,7 +50,7 @@ return {
             fs = {
                 driver = "local",
                 chunk_size = 8192,
-                root_folder = "/var/www/foxcaves/storage"
+                root_folder = "/var/lib/foxcaves/storage"
             },
         },
     },
