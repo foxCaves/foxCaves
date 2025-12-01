@@ -28,7 +28,6 @@ server {
 
     location /api/v1/ {
         gzip on;
-        brotli on;
 
         client_max_body_size 0;
         default_type application/json;
@@ -49,14 +48,12 @@ server {
 
     location / {
         gzip_static on;
-        brotli_static on;
 
         rewrite ^ /static/index_processed.html break;
     }
 
     location /view/ {
         gzip on;
-        brotli on;
 
         default_type text/html;
         types { }
@@ -65,14 +62,12 @@ server {
 
     location /static/ {
         gzip_static on;
-        brotli_static on;
 
         expires 1h;
     }
 
     location /api/v1/ {
         gzip on;
-        brotli on;
 
         default_type application/json;
         types { }
@@ -123,7 +118,6 @@ server {
         internal;
 
         gzip on;
-        brotli on;
 
         rewrite_by_lua_file /var/www/foxcaves/lua/nginx_run.lua;
     }
