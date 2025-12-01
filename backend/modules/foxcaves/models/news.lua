@@ -1,4 +1,4 @@
-local uuid = require('resty.uuid')
+local uuid = require('resty.jit-uuid')
 local database = require('foxcaves.database')
 local events = require('foxcaves.events')
 
@@ -58,7 +58,7 @@ end
 function news_model.new()
     local news = {
         not_in_db = true,
-        id = uuid.generate_random(),
+        id = uuid.generate_v4(),
         editor = nil,
     }
     setmetatable(news, news_mt)

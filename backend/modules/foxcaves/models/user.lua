@@ -1,4 +1,4 @@
-local uuid = require('resty.uuid')
+local uuid = require('resty.jit-uuid')
 local argon2 = require('argon2')
 local database = require('foxcaves.database')
 local redis = require('foxcaves.redis')
@@ -105,7 +105,7 @@ end
 function user_model.new()
     local user = {
         not_in_db = true,
-        id = uuid.generate_random(),
+        id = uuid.generate_v4(),
         security_version = 1,
         storage_quota = STORAGE_BASE,
         active = 0,

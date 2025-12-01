@@ -1,4 +1,5 @@
 local hooks = require('foxcaves.hooks')
+local uuid = require('resty.jit-uuid')
 local io = io
 local table = table
 local math = math
@@ -25,6 +26,8 @@ local function seed_lua_random()
         seed = bit.bxor(ngx.now() * 1000 + ngx.worker.pid(), seed)
     end
     math.randomseed(seed)
+
+    uuid.seed()
 end
 
 hooks.register_global('ngx_init', seed_lua_random)

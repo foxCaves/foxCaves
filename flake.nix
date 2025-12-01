@@ -31,23 +31,6 @@
             luafilesystem
             luaossl
           ];
-          luarocks = "${pkgs.luarocks}/bin/luarocks";
-          luarocksPackages = [
-            "lua-resty-acme"
-            "lua-resty-uuid"
-            "lua-resty-mysql"
-            "lpath"
-          ];
-          opm = null; # TODO: Get OPM maybe
-          opmPackages = [
-            "openresty/lua-resty-redis"
-            "openresty/lua-resty-websocket"
-            "thibaultcha/lua-argon2-ffi"
-            "GUI/lua-resty-mail"
-            "openresty/lua-resty-string"
-            "jkeys089/lua-resty-hmac"
-            "ledgetech/lua-resty-http"
-          ];
 
           luaGitPackages = [
             (pkgs.fetchFromGitHub {
@@ -79,6 +62,72 @@
               repo = "lua-resty-base-encoding";
               rev = "1.3.0";
               hash = "sha256-7L3EGhSMOAwxMJab2ZEkYL4T8bLztwWCKyhnEmGOLMo=";
+            })
+            (pkgs.fetchFromGitHub {
+              owner = "fffonion";
+              repo = "lua-resty-acme";
+              rev = "0.16.0";
+              hash = "sha256-aiZxcgIccAuGALh2uXalA0CwWyBGEOMda0ANaBncHSQ=";
+            })
+            (pkgs.fetchFromGitHub {
+              owner = "openresty";
+              repo = "lua-resty-mysql";
+              rev = "v0.28";
+              hash = "sha256-gunxl3JIDtqxAw5m3unKH6v+4W4/YV9noBAvwU1vFTM=";
+            })
+            (pkgs.fetchFromGitHub {
+              owner = "openresty";
+              repo = "lua-resty-redis";
+              rev = "v0.33";
+              hash = "sha256-2ZF1o7Cx1UxqRQ3k8RJPIdtS92oYR8aJWOkcEpF2Zv0=";
+            })
+            (pkgs.fetchFromGitHub {
+              owner = "openresty";
+              repo = "lua-resty-websocket";
+              rev = "v0.13";
+              hash = "sha256-DuSQcNM+semoOMX3JRMyE6+xo00kx8ln6L83OxzTYpU=";
+            })
+            (pkgs.fetchFromGitHub {
+              owner = "openresty";
+              repo = "lua-resty-string";
+              rev = "v0.16";
+              hash = "sha256-omAjZhu3NH6Wcz8e4pGYMRLKAz826dNa3IwgPoX4DGU=";
+            })
+            (pkgs.fetchFromGitHub {
+              owner = "thibaultCha";
+              repo = "lua-resty-jit-uuid";
+              rev = "0.0.7";
+              hash = "sha256-C7JkmHnW+SO3g8a2VDZwK2frKRV4iJrXKjxN1diTKP4=";
+            })
+            (pkgs.fetchFromGitHub {
+              owner = "thibaultCha";
+              repo = "lua-argon2-ffi";
+              rev = "3.0.1";
+              hash = "sha256-R5q1eqY9a7dgLSpgApgy3DSMGzEgHFdQRNcLJ2HXvqU=";
+            })
+            (pkgs.fetchFromGitHub {
+              owner = "starwing";
+              repo = "lpath";
+              rev = "0.4.0";
+              hash = "sha256-1C0HlIGpag2EInGp+Z2DeK5s0xjp6/WExkLSUVDtsig=";
+            })
+            (pkgs.fetchFromGitHub {
+              owner = "GUI";
+              repo = "lua-resty-mail";
+              rev = "v1.1.0";
+              hash = "sha256-Zb77OC52NsPqqpOdanc3p+IUjNCD76H7SqvmXkWNdmQ=";
+            })
+            (pkgs.fetchFromGitHub {
+              owner = "jkeys089";
+              repo = "lua-resty-hmac";
+              rev = "0.06-1";
+              hash = "sha256-CdYps8gqJqa0UzvZ8CsesEyBIb3rr0ZD+ugCr5P96NM=";
+            })
+            (pkgs.fetchFromGitHub {
+              owner = "ledgetech";
+              repo = "lua-resty-http";
+              rev = "v0.17.2";
+              hash = "sha256-Ph3PpzQYKYMvPvjYwx4TeZ9RYoryMsO6mLpkAq/qlHY=";
             })
           ];
 

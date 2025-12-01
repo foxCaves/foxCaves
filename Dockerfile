@@ -49,7 +49,7 @@ RUN mkdir -p /usr/local/share/lua/5.1 /usr/local/lib/lua/5.1
 RUN opm get openresty/lua-resty-redis openresty/lua-resty-websocket thibaultcha/lua-argon2-ffi GUI/lua-resty-mail openresty/lua-resty-string jkeys089/lua-resty-hmac ledgetech/lua-resty-http
 RUN luarocks install luasocket
 RUN luarocks install luafilesystem
-RUN luarocks install lua-resty-uuid
+RUN luarocks install lua-resty-jit-uuid
 RUN luarocks install lua-resty-acme
 RUN luarocks install lua-resty-mysql
 RUN luarocks install lpath
