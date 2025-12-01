@@ -48,7 +48,8 @@ server {
     location / {
         gzip_static on;
 
-        alias __FCV_NGINX_ROOT__/index_processed.html;
+        root __FCV_NGINX_ROOT__;
+        rewrite ^ /index_processed.html break;
     }
 
     location /view/ {
