@@ -1,5 +1,5 @@
 # Frontend build container
-FROM node:lts-alpine AS frontend_builder
+FROM git.foxden.network/mirror/oci-images/node:lts-alpine AS frontend_builder
 
 # Install packages
 RUN apk --no-cache add gzip
@@ -22,7 +22,7 @@ RUN npm run build
 RUN find /opt/stage/build -type f -print0 > /tmp/files.txt && \
     cat /tmp/files.txt | xargs -0 -n1 gzip -k
 
-FROM openresty/openresty:alpine-fat AS backend-base
+FROM git.foxden.network/mirror/oci-images/openresty/openresty:alpine-fat AS backend-base
 
 FROM backend-base AS backend-builder
 
