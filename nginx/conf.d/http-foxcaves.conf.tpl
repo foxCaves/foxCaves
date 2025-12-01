@@ -6,7 +6,7 @@ server {
     listen [::]:81 default proxy_protocol;
 
     server_name _;
-    include /etc/nginx/basics.conf;
+    include basics.conf;
     add_header Content-Security-Policy "default-src 'self'; frame-ancestors 'none'" always;
 
     location / {

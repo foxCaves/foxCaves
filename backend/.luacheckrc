@@ -1,5 +1,5 @@
 std = "luajit"
-new_read_globals = {"LUA_ROOT", "OSENV", "R", "ngx", "protect_table", "bit", "foxcaves_executor", "ngx.ngx.quote_sql_str"}
+new_read_globals = {"FCV_LUA_ROOT", "OSENV", "R", "ngx", "protect_table", "bit", "foxcaves_executor", "ngx.ngx.quote_sql_str"}
 new_globals = {"ngx.header", "ngx.ctx", "ngx.status", "ngx.var", "ngx.shared.foxcaves"}
 max_line_length = 200
 max_string_line_length = 200

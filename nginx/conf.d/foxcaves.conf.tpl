@@ -3,8 +3,8 @@ resolver local=on;
 access_log off;
 log_not_found off;
 
-init_by_lua_file __LUA_ROOT__/nginx_init.lua;
-init_worker_by_lua_file __LUA_ROOT__/nginx_init_worker.lua;
+init_by_lua_file __FCV_LUA_ROOT__/nginx_init.lua;
+init_worker_by_lua_file __FCV_LUA_ROOT__/nginx_init_worker.lua;
 lua_socket_log_errors off;
 
 lua_ssl_trusted_certificate /etc/ssl/certs/ca-certificates.crt;
@@ -21,8 +21,8 @@ real_ip_header proxy_protocol;
 server {
     listen unix:/run/foxcaves-nginx-api.sock default;
     server_name __APP_DOMAIN__;
-    include /etc/nginx/basics.conf;
-    include /etc/nginx/csp-app.conf;
+    include basics.conf;
+    include csp-app.conf;
 
     real_ip_header X-Real-IP;
 
@@ -32,15 +32,15 @@ server {
         client_max_body_size 0;
         default_type application/json;
         types { }
-        content_by_lua_file __LUA_ROOT__/nginx_run.lua;
+        content_by_lua_file __FCV_LUA_ROOT__/nginx_run.lua;
     }
 }
 
 server {
     include __LISTENER_CONFIG__;
     server_name __APP_DOMAIN__;
-    include /etc/nginx/basics.conf;
-    include /etc/nginx/csp-app.conf;
+    include basics.conf;
+    include csp-app.conf;
 
     client_max_body_size 10M;
     client_body_buffer_size 64k;
@@ -48,7 +48,7 @@ server {
     location / {
         gzip_static on;
 
-        alias __NGINX_ROOT__/index_processed.html;
+        alias __FCV_NGINX_ROOT__/index_processed.html;
     }
 
     location /view/ {
@@ -56,14 +56,14 @@ server {
 
         default_type text/html;
         types { }
-        content_by_lua_file __LUA_ROOT__/nginx_run.lua;
+        content_by_lua_file __FCV_LUA_ROOT__/nginx_run.lua;
     }
 
     location /static/ {
         gzip_static on;
 
         expires 1h;
-        alias __FRONTEND_ROOT__/;
+        alias __FCV_FRONTEND_ROOT__/;
     }
 
     location /api/v1/ {
@@ -71,7 +71,7 @@ server {
 
         default_type application/json;
         types { }
-        content_by_lua_file __LUA_ROOT__/nginx_run.lua;
+        content_by_lua_file __FCV_LUA_ROOT__/nginx_run.lua;
     }
 
     location = /api/v1/files {
@@ -94,8 +94,8 @@ server {
 server {
     include __LISTENER_CONFIG__;
     server_name __CDN_DOMAIN__;
-    include /etc/nginx/basics.conf;
-    include /etc/nginx/csp-cdn.conf;
+    include basics.conf;
+    include csp-cdn.conf;
 
     set $fcv_proxy_host "";
     set $fcv_proxy_uri "";
@@ -118,7 +118,7 @@ server {
 
         gzip on;
 
-        rewrite_by_lua_file __LUA_ROOT__/nginx_run.lua;
+        rewrite_by_lua_file __FCV_LUA_ROOT__/nginx_run.lua;
     }
 
     location = /fcv-s3get {

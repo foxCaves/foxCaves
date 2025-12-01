@@ -1,4 +1,4 @@
-local root = os.getenv('LUA_ROOT')
+local root = os.getenv('FCV_LUA_ROOT')
 dofile(root .. '/includes/init.lua')
 dofile(root .. '/includes/autoloader.lua')
 

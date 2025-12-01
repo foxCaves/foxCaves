@@ -3,12 +3,30 @@ set -xeuo pipefail
 
 source "$(dirname "$0")/../share/foxcaves/env.sh"
 
-export CAPTCHA_FONT=/usr/share/fonts/opensans/OpenSans-Regular.ttf
+# Basic directory structure
+mkdir -p /var/lib/foxcaves/storage
+chown foxcaves:foxcaves /var/lib/foxcaves/storage
 
-export NGINX_ROOT="$(mktemp -d)"
-cp -r "${NGINX_TEMPLATE_ROOT}"/* "${NGINX_ROOT}"
-"${LUAJIT}/bin/luajit" "${LUA_ROOT}/nginx_configure.lua"
+# SSL setup
+mkdir -p /var/lib/foxcaves/acme
+
+openssl req -x509 -newkey rsa:2048 -keyout /var/lib/foxcaves/acme/snakeoil.key -out /var/lib/foxcaves/acme/snakeoil.crt -sha256 -days 3650 -nodes -subj '/CN=snakeoil' >/dev/null 2>/dev/null
+if [ ! -f /var/lib/foxcaves/acme/account.key ]; then
+    openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:4096 -out /var/lib/foxcaves/acme/account.key >/dev/null 2>/dev/null
+fi
+
+chown root:foxcaves /var/lib/foxcaves/acme/account.key
+chmod 640 /var/lib/foxcaves/acme/account.key
+
+chown -R foxcaves:foxcaves /var/lib/foxcaves/acme/storage
+chmod 700 /var/lib/foxcaves/acme/storage
+# END SSL setup
+
+export FCV_NGINX_ROOT="$(mktemp -d)"
+cp -r "${FCV_NGINX_TEMPLATE_ROOT}"/* "${FCV_NGINX_ROOT}"
+chmod -R 700 "${FCV_NGINX_ROOT}"
+"${FCV_LUAJIT}/bin/luajit" "${FCV_LUA_ROOT}/nginx_configure.lua"
 
 rm -f /run/foxcaves-nginx-api.sock
 
-exec "${OPENRESTY}/bin/openresty" -c "${NGINX_ROOT}/nginx.conf" -g "daemon off;"
+exec "${FCV_NGINX}/bin/openresty" -p "${FCV_NGINX_ROOT}" -c "${FCV_NGINX_ROOT}/main.conf" -e stderr

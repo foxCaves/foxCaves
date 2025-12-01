@@ -15,8 +15,8 @@ M.ENV_INVALID = -1
 
 -- Load paths
 M.CONFIG_ROOT = os.getenv('CONFIG_ROOT') or '/etc/foxcaves'
-M.LUA_ROOT = os.getenv('LUA_ROOT')
-M.FRONTEND_ROOT = os.getenv('FRONTEND_ROOT')
-M.MODULE_ROOT = M.LUA_ROOT .. '/modules'
+M.FCV_LUA_ROOT = os.getenv('FCV_LUA_ROOT')
+M.FCV_FRONTEND_ROOT = os.getenv('FCV_FRONTEND_ROOT')
+M.MODULE_ROOT = M.FCV_LUA_ROOT .. '/modules'
 
 return M

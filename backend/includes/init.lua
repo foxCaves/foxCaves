@@ -54,10 +54,10 @@ for k, v in pairs(_G) do
 end
 
 -- Load module path
-local modules_root = os.getenv('LUA_ROOT') .. '/modules'
+local modules_root = os.getenv('FCV_LUA_ROOT') .. '/modules'
 package.path = package.path .. ';' .. modules_root:gsub('//+', '/') .. '/?.lua;'
 local consts = dofile(modules_root .. '/foxcaves/consts.lua')
-rawset(_G, 'LUA_ROOT', consts.LUA_ROOT)
+rawset(_G, 'FCV_LUA_ROOT', consts.FCV_LUA_ROOT)
 
 -- Secure cjson
 local cjson = require('cjson')

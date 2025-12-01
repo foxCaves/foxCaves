@@ -2,7 +2,7 @@ local EXTENSION_TO_MIMETYPE = {}
 local MIMETYPE_TO_EXTENSIONS = {}
 
 local function load_mimetypes()
-    local fh = io.open('/usr/local/openresty/nginx/conf/mime.types', 'r')
+    local fh = io.open(os.getenv('FCV_NGINX') .. '/conf/mime.types', 'r')
 
     local semicolon = (';'):byte(1)
     local in_mimetypes = false

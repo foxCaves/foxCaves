@@ -70,7 +70,7 @@ local function setup_db()
         ran_migrations[row.name] = true
     end
 
-    process_migration_dir(db, ran_migrations, consts.LUA_ROOT .. '/migrations')
+    process_migration_dir(db, ran_migrations, consts.FCV_LUA_ROOT .. '/migrations')
 
     db:close()
 end

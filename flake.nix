@@ -21,7 +21,7 @@
           luaossl
           cjson
         ];
-        luaGitPackages = [
+        luaGitModules = [
           (pkgs.fetchFromGitHub rec {
             owner = "foxCaves";
             repo = "lua-gd";
@@ -33,8 +33,8 @@
             owner = "foxCaves";
             repo = "raven-lua";
             name = repo;
-            rev = "v1.0.3";
-            hash = "sha256-EhLbvb8dK/K2DcPWdjZYG0U2g+EYQRszRoOVTorB7xE=";
+            rev = "v1.0.4";
+            hash = "sha256-c1hvBfxbIyVEK+8x3SCouTrUhU+5HQW8yC8/Dfa+/Js=";
           })
           (pkgs.fetchFromGitHub rec {
             owner = "foxCaves";
@@ -63,6 +63,13 @@
             name = repo;
             rev = "0.16.0";
             hash = "sha256-aiZxcgIccAuGALh2uXalA0CwWyBGEOMda0ANaBncHSQ=";
+          })
+          (pkgs.fetchFromGitHub rec {
+            owner = "fffonion";
+            repo = "lua-resty-openssl";
+            name = repo;
+            rev = "1.7.0";
+            hash = "sha256-xcEnic0aQCgzIlgU/Z6dxH7WTyTK+g5UKo4BiKcvNxQ=";
           })
           (pkgs.fetchFromGitHub rec {
             owner = "openresty";
@@ -154,27 +161,86 @@
           '';
         };
 
+        luaGitPkg = pkgs.stdenv.mkDerivation {
+          name = "foxcaves-lua-git";
+          version = "1.0.0";
+
+          inherit luaGitModules;
+
+          buildInputs = with pkgs; [
+            stdenv.cc.cc
+            luajit
+            gd
+            pkg-config
+          ];
+
+          nativeBuildInputs = with pkgs; [
+            autoPatchelfHook
+          ];
+
+          unpackPhase = ''
+            set -euo pipefail
+            mkdir -p ./r/lib
+            for pkg in $luaGitModules; do
+              rm -rf ./tmp && mkdir ./tmp
+              cp -r "$pkg"/* ./tmp
+              find ./tmp -type d -exec chmod 755 {} +
+              if [ -f ./tmp/Makefile ]; then
+                fileCount="$(find ./tmp -type f '(' -iname '*.c' -o -iname '*.cpp' ')' | wc -l)"
+                if [ "$fileCount" -eq 0 ]; then
+                  echo "No native code files found in $pkg, skipping build"
+                else
+                  echo "Building Lua module in $pkg"
+                  cd ./tmp
+                  LUA_INCDIR=${pkgs.luajit}/include make
+                  cd ..
+                fi
+              fi
+              cp -r ./tmp/lib/* ./r/lib || true
+              cp -r ./tmp/src/* ./r/lib || true
+              cp ./tmp/*.so ./r/ || true
+            done
+          '';
+
+          installPhase = ''
+            mkdir -p $out
+            cp -r r/* $out/
+          '';
+        };
+
         main = pkgs.stdenv.mkDerivation {
           name = "foxcaves-main";
           version = "1.0.0";
 
           unpackPhase =
             let
-              luaCPath = lib.concatStringsSep ";" (map (pkg: "${pkg}/lib/lua/5.1/?.so") luaModules);
-              luaPath = lib.concatStringsSep ";" (
-                (map (pkg: "${pkg}/share/lua/5.1/?.lua") luaModules)
-                ++ (map (pkg: "${pkg}/share/lua/5.1/?/init.lua") luaModules)
-                ++ (map (pkg: "${pkg}/lib/?.lua") luaGitPackages)
+              luaCPath = lib.concatStringsSep ";" (
+                (map (pkg: "${pkg}/lib/lua/5.1/?.so") luaModules) ++ [ "${luaGitPkg}/?.so" ]
               );
+              luaPath = lib.concatStringsSep ";" (
+                lib.flatten (
+                  (map (pkg: [
+                    "${pkg}/share/lua/5.1/?.lua"
+                    "${pkg}/share/lua/5.1/?/init.lua"
+                  ]) luaModules)
+                )
+                ++ [
+                  "${luaGitPkg}/lib/?.lua"
+                  "${luaGitPkg}/lib/?/init.lua"
+                ]
+              );
+              nginx = pkgs.openresty;
               envFile = ''
-                export FRONTEND_ROOT='${frontend}/lib/node_modules/foxcaves-frontend/build'
-                export LUA_ROOT='${backend}/share/foxcaves/lua'
-                export NGINX_TEMPLATE_ROOT='${backend}/etc/nginx'
-                export OPENRESTY='${pkgs.luajit_openresty}'
-                export LUAJIT='${pkgs.luajit}'
+                export FCV_FRONTEND_ROOT='${frontend}/lib/node_modules/foxcaves-frontend/build'
+                export FCV_LUA_ROOT='${backend}/share/foxcaves/lua'
+                export FCV_NGINX_TEMPLATE_ROOT='${backend}/etc/nginx'
+                export FCV_NGINX='${nginx}'
+                export FCV_LUAJIT='${pkgs.luajit}'
+                export CAPTCHA_FONT="${pkgs.dejavu_fonts}/share/fonts/truetype/DejaVuSans.ttf"
                 export LUA_CPATH='${luaCPath}'
                 export LUA_PATH='${luaPath}'
-                export PATH="$PATH:${pkgs.coreutils}/bin"
+                export PATH="$PATH:${pkgs.coreutils}/bin:${pkgs.gnugrep}/bin:${pkgs.findutils}/bin"
+                export LD_LIBRARY_PATH="${pkgs.libargon2}/lib"
               '';
             in
             ''

@@ -25,7 +25,7 @@ local html_replacement_expr = ''
 
     html_replacement_expr = '[' .. html_replacement_expr .. ']'
 
-    local fh = io.open(consts.FRONTEND_ROOT .. '/index.html', 'r')
+    local fh = io.open(consts.FCV_FRONTEND_ROOT .. '/index.html', 'r')
     index_html = fh:read('*a')
     fh:close()
 

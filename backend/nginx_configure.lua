@@ -7,8 +7,8 @@ rawset(_G, 'ngx', {
     worker = false,
 })
 
-dofile(os.getenv('LUA_ROOT') .. '/includes/init.lua')
-local nginx_root = os.getenv('NGINX_ROOT') or '/etc/nginx'
+dofile(os.getenv('FCV_LUA_ROOT') .. '/includes/init.lua')
+local nginx_root = os.getenv('FCV_NGINX_ROOT') or '/etc/nginx'
 
 local config = require('foxcaves.config')
 local utils = require('foxcaves.utils')
@@ -25,11 +25,12 @@ local listener_config = nginx_root .. '/listener.conf'
 
 local nginx_configs =
     {
+        nginx_root .. '/basics.conf',
         nginx_root .. '/conf.d/foxcaves.conf',
         nginx_root .. '/conf.d/http-foxcaves.conf',
-        nginx_root .. '/listener.conf',
         nginx_root .. '/csp-app.conf',
         nginx_root .. '/csp-cdn.conf',
+        nginx_root .. '/listener.conf',
     }
 
 if config.http.force_plaintext then
@@ -53,9 +54,11 @@ for _, nginx_config in pairs(nginx_configs) do
     data = data:gsub('__CDN_DOMAIN__', cdn_domain)
     data = data:gsub('__UPSTREAM_IPS__', upstream_ips_str)
     data = data:gsub('__LISTENER_CONFIG__', listener_config)
-    data = data:gsub('__LUA_ROOT__', os.getenv('LUA_ROOT'))
-    data = data:gsub('__FRONTEND_ROOT__', os.getenv('FRONTEND_ROOT'))
-    data = data:gsub('__NGINX_ROOT__', nginx_root)
+
+    data = data:gsub('__FCV_NGINX_ROOT__', nginx_root)
+    data = data:gsub('__FCV_LUA_ROOT__', os.getenv('FCV_LUA_ROOT'))
+    data = data:gsub('__FCV_FRONTEND_ROOT__', os.getenv('FCV_FRONTEND_ROOT'))
+    data = data:gsub('__FCV_NGINX__', os.getenv('FCV_NGINX'))
 
     fh = io.open(nginx_config, 'w')
     fh:write(data)

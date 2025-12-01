@@ -75,11 +75,10 @@ COPY --from=frontend_builder /opt/stage/build /usr/share/foxcaves/html
 
 # Implant version
 ARG GIT_REVISION=UNKNOWN
-RUN echo "$GIT_REVISION" > /usr/share/foxcaves/.revision
-
-ENV LUA_ROOT=/usr/share/foxcaves/lua
-ENV FRONTEND_ROOT=/usr/share/foxcaves/html
-ENV NGINX_TEMPLATE_ROOT=/etc/nginx
+ENV GIT_REVISION=${GIT_REVISION}
+ENV FCV_LUA_ROOT=/usr/share/foxcaves/lua
+ENV FCV_FRONTEND_ROOT=/usr/share/foxcaves/html
+ENV FCV_NGINX_TEMPLATE_ROOT=/etc/nginx
 
 # Runtime environment setup
 EXPOSE 80 443 8080 8443
