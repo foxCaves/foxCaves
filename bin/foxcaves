@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-source "$(dirname "$0")/../share/foxcaves/env.sh"
+if [ "${1-}" != "--skip-env" ]; then
+    source "$(dirname "$0")/../share/foxcaves/env.sh"
+fi
 
 if [ -z "${FCV_STORAGE_ROOT:-}" ]; then
     export FCV_STORAGE_ROOT=/var/lib/foxcaves

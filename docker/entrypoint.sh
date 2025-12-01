@@ -1,8 +1,6 @@
 #!/bin/bash
 set -euo pipefail
 
-export CAPTCHA_FONT=/usr/share/fonts/opensans/OpenSans-Regular.ttf
-
 # Basic directory structure
 mkdir -p "${FCV_STORAGE_ROOT}/storage"
 chown foxcaves:foxcaves "${FCV_STORAGE_ROOT}/storage"

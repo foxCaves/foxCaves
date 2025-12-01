@@ -244,8 +244,8 @@
               '';
             in
             ''
-              mkdir -p ./r/share/foxcaves
-              cp -r ${./service}/* ./r
+              mkdir -p ./r/share/foxcaves ./r/bin
+              cp -r ${./bin}/* ./r/bin/
               cp ${pkgs.writeText "foxcaves-env.sh" envFile} ./r/share/foxcaves/env.sh
             '';
 

@@ -69,19 +69,23 @@ COPY nginx /etc/nginx
 COPY config/testing.lua /etc/foxcaves/testing.lua
 COPY config/example.lua /etc/foxcaves/example.lua
 COPY backend /usr/share/foxcaves/lua
+COPY bin/ /bin/
 
 # Copy frontend
 COPY --from=frontend_builder /opt/stage/build /usr/share/foxcaves/html
 
+RUN ln -s /usr/local/openresty/bin /usr/local/openresty/nginx/
+
 # Implant version
 ARG GIT_REVISION=UNKNOWN
 ENV GIT_REVISION=${GIT_REVISION}
-ENV FCV_STORAGE_ROOT=/var/lib/foxcaves
 ENV FCV_LUA_ROOT=/usr/share/foxcaves/lua
+ENV FCV_LUAJIT=/usr/local/openresty/luajit
 ENV FCV_FRONTEND_ROOT=/usr/share/foxcaves/html
 ENV FCV_NGINX_TEMPLATE_ROOT=/etc/nginx
 ENV FCV_NGINX=/usr/local/openresty/nginx
+ENV CAPTCHA_FONT=/usr/share/fonts/opensans/OpenSans-Regular.ttf
 
 # Runtime environment setup
 EXPOSE 80 443 8080 8443
-ENTRYPOINT ["/entrypoint.sh"]
+ENTRYPOINT ["/bin/foxcaves" "--skip-env"]
