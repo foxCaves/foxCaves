@@ -80,6 +80,7 @@ ENV FCV_STORAGE_ROOT=/var/lib/foxcaves
 ENV FCV_LUA_ROOT=/usr/share/foxcaves/lua
 ENV FCV_FRONTEND_ROOT=/usr/share/foxcaves/html
 ENV FCV_NGINX_TEMPLATE_ROOT=/etc/nginx
+ENV FCV_NGINX=/usr/local/openresty/nginx
 
 # Runtime environment setup
 EXPOSE 80 443 8080 8443
