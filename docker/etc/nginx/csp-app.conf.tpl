@@ -1,1 +1,0 @@
-add_header Content-Security-Policy "default-src 'self'; style-src 'self' __PROTO__ data:; img-src 'self' __PROTO__ data:; media-src 'self' __PROTO__ data:; connect-src 'self' __CDN_DOMAIN__; frame-src __CDN_DOMAIN__; frame-ancestors 'none'" always;
