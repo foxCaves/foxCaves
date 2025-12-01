@@ -34,13 +34,11 @@ jobs:
             }
       - name: Set up Docker Buildx
         uses: https://data.forgejo.org/docker/setup-buildx-action@v3
-      - name: Set up NodeJS LTS
+      - name: Set up Node.js
         uses: https://data.forgejo.org/actions/setup-node@v6
         with:
           node-version: lts/*
           check-latest: true
-          cache: npm
-          cache-dependency-path: package-lock.json
           token: ${{ secrets.EXT_GITHUB_TOKEN }}
       - name: Ensure we are up to date on all images
         run: docker pull node:lts-alpine && docker pull openresty/openresty:alpine-fat
