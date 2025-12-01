@@ -29,4 +29,6 @@ luajit /usr/share/foxcaves/lua/nginx_configure.lua
 export FCV_NGINX_SOCKET="$(mktemp -u)"
 rm -f "${FCV_NGINX_SOCKET}"
 
+mkdir -p "${FCV_NGINX_ROOT}/logs"
+rm -f "${FCV_NGINX_ROOT}/api.sock"
 exec /usr/local/openresty/bin/openresty -p "${FCV_NGINX_ROOT}" -c "${FCV_NGINX_ROOT}/main.conf" -g "user foxcaves;" -e stderr
