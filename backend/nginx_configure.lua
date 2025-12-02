@@ -57,6 +57,7 @@ for _, nginx_config in pairs(nginx_configs) do
     data = data:gsub('__LISTENER_CONFIG__', listener_config)
 
     data = data:gsub('__FCV_NGINX_ROOT__', nginx_root)
+    data = data:gsub('__FCV_STORAGE_ROOT__', os.getenv('FCV_STORAGE_ROOT'))
     data = data:gsub('__FCV_LUA_ROOT__', os.getenv('FCV_LUA_ROOT'))
     data = data:gsub('__FCV_FRONTEND_ROOT__', os.getenv('FCV_FRONTEND_ROOT'))
     data = data:gsub('__FCV_NGINX__', os.getenv('FCV_NGINX'))
