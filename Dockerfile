@@ -45,7 +45,7 @@ ENV AWS_EC2_METADATA_DISABLED=true
 RUN apk update && apk add imagemagick git argon2-libs argon2-dev argon2 runuser libuuid openssl openssl-dev ca-certificates libqrencode-tools gd-dev freetype-dev font-opensans
 
 # Lua modules
-RUN mkdir -p /usr/local/share/lua/5.1 /usr/local/lib/lua/5.1 && rm /usr/local/openresty/lualib/resty/mysql.lua
+RUN mkdir -p /usr/local/share/lua/5.1 /usr/local/lib/lua/5.1
 RUN opm get openresty/lua-resty-redis openresty/lua-resty-websocket thibaultcha/lua-argon2-ffi GUI/lua-resty-mail openresty/lua-resty-string jkeys089/lua-resty-hmac ledgetech/lua-resty-http
 RUN luarocks install luasocket
 RUN luarocks install luafilesystem
@@ -58,7 +58,6 @@ RUN git clone --depth 1 --branch v1.0.3 https://github.com/foxCaves/raven-lua.gi
 RUN git clone --depth 1 --branch v0.1.8 https://github.com/foxCaves/lua-resty-cookie.git /tmp/lua-resty-cookie && cp -r /tmp/lua-resty-cookie/lib/* /usr/local/share/lua/5.1/ && rm -rf /tmp/lua-resty-cookie
 RUN git clone --depth 1 --branch v0.3.1 https://github.com/foxCaves/lua-resty-aws-signature.git /tmp/lua-resty-aws-signature && cp -r /tmp/lua-resty-aws-signature/lib/* /usr/local/share/lua/5.1/ && rm -rf /tmp/lua-resty-aws-signature
 RUN git clone --depth 1 --branch 1.3.0 https://github.com/spacewander/lua-resty-base-encoding /tmp/lua-resty-base-encoding && cd /tmp/lua-resty-base-encoding && cp -r ./lib/* /usr/local/share/lua/5.1/ && make && cp -fv librestybaseencoding.so /usr/local/lib/lua/5.1/ && rm -rf /tmp/lua-resty-base-encoding
-RUN git clone --depth 1 --revision 459a2afbf28c745c0bd0a2c48a8cb3d0f1bb7171 https://github.com/foxCaves/lua-resty-mysql /tmp/lua-resty-mysql && cp -r /tmp/lua-resty-mysql/lib/* /usr/local/share/lua/5.1/ && rm -rf /tmp/lua-resty-mysql
 
 # Container setup
 RUN adduser -u 1337 --disabled-password foxcaves

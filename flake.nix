@@ -15,20 +15,6 @@
         lib = nixpkgs.lib;
         pkgs = nixpkgs.legacyPackages.${system};
 
-        openresty = pkgs.stdenv.mkDerivation {
-          name = "foxcaves-openresty";
-          version = "1.0.0";
-
-          src = pkgs.openresty;
-
-          installPhase = ''
-            mkdir -p $out
-            cp -r $src/* $out/
-            chmod 700 $out/lualib/resty
-            rm $out/lualib/resty/mysql.lua
-          '';
-        };
-
         luaModules = with pkgs.luajitPackages; [
           luasocket
           luafilesystem
@@ -84,13 +70,6 @@
             name = repo;
             rev = "1.7.0";
             hash = "sha256-xcEnic0aQCgzIlgU/Z6dxH7WTyTK+g5UKo4BiKcvNxQ=";
-          })
-          (pkgs.fetchFromGitHub rec {
-            owner = "foxCaves";
-            repo = "lua-resty-mysql";
-            name = repo;
-            rev = "459a2afbf28c745c0bd0a2c48a8cb3d0f1bb7171";
-            hash = "sha256-NIvwGgQfhTfZhl9KUryWwSUkF1wAqw6H+9dD6MmhLNY=";
           })
           (pkgs.fetchFromGitHub rec {
             owner = "openresty";
@@ -252,7 +231,7 @@
                 export FCV_FRONTEND_ROOT='${frontend}/lib/node_modules/foxcaves-frontend/build'
                 export FCV_LUA_ROOT='${backend}/share/foxcaves/lua'
                 export FCV_NGINX_TEMPLATE_ROOT='${backend}/etc/nginx'
-                export FCV_NGINX='${openresty}'
+                export FCV_NGINX='${pkgs.openresty}'
                 export FCV_LUAJIT='${pkgs.luajit}'
                 export FCV_OPENSSL='${pkgs.openssl}'
                 export CAPTCHA_FONT="${pkgs.dejavu_fonts}/share/fonts/truetype/DejaVuSans.ttf"
