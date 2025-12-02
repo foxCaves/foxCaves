@@ -15,6 +15,8 @@
         lib = nixpkgs.lib;
         pkgs = nixpkgs.legacyPackages.${system};
 
+        gitrev = self.rev or "${self.dirtyRev}-dirty";
+
         luaModules = with pkgs.luajitPackages; [
           luasocket
           luafilesystem
@@ -117,7 +119,7 @@
           nodejs = pkgs.nodejs_24;
 
           env = {
-            GIT_REVISION = self.rev or "${self.dirtyRev}-dirty";
+            GIT_REVISION = gitrev;
           };
         };
 
@@ -223,7 +225,7 @@
                 export LUA_PATH='${luaPath}'
                 export PATH="$PATH:${pkgs.coreutils}/bin:${pkgs.gnugrep}/bin:${pkgs.findutils}/bin"
                 export LD_LIBRARY_PATH="${pkgs.libargon2}/lib"
-                export GIT_REVISION='${self.rev or "${self.dirtyRev}-dirt"}'
+                export GIT_REVISION='${gitrev}'
               '';
             in
             ''
