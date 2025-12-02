@@ -180,7 +180,7 @@
 
           unpackPhase = ''
             set -euo pipefail
-            mkdir -p ./r/lib
+            mkdir -p ./r/lib ./r/share
             for pkg in $luaGitModules; do
               rm -rf ./tmp && mkdir ./tmp
               cp -r "$pkg"/* ./tmp
@@ -196,9 +196,14 @@
                   cd ..
                 fi
               fi
-              cp -r ./tmp/lib/* ./r/lib || true
-              cp -r ./tmp/src/* ./r/lib || true
-              cp ./tmp/*.so ./r/ || true
+              if [ -d ./tmp/lib ]; then
+                cp -r ./tmp/lib/* ./r/share
+              elif [ -d ./tmp/src ]; then
+                cp -r ./tmp/src/* ./r/share
+              else
+                cp -r ./tmp/* ./r/share
+              fi
+              cp ./tmp/*.so ./r/lib || true
             done
           '';
 
@@ -215,7 +220,7 @@
           unpackPhase =
             let
               luaCPath = lib.concatStringsSep ";" (
-                (map (pkg: "${pkg}/lib/lua/5.1/?.so") luaModules) ++ [ "${luaGitPkg}/?.so" ]
+                (map (pkg: "${pkg}/lib/lua/5.1/?.so") luaModules) ++ [ "${luaGitPkg}/lib/?.so" ]
               );
               luaPath = lib.concatStringsSep ";" (
                 lib.flatten (
@@ -225,8 +230,8 @@
                   ]) luaModules)
                 )
                 ++ [
-                  "${luaGitPkg}/lib/?.lua"
-                  "${luaGitPkg}/lib/?/init.lua"
+                  "${luaGitPkg}/share/?.lua"
+                  "${luaGitPkg}/share/?/init.lua"
                 ]
               );
               nginx = pkgs.openresty;
