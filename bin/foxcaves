@@ -1,15 +1,12 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+source "${0}-env"
+
 export AWS_EC2_METADATA_DISABLED=true
 
 if [ -z "${ENVIRONMENT:-}" ]; then
     export ENVIRONMENT=development
-fi
-
-if [ "${1-}" != "--skip-env" ]; then
-    echo 'Loading environment...'
-    source "$(dirname "$0")/../share/foxcaves/env.sh"
 fi
 
 echo 'Starting foxCaves init sequence...'
@@ -34,8 +31,22 @@ chmod 700 "${FCV_STORAGE_ROOT}/acme/storage"
 # END SSL setup
 
 if [ "$(id -u)" -eq '0' ]; then
+    if [ ! -f /etc/passwd ]; then
+        echo 'root:!x:::::::' > /etc/shadow
+        echo 'foxcaves:!:::::::' >> /etc/shadow
+        echo 'root:x:0:0::/root:' > /etc/passwd
+        echo 'foxcaves:x:1000:1000::/var/lib/foxcaves:' >> /etc/passwd
+        echo 'root:x:0:' > /etc/group
+        echo 'foxcaves:x:1000:' >> /etc/group
+        echo 'root:x::' > /etc/gshadow
+        echo 'foxcaves:x::' >> /etc/gshadow
+    fi
+
     chown foxcaves:foxcaves "${FCV_STORAGE_ROOT}/storage"
     chown foxcaves:foxcaves -R "${FCV_STORAGE_ROOT}/acme"
+
+    mkdir -p /tmp
+    chmod 2777 /tmp
 fi
 
 export FCV_NGINX_ROOT="$(mktemp -d)"
@@ -44,4 +55,4 @@ chmod -R 755 "${FCV_NGINX_ROOT}"
 "${FCV_LUAJIT}/bin/luajit" "${FCV_LUA_ROOT}/nginx_configure.lua"
 
 mkdir -p "${FCV_NGINX_ROOT}/logs"
-exec "${FCV_NGINX}/bin/openresty" -p "${FCV_NGINX_ROOT}" -c "${FCV_NGINX_ROOT}/main.conf" -e stderr
+exec "${FCV_NGINX}/bin/openresty" -p "${FCV_NGINX_ROOT}" -c "${FCV_NGINX_ROOT}/main.conf" -e stderr -g 'user foxcaves;'

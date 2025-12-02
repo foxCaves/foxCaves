@@ -6,7 +6,7 @@ return {
     mysql = {
         path = "/var/run/mysqld/mysqld.sock",
         user = "foxcaves",
-        password = "",
+        password = "foxcaves",
         database = "foxcaves",
     },
     email = {

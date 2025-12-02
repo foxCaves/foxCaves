@@ -213,6 +213,7 @@
                 export FCV_NGINX='${pkgs.openresty}'
                 export FCV_LUAJIT='${pkgs.luajit}'
                 export FCV_OPENSSL='${pkgs.openssl}'
+                export FCV_CACERT='${pkgs.cacert}'
                 export CAPTCHA_FONT="${pkgs.dejavu_fonts}/share/fonts/truetype/DejaVuSans.ttf"
                 export LUA_CPATH='${luaCPath}'
                 export LUA_PATH='${luaPath}'
@@ -223,7 +224,7 @@
             ''
               mkdir -p ./r/share/foxcaves ./r/bin
               cp -r ${./bin}/* ./r/bin/
-              cp ${pkgs.writeText "foxcaves-env.sh" envFile} ./r/share/foxcaves/env.sh
+              cp ${pkgs.writeText "foxcaves-env" envFile} ./r/bin/foxcaves-env
             '';
 
           installPhase = ''
