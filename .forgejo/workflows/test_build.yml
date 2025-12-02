@@ -76,7 +76,7 @@ jobs:
       - name: Run tests
         working-directory: ./frontend
         run: |
-          source ./result/bin/foxcaves-env
+          source ../result/bin/foxcaves-env
           npm test
       - name: Test container teardown
         if: always()
