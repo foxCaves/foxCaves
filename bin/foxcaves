@@ -30,6 +30,8 @@ chmod 640 "${FCV_STORAGE_ROOT}/acme/account.key"
 chmod 700 "${FCV_STORAGE_ROOT}/acme/storage"
 # END SSL setup
 
+extra_nginx_args=()
+
 if [ "$(id -u)" -eq '0' ]; then
     if [ ! -f /etc/passwd ]; then
         echo 'root:!x:::::::' > /etc/shadow
@@ -47,6 +49,8 @@ if [ "$(id -u)" -eq '0' ]; then
 
     mkdir -p /tmp
     chmod 2777 /tmp
+
+    extra_nginx_args+=('-g' 'user foxcaves;')
 fi
 
 export FCV_NGINX_ROOT="$(mktemp -d)"
@@ -55,4 +59,4 @@ chmod -R 755 "${FCV_NGINX_ROOT}"
 "${FCV_LUAJIT}/bin/luajit" "${FCV_LUA_ROOT}/nginx_configure.lua"
 
 mkdir -p "${FCV_NGINX_ROOT}/logs"
-exec "${FCV_NGINX}/bin/openresty" -p "${FCV_NGINX_ROOT}" -c "${FCV_NGINX_ROOT}/main.conf" -e stderr -g 'user foxcaves;'
+exec "${FCV_NGINX}/bin/openresty" -p "${FCV_NGINX_ROOT}" -c "${FCV_NGINX_ROOT}/main.conf" -e stderr "${extra_nginx_args[@]}"
