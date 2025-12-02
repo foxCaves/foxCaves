@@ -1,7 +1,7 @@
 services:
   site:
     build: .
-    image: ghcr.io/foxcaves/foxcaves/foxcaves:latest
+    image: git.foxden.network/foxcaves/foxcaves
     restart: unless-stopped
     sysctls:
       - net.ipv6.conf.all.disable_ipv6=1

@@ -40,16 +40,14 @@ jobs:
           node-version: lts/*
           check-latest: true
           token: ${{ secrets.EXT_GITHUB_TOKEN }}
-      - name: Ensure we are up to date on all images
-        run: docker pull git.foxden.network/mirror/oci-images/node:lts-alpine && docker pull git.foxden.network/mirror/oci-images/openresty/openresty:alpine-fat
-      - name: Build container image
-        uses: https://data.forgejo.org/docker/build-push-action@v6
+      - uses: https://github.com/cachix/install-nix-action@v31
         with:
-          push: false
-          load: true
-          build-args: |
-            GIT_REVISION=${{ github.sha }}
-          tags: ghcr.io/foxcaves/foxcaves/foxcaves:latest
+          nix_path: nixpkgs=channel:nixos-unstable
+          github_access_token: ${{ secrets.EXT_GITHUB_TOKEN }}
+      - name: Build container image
+        run: |
+          nix build .#foxcaves-docker
+          docker load -i result
       # Run tests
       - name: Add to hostsfile
         run: sudo bash -c "echo '127.0.0.1 app.foxcaves cdn.foxcaves' >> /etc/hosts"

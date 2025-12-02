@@ -1,6 +1,12 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+export AWS_EC2_METADATA_DISABLED=true
+
+if [ -z "${ENVIRONMENT:-}" ]; then
+    export ENVIRONMENT=development
+fi
+
 if [ "${1-}" != "--skip-env" ]; then
     echo 'Loading environment...'
     source "$(dirname "$0")/../share/foxcaves/env.sh"

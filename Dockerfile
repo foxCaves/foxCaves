@@ -37,10 +37,6 @@ RUN apk add --no-cache git zlib-dev pcre-dev openssl-dev libxml2-dev libxslt-dev
 # Deployed container
 FROM backend-base
 
-# Base variables
-ENV ENVIRONMENT=development
-ENV AWS_EC2_METADATA_DISABLED=true
-
 # OS packages
 RUN apk update && apk add imagemagick git argon2-libs argon2-dev argon2 runuser libuuid openssl openssl-dev ca-certificates libqrencode-tools gd-dev freetype-dev font-opensans
 

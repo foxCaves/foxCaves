@@ -234,6 +234,13 @@
       in
       {
         packages.foxcaves-frontend = frontend;
+        packages.foxcaves-docker = pkgs.dockerTools.buildImage {
+          name = "git.foxden.network/foxcaves/foxcaves";
+          tag = "latest";
+          config = {
+            Entrypoint = [ "${main}/bin/foxcaves" ];
+          };
+        };
         packages.foxcaves = main;
         packages.default = main;
       }
