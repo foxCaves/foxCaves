@@ -1,9 +1,13 @@
 #!/usr/bin/env bash
-set -xeuo pipefail
+set -euo pipefail
 
 if [ "${1-}" != "--skip-env" ]; then
+    echo 'Loading environment...'
     source "$(dirname "$0")/../share/foxcaves/env.sh"
 fi
+
+echo 'Starting foxCaves init sequence...'
+set -x
 
 if [ -z "${FCV_STORAGE_ROOT:-}" ]; then
     export FCV_STORAGE_ROOT=/var/lib/foxcaves
