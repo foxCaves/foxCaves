@@ -23,7 +23,7 @@
 
           installPhase = ''
             mkdir -p $out
-            cp -r ${pkgs.openresty}/* $out/
+            cp -r $src/* $out/
             chmod 700 $out/lualib/resty
             rm $out/lualib/resty/mysql.lua
           '';
