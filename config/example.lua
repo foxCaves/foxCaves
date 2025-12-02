@@ -4,7 +4,10 @@ return {
         port = 6379
     },
     mysql = {
-        -- mysql options
+        path = "/var/run/mysqld/mysqld.sock",
+        user = "foxcaves",
+        password = "",
+        database = "foxcaves",
     },
     email = {
         host = "localhost",

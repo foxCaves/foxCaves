@@ -11,6 +11,7 @@ services:
     volumes:
       - ./config:/etc/foxcaves
       - ./data/storage:/var/lib/foxcaves/storage
+      - mysqlsock:/var/run/mysqld
     healthcheck:
       test: 'curl -s -f --resolve "app.foxcaves:443:127.0.0.1" --insecure "https://app.foxcaves/healthz" >/dev/null || exit 1'
       interval: 60s
@@ -37,6 +38,9 @@ services:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: foxcaves
       MYSQL_USER: foxcaves
-      MYSQL_PASSWORD: foxcaves
     volumes:
       - ./data/mysql:/var/lib/mysql
+      - mysqlsock:/var/run/mysqld
+
+volumes:
+  mysqlsock: {}
