@@ -142,6 +142,7 @@
           src = ./frontend;
           npmDeps = pkgs.importNpmLock { npmRoot = ./frontend; };
           npmConfigHook = pkgs.importNpmLock.npmConfigHook;
+          nodejs = pkgs.nodejs_24;
         };
 
         backend = pkgs.stdenv.mkDerivation {
