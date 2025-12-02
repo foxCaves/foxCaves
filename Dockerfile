@@ -51,7 +51,6 @@ RUN luarocks install luasocket
 RUN luarocks install luafilesystem
 RUN luarocks install lua-resty-jit-uuid
 RUN luarocks install lua-resty-acme
-RUN luarocks install lpath
 RUN luarocks install luaossl
 RUN git clone --depth 1 --branch v3.0.0 https://github.com/foxCaves/lua-gd /tmp/lua-gd && cd /tmp/lua-gd && luarocks make *.rockspec && cd /tmp && rm -rf /tmp/lua-gd
 RUN git clone --depth 1 --branch v1.0.3 https://github.com/foxCaves/raven-lua.git /tmp/raven-lua && mv /tmp/raven-lua/raven /usr/local/share/lua/5.1/ && rm -rf /tmp/raven-lua
