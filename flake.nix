@@ -115,6 +115,10 @@
           npmDeps = pkgs.importNpmLock { npmRoot = ./frontend; };
           npmConfigHook = pkgs.importNpmLock.npmConfigHook;
           nodejs = pkgs.nodejs_24;
+
+          env = {
+            GIT_REVISION = self.rev or "${self.dirtyRev}-dirty";
+          };
         };
 
         backend = pkgs.stdenv.mkDerivation {
