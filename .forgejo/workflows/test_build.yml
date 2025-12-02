@@ -32,6 +32,12 @@ jobs:
                 "containerd-snapshotter": true
               }
             }
+      - name: Log in to Docker Registry
+        uses: https://data.forgejo.org/docker/login-action@v3
+        with:
+          registry: git.foxden.network
+          username: ${{ secrets.DOCKER_REGISTRY_USER }}
+          password: ${{ secrets.DOCKER_REGISTRY_PASSWORD }}
       - name: Set up Docker Buildx
         uses: https://data.forgejo.org/docker/setup-buildx-action@v3
       - name: Set up Node.js
