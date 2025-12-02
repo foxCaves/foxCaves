@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -euo pipefail
+set -xeuo pipefail
 
 if [ "${1-}" != "--skip-env" ]; then
     source "$(dirname "$0")/../share/foxcaves/env.sh"
