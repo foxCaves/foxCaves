@@ -69,6 +69,7 @@ const config: Configuration = {
             },
         }),
     ],
+    devtool: 'source-map',
     devServer: {
         historyApiFallback: {
             index: `/static/index.html`,
