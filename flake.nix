@@ -72,27 +72,6 @@
             hash = "sha256-xcEnic0aQCgzIlgU/Z6dxH7WTyTK+g5UKo4BiKcvNxQ=";
           })
           (pkgs.fetchFromGitHub rec {
-            owner = "openresty";
-            repo = "lua-resty-redis";
-            name = repo;
-            rev = "v0.33";
-            hash = "sha256-2ZF1o7Cx1UxqRQ3k8RJPIdtS92oYR8aJWOkcEpF2Zv0=";
-          })
-          (pkgs.fetchFromGitHub rec {
-            owner = "openresty";
-            repo = "lua-resty-websocket";
-            name = repo;
-            rev = "v0.13";
-            hash = "sha256-DuSQcNM+semoOMX3JRMyE6+xo00kx8ln6L83OxzTYpU=";
-          })
-          (pkgs.fetchFromGitHub rec {
-            owner = "openresty";
-            repo = "lua-resty-string";
-            name = repo;
-            rev = "v0.16";
-            hash = "sha256-omAjZhu3NH6Wcz8e4pGYMRLKAz826dNa3IwgPoX4DGU=";
-          })
-          (pkgs.fetchFromGitHub rec {
             owner = "thibaultCha";
             repo = "lua-resty-jit-uuid";
             name = repo;
