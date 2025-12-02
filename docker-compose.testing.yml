@@ -2,18 +2,3 @@ services:
   site:
     environment:
       ENVIRONMENT: testing
-    volumes:
-      - site_config:/etc/foxcaves
-      - site_storage:/var/lib/foxcaves/storage
-  redis:
-    volumes:
-      - redis:/data
-  mysql:
-    volumes:
-      - mysql:/var/lib/mysql
-
-volumes:
-  site_config: {}
-  site_storage: {}
-  redis: {}
-  mysql: {}
