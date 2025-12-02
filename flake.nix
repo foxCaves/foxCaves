@@ -72,6 +72,13 @@
             hash = "sha256-xcEnic0aQCgzIlgU/Z6dxH7WTyTK+g5UKo4BiKcvNxQ=";
           })
           (pkgs.fetchFromGitHub rec {
+            owner = "foxCaves";
+            repo = "lua-resty-mysql";
+            name = repo;
+            rev = "aefc72dcfe6ab5ad5b016cae4278597cfd7c5a46";
+            hash = "sha256-uEueOjC+Tb9JSI3IG0UnWB9Ul8oUPb2Hf5m9JorWVMo=";
+          })
+          (pkgs.fetchFromGitHub rec {
             owner = "openresty";
             repo = "lua-resty-redis";
             name = repo;

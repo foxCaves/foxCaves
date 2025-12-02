@@ -1,6 +1,6 @@
 local config = require('foxcaves.config').mysql
 local hooks = require('foxcaves.hooks')
-local mysql = require('resty.mysql')
+local mysql = require('fork.resty.mysql')
 local error = error
 local ngx = ngx
 local unpack = unpack
