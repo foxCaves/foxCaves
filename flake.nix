@@ -179,7 +179,6 @@
           ];
 
           unpackPhase = ''
-            set -euo pipefail
             mkdir -p ./r/lib ./r/share
             for pkg in $luaGitModules; do
               rm -rf ./tmp && mkdir ./tmp
@@ -194,6 +193,7 @@
                   cd ./tmp
                   LUA_INCDIR=${pkgs.luajit}/include make
                   cd ..
+                  cp ./tmp/*.so ./r/lib
                 fi
               fi
               if [ -d ./tmp/lib ]; then
@@ -201,9 +201,8 @@
               elif [ -d ./tmp/src ]; then
                 cp -r ./tmp/src/* ./r/share
               else
-                cp -r ./tmp/* ./r/share
+                find ./tmp/* -maxdepth 1 -type d -print -exec cp -r '{}' ./r/share/ \;
               fi
-              cp ./tmp/*.so ./r/lib || true
             done
           '';
 
