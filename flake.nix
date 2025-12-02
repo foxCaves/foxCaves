@@ -219,6 +219,7 @@
                 export LUA_PATH='${luaPath}'
                 export PATH="$PATH:${pkgs.coreutils}/bin:${pkgs.gnugrep}/bin:${pkgs.findutils}/bin"
                 export LD_LIBRARY_PATH="${pkgs.libargon2}/lib"
+                export GIT_REVISION='${self.rev}'
               '';
             in
             ''
