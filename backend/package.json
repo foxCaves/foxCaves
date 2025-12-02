@@ -1,6 +1,9 @@
 {
     "name": "foxcaves-backend",
     "version": "0.1.0",
+    "engines": {
+        "node": ">=24.0.0"
+    },
     "scripts": {
         "lint:prettier": "prettier --check \"**/*.lua\"",
         "fmt:prettier": "prettier --write \"**/*.lua\"",
