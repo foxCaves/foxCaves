@@ -18,9 +18,9 @@ mkdir -p "${FCV_STORAGE_ROOT}/storage"
 
 # SSL setup
 mkdir -p "${FCV_STORAGE_ROOT}/acme/storage"
-openssl req -x509 -newkey rsa:2048 -keyout "${FCV_STORAGE_ROOT}/acme/snakeoil.key" -out "${FCV_STORAGE_ROOT}/acme/snakeoil.crt" -sha256 -days 3650 -nodes -subj '/CN=snakeoil' >/dev/null 2>/dev/null
+"${FCV_OPENSSL}/bin/openssl" req -x509 -newkey rsa:2048 -keyout "${FCV_STORAGE_ROOT}/acme/snakeoil.key" -out "${FCV_STORAGE_ROOT}/acme/snakeoil.crt" -sha256 -days 3650 -nodes -subj '/CN=snakeoil' >/dev/null 2>/dev/null
 if [ ! -f "${FCV_STORAGE_ROOT}/acme/account.key" ]; then
-    openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:4096 -out "${FCV_STORAGE_ROOT}/acme/account.key" >/dev/null 2>/dev/null
+    "${FCV_OPENSSL}/bin/openssl" genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:4096 -out "${FCV_STORAGE_ROOT}/acme/account.key" >/dev/null 2>/dev/null
 fi
 
 chmod 640 "${FCV_STORAGE_ROOT}/acme/account.key"

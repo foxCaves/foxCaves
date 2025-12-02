@@ -79,6 +79,7 @@ RUN ln -s /usr/local/openresty/bin /usr/local/openresty/nginx/
 ARG GIT_REVISION=UNKNOWN
 ENV GIT_REVISION=${GIT_REVISION}
 ENV FCV_LUA_ROOT=/usr/share/foxcaves/lua
+ENV FCV_OPENSSL=/usr
 ENV FCV_LUAJIT=/usr/local/openresty/luajit
 ENV FCV_FRONTEND_ROOT=/usr/share/foxcaves/html
 ENV FCV_NGINX_TEMPLATE_ROOT=/etc/nginx
