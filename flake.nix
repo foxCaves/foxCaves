@@ -220,6 +220,7 @@
                 export FCV_LUAJIT='${pkgs.luajit}'
                 export FCV_OPENSSL='${pkgs.openssl}'
                 export FCV_CACERT='${pkgs.cacert}'
+                export FCV_IMAGEMAGICK='${pkgs.imagemagick}'
                 export CAPTCHA_FONT="${pkgs.dejavu_fonts}/share/fonts/truetype/DejaVuSans.ttf"
                 export LUA_CPATH='${luaCPath}'
                 export LUA_PATH='${luaPath}'

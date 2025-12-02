@@ -18,6 +18,8 @@ local setmetatable = setmetatable
 local error = error
 local tonumber = tonumber
 
+local IMAGEMAGICK_BIN = (os.getenv('FCV_IMAGEMAGICK') or '/usr') .. '/bin/magick'
+
 local file_mt = {}
 
 local file_model = {
@@ -30,9 +32,9 @@ local file_model = {
 }
 
 require('foxcaves.module_helper').setmodenv()
-
 local mimeHandlers = { image = function(src, dest)
     exec.cmd(
+        IMAGEMAGICK_BIN,
         'convert',
         src,
         '-thumbnail',

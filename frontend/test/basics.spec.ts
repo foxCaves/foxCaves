@@ -10,8 +10,13 @@ testGuest('Git revision on main page', async ({ page }) => {
     await page.goto('http://app.foxcaves:8080/');
 
     const gitRevision = process.env.GIT_REVISION ?? 'UNKNOWN';
-    if (process.env.CI && gitRevision === 'UNKNOWN') {
-        throw new Error('GIT_REVISION is not set in CI');
+    if (gitRevision === 'UNKNOWN') {
+        if (process.env.CI) {
+            throw new Error('GIT_REVISION is not set in CI');
+        }
+        // eslint-disable-next-line no-console
+        console.warn('GIT_REVISION is not set, skipping test');
+        return;
     }
 
     await page.getByText(`Frontend revision: ${gitRevision}`).waitFor();

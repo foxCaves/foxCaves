@@ -48,6 +48,8 @@ jobs:
         run: |
           nix build .#foxcaves-docker
           docker load -i result
+      - name: Symlink foxcaves app
+        run: nix build .#foxcaves
       # Run tests
       - name: Add to hostsfile
         run: sudo bash -c "echo '127.0.0.1 app.foxcaves cdn.foxcaves' >> /etc/hosts"
@@ -68,7 +70,7 @@ jobs:
       - name: Run tests
         working-directory: ./frontend
         run: |
-          export GIT_REVISION=${{ github.sha }}
+          source ./result/bin/foxcaves-env
           npm test
       - name: Test container teardown
         if: always()
