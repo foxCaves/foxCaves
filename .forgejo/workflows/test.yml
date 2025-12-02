@@ -1,7 +1,7 @@
-name: Test/Build
+name: Test
 
 concurrency:
-  group: testbuild-${{ github.ref }}
+  group: test-${{ github.ref }}
   cancel-in-progress: true
 
 on:
@@ -11,7 +11,7 @@ on:
   pull_request:
 
 jobs:
-  docker:
+  test:
     runs-on: ubuntu-24.04
     permissions:
       packages: write
