@@ -5,7 +5,7 @@ local ngx = ngx
 
 R.register_route('/view/{file}', 'GET', R.make_route_opts_anon(), function(route_vars)
     local file = file_model.get_by_id(route_vars.file)
-    if (not file) or (not file:can_view(ngx.ctx.user)) then
+    if not file or not file:can_view(ngx.ctx.user) then
         htmlgen.render_index_html()
         return
     end
