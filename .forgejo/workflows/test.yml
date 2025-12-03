@@ -19,19 +19,7 @@ jobs:
     steps:
       - name: Check out the repo
         uses: https://data.forgejo.org/actions/checkout@v6
-      - name: Update Docker version
-        uses: https://github.com/docker/setup-docker-action@v4
-        env:
-          DOCKER_CLI_EXPERIMENTAL: enabled
-        with:
-          channel: stable
-          github-token: ${{ secrets.EXT_GITHUB_TOKEN }}
-          daemon-config: |
-            {
-              "features": {
-                "containerd-snapshotter": true
-              }
-            }
+      - run: start-docker
       - name: Log in to Docker Registry
         uses: https://data.forgejo.org/docker/login-action@v3
         with:
