@@ -17,7 +17,8 @@ if [ -z "${FCV_STORAGE_ROOT:-}" ]; then
 fi
 
 # Basic directory structure
-mkdir -p "${FCV_STORAGE_ROOT}/storage"
+mkdir -p "${FCV_STORAGE_ROOT}/storage" "${FCV_STORAGE_ROOT}/acme"
+chmod 700 "${FCV_STORAGE_ROOT}/acme" "${FCV_STORAGE_ROOT}/storage"
 
 # SSL setup
 mkdir -p "${FCV_STORAGE_ROOT}/acme/storage"
