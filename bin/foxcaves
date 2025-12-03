@@ -18,7 +18,7 @@ fi
 
 # Basic directory structure
 mkdir -p "${FCV_STORAGE_ROOT}/storage" "${FCV_STORAGE_ROOT}/acme"
-chmod 700 "${FCV_STORAGE_ROOT}/acme" "${FCV_STORAGE_ROOT}/storage"
+chmod 700 "${FCV_STORAGE_ROOT}/storage" "${FCV_STORAGE_ROOT}/acme"
 
 # SSL setup
 mkdir -p "${FCV_STORAGE_ROOT}/acme/storage"
